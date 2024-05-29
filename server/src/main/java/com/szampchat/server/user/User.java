@@ -19,6 +19,8 @@ import org.hibernate.annotations.Type;
 public class User {
     @Id
     @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
+    //TODO GenericGenerator is deprecated, use IdGeneratorType instead, or even better have snowflake generator in postgres https://github.com/mausimag/pgflake
+    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
     @Column
     private Long id;
     @Column
