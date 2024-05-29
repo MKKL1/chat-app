@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: szampchat-server
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chat
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+server:
+  error:
+    include-message: always
