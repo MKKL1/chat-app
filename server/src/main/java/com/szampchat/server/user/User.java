@@ -1,5 +1,6 @@
 package com.szampchat.server.user;
 
+import com.szampchat.server.community.Community;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IdGeneratorType;
 import org.hibernate.annotations.Type;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -21,12 +26,18 @@ public class User {
     @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
     //TODO GenericGenerator is deprecated, use IdGeneratorType instead, or even better have snowflake generator in postgres https://github.com/mausimag/pgflake
     @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
-    @Column
     private Long id;
-    @Column
+    @Column(unique = true, nullable = false)
     private String name;
-    @Column
+    @Column(unique = true, nullable = false)
     private String email;
-    @Column
+    @Column(nullable = false)
     private String password;
+    @Column
+    private URL image_url;
+    @Column
+    private String description;
+
+    @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
+    private Set<Community> communities = new HashSet<>();
 }
