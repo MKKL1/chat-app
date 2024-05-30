@@ -29,13 +29,14 @@ public class UserRepositoryTests {
                     .password("password123")
                     .build();
             userRepository.save(user1);
+            users.add(user1);
         }
 
         for (int i = 0; i < 2; i++) {
             Collections.shuffle(users);
             Community community = Community.builder()
                     .name("community")
-                    .members(users.stream().limit(3).collect(Collectors.toSet()))
+                    .members(users.stream().limit(5).collect(Collectors.toSet()))
                     .build();
             communityRepository.save(community);
         }

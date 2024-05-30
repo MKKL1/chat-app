@@ -29,7 +29,7 @@ public class Community {
     @Column
     private URL image_url;
 
-    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.ALL})
+    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "community_members",
             joinColumns = { @JoinColumn(name = "community_id") },
