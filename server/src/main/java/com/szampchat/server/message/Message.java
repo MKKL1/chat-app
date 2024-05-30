@@ -25,10 +25,9 @@ import java.util.Set;
 @Entity
 @Table(name="messages")
 public class Message {
-    @Id
-    @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
-    private Long id;
+
+    @EmbeddedId
+    private MessageId id = new MessageId();
 
     @Column(nullable = false)
     private String text;
@@ -36,20 +35,20 @@ public class Message {
     @Column
     private Date updated_at;
 
-    @ManyToOne
-    @JoinColumn(name="text_channel_id", nullable = false)
-    private Channel channel;
+//    @MapsId("channelId")
+//    @ManyToOne
+//    private Channel channel;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-    @ManyToOne(cascade={CascadeType.ALL})
-    @JoinColumn(name="responds_to")
-    private Message responds_to;
+//    @ManyToOne(cascade={CascadeType.ALL})
+//    @JoinColumn(name="responds_to")
+//    private Message responds_to;
 
-    @OneToMany(mappedBy="responds_to")
-    private Set<Message> responses = new HashSet<>();
+//    @OneToMany(mappedBy="responds_to")
+//    private Set<Message> responses = new HashSet<>();
 
     @OneToMany(mappedBy="message")
     private Set<Reaction> reactions = new HashSet<>();

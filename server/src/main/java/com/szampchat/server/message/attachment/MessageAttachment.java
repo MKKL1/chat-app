@@ -32,6 +32,9 @@ public class MessageAttachment {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="message_id", nullable = false)
+    @JoinColumns({
+            @JoinColumn(name = "message_id", referencedColumnName = "message_id"),
+            @JoinColumn(name = "channel_id", referencedColumnName = "channel_id")
+    })
     private Message message;
 }

@@ -72,7 +72,7 @@ public class UserRepositoryTests {
                     Message message = Message.builder()
                             .text(STR."Message \{k}")
                             .user(memberList.get(rand.nextInt(memberList.size())))
-                            .channel(channel)
+//                            .channel(channel)
                             .build();
                     messageRepository.save(message);
                 }

@@ -27,7 +27,10 @@ public class Reaction {
     private Character emoji;
 
     @ManyToOne
-    @JoinColumn(name="message_id", nullable = false)
+    @JoinColumns({
+            @JoinColumn(name = "message_id", referencedColumnName = "message_id"),
+            @JoinColumn(name = "channel_id", referencedColumnName = "channel_id")
+    })
     private Message message;
 
     @ManyToOne
