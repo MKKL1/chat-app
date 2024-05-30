@@ -1,7 +1,6 @@
-package com.szampchat.server.community;
+package com.szampchat.server.role;
 
-import com.szampchat.server.channel.Channel;
-import com.szampchat.server.role.Role;
+import com.szampchat.server.community.Community;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
 import com.szampchat.server.user.User;
 import jakarta.persistence.*;
@@ -20,28 +19,26 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="communities")
-public class Community {
+@Table(name="roles")
+public class Role {
     @Id
     @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
     @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column
-    private URL image_url;
+    @Column(nullable = false)
+    private Long permission;
 
-    @OneToMany(mappedBy = "community")
-    private Set<Role> roles;
-
-    @OneToMany(mappedBy = "community")
-    private Set<Channel> channels;
+    @ManyToOne
+    @JoinColumn(name="community_id", nullable = false)
+    private Community community;
 
     @ManyToMany(targetEntity = User.class, cascade = {CascadeType.MERGE})
     @JoinTable(
-            name = "community_members",
-            joinColumns = { @JoinColumn(name = "community_id") },
+            name = "user_roles",
+            joinColumns = { @JoinColumn(name = "role_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
-    private Set<User> members = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 }

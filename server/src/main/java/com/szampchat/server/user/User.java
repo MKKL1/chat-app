@@ -1,6 +1,7 @@
 package com.szampchat.server.user;
 
 import com.szampchat.server.community.Community;
+import com.szampchat.server.role.Role;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,4 +41,6 @@ public class User {
 
     @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
     private Set<Community> communities = new HashSet<>();
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Set<Role> roles = new HashSet<>();
 }
