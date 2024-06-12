@@ -33,17 +33,13 @@ import {MatIcon} from "@angular/material/icon";
 })
 export class RegisterComponent {
   form: FormGroup = new FormGroup({
-    // add checking if db if email is used
+    // add checking in db if email is used
     email: new FormControl('', [Validators.required, Validators.email]),
     username: new FormControl('', [Validators.required, Validators.min(6)]),
     // add regex and checking if both passwords are the same
     password: new FormControl('', Validators.required),
     repeatPassword: new FormControl('', Validators.required)
   });
-
-  get f(){
-    return this.form.controls;
-  }
 
   submitRegistration(){
     // showing form values

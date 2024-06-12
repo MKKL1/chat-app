@@ -35,7 +35,6 @@ export class LoginComponent {
   model = new LoginForm('','');
 
   submitLogin(form: NgForm){
-    console.log("Jebać javascript");
     console.log(form.form.value);
   }
 
