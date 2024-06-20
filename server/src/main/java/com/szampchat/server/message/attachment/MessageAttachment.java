@@ -1,8 +1,7 @@
 package com.szampchat.server.message.attachment;
 
-import com.szampchat.server.message.Message;
+import com.szampchat.server.message.base.Message;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
-import com.szampchat.server.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

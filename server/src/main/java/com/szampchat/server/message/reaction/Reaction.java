@@ -1,7 +1,7 @@
 package com.szampchat.server.message.reaction;
 
 import com.szampchat.server.channel.Channel;
-import com.szampchat.server.message.Message;
+import com.szampchat.server.message.base.Message;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
 import com.szampchat.server.user.User;
 import jakarta.persistence.*;
@@ -18,18 +18,21 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name="reactions")
 public class Reaction {
-    @Id
-    @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
-    private Long id;
+    @EmbeddedId
+    private ReactionId id = new ReactionId();
 
     @Column(nullable = false)
     private Character emoji;
 
     @ManyToOne
+    @MapsId("channelId")
+    @JoinColumn(name = "channel_id", insertable = false, updatable = false)
+    private Channel channel;
+
+    @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "message_id", referencedColumnName = "message_id"),
-            @JoinColumn(name = "channel_id", referencedColumnName = "channel_id")
+            @JoinColumn(name = "message_channel_id", referencedColumnName = "channel_id")
     })
     private Message message;
 

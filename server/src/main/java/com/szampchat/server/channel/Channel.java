@@ -37,12 +37,4 @@ public class Channel {
     @ManyToOne
     @JoinColumn(name="community_id", nullable = false)
     private Community community;
-//
-//    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.MERGE})
-//    @JoinTable(
-//            name = "community_members",
-//            joinColumns = { @JoinColumn(name = "community_id") },
-//            inverseJoinColumns = { @JoinColumn(name = "user_id") }
-//    )
-//    private Set<User> members = new HashSet<>();
 }

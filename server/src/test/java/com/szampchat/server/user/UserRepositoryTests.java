@@ -4,8 +4,9 @@ import com.szampchat.server.channel.ChannelRepository;
 import com.szampchat.server.channel.ChannelType;
 import com.szampchat.server.community.Community;
 import com.szampchat.server.community.CommunityRepository;
-import com.szampchat.server.message.Message;
-import com.szampchat.server.message.MessageRepository;
+import com.szampchat.server.message.base.Message;
+import com.szampchat.server.message.base.MessageId;
+import com.szampchat.server.message.base.MessageRepository;
 import com.szampchat.server.role.Role;
 import com.szampchat.server.role.RoleRepository;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,7 @@ public class UserRepositoryTests {
                     Message message = Message.builder()
                             .text(STR."Message \{k}")
                             .user(memberList.get(rand.nextInt(memberList.size())))
-//                            .channel(channel)
+                            .channel(channel)
                             .build();
                     messageRepository.save(message);
                 }
