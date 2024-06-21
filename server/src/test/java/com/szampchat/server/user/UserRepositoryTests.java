@@ -7,6 +7,8 @@ import com.szampchat.server.community.CommunityRepository;
 import com.szampchat.server.message.base.Message;
 import com.szampchat.server.message.base.MessageId;
 import com.szampchat.server.message.base.MessageRepository;
+import com.szampchat.server.message.reaction.Reaction;
+import com.szampchat.server.message.reaction.ReactionRepository;
 import com.szampchat.server.role.Role;
 import com.szampchat.server.role.RoleRepository;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,8 @@ public class UserRepositoryTests {
 
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private ReactionRepository reactionRepository;
 
     @Test
     public void test_save_user() {
@@ -75,7 +79,17 @@ public class UserRepositoryTests {
                             .user(memberList.get(rand.nextInt(memberList.size())))
                             .channel(channel)
                             .build();
-                    messageRepository.save(message);
+                    Message savedMessage = messageRepository.save(message);
+
+                    for(int l = 0; l < 3; l++) {
+                        Reaction reaction = Reaction.builder()
+                                .emoji('a')
+                                .channel(channel)
+                                .message(savedMessage) //why?
+                                .user(memberList.get(rand.nextInt(memberList.size())))
+                                .build();
+                        reactionRepository.save(reaction);
+                    }
                 }
             }
 

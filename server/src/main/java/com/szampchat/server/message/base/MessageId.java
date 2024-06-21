@@ -20,8 +20,9 @@ import java.io.Serializable;
 public class MessageId implements Serializable {
     @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
     @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
-    @Column(name="message_id")
+    @Column(name = "message_id")
     private Long id;
-    @Column(name="channel_id")
+
+    @Column(name = "channel_id")
     private Long channelId;
 }

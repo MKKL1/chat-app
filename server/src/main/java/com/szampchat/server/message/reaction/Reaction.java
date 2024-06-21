@@ -13,8 +13,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name="reactions")
 public class Reaction {
@@ -39,4 +37,13 @@ public class Reaction {
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    @Builder
+    public Reaction(Character emoji, Channel channel, Message message, User user) {
+        this.id = new ReactionId(null, channel.getId());
+        this.emoji = emoji;
+        this.channel = channel;
+        this.message = message;
+        this.user = user;
+    }
 }
