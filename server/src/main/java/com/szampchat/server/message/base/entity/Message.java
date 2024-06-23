@@ -1,11 +1,11 @@
-package com.szampchat.server.message.base;
+package com.szampchat.server.message.base.entity;
 
-import com.szampchat.server.channel.Channel;
-import com.szampchat.server.message.attachment.MessageAttachment;
-import com.szampchat.server.message.reaction.Reaction;
-import com.szampchat.server.user.User;
+import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.message.attachment.entity.MessageAttachment;
+import com.szampchat.server.message.base.MessageId;
+import com.szampchat.server.message.reaction.entity.Reaction;
+import com.szampchat.server.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

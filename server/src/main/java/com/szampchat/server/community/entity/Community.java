@@ -1,9 +1,9 @@
-package com.szampchat.server.community;
+package com.szampchat.server.community.entity;
 
-import com.szampchat.server.channel.Channel;
-import com.szampchat.server.role.Role;
+import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
-import com.szampchat.server.user.User;
+import com.szampchat.server.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

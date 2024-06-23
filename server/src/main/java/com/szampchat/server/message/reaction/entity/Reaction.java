@@ -1,15 +1,13 @@
-package com.szampchat.server.message.reaction;
+package com.szampchat.server.message.reaction.entity;
 
-import com.szampchat.server.channel.Channel;
-import com.szampchat.server.message.base.Message;
-import com.szampchat.server.snowflake.SnowflakeGenerator;
-import com.szampchat.server.user.User;
+import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.message.base.entity.Message;
+import com.szampchat.server.message.reaction.ReactionId;
+import com.szampchat.server.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Data
 @NoArgsConstructor

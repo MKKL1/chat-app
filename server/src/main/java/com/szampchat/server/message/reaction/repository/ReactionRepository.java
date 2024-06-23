@@ -1,5 +1,7 @@
-package com.szampchat.server.message.reaction;
+package com.szampchat.server.message.reaction.repository;
 
+import com.szampchat.server.message.reaction.ReactionId;
+import com.szampchat.server.message.reaction.entity.Reaction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
