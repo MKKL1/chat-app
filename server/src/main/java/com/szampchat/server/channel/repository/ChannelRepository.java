@@ -1,6 +1,6 @@
-package com.szampchat.server.channel;
+package com.szampchat.server.channel.repository;
 
-import com.szampchat.server.role.Role;
+import com.szampchat.server.channel.entity.Channel;
 import jdk.jfr.Registered;
 import org.springframework.data.repository.CrudRepository;
 

@@ -3,6 +3,7 @@ version: '3.9'
 services:
   postgres:
     image: postgres:alpine
+    container_name: postgres
     ports:
       - 5432:5432
     volumes:
@@ -11,8 +12,15 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_USER=root
       - POSTGRES_DB=chat
-  adminer:
-    image: adminer
-    restart: always
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
     ports:
-      - 8080:8080
+      - 8080:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - ~/apps/pgadmin:/var/lib/pgadmin

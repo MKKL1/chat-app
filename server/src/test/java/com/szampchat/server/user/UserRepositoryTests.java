@@ -1,13 +1,17 @@
 package com.szampchat.server.user;
-import com.szampchat.server.channel.Channel;
-import com.szampchat.server.channel.ChannelRepository;
+import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.channel.ChannelType;
-import com.szampchat.server.community.Community;
-import com.szampchat.server.community.CommunityRepository;
-import com.szampchat.server.message.Message;
-import com.szampchat.server.message.MessageRepository;
-import com.szampchat.server.role.Role;
-import com.szampchat.server.role.RoleRepository;
+import com.szampchat.server.community.entity.Community;
+import com.szampchat.server.community.repository.CommunityRepository;
+import com.szampchat.server.message.base.entity.Message;
+import com.szampchat.server.message.base.repository.MessageRepository;
+import com.szampchat.server.message.reaction.entity.Reaction;
+import com.szampchat.server.message.reaction.repository.ReactionRepository;
+import com.szampchat.server.role.entity.Role;
+import com.szampchat.server.role.repository.RoleRepository;
+import com.szampchat.server.user.entity.User;
+import com.szampchat.server.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +36,8 @@ public class UserRepositoryTests {
 
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private ReactionRepository reactionRepository;
 
     @Test
     public void test_save_user() {
@@ -74,7 +80,17 @@ public class UserRepositoryTests {
                             .user(memberList.get(rand.nextInt(memberList.size())))
                             .channel(channel)
                             .build();
-                    messageRepository.save(message);
+                    Message savedMessage = messageRepository.save(message);
+
+                    for(int l = 0; l < 3; l++) {
+                        Reaction reaction = Reaction.builder()
+                                .emoji('a')
+                                .channel(channel)
+                                .message(savedMessage) //why?
+                                .user(memberList.get(rand.nextInt(memberList.size())))
+                                .build();
+                        reactionRepository.save(reaction);
+                    }
                 }
             }
 

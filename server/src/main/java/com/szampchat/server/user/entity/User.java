@@ -1,7 +1,7 @@
-package com.szampchat.server.user;
+package com.szampchat.server.user.entity;
 
-import com.szampchat.server.community.Community;
-import com.szampchat.server.role.Role;
+import com.szampchat.server.community.entity.Community;
+import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.snowflake.SnowflakeGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.IdGeneratorType;
-import org.hibernate.annotations.Type;
 
 import java.net.URL;
 import java.util.HashSet;
