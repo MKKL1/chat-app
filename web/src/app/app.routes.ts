@@ -5,6 +5,7 @@ import {AppComponent} from "./app.component";
 import {CommunityComponent} from "./features/pages/community/community.component";
 import {ChannelComponent} from "./features/pages/channel/channel.component";
 import {ProfileComponent} from "./features/pages/profile/profile.component";
+import {MainComponent} from "./features/pages/main/main.component";
 
 export const routes: Routes = [
   {
@@ -20,8 +21,26 @@ export const routes: Routes = [
     component: RegisterComponent
   },
   {
-    path: 'profile',
-    component: ProfileComponent
+    path: 'app',
+    component: MainComponent,
+    children: [
+      {
+        path: 'profile',
+        component: ProfileComponent
+      },
+      {
+        path: 'communities',
+        component: CommunityComponent
+      },
+      {
+        path: 'communities/text',
+        component: ChannelComponent
+      },
+      {
+        path: 'communities/voice',
+        component: ChannelComponent
+      }
+    ]
   },
   {
     path: 'community',
