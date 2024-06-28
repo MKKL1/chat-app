@@ -6,9 +6,7 @@ import com.szampchat.server.message.base.MessageId;
 import com.szampchat.server.message.reaction.entity.Reaction;
 import com.szampchat.server.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -16,8 +14,12 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
-@Table(name="messages")
+@Table(name = "messages", indexes = {
+        @Index(name = "idx_message_channel_id", columnList = "channel_id")
+})
 public class Message {
 
     @EmbeddedId

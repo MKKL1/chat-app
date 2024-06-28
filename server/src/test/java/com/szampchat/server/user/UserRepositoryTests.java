@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @SpringBootTest
 public class UserRepositoryTests {
 
+    //To nie test a generator więc usuwam to
     @Autowired
     private UserRepository userRepository;
 

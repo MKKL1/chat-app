@@ -29,7 +29,7 @@ public class Community {
     @Column(nullable = false)
     private String name;
     @Column
-    private URL image_url;
+    private String image_url;
 
     @OneToMany(mappedBy = "community")
     private Set<Role> roles;
