@@ -10,7 +10,7 @@ import {MainComponent} from "./features/pages/main/main.component";
 export const routes: Routes = [
   {
     path: '',
-    component: AppComponent
+    component: LoginComponent
   },
   {
     path: 'login',

@@ -26,6 +26,10 @@ export class AuthService {
       );
   }
 
+  register(){
+
+  }
+
   logout(): void {
     this.removeToken();
     this.loggedIn.next(false);
