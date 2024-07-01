@@ -8,6 +8,8 @@ import {
 import {MatChip, MatChipSet} from "@angular/material/chips";
 import {UserBasicInfoComponent} from "../../../core/components/user-basic-info/user-basic-info.component";
 import {MatListModule} from "@angular/material/list";
+import {disableDebugTools} from "@angular/platform-browser";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -20,12 +22,15 @@ import {MatListModule} from "@angular/material/list";
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
     UserBasicInfoComponent,
-    MatListModule
+    MatListModule,
+    RouterLink
   ],
   templateUrl: './users-list-voice.component.html',
   styleUrl: './users-list-voice.component.scss'
 })
 export class UsersListVoiceComponent {
+  readonly panelOpenState = signal(false);
+
   channels: any[] = [
     {
       name: "Channel 1",
@@ -38,4 +43,5 @@ export class UsersListVoiceComponent {
     {name: "Channel 2"},
     {name: "Channel 3"}
   ];
+
 }

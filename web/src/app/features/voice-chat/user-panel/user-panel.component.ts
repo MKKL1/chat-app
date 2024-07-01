@@ -1,16 +1,36 @@
-import { Component } from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
+import {NgClass, NgStyle} from "@angular/common";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [],
+  imports: [
+    NgClass,
+    NgStyle,
+    MatIcon
+  ],
   templateUrl: './user-panel.component.html',
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent {
-  speaking: boolean = false;
+  @HostBinding('class.speaking') speaking: boolean = true;
   muted: boolean = false;
+  silent: boolean = false;
   image: string | null = null;
   username: string = "Username";
+
+  constructor() {
+    // setting random value just to see difference in ui
+    this.speaking = Math.random() < 0.5;
+  }
+
+  toggleMuted(){
+    this.muted = !this.muted;
+  }
+
+  toggleSilent(){
+    this.speaking = !this.silent;
+  }
 
 }

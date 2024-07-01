@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.component";
 import {UsersListVoiceComponent} from "../../voice-chat/users-list-voice/users-list-voice.component";
+import {MatIcon} from "@angular/material/icon";
+import {Subscription} from "rxjs";
+import {ScreenSizeService} from "../../../core/services/screen-size.service";
 
 @Component({
   selector: 'app-channel',
@@ -10,11 +13,42 @@ import {UsersListVoiceComponent} from "../../voice-chat/users-list-voice/users-l
     MatGridList,
     MatGridTile,
     UserPanelComponent,
-    UsersListVoiceComponent
+    UsersListVoiceComponent,
+    MatIcon
   ],
   templateUrl: './channel.component.html',
   styleUrl: './channel.component.scss'
 })
-export class ChannelComponent {
+export class ChannelComponent implements OnInit, OnDestroy{
+  channelName: string = "Community 1";
+  clientMuted: boolean = false;
+  clientSilent: boolean = false;
 
+  isMobile: boolean = false;
+  private subscription: Subscription;
+
+  constructor(private screenSizeService: ScreenSizeService) {
+    this.subscription = this.screenSizeService.isMobileView$.subscribe(isMobile => {
+      this.isMobile = isMobile;
+    })
+  }
+
+  // error why using OnInit for some reason
+  ngOnInit() {
+    // this.subscription = this.screenSizeService.isMobileView$.subscribe(isMobile => {
+    //   this.isMobile = isMobile;
+    // });
+  }
+
+  toggleClientMuted(){
+    this.clientMuted = !this.clientMuted;
+  }
+
+  toggleClientSilent(){
+    this.clientSilent = !this.clientSilent;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }
