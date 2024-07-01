@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column
-    private URL image_url;
+    private String image_url;
     @Column
     private String description;
 
