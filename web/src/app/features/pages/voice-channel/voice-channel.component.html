@@ -1,38 +1,63 @@
-@if(isMobile){
-  <!-- TODO change width -->
-  <app-users-list-voice></app-users-list-voice>
-} @else {
-  <div class="voice-chat-container">
-    <div class="sidebar">
-      <app-users-list-voice></app-users-list-voice>
+<app-layout>
+  <app-users-list-voice sidebar></app-users-list-voice>
+  <div class="container" content="">
+    <div class="voice-nav">
+      <h3>{{channelName}}</h3>
+      <div>
+        <mat-icon fontIcon="{{clientSilent ? 'mic_off' : 'mic'}}"></mat-icon>
+        <mat-icon (click)="toggleClientMuted()" fontIcon="{{clientMuted ? 'volume_off' : 'volume_up'}}"></mat-icon>
+      </div>
     </div>
-    <div class="container">
-      <div class="voice-nav">
-        <h3>{{channelName}}</h3>
-        <div>
-          <mat-icon fontIcon="{{clientSilent ? 'mic_off' : 'mic'}}"></mat-icon>
-          <mat-icon (click)="toggleClientMuted()" fontIcon="{{clientMuted ? 'volume_off' : 'volume_up'}}"></mat-icon>
-        </div>
-      </div>
-      <div class="grid-container">
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-        <app-user-panel></app-user-panel>
-      </div>
+    <div class="grid-container">
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
+      <app-user-panel></app-user-panel>
     </div>
   </div>
+</app-layout>
 
-}
+<!--<div class="voice-chat-container">-->
+<!--  <div class="sidebar">-->
+<!--    <app-users-list-voice></app-users-list-voice>-->
+<!--  </div>-->
+<!--  <div class="container">-->
+<!--    <div class="voice-nav">-->
+<!--      <h3>{{channelName}}</h3>-->
+<!--      <div>-->
+<!--        <mat-icon fontIcon="{{clientSilent ? 'mic_off' : 'mic'}}"></mat-icon>-->
+<!--        <mat-icon (click)="toggleClientMuted()" fontIcon="{{clientMuted ? 'volume_off' : 'volume_up'}}"></mat-icon>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="grid-container">-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--      <app-user-panel></app-user-panel>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->

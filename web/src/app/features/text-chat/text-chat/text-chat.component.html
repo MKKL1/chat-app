@@ -1,7 +1,12 @@
 <div class="text-chat-container">
   <!-- messages -->
   <div class="messages">
-    sraka
+    <app-message></app-message>
+    <app-message></app-message>
+    <app-message></app-message>
+    @for(message of messages; track message){
+      <app-message></app-message>
+    }
   </div>
   <!-- input for sending message -->
   <div class="message-input">

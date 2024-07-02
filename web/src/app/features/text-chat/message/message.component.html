@@ -1,1 +1,20 @@
-<p>message works!</p>
+<div class="message-container">
+  <p>Username</p>
+  <div class="message-wrapper">
+    <div class="message">
+      <app-avatar></app-avatar>
+      <div class="message-content">
+        message
+      </div>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>Respond</button>
+        <button mat-menu-item>React</button>
+        <button mat-menu-item>Edit</button>
+        <button mat-menu-item>Delete</button>
+      </mat-menu>
+    </div>
+  </div>
+</div>

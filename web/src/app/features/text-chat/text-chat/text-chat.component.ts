@@ -6,6 +6,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {EmojiPickerComponent} from "../../../shared/ui/emoji-picker/emoji-picker.component";
 import {ClickOutsideDirective} from "../../../shared/directives/click-outside.directive";
 import {FormsModule} from "@angular/forms";
+import {MessageComponent} from "../message/message.component";
 
 @Component({
   selector: 'app-text-chat',
@@ -17,12 +18,16 @@ import {FormsModule} from "@angular/forms";
     MatTooltip,
     EmojiPickerComponent,
     ClickOutsideDirective,
-    FormsModule
+    FormsModule,
+    MessageComponent
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
 })
 export class TextChatComponent {
+  messages: any[] = [];
+
+
   message: string = '';
 
   selectedFile: File | null = null;

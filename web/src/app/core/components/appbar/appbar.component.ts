@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
-import {RouterLink} from "@angular/router";
+import {RouterLink, RouterLinkActive} from "@angular/router";
 
 @Component({
   selector: 'app-appbar',
   standalone: true,
   imports: [
     MatIcon,
-    RouterLink
+    RouterLink,
+    RouterLinkActive
   ],
   templateUrl: './appbar.component.html',
   styleUrl: './appbar.component.scss'
