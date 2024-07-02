@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChannelComponent } from './channel.component';
+import { ChannelComponent } from './voice-channel.component';
 
 describe('ChannelComponent', () => {
   let component: ChannelComponent;
@@ -11,7 +11,7 @@ describe('ChannelComponent', () => {
       imports: [ChannelComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ChannelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

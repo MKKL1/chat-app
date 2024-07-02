@@ -7,7 +7,7 @@ import {Subscription} from "rxjs";
 import {ScreenSizeService} from "../../../core/services/screen-size.service";
 
 @Component({
-  selector: 'app-channel',
+  selector: 'app-voice-channel',
   standalone: true,
   imports: [
     MatGridList,
@@ -16,11 +16,15 @@ import {ScreenSizeService} from "../../../core/services/screen-size.service";
     UsersListVoiceComponent,
     MatIcon
   ],
-  templateUrl: './channel.component.html',
-  styleUrl: './channel.component.scss'
+  templateUrl: './voice-channel.component.html',
+  styleUrl: './voice-channel.component.scss'
 })
-export class ChannelComponent implements OnInit, OnDestroy{
+export class VoiceChannelComponent implements OnInit, OnDestroy{
   channelName: string = "Community 1";
+  channelUsers: any[] = [
+
+  ];
+
   clientMuted: boolean = false;
   clientSilent: boolean = false;
 

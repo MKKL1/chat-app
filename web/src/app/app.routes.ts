@@ -2,9 +2,10 @@ import { Routes } from '@angular/router';
 import {LoginComponent} from "./features/pages/login/login.component";
 import {RegisterComponent} from "./features/pages/register/register.component";
 import {CommunityComponent} from "./features/pages/community/community.component";
-import {ChannelComponent} from "./features/pages/channel/channel.component";
+import {VoiceChannelComponent} from "./features/pages/voice-channel/voice-channel.component";
 import {ProfileComponent} from "./features/pages/profile/profile.component";
 import {MainComponent} from "./features/pages/main/main.component";
+import {TextChannelComponent} from "./features/pages/text-channel/text-channel.component";
 
 export const routes: Routes = [
   {
@@ -33,11 +34,11 @@ export const routes: Routes = [
       },
       {
         path: 'communities/text',
-        component: ChannelComponent
+        component: TextChannelComponent
       },
       {
         path: 'communities/voice',
-        component: ChannelComponent
+        component: VoiceChannelComponent
       }
     ]
   },
@@ -47,6 +48,6 @@ export const routes: Routes = [
   },
   {
     path: 'community/channel',
-    component: ChannelComponent
+    component: VoiceChannelComponent
   }
 ];

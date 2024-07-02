@@ -1,0 +1,47 @@
+.text-chat-container{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages{
+  flex: 1;
+  background: cadetblue;
+}
+
+.message-input{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px;
+  overflow: hidden;
+}
+
+input, form, mat-form-field {
+  width: 90%;
+}
+
+.icons{
+  display: flex;
+  justify-content: flex-end;
+  width: 20%;
+}
+
+mat-icon{
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+mat-icon:hover{
+  background: #cccccc;
+  cursor: pointer;
+}
+
+app-emoji-picker{
+  position: absolute;
+  right: 20px;
+  bottom: 10%;
+}
