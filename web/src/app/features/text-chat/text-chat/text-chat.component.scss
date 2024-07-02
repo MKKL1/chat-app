@@ -1,0 +1,72 @@
+.text-chat-container{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 15px;
+  background: cadetblue;
+}
+
+.messages{
+  flex: 1;
+}
+
+.message-input{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px;
+  overflow: hidden;
+}
+
+input, form, mat-form-field {
+  width: 90%;
+
+  @media screen and (max-width: 1200px) {
+    width: 70%;
+  }
+
+  @media screen and (max-width: 1000px) {
+    width: 65%;
+  }
+
+  @media screen and (max-width: 600px) {
+    width: 50%;
+  }
+}
+
+.icons{
+  display: flex;
+  justify-content: flex-end;
+  width: 20%;
+
+  @media screen and (max-width: 1200px) {
+    width: 30%;
+  }
+
+  @media screen and (max-width: 1000px) {
+    width: 35%;
+  }
+
+  @media screen and (max-width: 600px) {
+    width: 50%;
+  }
+}
+
+mat-icon{
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+mat-icon:hover{
+  background: #cccccc;
+  cursor: pointer;
+}
+
+app-emoji-picker{
+  position: absolute;
+  right: 20px;
+  bottom: 10%;
+}

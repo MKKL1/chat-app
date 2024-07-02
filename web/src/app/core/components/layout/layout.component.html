@@ -1,0 +1,18 @@
+<mat-toolbar color="primary">
+  @if(isMobile){
+    <button mat-icon-button aria-label="Menu icon" (click)="toggleMenu()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+  <h1>{{title}}</h1>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
+    <mat-nav-list>
+      <ng-content select="[sidebar]"></ng-content>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <ng-content select="[content]"></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

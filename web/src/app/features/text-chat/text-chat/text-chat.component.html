@@ -1,0 +1,29 @@
+<div class="text-chat-container">
+  <!-- messages -->
+  <div class="messages">
+    <app-message></app-message>
+    <app-message></app-message>
+    <app-message></app-message>
+    @for(message of messages; track message){
+      <app-message></app-message>
+    }
+  </div>
+  <!-- input for sending message -->
+  <div class="message-input">
+      <!-- preventing from displaying additional margin at bottom (place for hint) -->
+      <mat-form-field style="margin-bottom: -1.25em">
+        <input [(ngModel)]="message" matInput placeholder="Write something here...">
+      </mat-form-field>
+    <!-- make icons prettier -->
+    <div class="icons">
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
+      <mat-icon (click)="triggerFileInput()" fontIcon="attach_file" matTooltip="Choose file to attach"></mat-icon>
+      <mat-icon fontIcon="gif" matTooltip="Add gif to message"></mat-icon>
+      <mat-icon fontIcon="add_reaction" matTooltip="Add emoji to message" (click)="toggleEmojiPicker()"></mat-icon>
+      <mat-icon fontIcon="send" matTooltip="Send message" ></mat-icon>
+    </div>
+  </div>
+  @if(showEmojiPicker){
+    <app-emoji-picker (clickOutside)="closeEmojiPicker()" (emojiSelect)="appendEmojiToInputField($event)"></app-emoji-picker>
+  }
+</div>

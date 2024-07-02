@@ -1,0 +1,13 @@
+<mat-accordion>
+  @for(channel of channels; track channel){
+    <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{channel.name}}</mat-panel-title>
+      </mat-expansion-panel-header>
+      @for(user of channel.users; track user){
+         <app-user-basic-info [username]="user.username"></app-user-basic-info>
+      }
+      and 97 more users
+    </mat-expansion-panel>
+  }
+</mat-accordion>

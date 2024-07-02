@@ -1,0 +1,7 @@
+<img src="{{image ?? 'https://s1.zerochan.net/Makima.600.3905493.jpg'}}" >
+<div class="voice-username">{{username}}</div>
+<div class="voice-options">
+  <mat-icon fontIcon="{{silent ? 'mic_off' : 'mic'}}"></mat-icon>
+  <mat-icon (click)="toggleMuted()" fontIcon="{{muted ? 'volume_off' : 'volume_up'}}"></mat-icon>
+</div>
+
