@@ -8,6 +8,7 @@ import com.szampchat.server.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class Message {
     private String text;
 
     @Column
-    private Date updated_at;
+    private Instant updated_at;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
@@ -49,7 +50,7 @@ public class Message {
     private Message responds_to;
 
     @Builder
-    public Message(String text, Date updated_at, User user, Channel channel, Message responds_to) {
+    public Message(String text, Instant updated_at, User user, Channel channel, Message responds_to) {
         this.id = new MessageId(null, channel.getId());
         this.text = text;
         this.updated_at = updated_at;

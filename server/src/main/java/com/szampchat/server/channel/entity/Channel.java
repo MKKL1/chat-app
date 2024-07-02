@@ -9,15 +9,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="channels")
+@Table(name="channels", schema = "")
 public class Channel {
     @Id
+    @jakarta.persistence.Id
     @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
     @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
     private Long id;

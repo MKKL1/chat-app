@@ -1,11 +1,10 @@
 spring:
   application:
     name: szampchat-server
-  datasource:
-    url: jdbc:postgresql://localhost:5432/chat
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/chat
     username: root
     password: root
-    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:
