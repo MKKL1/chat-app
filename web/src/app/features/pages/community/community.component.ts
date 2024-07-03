@@ -5,16 +5,18 @@ import {MatFabButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {CreateCommunityComponent} from "../../community/create-community/create-community.component";
+import {CommunitiesListComponent} from "../../community/communities-list/communities-list.component";
 
 @Component({
   selector: 'app-community',
   standalone: true,
-    imports: [
-        UsersListComponent,
-        UserPanelComponent,
-        MatFabButton,
-        MatIcon
-    ],
+  imports: [
+    UsersListComponent,
+    UserPanelComponent,
+    MatFabButton,
+    MatIcon,
+    CommunitiesListComponent
+  ],
   templateUrl: './community.component.html',
   styleUrl: './community.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,3 +1,5 @@
+
+
 .message-content{
   padding: 10px;
   color: white;
@@ -12,5 +14,13 @@
 
 .message-wrapper{
   display: flex;
+  align-items: center;
+}
 
+.message-menu{
+  display: none;
+}
+
+.message-container:hover .message-menu {
+  display: block;
 }
