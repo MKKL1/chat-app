@@ -1,43 +1,29 @@
 package com.szampchat.server.role.entity;
 
-import com.szampchat.server.community.entity.Community;
-import com.szampchat.server.snowflake.SnowflakeGenerator;
-import com.szampchat.server.user.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name="roles")
+@Table("roles")
 public class Role {
     @Id
-    @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
+    @Column("id")
     private Long id;
-    @Column(nullable = false)
+
+    @Column("name")
     private String name;
-    @Column(nullable = false)
+
+    @Column("permission")
     private Long permission;
 
-    @ManyToOne
-    @JoinColumn(name="community_id", nullable = false)
-    private Community community;
-
-    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.MERGE})
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = { @JoinColumn(name = "role_id") },
-            inverseJoinColumns = { @JoinColumn(name = "user_id") }
-    )
-    private Set<User> users = new HashSet<>();
+    @Column("community_id")
+    private Long community;
 }

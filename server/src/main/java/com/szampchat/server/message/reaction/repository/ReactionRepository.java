@@ -1,10 +1,10 @@
 package com.szampchat.server.message.reaction.repository;
 
-import com.szampchat.server.message.reaction.ReactionId;
 import com.szampchat.server.message.reaction.entity.Reaction;
-import org.springframework.data.repository.CrudRepository;
+import com.szampchat.server.message.reaction.entity.ReactionId;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReactionRepository extends CrudRepository<Reaction, ReactionId> {
+public interface ReactionRepository extends R2dbcRepository<Reaction, ReactionId> {
 }

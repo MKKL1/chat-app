@@ -1,47 +1,27 @@
 package com.szampchat.server.message.reaction.entity;
 
-import com.szampchat.server.channel.entity.Channel;
-import com.szampchat.server.message.base.entity.Message;
-import com.szampchat.server.message.reaction.ReactionId;
-import com.szampchat.server.user.entity.User;
-import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name="reactions")
+@Table("reactions")
 public class Reaction {
-    @EmbeddedId
-    private ReactionId id = new ReactionId();
-
-    @Column(nullable = false)
+    @Column("emoji")
     private Character emoji;
 
-    @ManyToOne
-    @MapsId("channelId")
-    @JoinColumn(name = "channel_id", insertable = false, updatable = false)
-    private Channel channel;
+    @Column("user_id")
+    private Long user;
 
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "message_id", referencedColumnName = "message_id"),
-            @JoinColumn(name = "message_channel_id", referencedColumnName = "channel_id")
-    })
-    private Message message;
+    @Column("reaction_id")
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
-    private User user;
+    @Column("message_id")
+    private Long message;
 
-    @Builder
-    public Reaction(Character emoji, Channel channel, Message message, User user) {
-        this.id = new ReactionId(null, channel.getId());
-        this.emoji = emoji;
-        this.channel = channel;
-        this.message = message;
-        this.user = user;
-    }
+    @Column("channel_id")
+    private Long channel;
+
 }

@@ -1,39 +1,35 @@
 package com.szampchat.server.message.attachment.entity;
 
-import com.szampchat.server.message.base.entity.Message;
-import com.szampchat.server.snowflake.SnowflakeGenerator;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name="message_attachment")
+@Table("message_attachment")
 public class MessageAttachment {
     @Id
-    @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
+    @Column("id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column("path")
     private String path;
 
-    @Column(nullable = false)
+    @Column("size")
     private Integer size;
 
-    @Column(nullable = false)
+    @Column("name")
     private String name;
 
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "message_id", referencedColumnName = "message_id"),
-            @JoinColumn(name = "channel_id", referencedColumnName = "channel_id")
-    })
-    private Message message;
+    @Column("message_id")
+    private Long message;
+
+    @Column("channel_id")
+    private Long channel;
 }
