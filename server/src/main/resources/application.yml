@@ -12,6 +12,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    rest:
+      detection-strategy: annotated
 server:
   error:
     include-message: always

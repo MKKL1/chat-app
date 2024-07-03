@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface MessageRepository extends R2dbcRepository<Message, MessageId> {
-    Flux<Message> findMessagesByChannelOrderByIdDesc(Long channelId);
     Flux<Message> findMessagesByChannelOrderByIdDesc(Long channelId, Limit limit);
 
     @Query("""
