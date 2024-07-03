@@ -3,11 +3,23 @@
   flex-direction: column;
   height: 100%;
   padding: 0 15px;
-  background: cadetblue;
+  background: #191919;
 }
 
 .messages{
   flex: 1;
+  overflow-y: auto;
+
+  // firefox
+  scrollbar-width: none;
+  // edge
+  -ms-overflow-style: none;
+}
+
+// chrome
+.messages::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .message-input{
@@ -65,8 +77,25 @@ mat-icon:hover{
   cursor: pointer;
 }
 
-app-emoji-picker{
+app-emoji-picker, app-gif-search{
   position: absolute;
   right: 20px;
   bottom: 10%;
+}
+
+.resources-container{
+  background: #191c1c;
+  height: 30vh;
+  border-top-left-radius: 100px;
+  border-top-right-radius: 100px;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 10%;
+
+  img {
+    max-width: 65%;
+    max-height: 65%;
+  }
 }
