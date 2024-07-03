@@ -1,19 +1,14 @@
 package com.szampchat.server.message.base.repository;
 
-import com.szampchat.server.channel.entity.Channel;
-import com.szampchat.server.message.base.MessageId;
 import com.szampchat.server.message.base.entity.Message;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import com.szampchat.server.message.base.entity.MessageId;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
-
-import java.awt.print.Pageable;
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface MessageRepository extends CrudRepository<Message, MessageId> {
-    @Query(value = "SELECT * FROM messages WHERE channel_id = :channelId ORDER BY updated_at DESC LIMIT :limit", nativeQuery = true)
-    List<Message> findLatestMessagesForChannel(@Param("channelId") Long channelId, @Param("limit") int limit);
-
+public interface MessageRepository extends R2dbcRepository<Message, MessageId> {
+    Flux<Message> findMessagesByChannelOrderById(Long channelId);
+    Flux<Message> findMessagesByChannelOrderById(Long channelId, Limit limit);
 }

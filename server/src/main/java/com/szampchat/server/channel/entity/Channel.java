@@ -1,35 +1,28 @@
 package com.szampchat.server.channel.entity;
 
-import com.szampchat.server.channel.ChannelType;
-import com.szampchat.server.community.entity.Community;
-import com.szampchat.server.snowflake.SnowflakeGenerator;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name="channels")
+@Table("channels")
 public class Channel {
     @Id
-    @GeneratedValue(generator = SnowflakeGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = SnowflakeGenerator.GENERATOR_NAME, type = SnowflakeGenerator.class)
+    @Column("id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column("name")
     private String name;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.ORDINAL)
-    private ChannelType type;
+    @Column("community_id")
+    private Long community;
 
-    @ManyToOne
-    @JoinColumn(name="community_id", nullable = false)
-    private Community community;
+    //TODO add channel type (requires custom converter)
 }
