@@ -41,7 +41,6 @@ CREATE TABLE messages
     message_id             BIGINT       NOT NULL,
     channel_id             BIGINT       NOT NULL,
     responds_to_message_id BIGINT,
-    responds_to_channel_id BIGINT,
     CONSTRAINT pk_messages PRIMARY KEY (message_id, channel_id)
 );
 
@@ -52,7 +51,6 @@ CREATE TABLE reactions
     reaction_id        BIGINT NOT NULL,
     channel_id         BIGINT NOT NULL,
     message_id         BIGINT,
-    message_channel_id BIGINT,
     CONSTRAINT pk_reactions PRIMARY KEY (reaction_id, channel_id)
 );
 
@@ -98,7 +96,7 @@ ALTER TABLE messages
 CREATE INDEX idx_message_channel_id ON messages (channel_id);
 
 ALTER TABLE messages
-    ADD CONSTRAINT FK_MESSAGES_ON_RETOMEIDRETOCHID FOREIGN KEY (responds_to_message_id, responds_to_channel_id) REFERENCES messages (message_id, channel_id);
+    ADD CONSTRAINT FK_MESSAGES_ON_RETOMEIDRETOCHID FOREIGN KEY (responds_to_message_id, channel_id) REFERENCES messages (message_id, channel_id);
 
 ALTER TABLE messages
     ADD CONSTRAINT FK_MESSAGES_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
@@ -110,7 +108,7 @@ ALTER TABLE reactions
     ADD CONSTRAINT FK_REACTIONS_ON_CHANNEL FOREIGN KEY (channel_id) REFERENCES channels (id);
 
 ALTER TABLE reactions
-    ADD CONSTRAINT FK_REACTIONS_ON_MEIDMECHID FOREIGN KEY (message_id, message_channel_id) REFERENCES messages (message_id, channel_id);
+    ADD CONSTRAINT FK_REACTIONS_ON_MEIDMECHID FOREIGN KEY (message_id, channel_id) REFERENCES messages (message_id, channel_id);
 
 ALTER TABLE reactions
     ADD CONSTRAINT FK_REACTIONS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
