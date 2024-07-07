@@ -13,7 +13,8 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     public Mono<Role> findRole(Long roleId) {
-        return roleRepository.findById(roleId);
+        return roleRepository.findById(roleId)
+                .switchIfEmpty(Mono.error(new RoleNotFoundException()));
     }
 
     public Flux<Role> findRolesForCommunity(Long communityId) {

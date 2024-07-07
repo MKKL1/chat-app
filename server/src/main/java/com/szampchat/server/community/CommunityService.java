@@ -12,6 +12,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
 
     public Mono<Community> findById(Long id) {
-        return communityRepository.findById(id);
+        return communityRepository.findById(id)
+                .switchIfEmpty(Mono.error(new CommunityNotFoundException()));
     }
 }

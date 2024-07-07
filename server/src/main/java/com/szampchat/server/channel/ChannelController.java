@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 public class ChannelController {
     private final ChannelService channelService;
 
-
     @GetMapping("/communities/{communityId}/channels")
     public Flux<Channel> getChannelsForCommunity(@PathVariable Long communityId) {
         return channelService.findChannelsForCommunity(communityId);
