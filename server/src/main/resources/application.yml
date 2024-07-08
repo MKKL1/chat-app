@@ -1,18 +1,30 @@
 spring:
   application:
     name: szampchat-server
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/chat
-    username: root
-    password: root
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+  profiles:
+    active: test
 server:
   error:
     include-message: always
   port: 8081
+
+# moved to application-prod.yml
+
+#spring:
+#  application:
+#    name: szampchat-server
+#  r2dbc:
+#    url: r2dbc:postgresql://localhost:5432/chat
+#    username: root
+#    password: root
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: validate
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#server:
+#  error:
+#    include-message: always
+#  port: 8081

@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: r2dbc:h2:mem:///testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: root
+    password: password
+    generate-unique-name: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+#spring.datasource.url=jdbc:h2:mem:chat
+#spring.datasource.username=sa
+#spring.datasource.password=password
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
