@@ -20,4 +20,8 @@ public class RoleService {
     public Flux<Role> findRolesForCommunity(Long communityId) {
         return roleRepository.findRolesByCommunity(communityId);
     }
+
+//    public Flux<Role> groupUserRolesForCommunity(Long communityId) {
+//        return
+//    }
 }
