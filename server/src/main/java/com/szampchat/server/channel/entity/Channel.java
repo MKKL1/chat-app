@@ -24,5 +24,8 @@ public class Channel {
     @Column("community_id")
     private Long community;
 
+    @Column("type")
+    private Byte type;
+
     //TODO add channel type (requires custom converter)
 }

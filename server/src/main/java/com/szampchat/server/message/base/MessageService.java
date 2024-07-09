@@ -1,19 +1,53 @@
 package com.szampchat.server.message.base;
 
+import com.szampchat.server.message.attachment.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.base.entity.Message;
 import com.szampchat.server.message.base.repository.MessageRepository;
+import com.szampchat.server.message.reaction.repository.ReactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final MessageAttachmentRepository messageAttachmentRepository;
+    private final ReactionRepository reactionRepository;
 
-    public Flux<Message> findLatestMessagesForChannel(Long channelId, int limit) {
-        return messageRepository.findMessagesByChannelOrderById(channelId, Limit.of(limit));
+    public Flux<MessageMergedData> getMessages(Long channelId, GetMessagesRequest getMessagesRequest) {
+        return Mono.just(getMessagesRequest)
+                .flatMapMany(request -> {
+                    int limit = request.getLimit() != null ? request.getLimit() : 10;
+                    if(request.getBefore() == null)
+                        return findLatestMessages(channelId, limit);
+                    return findMessagesBefore(channelId, request.getBefore(), limit);
+                })
+                .flatMap(message -> attachAdditionalDataToMessage(message, 123L));
+    }
+
+    private Flux<Message> findLatestMessages(Long channelId, int limit) {
+        return messageRepository.findMessagesByChannelOrderByIdDesc(channelId, Limit.of(limit));
+    }
+
+    private Flux<Message> findMessagesBefore(Long channel, Long before, int limit) {
+        return messageRepository.findMessagesByChannel(channel, before, limit);
+    }
+
+    private Mono<MessageMergedData> attachAdditionalDataToMessage(Message message, Long currentUserId) {
+        return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
+                .collectList()
+                .map(reactionPreviews ->
+                        MessageMergedData.builder()
+                                .attachments(List.of())//TODO there are no attachments in test data, so skipping this for now
+                                .reactions(reactionPreviews)
+                                .message(message)
+                                .build()
+                        );
     }
 }

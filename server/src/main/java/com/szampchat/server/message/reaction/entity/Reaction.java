@@ -10,7 +10,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("reactions")
 public class Reaction {
     @Column("emoji")
-    private Character emoji;
+    private String emoji;
 
     @Column("user_id")
     private Long user;

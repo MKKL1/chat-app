@@ -19,7 +19,7 @@ public class Community {
     private Long id;
 
     @Column("name")
-    private Long name;
+    private String name;
 
     @Column("image_url")
     private String image_url;
