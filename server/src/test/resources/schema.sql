@@ -46,7 +46,7 @@ CREATE TABLE messages
 
 CREATE TABLE reactions
 (
-    emoji              CHAR   NOT NULL,
+    emoji              VARCHAR(2)   NOT NULL,
     user_id            BIGINT NOT NULL,
     reaction_id        BIGINT NOT NULL,
     channel_id         BIGINT NOT NULL,
