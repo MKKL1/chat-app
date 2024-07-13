@@ -1,27 +1,24 @@
 package com.szampchat.server.community;
 
+import com.szampchat.server.community.dto.CommunityMemberDTO;
 import com.szampchat.server.community.entity.Community;
-import com.szampchat.server.community.repository.CommunityRepository;
+import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.community.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/communities")
+@RequestMapping("/communities")
 public class CommunityController {
     private final CommunityService communityService;
-    private final ModelMapper modelMapper;
+    private final CommunityMemberService communityMemberService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -35,7 +32,12 @@ public class CommunityController {
 
     @GetMapping("/{communityId}/members")
     public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId) {
-        return communityService.getCommunityMembers(communityId)
-                .map(communityMember -> modelMapper.map(communityMember, CommunityMemberDTO.class));
+        return communityMemberService.getCommunityMembers(communityId);
+    }
+
+    //TODO
+    @PostMapping("/{communityId}/join")
+    public Mono<Void> joinCommunity(@PathVariable Long communityId) {
+        return Mono.empty();
     }
 }

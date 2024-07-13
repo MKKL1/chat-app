@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api")
 public class ChannelController {
     private final ChannelService channelService;
 
