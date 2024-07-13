@@ -9,7 +9,6 @@ class SzampchatServerApplicationTests {
 
 	@Test
 	void contextLoads() {
-		User user = new User();
 
 	}
 

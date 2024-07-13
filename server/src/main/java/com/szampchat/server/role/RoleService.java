@@ -1,6 +1,7 @@
 package com.szampchat.server.role;
 
 import com.szampchat.server.role.entity.Role;
+import com.szampchat.server.role.exception.RoleNotFoundException;
 import com.szampchat.server.role.repository.RoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

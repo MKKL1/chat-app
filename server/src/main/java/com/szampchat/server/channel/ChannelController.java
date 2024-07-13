@@ -1,21 +1,38 @@
 package com.szampchat.server.channel;
 
+import com.szampchat.server.channel.dto.ChannelCreateDTO;
+import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api")
 public class ChannelController {
     private final ChannelService channelService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/communities/{communityId}/channels")
-    public Flux<Channel> getChannelsForCommunity(@PathVariable Long communityId) {
-        return channelService.findChannelsForCommunity(communityId);
+    public Flux<ChannelDTO> getChannelsForCommunity(@PathVariable Long communityId) {
+        return channelService.findChannelsForCommunity(communityId)
+                .map(channel -> modelMapper.map(channel, ChannelDTO.class));
+    }
+
+    @PostMapping("/channels")
+    public Mono<ChannelDTO> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO) {
+        return Mono.empty();
+    }
+
+    @PatchMapping("/channels/{channelId}")
+    public Mono<Channel> editChannel(@PathVariable Long channelId) {
+        return Mono.empty();
+    }
+
+    @DeleteMapping("/channels/{channelId}")
+    public Mono<Void> deleteChannel(@PathVariable Long channelId) {
+        return Mono.empty();
     }
 }
