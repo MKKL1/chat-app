@@ -1,14 +1,12 @@
 package com.szampchat.server.role;
 
+import com.szampchat.server.role.dto.RoleCreateDTO;
 import com.szampchat.server.role.entity.Role;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,8 +24,24 @@ public class RoleController {
         return roleService.findRole(roleId);
     }
 
+    //TODO present roles in community GET endpoint
     @GetMapping("/communities/{communityId}/roles")
     public Flux<Role> getRolesForCommunity(@PathVariable Long communityId) {
         return roleService.findRolesForCommunity(communityId);
+    }
+
+    @PostMapping("/roles")
+    public Mono<Role> createRole(@RequestBody RoleCreateDTO roleCreateDTO) {
+        return Mono.empty();
+    }
+
+    @PatchMapping("/roles/{roleId}")
+    public Mono<Role> editRole(@PathVariable Long roleId, @RequestBody RoleCreateDTO roleCreateDTO) {
+        return Mono.empty();
+    }
+
+    @DeleteMapping("/roles/{roleId}")
+    public Mono<Void> deleteRole(@PathVariable Long roleId) {
+        return Mono.empty();
     }
 }

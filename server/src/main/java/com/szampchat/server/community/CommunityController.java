@@ -1,5 +1,8 @@
 package com.szampchat.server.community;
 
+import com.szampchat.server.community.dto.CommunityCreateDTO;
+import com.szampchat.server.community.dto.CommunityDTO;
+import com.szampchat.server.community.dto.CommunityEditDTO;
 import com.szampchat.server.community.dto.CommunityMemberDTO;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.service.CommunityMemberService;
@@ -38,6 +41,21 @@ public class CommunityController {
     //TODO
     @PostMapping("/{communityId}/join")
     public Mono<Void> joinCommunity(@PathVariable Long communityId) {
+        return Mono.empty();
+    }
+
+    @PostMapping()
+    public Mono<CommunityDTO> createCommunity(@RequestBody CommunityCreateDTO communityCreateDTO) {
+        return Mono.empty();
+    }
+
+    @PatchMapping("/{communityId}")
+    public Mono<CommunityDTO> editCommunity(@PathVariable Long communityId, @RequestBody CommunityEditDTO communityEditDTO) {
+        return Mono.empty();
+    }
+
+    @DeleteMapping("/{communityId}")
+    public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
         return Mono.empty();
     }
 }
