@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/swagger-resources",
             "/swagger-resources/**",
             "/swagger-ui/**",
-            "/register",
+            "/error",
+            "/auth/register",
     };
 
     private final RsaKeyProperties jwtConfigProperties;

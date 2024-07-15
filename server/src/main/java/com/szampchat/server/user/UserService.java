@@ -12,20 +12,13 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final Snowflake snowflake;
+
 
     public Mono<User> findUser(Long userId) {
         return userRepository.findById(userId);
     }
 
     public Mono<User> createUser(User user) {
-        return Mono.just(user)
-                .map(u -> { //note to self: check if this operation will be performed asynchronously
-                    if (u.getId() == null) {
-                        u.setId(snowflake.nextId());
-                    }
-                    return u;
-                })
-                .flatMap(userRepository::save);
+        return userRepository.save(user);
     }
 }
