@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,16 +27,25 @@ public class CryptoService {
 
     private final JwtEncoder jwtEncoder;
     private final PasswordEncoder passwordEncoder;
+    private final JwtDecoder jwtDecoder;
 
     public String generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
+                .subject(userDetails.getUsername())
                 .issuedAt(now)
                 .expiresAt(now.plus(EXPIRATION_TIME))
                 .subject(userDetails.getPassword())
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        String decodedToken = jwtDecoder.decode(token).getSubject();
+        if(decodedToken == null)
+            return false;
+        return decodedToken.equals(userDetails.getUsername());
     }
 
     public String encodePassword(String password) {

@@ -5,6 +5,7 @@ import com.szampchat.server.user.UserService;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -25,5 +26,10 @@ public class AuthService {
                         .accessToken(cryptoService.generateToken(user))
                         .refreshToken("TODO")
                         .build());
+    }
+
+    public Mono<AuthenticationResponse> login(LoginRequest loginRequest) {
+        return userService.findByEmail(loginRequest.getEmail())
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")));
     }
 }

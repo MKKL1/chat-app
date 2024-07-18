@@ -19,4 +19,9 @@ public class AuthController {
     public Mono<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) {
         return authService.register(registerRequest);
     }
+
+    @PostMapping("login")
+    public Mono<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
+    }
 }

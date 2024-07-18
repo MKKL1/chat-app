@@ -21,4 +21,8 @@ public class UserService {
     public Mono<User> createUser(User user) {
         return userRepository.save(user);
     }
+
+    public Mono<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
