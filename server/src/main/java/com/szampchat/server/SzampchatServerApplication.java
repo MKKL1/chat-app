@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 @EnableR2dbcRepositories
-@EnableConfigurationProperties(RsaKeyProperties.class)
 @SpringBootApplication
 public class SzampchatServerApplication {
 

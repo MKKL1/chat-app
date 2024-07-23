@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,13 +21,10 @@ public class User {
     private Long id;
 
     @Column("name")
-    private String name;
+    private String username;
 
-    @Column("email")
-    private String email;
-
-    @Column("password")
-    private String password;
+    @Column("sub")
+    private UUID sub;
 
     @Column("image_url")
     private String imageUrl;

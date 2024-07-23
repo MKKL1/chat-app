@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -18,11 +20,11 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
-    public Mono<User> createUser(User user) {
-        return userRepository.save(user);
+    public Mono<User> findUserBySub(UUID sub) {
+        return userRepository.findBySub(sub);
     }
 
-    public Mono<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Mono<User> createUser(User user) {
+        return userRepository.save(user);
     }
 }
