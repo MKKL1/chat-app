@@ -11,5 +11,4 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends ReactiveCrudRepository<User, Long> {
     Mono<User> findByUsername(String username);
-    Mono<User> findBySub(UUID sub);
 }
