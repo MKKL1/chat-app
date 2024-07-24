@@ -6,6 +6,7 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface CommunityMemberRepository extends ReactiveCrudRepository<CommunityMember, Long> {
     //TODO return id's instead of whole user data
@@ -22,4 +23,7 @@ public interface CommunityMemberRepository extends ReactiveCrudRepository<Commun
     join roles r on ur.role_id = r.id
     WHERE cm.community_id = :community AND r.community_id = cm.community_id""")
     Flux<CommunityMemberRolesRow> fetchMemberWithRolesFromCommunity(@Param("community") Long community);
+
+    @Query("SELECT EXISTS (SELECT 1 FROM community_members WHERE community_id = :community AND user_id = :user)")
+    Mono<Boolean> isMemberOfCommunity(@Param("community") Long community, @Param("user") Long user);
 }

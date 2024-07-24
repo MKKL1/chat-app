@@ -1,6 +1,7 @@
 package com.szampchat.server.user;
 
 import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
 import com.szampchat.server.user.repository.UserRepository;
@@ -34,7 +35,11 @@ public class UserService {
                 .flatMap(userRepository::findById);
     }
 
-    public Mono<User> createUser(User user) {
-        return userRepository.save(user);
+    public Mono<User> createUser(User user, UUID subjectId) {
+        return userRepository.save(user)
+                .flatMap(savedUser -> userSubjectRepository.save(UserSubject.builder()
+                                .userId(savedUser.getId())
+                                .sub(subjectId)
+                        .build()).then(Mono.just(savedUser)));
     }
 }

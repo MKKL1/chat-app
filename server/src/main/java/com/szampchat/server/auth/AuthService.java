@@ -1,7 +1,9 @@
 package com.szampchat.server.auth;
 
 import com.szampchat.server.user.UserService;
+import com.szampchat.server.user.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -19,11 +21,11 @@ public class AuthService {
     /**
      * Retrieves identifier of user (szampchat/snowflake id) by given subject (auth server/uuid id).
      * @throws UserNotRegisteredException if subject was not found (User was not registered on resource server)
-     * @param principal Current principal
+     * @param authentication
      * @return Szampchat's identifier for user
      */
-    public Mono<Long> getUserId(Principal principal) {
-        return userService.findUserIdBySub(UUID.fromString(principal.getName()))
+    public Mono<Long> getUserId(Authentication authentication) {
+        return userService.findUserIdBySub(UUID.fromString(authentication.getName()))
                 .switchIfEmpty(Mono.error(new UserNotRegisteredException()));
     }
 }

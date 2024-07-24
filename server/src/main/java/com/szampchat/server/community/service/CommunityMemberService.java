@@ -1,5 +1,6 @@
 package com.szampchat.server.community.service;
 
+import com.szampchat.server.auth.AuthService;
 import com.szampchat.server.community.CommunityMemberRolesRow;
 import com.szampchat.server.community.dto.CommunityMemberDTO;
 import com.szampchat.server.community.entity.CommunityMember;
@@ -8,6 +9,7 @@ import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,9 +22,16 @@ import java.util.Set;
 @Service
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
+    private final AuthService authService;
     private final ModelMapper modelMapper;
 
-    public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId) {
+    public Mono<Boolean> isMember(Long communityId, Long userId) {
+        return communityMemberRepository.isMemberOfCommunity(communityId, userId);
+    }
+
+    public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId, Authentication authentication) {
+//        authService.getUserId(authentication)
+//                        .flatMap(userId -> isMember(communityId, userId))
         return communityMemberRepository.fetchMemberWithRolesFromCommunity(communityId)
                 //Grouping rows by user id
                 .collectMultimap(
