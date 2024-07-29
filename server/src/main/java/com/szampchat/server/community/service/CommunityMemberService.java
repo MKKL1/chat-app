@@ -1,5 +1,6 @@
 package com.szampchat.server.community.service;
 
+import com.szampchat.server.auth.AuthService;
 import com.szampchat.server.community.CommunityMemberRolesRow;
 import com.szampchat.server.community.dto.CommunityMemberDTO;
 import com.szampchat.server.community.entity.CommunityMember;
@@ -20,9 +21,17 @@ import java.util.Set;
 @Service
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
+    private final AuthService authService;
     private final ModelMapper modelMapper;
 
+    public Mono<Boolean> isMember(Long communityId, Long userId) {
+        return communityMemberRepository.isMemberOfCommunity(communityId, userId);
+    }
+
     public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId) {
+        //TODO authorization
+//        authService.getAuthenticatedUser()
+//                .
         return communityMemberRepository.fetchMemberWithRolesFromCommunity(communityId)
                 //Grouping rows by user id
                 .collectMultimap(

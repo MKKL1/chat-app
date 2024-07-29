@@ -1,129 +1,132 @@
-CREATE TABLE channels
+create table communities
 (
-    id           BIGINT       NOT NULL,
-    name         VARCHAR(255) NOT NULL,
-    type         SMALLINT     NOT NULL,
-    community_id BIGINT       NOT NULL,
-    CONSTRAINT pk_channels PRIMARY KEY (id)
+    id        bigint       not null
+        constraint pk_communities
+            primary key,
+    name      varchar(255) not null,
+    image_url varchar(255)
 );
 
-CREATE TABLE communities
+create table channels
 (
-    id        BIGINT       NOT NULL,
-    name      VARCHAR(255) NOT NULL,
-    image_url VARCHAR(255),
-    CONSTRAINT pk_communities PRIMARY KEY (id)
+    id           bigint       not null
+        constraint pk_channels
+            primary key,
+    name         varchar(255) not null,
+    type         smallint     not null,
+    community_id bigint       not null
+        constraint fk_channels_on_community
+            references communities
 );
 
-CREATE TABLE community_members
+create table roles
 (
-    community_id BIGINT NOT NULL,
-    user_id      BIGINT NOT NULL,
-    CONSTRAINT pk_community_members PRIMARY KEY (community_id, user_id)
+    id           bigint       not null
+        constraint pk_roles
+            primary key,
+    name         varchar(255) not null,
+    permission   bigint       not null,
+    community_id bigint       not null
+        constraint fk_roles_on_community
+            references communities
 );
 
-CREATE TABLE message_attachment
+create table users
 (
-    id         BIGINT       NOT NULL,
-    path       VARCHAR(255) NOT NULL,
-    size       INTEGER      NOT NULL,
-    name       VARCHAR(255) NOT NULL,
-    message_id BIGINT,
-    channel_id BIGINT,
-    CONSTRAINT pk_message_attachment PRIMARY KEY (id)
+    id          bigint       not null
+        constraint pk_users
+            primary key,
+    name        varchar(255) not null
+        constraint uc_users_name
+            unique,
+    email       varchar(255)
+        constraint uc_users_email
+            unique,
+    image_url   varchar(255),
+    description varchar(255),
+    sub         uuid
 );
 
-CREATE TABLE messages
+create table community_members
 (
-    text                   VARCHAR(255) NOT NULL,
-    updated_at             TIMESTAMP WITHOUT TIME ZONE,
-    user_id                BIGINT       NOT NULL,
-    message_id             BIGINT       NOT NULL,
-    channel_id             BIGINT       NOT NULL,
-    responds_to_message_id BIGINT,
-    CONSTRAINT pk_messages PRIMARY KEY (message_id, channel_id)
+    community_id bigint not null
+        constraint fk_commem_on_community
+            references communities,
+    user_id      bigint not null
+        constraint fk_commem_on_user
+            references users,
+    constraint pk_community_members
+        primary key (community_id, user_id)
 );
 
-CREATE TABLE reactions
+create table messages
 (
-    emoji              VARCHAR(2)   NOT NULL,
-    user_id            BIGINT NOT NULL,
-    reaction_id        BIGINT NOT NULL,
-    channel_id         BIGINT NOT NULL,
-    message_id         BIGINT,
-    CONSTRAINT pk_reactions PRIMARY KEY (reaction_id, channel_id)
+    text                   varchar(255) not null,
+    updated_at             timestamp,
+    user_id                bigint       not null
+        constraint fk_messages_on_user
+            references users,
+    message_id             bigint       not null,
+    channel_id             bigint       not null
+        constraint fk_messages_on_channel
+            references channels,
+    responds_to_message_id bigint,
+    constraint pk_messages
+        primary key (message_id, channel_id),
+    constraint fk_messages_on_retomeidretochid
+        foreign key (responds_to_message_id, channel_id) references messages
 );
 
-CREATE TABLE roles
+create table message_attachment
 (
-    id           BIGINT       NOT NULL,
-    name         VARCHAR(255) NOT NULL,
-    permission   BIGINT       NOT NULL,
-    community_id BIGINT       NOT NULL,
-    CONSTRAINT pk_roles PRIMARY KEY (id)
+    id         bigint       not null
+        constraint pk_message_attachment
+            primary key,
+    path       varchar(255) not null,
+    size       integer      not null,
+    name       varchar(255) not null,
+    message_id bigint,
+    channel_id bigint,
+    constraint fk_message_attachment_on_meidchid
+        foreign key (message_id, channel_id) references messages
 );
 
-CREATE TABLE user_roles
+create table reactions
 (
-    role_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    CONSTRAINT pk_user_roles PRIMARY KEY (role_id, user_id)
+    emoji       char   not null,
+    user_id     bigint not null
+        constraint fk_reactions_on_user
+            references users,
+    reaction_id bigint not null,
+    channel_id  bigint not null
+        constraint fk_reactions_on_channel
+            references channels,
+    message_id  bigint,
+    constraint pk_reactions
+        primary key (reaction_id, channel_id),
+    constraint fk_reactions_on_meidmechid
+        foreign key (message_id, channel_id) references messages
 );
 
-CREATE TABLE users
+create table user_roles
 (
-    id          BIGINT       NOT NULL,
-    name        VARCHAR(255) NOT NULL,
-    email       VARCHAR(255) NOT NULL,
-    password    VARCHAR(255) NOT NULL,
-    image_url   VARCHAR(255),
-    description VARCHAR(255),
-    CONSTRAINT pk_users PRIMARY KEY (id)
+    role_id bigint not null
+        constraint fk_userol_on_role
+            references roles,
+    user_id bigint not null
+        constraint fk_userol_on_user
+            references users,
+    constraint pk_user_roles
+        primary key (role_id, user_id)
 );
 
-ALTER TABLE users
-    ADD CONSTRAINT uc_users_email UNIQUE (email);
+create table user_subject
+(
+    user_id bigint not null
+        constraint user_subject_users_id_fk
+            references users,
+    sub     uuid   not null,
+    constraint pk_user_subject
+        primary key (user_id, sub)
+);
 
-ALTER TABLE users
-    ADD CONSTRAINT uc_users_name UNIQUE (name);
-
-ALTER TABLE channels
-    ADD CONSTRAINT FK_CHANNELS_ON_COMMUNITY FOREIGN KEY (community_id) REFERENCES communities (id);
-
-ALTER TABLE messages
-    ADD CONSTRAINT FK_MESSAGES_ON_CHANNEL FOREIGN KEY (channel_id) REFERENCES channels (id);
-
-CREATE INDEX idx_message_channel_id ON messages (channel_id);
-
-ALTER TABLE messages
-    ADD CONSTRAINT FK_MESSAGES_ON_RETOMEIDRETOCHID FOREIGN KEY (responds_to_message_id, channel_id) REFERENCES messages (message_id, channel_id);
-
-ALTER TABLE messages
-    ADD CONSTRAINT FK_MESSAGES_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
-
-ALTER TABLE message_attachment
-    ADD CONSTRAINT FK_MESSAGE_ATTACHMENT_ON_MEIDCHID FOREIGN KEY (message_id, channel_id) REFERENCES messages (message_id, channel_id);
-
-ALTER TABLE reactions
-    ADD CONSTRAINT FK_REACTIONS_ON_CHANNEL FOREIGN KEY (channel_id) REFERENCES channels (id);
-
-ALTER TABLE reactions
-    ADD CONSTRAINT FK_REACTIONS_ON_MEIDMECHID FOREIGN KEY (message_id, channel_id) REFERENCES messages (message_id, channel_id);
-
-ALTER TABLE reactions
-    ADD CONSTRAINT FK_REACTIONS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
-
-ALTER TABLE roles
-    ADD CONSTRAINT FK_ROLES_ON_COMMUNITY FOREIGN KEY (community_id) REFERENCES communities (id);
-
-ALTER TABLE community_members
-    ADD CONSTRAINT fk_commem_on_community FOREIGN KEY (community_id) REFERENCES communities (id);
-
-ALTER TABLE community_members
-    ADD CONSTRAINT fk_commem_on_user FOREIGN KEY (user_id) REFERENCES users (id);
-
-ALTER TABLE user_roles
-    ADD CONSTRAINT fk_userol_on_role FOREIGN KEY (role_id) REFERENCES roles (id);
-
-ALTER TABLE user_roles
-    ADD CONSTRAINT fk_userol_on_user FOREIGN KEY (user_id) REFERENCES users (id);

@@ -22,3 +22,20 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
       - ~/apps/pgadmin:/var/lib/pgadmin
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:25.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak:/opt/keycloak/data/
+    ports:
+      - "8082:8080"
+    command:
+      - "start-dev"
+
+volumes:
+  keycloak:
+  # add postgres volume here
+  # and pgadmin
