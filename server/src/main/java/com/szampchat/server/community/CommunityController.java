@@ -35,8 +35,8 @@ public class CommunityController {
     }
 
     @GetMapping("/{communityId}/members")
-    public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId, Authentication authentication) {
-        return communityMemberService.getCommunityMembers(communityId, authentication);
+    public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId) {
+        return communityMemberService.getCommunityMembers(communityId);
     }
 
     //TODO

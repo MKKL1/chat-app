@@ -8,10 +8,6 @@ import com.szampchat.server.user.exception.UserAlreadyExistsException;
 import com.szampchat.server.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -26,9 +22,9 @@ public class UserController {
     private final AuthService authService;
 
     @GetMapping("/users/me")
-    public Mono<UserDTO> getMe(Authentication authentication) {
-        return authService.getUserId(authentication)
-                .flatMap(userService::findUser)
+    public Mono<UserDTO> getMe() {
+        return authService.getAuthenticatedUser()
+                .flatMap(authUser -> userService.findUser(authUser.getId()))
                 .switchIfEmpty(Mono.error(new UserNotFoundException()))
                 .map(user -> modelMapper.map(user, UserDTO.class));
     }

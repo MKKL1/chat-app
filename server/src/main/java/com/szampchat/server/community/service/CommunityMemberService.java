@@ -9,7 +9,6 @@ import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,9 +28,10 @@ public class CommunityMemberService {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
     }
 
-    public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId, Authentication authentication) {
-//        authService.getUserId(authentication)
-//                        .flatMap(userId -> isMember(communityId, userId))
+    public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId) {
+        //TODO authorization
+//        authService.getAuthenticatedUser()
+//                .
         return communityMemberRepository.fetchMemberWithRolesFromCommunity(communityId)
                 //Grouping rows by user id
                 .collectMultimap(
