@@ -6,6 +6,7 @@ import {VoiceChannelComponent} from "./features/pages/voice-channel/voice-channe
 import {ProfileComponent} from "./features/pages/profile/profile.component";
 import {MainComponent} from "./features/pages/main/main.component";
 import {TextChannelComponent} from "./features/pages/text-channel/text-channel.component";
+import {AuthGuard} from "./core/auth/auth.guard";
 
 export const routes: Routes = [
   {
@@ -23,6 +24,7 @@ export const routes: Routes = [
   {
     path: 'app',
     component: MainComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'profile',
