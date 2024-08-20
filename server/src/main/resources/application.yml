@@ -20,6 +20,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: "http://localhost:8082/realms/szampchat"
+  main:
+    web-application-type: reactive
 server:
   error:
     include-message: always
@@ -32,3 +34,4 @@ logging:
     org:
       springframework:
         security: TRACE
+
