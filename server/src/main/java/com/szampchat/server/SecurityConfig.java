@@ -4,7 +4,6 @@ import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
 import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +14,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
@@ -50,7 +46,6 @@ public class SecurityConfig {
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/api/users"))
                 .authorizeExchange(auth -> auth.anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
-//                .sessionManagement(session -> session.concurrentSessions())
                 .build();
     }
 
@@ -67,14 +62,13 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(customJwtAuthenticationConverter)
                         )
+                        .authenticationEntryPoint(UserNotRegisteredExceptionEntryPoint())
                 )
-                .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec.authenticationEntryPoint(serverAuthenticationEntryPoint()))
                 .build();
     }
 
-    public ServerAuthenticationEntryPoint serverAuthenticationEntryPoint() {
+    public ServerAuthenticationEntryPoint UserNotRegisteredExceptionEntryPoint() {
         return (exchange, ex) -> Mono.just(ex)
-                .doOnNext(ex2 -> log.info("ServerAuthenticationEntryPoint: " + ex2))
                     .filter(e -> e instanceof UserNotRegisteredException)
                     .doOnNext(_ -> exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(419)))
                 .then();
