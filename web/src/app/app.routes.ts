@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
-import {LoginComponent} from "./features/pages/login/login.component";
-import {RegisterComponent} from "./features/pages/register/register.component";
-import {CommunityComponent} from "./features/pages/community/community.component";
-import {VoiceChannelComponent} from "./features/pages/voice-channel/voice-channel.component";
-import {ProfileComponent} from "./features/pages/profile/profile.component";
-import {MainComponent} from "./features/pages/main/main.component";
-import {TextChannelComponent} from "./features/pages/text-channel/text-channel.component";
-import {CommunityDetailsComponent} from "./features/community/community-details/community-details.component";
-import {OverviewComponent} from "./features/community/overview/overview.component";
-import {RolesComponent} from "./features/community/roles/roles.component";
-import {UsersListComponent} from "./features/community/users-list/users-list.component";
+import {LandingComponent} from "./features/components/pages/landing/landing.component";
+import {LoginComponent} from "./features/components/pages/login/login.component";
+import {RegisterComponent} from "./features/components/pages/register/register.component";
+import {MainComponent} from "./features/components/pages/main/main.component";
 import {AuthGuard} from "./core/auth/auth.guard";
-import {LandingComponent} from "./features/pages/landing/landing.component";
+import {TextChannelComponent} from "./features/components/pages/text-channel/text-channel.component";
+import {VoiceChannelComponent} from "./features/components/pages/voice-channel/voice-channel.component";
+import {CommunityComponent} from "./features/components/pages/community/community.component";
+import {CommunityDetailsComponent} from "./features/components/community/community-details/community-details.component";
+import {OverviewComponent} from "./features/components/community/overview/overview.component";
+import {RolesComponent} from "./features/components/community/roles/roles.component";
+import {UsersListComponent} from "./features/components/community/users-list/users-list.component";
+import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 
 export const routes: Routes = [
   {

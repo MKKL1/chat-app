@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {LoginForm} from "../../features/pages/login/LoginForm";
 import {BehaviorSubject, map, Observable} from "rxjs";
+import {LoginForm} from "../../features/components/pages/login/LoginForm";
 
 @Injectable({
   providedIn: 'root'
