@@ -38,13 +38,19 @@ export class UsersListComponent implements OnInit{
     this.user = this.keycloackService.getUsername();
   }
 
+  test(): void {
+    this.keycloackService.loadUserProfile().then(p => {
+      console.log(p);
+    });
+  }
+
   logout(): void {
     this.keycloackService.logout('http://localhost:4200');
   }
 
   users: any[] = [
-    {id: 1, name: "twoja stara", roles: ["Owner", "Administator"]},
-    {id: 2, name: "twoj stary"},
-    {id: 3, name: "twoje stare"}
+    {id: 1, name: "test1", roles: ["Owner", "Administator"]},
+    {id: 2, name: "test2"},
+    {id: 3, name: "test3"}
   ];
 }

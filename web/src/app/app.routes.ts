@@ -7,11 +7,12 @@ import {ProfileComponent} from "./features/pages/profile/profile.component";
 import {MainComponent} from "./features/pages/main/main.component";
 import {TextChannelComponent} from "./features/pages/text-channel/text-channel.component";
 import {AuthGuard} from "./core/auth/auth.guard";
+import {LandingComponent} from "./features/pages/landing/landing.component";
 
 export const routes: Routes = [
   {
     path: '',
-    component: LoginComponent
+    component: LandingComponent
   },
   {
     path: 'login',
