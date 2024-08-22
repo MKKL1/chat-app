@@ -20,15 +20,19 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: "http://localhost:8082/realms/szampchat"
+  main:
+    web-application-type: reactive
+  webflux:
+    base-path: /api
 server:
   error:
     include-message: always
   port: 8081
-  servlet:
-    context-path: /api
+
 
 logging:
   level:
     org:
       springframework:
         security: TRACE
+
