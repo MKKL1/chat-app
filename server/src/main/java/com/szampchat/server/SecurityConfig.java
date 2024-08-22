@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -40,20 +42,20 @@ public class SecurityConfig {
     };
 
     @Bean
-    @Order(1)
-    public SecurityWebFilterChain securityFilterChainForUserCreation(ServerHttpSecurity http) throws Exception {
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityWebFilterChain securityFilterChainForUserCreation(ServerHttpSecurity http) {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/api/users"))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth.anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
                 .build();
     }
 
     @Bean
-    @Order(2)
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, UserService userService) throws Exception {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, UserService userService) {
         return http
-                .csrf(csrfSpec -> csrfSpec.disable())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
 //                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
@@ -68,9 +70,13 @@ public class SecurityConfig {
     }
 
     public ServerAuthenticationEntryPoint UserNotRegisteredExceptionEntryPoint() {
-        return (exchange, ex) -> Mono.just(ex)
-                    .filter(e -> e instanceof UserNotRegisteredException)
-                    .doOnNext(_ -> exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(419)))
-                .then();
+        return (exchange, ex) -> {
+            if (ex instanceof UserNotRegisteredException) {
+                exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(419));
+                return Mono.empty();
+            }
+            exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(401));
+            return Mono.empty();
+        };
     }
 }

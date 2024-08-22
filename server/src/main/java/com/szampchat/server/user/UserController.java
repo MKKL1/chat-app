@@ -1,6 +1,7 @@
 package com.szampchat.server.user;
 
 import com.szampchat.server.auth.AuthService;
+import com.szampchat.server.auth.CustomUser;
 import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
@@ -22,21 +23,18 @@ public class UserController {
     private final AuthService authService;
 
     @GetMapping("/users/me")
-    public Mono<UserDTO> getMe() {
-        return authService.getAuthenticatedUser()
-                .flatMap(authUser -> userService.findUser(authUser.getId()))
-                .switchIfEmpty(Mono.error(new UserNotFoundException()))
-                .map(user -> modelMapper.map(user, UserDTO.class));
+    public Mono<UserDTO> getMe(CustomUser currentUser) {
+        return Mono.fromCallable(() -> modelMapper.map(currentUser, UserDTO.class));
     }
 
     //TODO save image
     @PostMapping("/users")
     public Mono<Object> createUser(@RequestBody UserCreateDTO userCreateDTO, Principal principal) {
         return userService.findUserIdBySub(UUID.fromString(principal.getName()))
-                .flatMap(id -> Mono.error(new UserAlreadyExistsException()))
-                .switchIfEmpty(Mono.just(userCreateDTO)
-                                .map(userDto -> modelMapper.map(userDto, User.class))
-                                        .flatMap(user -> userService.createUser(user, UUID.fromString(principal.getName()))));
+        .flatMap(_ -> Mono.error(new UserAlreadyExistsException()))
+        .switchIfEmpty(Mono.just(userCreateDTO)
+                        .map(userDto -> modelMapper.map(userDto, User.class))
+                                .flatMap(user -> userService.createUser(user, UUID.fromString(principal.getName()))));
     }
 
     @GetMapping("/users/{userId}")

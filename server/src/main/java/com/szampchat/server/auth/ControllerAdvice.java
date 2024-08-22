@@ -1,7 +1,6 @@
 package com.szampchat.server.auth;
 
 import com.szampchat.server.user.exception.UserNotFoundException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
