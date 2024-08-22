@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
 import {GifSearchComponent} from "../../../shared/ui/gif-search/gif-search.component";
 import {MatIcon} from "@angular/material/icon";
 import {MatFabButton} from "@angular/material/button";
+import {Component, OnInit} from '@angular/core';
+import {KeycloakService} from "keycloak-angular";
 
 @Component({
   selector: 'app-profile',
@@ -14,6 +15,17 @@ import {MatFabButton} from "@angular/material/button";
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit{
+
+  constructor(private keycloackServie: KeycloakService) {
+  }
+
+  ngOnInit() {
+
+  }
+
+  openUserSettings(){
+    this.keycloackServie.getKeycloakInstance().accountManagement();
+  }
 
 }

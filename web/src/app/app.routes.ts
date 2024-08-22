@@ -10,11 +10,13 @@ import {CommunityDetailsComponent} from "./features/community/community-details/
 import {OverviewComponent} from "./features/community/overview/overview.component";
 import {RolesComponent} from "./features/community/roles/roles.component";
 import {UsersListComponent} from "./features/community/users-list/users-list.component";
+import {AuthGuard} from "./core/auth/auth.guard";
+import {LandingComponent} from "./features/pages/landing/landing.component";
 
 export const routes: Routes = [
   {
     path: '',
-    component: LoginComponent
+    component: LandingComponent
   },
   {
     path: 'login',
@@ -27,6 +29,7 @@ export const routes: Routes = [
   {
     path: 'app',
     component: MainComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'text',
