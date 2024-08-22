@@ -1,0 +1,44 @@
+mat-card {
+  width: 30vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 800px) {
+    width: 80vw;
+    height: 60vh;
+  }
+}
+
+mat-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.gifs {
+  column-count: 2;
+  column-gap: 16px;
+
+  img {
+    display: inline-block;
+    margin-bottom: 16px;
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 10px;
+  }
+
+  img:hover{
+    border: 3px solid green;
+  }
+}
+
+.spinner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+

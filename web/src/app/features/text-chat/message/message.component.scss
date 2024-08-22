@@ -1,18 +1,26 @@
-.message-container{}
 
-.message-wrapper{
-  display: inline-block;
-
-}
-
-.message{
-  display: flex;
-  flex-direction: row-reverse;
-}
 
 .message-content{
   padding: 10px;
-  background: #13574f;
   color: white;
   border-radius: 20px;
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.message-wrapper{
+  display: flex;
+  align-items: center;
+}
+
+.message-menu{
+  display: none;
+}
+
+.message-container:hover .message-menu {
+  display: block;
 }

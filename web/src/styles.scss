@@ -7,3 +7,12 @@ body {
   // make theme for app
   color: black;
 }
+
+.hideOnScroll{
+  opacity: 0;
+  transition: all 0.5s;
+}
+
+.showOnScroll{
+  opacity: 1;
+}

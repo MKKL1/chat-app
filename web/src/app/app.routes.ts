@@ -6,6 +6,10 @@ import {VoiceChannelComponent} from "./features/pages/voice-channel/voice-channe
 import {ProfileComponent} from "./features/pages/profile/profile.component";
 import {MainComponent} from "./features/pages/main/main.component";
 import {TextChannelComponent} from "./features/pages/text-channel/text-channel.component";
+import {CommunityDetailsComponent} from "./features/community/community-details/community-details.component";
+import {OverviewComponent} from "./features/community/overview/overview.component";
+import {RolesComponent} from "./features/community/roles/roles.component";
+import {UsersListComponent} from "./features/community/users-list/users-list.component";
 import {AuthGuard} from "./core/auth/auth.guard";
 import {LandingComponent} from "./features/pages/landing/landing.component";
 
@@ -28,29 +32,39 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'profile',
-        component: ProfileComponent
-      },
-      {
-        path: 'communities',
-        component: CommunityComponent
-      },
-      {
-        path: 'communities/text',
+        path: 'text',
         component: TextChannelComponent
       },
       {
-        path: 'communities/voice',
+        path: 'voice',
         component: VoiceChannelComponent
+      },
+      {
+        path: 'communities',
+        component: CommunityComponent,
+      },
+      {
+        path: 'communities/details',
+        component: CommunityDetailsComponent,
+        children: [
+          {
+            path: 'overview',
+            component: OverviewComponent
+          },
+          {
+            path: 'roles',
+            component: RolesComponent
+          },
+          {
+            path: 'members',
+            component: UsersListComponent
+          }
+        ]
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
       }
     ]
-  },
-  {
-    path: 'community',
-    component: CommunityComponent
-  },
-  {
-    path: 'community/channel',
-    component: VoiceChannelComponent
   }
 ];

@@ -11,7 +11,7 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
     RouterLinkActive
   ],
   templateUrl: './appbar.component.html',
-  styleUrl: './appbar.component.scss'
+  styleUrl: './appbar.component.scss',
 })
 export class AppbarComponent {
 

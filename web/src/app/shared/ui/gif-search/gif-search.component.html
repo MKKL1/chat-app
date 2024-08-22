@@ -1,0 +1,19 @@
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <mat-form-field appearance="outline">
+      <input matInput placeholder="Search for gif..." (keyup.enter)="search()" [(ngModel)]="tag">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    @if(loading){
+      <div class="spinner">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else{
+      <div class="gifs">
+        @for(gif of gifs; track gif){
+          <img [src]="gif.images.downsized_medium.url" (click)="chooseGif(gif)">
+        }
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
