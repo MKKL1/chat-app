@@ -1,7 +1,6 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.auth.AuthService;
-import com.szampchat.server.auth.CustomUser;
+import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
@@ -20,14 +19,14 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
-    private final AuthService authService;
 
     @GetMapping("/users/me")
-    public Mono<UserDTO> getMe(CustomUser currentUser) {
+    public Mono<UserDTO> getMe(CurrentUser currentUser) {
         return Mono.fromCallable(() -> modelMapper.map(currentUser, UserDTO.class));
     }
 
     //TODO save image
+    //This endpoint is secured by oauth resource server without CustomJwtAuthenticationConverter, so we cannot apply CustomUser here
     @PostMapping("/users")
     public Mono<Object> createUser(@RequestBody UserCreateDTO userCreateDTO, Principal principal) {
         return userService.findUserIdBySub(UUID.fromString(principal.getName()))
@@ -38,6 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
+//    @PreAuthorize("//Current user knows specified user")
     public Mono<UserDTO> getUser(@PathVariable Long userId) {
         return userService.findUser(userId)
                 .switchIfEmpty(Mono.error(new UserNotFoundException()))
