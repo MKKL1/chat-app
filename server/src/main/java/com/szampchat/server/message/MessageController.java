@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 @RestController
 public class MessageController {
     private final MessageService messageService;
-    private final ModelMapper modelMapper;
 
     @Operation(summary = "Get messages for given channel")
     @GetMapping("/channels/{channelId}/messages")
@@ -31,19 +30,19 @@ public class MessageController {
     }
 
     @PostMapping("/channels/{channelId}/messages")
-    @PreAuthorize("channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<MessageDTO> createMessage(@PathVariable Long channelId, MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
         return Mono.empty();
     }
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    @PreAuthorize("channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<MessageDTO> editMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
         return Mono.empty();
     }
 
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
-    @PreAuthorize("channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<MessageDTO> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
         return Mono.empty();
     }

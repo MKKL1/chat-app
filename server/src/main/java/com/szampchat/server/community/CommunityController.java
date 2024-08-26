@@ -33,13 +33,13 @@ public class CommunityController {
     })
     @Operation(summary = "Get detailed info about community")
     @GetMapping("/{communityId}")
-    @PreAuthorize("communityMemberService.isMember(#communityId, #currentUser.userId)")
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Mono<Community> getCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
         return communityService.findById(communityId);
     }
 
     @GetMapping("/{communityId}/members")
-    @PreAuthorize("communityMemberService.isMember(#communityId, #currentUser.userId)")
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId, CurrentUser currentUser) {
         return communityMemberService.getCommunityMembers(communityId);
     }

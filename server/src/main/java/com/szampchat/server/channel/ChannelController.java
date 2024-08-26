@@ -18,31 +18,30 @@ import reactor.core.publisher.Mono;
 public class ChannelController {
     private final ChannelService channelService;
     private final ModelMapper modelMapper;
-    private final CommunityMemberService communityMemberService;
 
     @GetMapping("/communities/{communityId}/channels")
-    @PreAuthorize("communityMemberService.isMember(#communityId, #currentUser.userId)")
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Flux<ChannelDTO> getChannelsForCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
         return channelService.findChannelsForCommunity(communityId)
                 .map(channel -> modelMapper.map(channel, ChannelDTO.class));
     }
 
     @PostMapping("/channels")
-    @PreAuthorize("communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)")
+    @PreAuthorize("@communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)")
     //TODO Check if user has permission to create channels in community
     public Mono<ChannelDTO> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO, CurrentUser currentUser) {
         return Mono.empty();
     }
 
     @PatchMapping("/channels/{channelId}")
-    @PreAuthorize("channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to edit this channel
     public Mono<Channel> editChannel(@PathVariable("channelId") Long channelId, @Param("currentUser") CurrentUser currentUser) {
         return Mono.empty();
     }
 
     @DeleteMapping("/channels/{channelId}")
-    @PreAuthorize("channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to delete this channel
     public Mono<Void> deleteChannel(@PathVariable Long channelId, CurrentUser currentUser) {
         return Mono.empty();

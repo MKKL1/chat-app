@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @AllArgsConstructor
-@Service
+@Service("communityMemberService")
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final ModelMapper modelMapper;
