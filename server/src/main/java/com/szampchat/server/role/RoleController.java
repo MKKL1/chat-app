@@ -1,11 +1,13 @@
 package com.szampchat.server.role;
 
+import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.role.dto.RoleCreateDTO;
 import com.szampchat.server.role.entity.Role;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,13 +22,15 @@ public class RoleController {
             @ApiResponse(responseCode = "404", description = "Role by given ID was not found", content = @Content),
     })
     @GetMapping("/roles/{roleId}")
-    public Mono<Role> getRole(@PathVariable Long roleId) {
+    @PreAuthorize("@roleService.hasAccessToRoleInfo(#roleId, #currentUser.userId)")
+    public Mono<Role> getRole(@PathVariable Long roleId, CurrentUser currentUser) {
         return roleService.findRole(roleId);
     }
 
     //TODO present roles in community GET endpoint
     @GetMapping("/communities/{communityId}/roles")
-    public Flux<Role> getRolesForCommunity(@PathVariable Long communityId) {
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
+    public Flux<Role> getRolesForCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
         return roleService.findRolesForCommunity(communityId);
     }
 

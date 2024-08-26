@@ -24,7 +24,7 @@ public class MessageService {
     private final ReactionRepository reactionRepository;
     private final ModelMapper modelMapper;
 
-    public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO) {
+    public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO, Long currentUserId) {
         return Mono.just(fetchMessagesDTO)
                 .flatMapMany(request -> {
                     int limit = request.getLimit() != null ? request.getLimit() : 10;
@@ -32,7 +32,7 @@ public class MessageService {
                         return findLatestMessages(channelId, limit);
                     return findMessagesBefore(channelId, request.getBefore(), limit);
                 })
-                .flatMap(message -> attachAdditionalDataToMessage(message, 123L)); //TODO change to actual user's ID
+                .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
     private Flux<Message> findLatestMessages(Long channelId, int limit) {
@@ -47,7 +47,7 @@ public class MessageService {
         return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
                 .collectList()
                 .map(reactionPreviews -> {
-                            MessageDTO messageDTO = modelMapper.map(reactionPreviews, MessageDTO.class);
+                            MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
                             messageDTO.setAttachments(List.of());//TODO there are no attachments in test data, so skipping this for now
                             messageDTO.setReactions(reactionPreviews);
 
