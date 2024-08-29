@@ -44,6 +44,11 @@ public class CommunityController {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
+    @GetMapping()
+    public Flux<Community> getAllCommunities(){
+        return communityService.getAllCommunities();
+    }
+
     //TODO
     //For when user accepts invite link
     //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
@@ -57,10 +62,8 @@ public class CommunityController {
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
-    public Mono<CommunityDTO> createCommunity(@RequestBody CommunityCreateDTO communityCreateDTO) {
-        return Mono.fromRunnable(() -> {
-            log.info("Creating community: {}", communityCreateDTO);
-        });
+    public Mono<Community> createCommunity(@RequestBody Community community) {
+        return communityService.save(community);
     }
 
     @PatchMapping("/{communityId}")

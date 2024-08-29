@@ -87,7 +87,6 @@ public class SecurityConfig {
     }
 
     // Global cors config
-
     @Bean
     CorsConfigurationSource apiConfigurationSource(){
         CorsConfiguration conf = new CorsConfiguration();

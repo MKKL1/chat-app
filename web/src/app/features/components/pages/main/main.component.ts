@@ -31,6 +31,10 @@ export class MainComponent implements OnInit {
       });
 
     // TODO call user service to get user data stored on client side
+    // for now there is no data beside sub id ???
+    this.http.get(environment.api + "users/me").subscribe(res => {
+      console.log(res);
+    })
   }
 
 }

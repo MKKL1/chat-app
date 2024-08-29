@@ -38,7 +38,7 @@ import {CommunityService} from "../../../services/community.service";
 export class CreateCommunityComponent {
   communityForm = new FormGroup({
     name: new FormControl('', Validators.required),
-    entryCode: new FormControl('', Validators.required)
+    //entryCode: new FormControl('', Validators.required)
   })
 
   file: File | undefined;
@@ -53,7 +53,6 @@ export class CreateCommunityComponent {
   }
 
   closeDialog(): void {
-    this.communityService.createCommunity();
     this.dialogRef.close({
       file: this.file,
       form: this.communityForm.value
