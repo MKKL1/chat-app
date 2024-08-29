@@ -2,7 +2,6 @@ package com.szampchat.server;
 
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
-import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -29,7 +28,7 @@ import java.util.List;
 
 @EnableWebFluxSecurity
 @Configuration
-//@EnableMethodSecurity
+@EnableReactiveMethodSecurity
 @AllArgsConstructor
 @Slf4j
 public class SecurityConfig {
@@ -51,7 +50,7 @@ public class SecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityWebFilterChain securityFilterChainForUserCreation(ServerHttpSecurity http) {
         return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/api/users"))
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/users"))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(apiConfigurationSource()))
                 .authorizeExchange(auth -> auth.anyExchange().authenticated())
@@ -60,7 +59,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, UserService userService) {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
 //                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
@@ -71,12 +70,12 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(customJwtAuthenticationConverter)
                         )
-                        .authenticationEntryPoint(UserNotRegisteredExceptionEntryPoint())
+                        .authenticationEntryPoint(userNotRegisteredExceptionEntryPoint())
                 )
                 .build();
     }
 
-    public ServerAuthenticationEntryPoint UserNotRegisteredExceptionEntryPoint() {
+    public ServerAuthenticationEntryPoint userNotRegisteredExceptionEntryPoint() {
         return (exchange, ex) -> {
             if (ex instanceof UserNotRegisteredException) {
                 exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(419));
