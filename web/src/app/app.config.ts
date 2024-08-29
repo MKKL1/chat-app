@@ -9,6 +9,12 @@ import {authInterceptor} from "./core/auth/auth.interceptor";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
 
+// Using keycloack auth system:
+// 1. Sign up/ sign in in keycloack form after being redirected from angular app
+// 2. Get your user token (I get it from di service in angular app beacuse I don't see any other way
+// 3. Make request to spring backend (/api/users) with token and username
+// 4. New account is created
+
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
