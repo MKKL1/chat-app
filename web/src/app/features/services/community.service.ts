@@ -10,7 +10,7 @@ export class CommunityService {
   constructor(private http: HttpClient) { }
 
   createCommunity(){
-    this.http.get(environment.api + "users/me").subscribe(res => {
+    this.http.post(environment.api + "communities", {}).subscribe(res => {
       console.log(res);
     });
   }

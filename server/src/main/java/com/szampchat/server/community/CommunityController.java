@@ -47,8 +47,9 @@ public class CommunityController {
 
     @PostMapping()
     public Mono<CommunityDTO> createCommunity(@RequestBody CommunityCreateDTO communityCreateDTO) {
-        System.out.println("HTTP WORKS");
-        return Mono.empty();
+        return Mono.fromRunnable(() -> {
+            System.out.println("HTTP WORKS");
+        });
     }
 
     @PatchMapping("/{communityId}")

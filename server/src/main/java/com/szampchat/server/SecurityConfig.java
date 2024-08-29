@@ -19,7 +19,13 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
 
 @EnableWebFluxSecurity
 @Configuration
@@ -47,6 +53,7 @@ public class SecurityConfig {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/api/users"))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(apiConfigurationSource()))
                 .authorizeExchange(auth -> auth.anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
                 .build();
@@ -78,5 +85,18 @@ public class SecurityConfig {
             exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(401));
             return Mono.empty();
         };
+    }
+
+    // Global cors config
+
+    @Bean
+    CorsConfigurationSource apiConfigurationSource(){
+        CorsConfiguration conf = new CorsConfiguration();
+        conf.setAllowedOrigins(List.of("http://localhost:4200"));
+        conf.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        conf.addAllowedHeader("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", conf);
+        return source;
     }
 }

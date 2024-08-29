@@ -33,7 +33,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(
-      withInterceptors([loggingInterceptor])
+      withInterceptors([loggingInterceptor, authInterceptor])
     ),
     importProvidersFrom(KeycloakAngularModule),
     {
