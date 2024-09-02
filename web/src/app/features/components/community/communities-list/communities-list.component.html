@@ -1,3 +1,3 @@
-@for(community of communities; track community){
-  <app-community-card routerLink="/app/communities/details/overview"></app-community-card>
-}
+<div *ngFor="let community of communities$ | async" class="communities">
+  <app-community-card [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
+</div>
