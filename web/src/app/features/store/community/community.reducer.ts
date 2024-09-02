@@ -14,6 +14,10 @@ export const initState: CommunitiesState = {
 
 export const communityReducer = createReducer(
   initState,
+  on(CommunityActions.addCommunity, (state, {community}) => ({
+    ...state,
+    communities: [...state.communities, community]
+  })),
   on(CommunityActions.loadCommunitiesSuccess, (state, {communities}) => ({
     ...state,
     communities,

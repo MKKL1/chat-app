@@ -13,6 +13,9 @@ import {RolesComponent} from "./features/components/community/roles/roles.compon
 import {UsersListComponent} from "./features/components/community/users-list/users-list.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 
+// train at 21:50
+// bus at 21:04 :(
+
 export const routes: Routes = [
   {
     path: '',

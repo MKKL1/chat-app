@@ -44,11 +44,19 @@ public class CommunityController {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
+    // only for testing
     @GetMapping()
     public Flux<Community> getAllCommunities(){
         return communityService.getAllCommunities();
     }
 
+    // TODO implement and use instead of getAllCommunities
+//    @GetMapping()
+//    public Flux<Community> getUserCommunities(CurrentUser user){
+//        return Flux.empty();
+//    }
+
+    // Implement A$AP
     //TODO
     //For when user accepts invite link
     //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
@@ -62,8 +70,8 @@ public class CommunityController {
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
-    public Mono<Community> createCommunity(@RequestBody Community community) {
-        return communityService.save(community);
+    public Mono<Community> createCommunity(@RequestBody Community community, CurrentUser user) {
+        return communityService.save(community, user);
     }
 
     @PatchMapping("/{communityId}")

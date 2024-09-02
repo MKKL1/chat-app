@@ -17,6 +17,18 @@ export class CommunityEffects {
     )
   );
 
+  // that boilerplate is insane
+  // I'm starting to think about just using services
+
+  // addCommunity$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(CommunityActions.addCommunity),
+  //     mergeMap(({community}) => this.communityService.createCommunity(community).pipe(
+  //       map((newCommunity) => CommunityActions.addCommunity({community: newCommunity})),
+  //       catchError((error) => of(CommunityActions.a))
+  //     ))
+  //   ))
+
   constructor(private actions$: Actions, private communityService: CommunityService) {
   }
 }

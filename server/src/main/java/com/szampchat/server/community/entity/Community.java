@@ -21,6 +21,9 @@ public class Community {
     @Column("name")
     private String name;
 
+    @Column("owner_id")
+    private Long owner_id;
+
     @Column("image_url")
     private String image_url;
 }

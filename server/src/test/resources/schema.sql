@@ -4,6 +4,9 @@ create table communities
         constraint pk_communities
             primary key,
     name      varchar(255) not null,
+    owner_id bigint not null
+        constraint fk_communities_on_user
+            references users,
     image_url varchar(255)
 );
 

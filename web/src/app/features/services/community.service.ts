@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {Observable} from "rxjs";
+import {Observable, tap} from "rxjs";
 import {Community} from "../models/community";
 
 @Injectable({
@@ -16,6 +16,12 @@ export class CommunityService {
   }
 
   createCommunity(form: {name: string}): Observable<any> {
-    return this.http.post(environment.api + "communities", {name: form.name});
+    return this.http.post<Community>(environment.api + "communities", {name: form.name})
+      .pipe(
+        tap((community: Community) => {
+          console.log("community: ");
+          console.log(community);
+        })
+      );
   }
 }

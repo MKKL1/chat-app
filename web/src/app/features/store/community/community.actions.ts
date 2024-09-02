@@ -1,6 +1,11 @@
 import {createAction, props} from "@ngrx/store";
 import {Community} from "../../models/community";
 
+export const addCommunity = createAction(
+  '[Community] Add community',
+  props<{community: Community}>()
+);
+
 export const loadCommunities = createAction('[Community] Load communities');
 
 export const loadCommunitiesSuccess = createAction(
