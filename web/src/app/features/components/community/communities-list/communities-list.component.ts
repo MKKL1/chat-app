@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {CommunityCardComponent} from "../community-card/community-card.component";
 import {RouterLink} from "@angular/router";
-import {CommunityService} from "../../../services/community.service";
 import {Community} from "../../../models/community";
-import {NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf} from "@angular/common";
+import {Observable} from "rxjs";
+import {Store} from "@ngrx/store";
+import * as CommunitySelectors from '../../../store/community/community.selector';
+import * as CommunityActions from '../../../store/community/community.actions';
 
 @Component({
   selector: 'app-communities-list',
@@ -11,32 +14,25 @@ import {NgForOf} from "@angular/common";
   imports: [
     CommunityCardComponent,
     RouterLink,
-    NgForOf
+    NgForOf,
+    AsyncPipe
   ],
   templateUrl: './communities-list.component.html',
   styleUrl: './communities-list.component.scss'
 })
-export class CommunitiesListComponent implements OnInit {
-  communities: Community[] = [];
 
-  constructor(private communityService: CommunityService) {
+// ng store is create in components, but i wonder if it isn't too much boilerplate for simple things
+
+export class CommunitiesListComponent implements OnInit {
+  communities$: Observable<Community[]>;
+
+  constructor(private store: Store) {
+    this.communities$ = this.store.select(CommunitySelectors.selectCommunities);
   }
 
   ngOnInit() {
-    this.loadCommunities();
+    this.store.dispatch(CommunityActions.loadCommunities());
   }
 
-  // I have no idea why it doesn't want to work
-  loadCommunities() {
-    this.communityService.getAllCommunities().subscribe({
-      next: (communities: Array<Community>) => {
-        console.log('Fetched communities:', communities); // Debugowanie
-        this.communities = communities;
-      },
-      error: (err) => {
-        console.error('Error fetching communities:', err);
-      }
-    });
-  }
 
 }

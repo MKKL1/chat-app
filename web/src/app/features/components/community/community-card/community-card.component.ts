@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {Community} from "../../../models/community";
 
 @Component({
   selector: 'app-community-card',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './community-card.component.scss'
 })
 export class CommunityCardComponent {
-
+  @Input() community: Community | undefined;
 }

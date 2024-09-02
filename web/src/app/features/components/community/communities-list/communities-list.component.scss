@@ -1,0 +1,15 @@
+.communities{
+  flex: 1;
+  overflow-y: auto;
+
+  // firefox
+  scrollbar-width: none;
+  // edge
+  -ms-overflow-style: none;
+}
+
+// chrome
+.communities::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

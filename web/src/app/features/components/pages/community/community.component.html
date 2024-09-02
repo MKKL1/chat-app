@@ -1,7 +1,10 @@
-<div>
-  <app-communities-list></app-communities-list>
-<!--  add pannel with users chats??? -->
+<div class="community-container">
+  <div>
+    <app-communities-list></app-communities-list>
+    <!--  add pannel with users chats??? -->
+  </div>
+  <button mat-fab (click)="openDialog()" class="add-button">
+    <mat-icon>add</mat-icon>
+  </button>
+
 </div>
-<button mat-fab (click)="openDialog()" class="add-button">
-  <mat-icon>add</mat-icon>
-</button>

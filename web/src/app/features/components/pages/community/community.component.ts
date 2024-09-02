@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {CreateCommunityComponent} from "../../community/create-community/create-community.component";
 import {CommunitiesListComponent} from "../../community/communities-list/communities-list.component";
 import {CommunityService} from "../../../services/community.service";
+import {LayoutComponent} from "../../../../core/components/layout/layout.component";
 
 @Component({
   selector: 'app-community',
@@ -16,7 +17,8 @@ import {CommunityService} from "../../../services/community.service";
     UserPanelComponent,
     MatFabButton,
     MatIcon,
-    CommunitiesListComponent
+    CommunitiesListComponent,
+    LayoutComponent
   ],
   templateUrl: './community.component.html',
   styleUrl: './community.component.scss',
