@@ -7,6 +7,7 @@ import {Observable} from "rxjs";
 import {Store} from "@ngrx/store";
 import * as CommunitySelectors from '../../../store/community/community.selector';
 import * as CommunityActions from '../../../store/community/community.actions';
+import {CommunityService} from "../../../services/community.service";
 
 @Component({
   selector: 'app-communities-list',
@@ -21,18 +22,19 @@ import * as CommunityActions from '../../../store/community/community.actions';
   styleUrl: './communities-list.component.scss'
 })
 
-// ng store is create in components, but i wonder if it isn't too much boilerplate for simple things
+// ng store is create in components, but I wonder if it isn't too much boilerplate for simple things
 
 export class CommunitiesListComponent implements OnInit {
-  communities$: Observable<Community[]>;
 
-  constructor(private store: Store) {
-    this.communities$ = this.store.select(CommunitySelectors.selectCommunities);
+  constructor(private communityService: CommunityService) {
   }
 
   ngOnInit() {
-    this.store.dispatch(CommunityActions.loadCommunities());
+    this.communityService.fetchCommunities();
   }
 
+  get communities$(){
+    return this.communityService.getUserCommunities();
+  }
 
 }

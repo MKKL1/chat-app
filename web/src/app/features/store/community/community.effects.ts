@@ -6,16 +6,16 @@ import {catchError, map, mergeMap, of} from "rxjs";
 
 @Injectable()
 export class CommunityEffects {
-  loadCommunities$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(CommunityActions.loadCommunities),
-      mergeMap(() => this.communityService.getAllCommunities().pipe(
-        map((communities) => CommunityActions.loadCommunitiesSuccess({communities})),
-        catchError((error) => of(CommunityActions.loadCommunitiesFailure({error})))
-        )
-      )
-    )
-  );
+  // loadCommunities$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(CommunityActions.loadCommunities),
+  //     mergeMap(() => this.communityService.getAllCommunities().pipe(
+  //       map((communities) => CommunityActions.loadCommunitiesSuccess({communities})),
+  //       catchError((error) => of(CommunityActions.loadCommunitiesFailure({error})))
+  //       )
+  //     )
+  //   )
+  // );
 
   // that boilerplate is insane
   // I'm starting to think about just using services

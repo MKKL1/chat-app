@@ -38,10 +38,7 @@ export class CommunityComponent {
       dialogRef.afterClosed().subscribe(result => {
         console.log("Dialog result: ");
         console.log(result);
-        this.communityService.createCommunity(result.form).subscribe(res => {
-          console.log("Created community!");
-          console.log(res);
-        });
-      })
+        this.communityService.createCommunity(result.form);
+      });
     }
 }

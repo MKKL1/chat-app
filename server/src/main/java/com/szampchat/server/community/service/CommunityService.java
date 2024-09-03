@@ -48,6 +48,8 @@ public class CommunityService {
         return communityRepository.ownedCommunities(id);
     }
 
+    // Link is create without domain name
+    // I'm not sure if it should be added here or at the frontend
     public Mono<String> createInvitation(Long id, Integer days){
         Invitation invitation = Invitation
                 .builder()
@@ -73,6 +75,7 @@ public class CommunityService {
 
     // Maybe also add owner as member of community?
     // I don't know if I am using Mono in right way
+    // TODO store image url
     public Mono<CommunityDTO> save(Community community, CurrentUser user){
         community.setOwner_id(user.getUserId());
 
@@ -81,6 +84,6 @@ public class CommunityService {
         Mono<User> userMono = userService.findUser(user.getUserId())
                 .switchIfEmpty(Mono.error(new Exception()));
 
-        return communityMono.flatMap(c -> userMono.map(u -> new CommunityDTO(u, c)));
+        return communityMono.flatMap(c -> userMono.map(u -> new CommunityDTO(c, u)));
     }
 }

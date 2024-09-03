@@ -17,7 +17,7 @@ import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.co
 })
 export class ProfileComponent implements OnInit{
 
-  constructor(private keycloackServie: KeycloakService) {
+  constructor(private keycloakService: KeycloakService) {
   }
 
   ngOnInit() {
@@ -25,7 +25,11 @@ export class ProfileComponent implements OnInit{
   }
 
   openUserSettings(){
-    this.keycloackServie.getKeycloakInstance().accountManagement();
+    this.keycloakService.getKeycloakInstance().accountManagement();
+  }
+
+  logout(){
+    this.keycloakService.logout();
   }
 
 }

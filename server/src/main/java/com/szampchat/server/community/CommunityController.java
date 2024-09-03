@@ -53,15 +53,15 @@ public class CommunityController {
     }
 
     // only for testing
-//    @GetMapping()
-//    public Flux<Community> getAllCommunities(){
-//        return communityService.getAllCommunities();
-//    }
-
     @GetMapping()
-    public Flux<Community> getUserCommunities(CurrentUser user){
-        return communityService.getUserCommunities(user.getUserId());
+    public Flux<Community> getAllCommunities(){
+        return communityService.getAllCommunities();
     }
+
+//    @GetMapping()
+//    public Flux<Community> getUserCommunities(CurrentUser user){
+//        return communityService.getUserCommunities(user.getUserId());
+//    }
 
     @GetMapping("/owned")
     public Flux<Community> getOwnedCommunities(CurrentUser user){

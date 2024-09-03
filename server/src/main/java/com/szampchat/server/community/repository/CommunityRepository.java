@@ -16,7 +16,7 @@ public interface CommunityRepository extends R2dbcRepository<Community, Long> {
 
     // Not sure if I should return dto with owner info
     @Query("""
-          SELECT c.* communities as c
+          SELECT c.* FROM communities as c
           JOIN community_members as cm  
           ON cm.community_id = c.id
           WHERE cm.user_id = :user""")
