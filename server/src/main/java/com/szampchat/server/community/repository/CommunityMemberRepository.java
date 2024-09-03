@@ -1,6 +1,7 @@
 package com.szampchat.server.community.repository;
 
 import com.szampchat.server.community.CommunityMemberRolesRow;
+import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface CommunityMemberRepository extends ReactiveCrudRepository<CommunityMember, Long> {
+
     //TODO return id's instead of whole user data
     /**
      * Fetch user data with it's corresponding role id.
