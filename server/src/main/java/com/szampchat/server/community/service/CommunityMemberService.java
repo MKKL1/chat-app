@@ -26,6 +26,9 @@ public class CommunityMemberService {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
     }
 
+    //Although it is named CommunityMemberDTO it is not meant to be converted directly to CommunityMember
+    //TODO rename CommunityMemberDTO
+    //TODO get user info from UserService, not from spaghetti database query
     public Flux<CommunityMemberDTO> getCommunityMembers(Long communityId) {
         return communityMemberRepository.fetchMemberWithRolesFromCommunity(communityId)
                 //Grouping rows by user id
