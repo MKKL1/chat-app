@@ -1,12 +1,16 @@
 package com.szampchat.server.user;
 
+import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.snowflake.Snowflake;
 import com.szampchat.server.user.dto.UserCreateDTO;
+import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
+import com.szampchat.server.user.exception.UserAlreadyExistsException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -18,6 +22,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserSubjectRepository userSubjectRepository;
+    private final ModelMapper modelMapper;
 
 
     public Mono<User> findUser(Long userId) {
@@ -35,11 +40,23 @@ public class UserService {
                 .flatMap(userRepository::findById);
     }
 
-    public Mono<User> createUser(User user, UUID subjectId) {
-        return userRepository.save(user)
-                .flatMap(savedUser -> userSubjectRepository.save(UserSubject.builder()
-                                .userId(savedUser.getId())
-                                .sub(subjectId)
-                        .build()).then(Mono.just(savedUser)));
+    public Mono<UserDTO> createUser(UserCreateDTO userCreateDTO, UUID currentUserId) {
+        //If user doesn't exist, create user
+        return findUserIdBySub(currentUserId)
+                .flatMap(_ -> Mono.error(new UserAlreadyExistsException()))
+                //Save user to database
+                .switchIfEmpty(Mono.just(userCreateDTO)
+                        .map(userDto -> modelMapper.map(userDto, User.class))
+                        .flatMap(userRepository::save)
+                        //We have to wait for userRepository::save to finish to obtain id of user in database
+                        .flatMap(savedUser -> userSubjectRepository.save(
+                                UserSubject.builder()
+                                        .userId(savedUser.getId())
+                                        .sub(currentUserId)
+                                        .build())
+                                .then(Mono.just(savedUser))))
+                //Map saved user to UserDTO
+                .map(savedUser -> modelMapper.map(savedUser, UserDTO.class));
+
     }
 }
