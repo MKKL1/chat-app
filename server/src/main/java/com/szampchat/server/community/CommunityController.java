@@ -52,16 +52,21 @@ public class CommunityController {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
-    // only for testing
-    @GetMapping()
-    public Flux<Community> getAllCommunities(){
-        return communityService.getAllCommunities();
+    @PostMapping("/{communityId}")
+    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
+        return communityMemberService.create(communityId, currentUser.getUserId());
     }
 
+    // only for testing
 //    @GetMapping()
-//    public Flux<Community> getUserCommunities(CurrentUser user){
-//        return communityService.getUserCommunities(user.getUserId());
+//    public Flux<Community> getAllCommunities(){
+//        return communityService.getAllCommunities();
 //    }
+
+    @GetMapping()
+    public Flux<CommunityDTO> getUserCommunities(CurrentUser user){
+        return communityService.getUserCommunities(user.getUserId());
+    }
 
     @GetMapping("/owned")
     public Flux<Community> getOwnedCommunities(CurrentUser user){

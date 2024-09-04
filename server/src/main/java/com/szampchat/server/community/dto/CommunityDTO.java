@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class CommunityDTO {
-    Community community;
-    User owner;
+    private final Community community;
+    private final User owner;
 }

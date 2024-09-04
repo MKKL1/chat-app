@@ -45,10 +45,7 @@ public class CommunityMemberService {
     }
 
     public Mono<CommunityMember> create(Long communityId, Long userId) {
-        return communityMemberRepository.save(CommunityMember.builder()
-                        .communityId(communityId)
-                        .userId(userId)
-                .build());
+        return communityMemberRepository.save(new CommunityMember(communityId, userId));
     }
 
     //Helper class to identify User object by id instead of it's fields

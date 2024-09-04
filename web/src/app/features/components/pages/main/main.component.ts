@@ -23,6 +23,11 @@ export class MainComponent implements OnInit {
   // Sending request to backend to create new user
   // It should be handled entirely by backend, but it's not ready yet
   ngOnInit(): void {
+    this.keycloakService.getToken().then(token => {
+      console.log(token);
+    });
+
+    // TODO store user data
     this.http.post(
       environment.api + "users",
       {username: this.keycloakService.getUsername()})

@@ -17,7 +17,7 @@ export class CommunityService {
 
   // for now backend returns community without owner
   fetchCommunities() {
-     this.http.get<CommunityResponse[]>(this.apiPath
+     this.http.get<Community[]>(this.apiPath
      ).subscribe(data => {
        console.log(data);
      });

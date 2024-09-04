@@ -1,5 +1,6 @@
 package com.szampchat.server.community.repository;
 
+import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.entity.Community;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -16,11 +17,13 @@ public interface CommunityRepository extends R2dbcRepository<Community, Long> {
 
     // Not sure if I should return dto with owner info
     @Query("""
-          SELECT c.* FROM communities as c
-          JOIN community_members as cm  
+          SELECT c.*, u.* FROM communities AS c
+          JOIN community_members AS cm  
           ON cm.community_id = c.id
+          JOIN users AS u
+          ON c.owner_id = u.id
           WHERE cm.user_id = :user""")
-    Flux<Community> userCommunities(@Param("user") Long user);
+    Flux<CommunityDTO> userCommunities(@Param("user") Long user);
 
     @Query("""
         SELECT * FROM communities

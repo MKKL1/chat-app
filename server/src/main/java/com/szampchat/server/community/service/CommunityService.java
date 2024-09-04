@@ -40,12 +40,12 @@ public class CommunityService {
         return communityRepository.findAll();
     }
 
-    public Flux<Community> getUserCommunities(Long id){
-        return communityRepository.userCommunities(id);
+    public Flux<CommunityDTO> getUserCommunities(Long id){
+        return communityRepository.userCommunities(id).doOnNext(c -> {System.out.println(c.toString());});
     }
 
     public Flux<Community> getOwnedCommunities(Long id){
-        return communityRepository.ownedCommunities(id);
+        return communityRepository.ownedCommunities(id).doOnNext(c -> {System.out.println(c.toString());});
     }
 
     // Link is create without domain name
@@ -73,17 +73,21 @@ public class CommunityService {
         });
     }
 
-    // Maybe also add owner as member of community?
     // I don't know if I am using Mono in right way
     // TODO store image url
-    public Mono<CommunityDTO> save(Community community, CurrentUser user){
+    public Mono<CommunityDTO> save(Community community, CurrentUser user) {
         community.setOwner_id(user.getUserId());
 
-        Mono<Community> communityMono = communityRepository.save(community)
-                .switchIfEmpty(Mono.error(new Exception()));
-        Mono<User> userMono = userService.findUser(user.getUserId())
-                .switchIfEmpty(Mono.error(new Exception()));
+        return communityRepository.save(community)
+            .switchIfEmpty(Mono.error(new Exception()))
+            .flatMap(savedCommunity -> {
+                Long communityId = savedCommunity.getId();
 
-        return communityMono.flatMap(c -> userMono.map(u -> new CommunityDTO(c, u)));
+                // After creating community its owner also need to be added as its member
+                return userService.findUser(user.getUserId())
+                    .switchIfEmpty(Mono.error(new Exception("User not found")))
+                    .flatMap(savedUser -> communityMemberService.create(communityId, user.getUserId())
+                            .then(Mono.just(new CommunityDTO(savedCommunity, savedUser))));
+            });
     }
 }
