@@ -8,10 +8,6 @@ import {loggingInterceptor} from "./core/auth/logging.interceptor";
 import {authInterceptor} from "./core/auth/auth.interceptor";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
-import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import {communityReducer} from "./features/store/community/community.reducer";
-import {CommunityEffects} from "./features/store/community/community.effects";
 
 // Using keycloack auth system:
 // 1. Sign up/ sign in in keycloack form after being redirected from angular app

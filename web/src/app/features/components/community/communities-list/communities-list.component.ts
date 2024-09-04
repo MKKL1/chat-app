@@ -4,9 +4,6 @@ import {RouterLink} from "@angular/router";
 import {Community} from "../../../models/community";
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Observable} from "rxjs";
-import {Store} from "@ngrx/store";
-import * as CommunitySelectors from '../../../store/community/community.selector';
-import * as CommunityActions from '../../../store/community/community.actions';
 import {CommunityService} from "../../../services/community.service";
 
 @Component({
@@ -22,8 +19,6 @@ import {CommunityService} from "../../../services/community.service";
   styleUrl: './communities-list.component.scss'
 })
 
-// ng store is create in components, but I wonder if it isn't too much boilerplate for simple things
-
 export class CommunitiesListComponent implements OnInit {
 
   constructor(private communityService: CommunityService) {
@@ -35,6 +30,10 @@ export class CommunitiesListComponent implements OnInit {
 
   get communities$(){
     return this.communityService.getUserCommunities();
+  }
+
+  selectCommunity(id: number){
+    this.communityService.fetchCommunity(id);
   }
 
 }

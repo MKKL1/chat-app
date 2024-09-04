@@ -17,13 +17,13 @@ public interface CommunityRepository extends R2dbcRepository<Community, Long> {
 
     // Not sure if I should return dto with owner info
     @Query("""
-          SELECT c.*, u.* FROM communities AS c
+          SELECT c.* FROM communities AS c
           JOIN community_members AS cm  
           ON cm.community_id = c.id
           JOIN users AS u
           ON c.owner_id = u.id
           WHERE cm.user_id = :user""")
-    Flux<CommunityDTO> userCommunities(@Param("user") Long user);
+    Flux<Community> userCommunities(@Param("user") Long user);
 
     @Query("""
         SELECT * FROM communities

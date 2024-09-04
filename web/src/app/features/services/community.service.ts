@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {BehaviorSubject, map, mergeMap, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs";
 import {Community} from "../models/community";
-import {CommunityResponse} from "../models/community-response";
+import {UserService} from "./user.service";
+import {CommunityStore} from "../store/community.store";
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,22 @@ export class CommunityService {
 
   private communitiesSubject: BehaviorSubject<Community[]> = new BehaviorSubject<Community[]>([]);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private communityStore: CommunityStore, private userService: UserService) { }
+
+  // after fetching all records beside first return error
+  fetchCommunity(id: number){
+    this.http.get<Community>(this.apiPath + "/" + id).subscribe({
+      next: (community: Community) => this.communityStore.selectCommunity(community),
+      error: (err) => console.error(err)
+    });
+  }
 
   // for now backend returns community without owner
   fetchCommunities() {
      this.http.get<Community[]>(this.apiPath
-     ).subscribe(data => {
-       console.log(data);
+     ).subscribe({
+       next: (communities) => this.communitiesSubject.next(communities),
+       error: (err) => console.error(err)
      });
   }
 
@@ -27,24 +37,24 @@ export class CommunityService {
     return this.communitiesSubject.asObservable();
   }
 
-  // getOwnedCommunities(): Observable<Community> {
-  //
-  // }
+  getOwnedCommunities(): Observable<Community[]> {
+    return this.communitiesSubject.asObservable().pipe(
+      map((communities: Community[]) =>
+        communities.filter((community: Community) =>
+          community.ownerId == this.userService.getUser().id))
+    );
+  }
 
   // change those types
   createCommunity(form: {name: string}) {
     this.http.post<Community>(this.apiPath, {name: form.name})
-      .pipe(
-        tap((community: Community) => {
-          console.log("community: ");
-          console.log(community);
-        })).subscribe(
-          community => this.communitiesSubject.next(
-            [
-              ...this.communitiesSubject.getValue(),
-              community
-            ]
-          )
-        );
+      .subscribe(
+        community => this.communitiesSubject.next(
+          [
+            ...this.communitiesSubject.getValue(),
+            community
+          ]
+        )
+      );
   }
 }

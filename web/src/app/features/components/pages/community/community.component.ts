@@ -30,14 +30,9 @@ export class CommunityComponent {
     constructor(private communityService: CommunityService) {}
 
     // TODO specify types and handle response
-    // I tried to add new created community to list with ngrx, but amount of boilerplate
-    // is killing me
-    // I will try to change it back to plain service
     openDialog(){
       const dialogRef = this.dialog.open(CreateCommunityComponent, {width: '60vw'});
       dialogRef.afterClosed().subscribe(result => {
-        console.log("Dialog result: ");
-        console.log(result);
         this.communityService.createCommunity(result.form);
       });
     }

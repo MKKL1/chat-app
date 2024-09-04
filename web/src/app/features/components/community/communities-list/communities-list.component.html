@@ -1,3 +1,3 @@
 <div *ngFor="let community of communities$ | async" class="communities">
-  <app-community-card [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
+  <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
 </div>

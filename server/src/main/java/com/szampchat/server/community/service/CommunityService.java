@@ -40,12 +40,12 @@ public class CommunityService {
         return communityRepository.findAll();
     }
 
-    public Flux<CommunityDTO> getUserCommunities(Long id){
-        return communityRepository.userCommunities(id).doOnNext(c -> {System.out.println(c.toString());});
+    public Flux<Community> getUserCommunities(Long id){
+        return communityRepository.userCommunities(id);
     }
 
     public Flux<Community> getOwnedCommunities(Long id){
-        return communityRepository.ownedCommunities(id).doOnNext(c -> {System.out.println(c.toString());});
+        return communityRepository.ownedCommunities(id);
     }
 
     // Link is create without domain name
@@ -75,8 +75,11 @@ public class CommunityService {
 
     // I don't know if I am using Mono in right way
     // TODO store image url
-    public Mono<CommunityDTO> save(Community community, CurrentUser user) {
-        community.setOwner_id(user.getUserId());
+    public Mono<Community> save(CommunityCreateDTO communityDTO, CurrentUser user) {
+        Community community = Community.builder()
+                .name(communityDTO.name())
+                .owner_id(user.getUserId())
+                .build();
 
         return communityRepository.save(community)
             .switchIfEmpty(Mono.error(new Exception()))
@@ -86,8 +89,8 @@ public class CommunityService {
                 // After creating community its owner also need to be added as its member
                 return userService.findUser(user.getUserId())
                     .switchIfEmpty(Mono.error(new Exception("User not found")))
-                    .flatMap(savedUser -> communityMemberService.create(communityId, user.getUserId())
-                            .then(Mono.just(new CommunityDTO(savedCommunity, savedUser))));
+                    .flatMap(savedUser -> communityMemberService.create(communityId, savedUser.getId())
+                        .then(Mono.just(community)));
             });
     }
 }

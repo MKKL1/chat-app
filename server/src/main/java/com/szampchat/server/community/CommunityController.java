@@ -52,22 +52,24 @@ public class CommunityController {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
+    // only for testing
     @PostMapping("/{communityId}")
     public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
         return communityMemberService.create(communityId, currentUser.getUserId());
     }
 
     // only for testing
-//    @GetMapping()
-//    public Flux<Community> getAllCommunities(){
-//        return communityService.getAllCommunities();
-//    }
+    @GetMapping("/all")
+    public Flux<Community> getAllCommunities(){
+        return communityService.getAllCommunities();
+    }
 
     @GetMapping()
-    public Flux<CommunityDTO> getUserCommunities(CurrentUser user){
+    public Flux<Community> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
+    // unnecessary - it can be filtered on frontend instead calling api another time
     @GetMapping("/owned")
     public Flux<Community> getOwnedCommunities(CurrentUser user){
         return communityService.getOwnedCommunities(user.getUserId());
@@ -95,7 +97,7 @@ public class CommunityController {
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
-    public Mono<CommunityDTO> createCommunity(@RequestBody Community community, CurrentUser user) {
+    public Mono<Community> createCommunity(@RequestBody CommunityCreateDTO community, CurrentUser user) {
         return communityService.save(community, user);
     }
 
