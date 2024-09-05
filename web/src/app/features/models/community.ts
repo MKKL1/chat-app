@@ -1,8 +1,8 @@
 import {User} from "./user";
 
 export interface Community {
-  id: number;
+  id: string;
   name: string;
   imageUrl: string;
-  ownerId: number
+  ownerId: string;
 }

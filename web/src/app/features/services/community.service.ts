@@ -17,7 +17,8 @@ export class CommunityService {
   constructor(private http: HttpClient, private communityStore: CommunityStore, private userService: UserService) { }
 
   // after fetching all records beside first return error
-  fetchCommunity(id: number){
+  fetchCommunity(id: string){
+    console.log("id in service: " + id);
     this.http.get<Community>(this.apiPath + "/" + id).subscribe({
       next: (community: Community) => this.communityStore.selectCommunity(community),
       error: (err) => console.error(err)
@@ -25,10 +26,13 @@ export class CommunityService {
   }
 
   // for now backend returns community without owner
+  // communities list has changed id's
   fetchCommunities() {
-     this.http.get<Community[]>(this.apiPath
+     this.http.get(this.apiPath
      ).subscribe({
-       next: (communities) => this.communitiesSubject.next(communities),
+       next: (communities) => { console.log(communities);
+         // @ts-ignore
+         this.communitiesSubject.next(communities);},
        error: (err) => console.error(err)
      });
   }

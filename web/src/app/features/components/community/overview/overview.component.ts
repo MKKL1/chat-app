@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {CommunityStore} from "../../../store/community.store";
 import {CommunityQuery} from "../../../store/community.query";
 import {Observable} from "rxjs";
 import {Community} from "../../../models/community";

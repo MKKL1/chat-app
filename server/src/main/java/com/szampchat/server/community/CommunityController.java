@@ -41,7 +41,7 @@ public class CommunityController {
     @GetMapping("/{communityId}")
     @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Mono<Community> getCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return communityService.findById(communityId);
+        return communityService.findById(communityId).doOnSuccess(System.out::println);
     }
 
     // Maybe instead of dozens of small request it will be better to make

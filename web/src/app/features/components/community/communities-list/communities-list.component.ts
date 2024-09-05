@@ -32,7 +32,7 @@ export class CommunitiesListComponent implements OnInit {
     return this.communityService.getUserCommunities();
   }
 
-  selectCommunity(id: number){
+  selectCommunity(id: string){
     this.communityService.fetchCommunity(id);
   }
 

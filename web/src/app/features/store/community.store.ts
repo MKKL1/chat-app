@@ -9,10 +9,10 @@ export interface CommunityState {
 export function createInitState(): CommunityState {
   return {
     community: {
-      id: 0,
+      id: '',
       name: '',
       imageUrl: '',
-      ownerId: 0
+      ownerId: ''
     }
   };
 }

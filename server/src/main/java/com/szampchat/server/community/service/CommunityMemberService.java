@@ -22,6 +22,7 @@ public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final ModelMapper modelMapper;
 
+    // communityId is different from one in db
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
     }
