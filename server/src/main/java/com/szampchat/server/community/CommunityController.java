@@ -1,12 +1,10 @@
 package com.szampchat.server.community;
 
 import com.szampchat.server.auth.CurrentUser;
-import com.szampchat.server.community.dto.CommunityCreateDTO;
-import com.szampchat.server.community.dto.CommunityDTO;
-import com.szampchat.server.community.dto.CommunityEditDTO;
-import com.szampchat.server.community.dto.CommunityMemberDTO;
+import com.szampchat.server.community.dto.*;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
+import com.szampchat.server.community.entity.Invitation;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +31,8 @@ public class CommunityController {
     private final CommunityService communityService;
     private final CommunityMemberService communityMemberService;
 
+
+    // We need another endpoint with community info for user who want to join it
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Community by given ID was not found", content = @Content),
@@ -78,8 +78,8 @@ public class CommunityController {
     // this endpoint will create link to community which then can be shared with other users to join your community
     @PostMapping("/{communityId}/invite")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<String> inviteToCommunity(@PathVariable Long communityId, @RequestBody @NotNull @Min(1) Integer days, CurrentUser currentUser){
-        return communityService.createInvitation(communityId, days);
+    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, @RequestBody CreateInvitationDTO invitationDTO, CurrentUser currentUser){
+        return communityService.createInvitation(communityId, invitationDTO.getDays());
     }
 
     // What if user is already in community?
@@ -91,8 +91,8 @@ public class CommunityController {
     //Maybe invite id should be something less repeatable then snowflake, maybe use uuid
     // Don't use @RequestParam in @PostMapping
     @PostMapping("/{communityId}/join")
-    public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody Long invitationId, CurrentUser currentUser) {
-        return communityService.addMemberToCommunity(communityId, invitationId, currentUser.getUserId());
+    public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
+        return communityService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
@@ -110,6 +110,7 @@ public class CommunityController {
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return Mono.empty();
+        System.out.println("jazda");
+        return communityService.delete(communityId);
     }
 }

@@ -5,6 +5,7 @@ import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs"
 import {Community} from "../models/community";
 import {UserService} from "./user.service";
 import {CommunityStore} from "../store/community.store";
+import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Injectable({
   providedIn: 'root'
@@ -28,11 +29,9 @@ export class CommunityService {
   // for now backend returns community without owner
   // communities list has changed id's
   fetchCommunities() {
-     this.http.get(this.apiPath
+     this.http.get<Community[]>(this.apiPath
      ).subscribe({
-       next: (communities) => { console.log(communities);
-         // @ts-ignore
-         this.communitiesSubject.next(communities);},
+       next: (communities) => this.communitiesSubject.next(communities),
        error: (err) => console.error(err)
      });
   }
@@ -61,4 +60,18 @@ export class CommunityService {
         )
       );
   }
+
+  // backend don't work yet
+  deleteCommunity(id: string) {
+    return this.http.delete(this.apiPath + "/" + id);
+  }
+
+  createInvitation(id: string, days: number){
+    return this.http.post<{link: string}>(this.apiPath + "/" + id + "/invite",{days: days});
+  }
+
+  acceptInvitation(communityId: string, invitationId: string){
+    return this.http.post(environment.api + "communities/" + communityId + "/join", {invitationId: invitationId});
+  }
+
 }

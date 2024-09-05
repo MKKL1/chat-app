@@ -2,16 +2,17 @@ package com.szampchat.server.community.service;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
-import com.szampchat.server.community.dto.CommunityDTO;
+import com.szampchat.server.community.dto.InvitationResponseDTO;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.entity.Invitation;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.InvalidInvitationException;
+import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.community.repository.InvitationRepository;
+import com.szampchat.server.snowflake.Snowflake;
 import com.szampchat.server.user.UserService;
-import com.szampchat.server.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -26,6 +27,7 @@ public class CommunityService {
     private final InvitationRepository invitationRepository;
     private final UserService userService;
     private final CommunityMemberService communityMemberService;
+    private final Snowflake snowflake;
 
     public Mono<Community> findById(Long id) {
         return communityRepository.findById(id)
@@ -33,7 +35,9 @@ public class CommunityService {
     }
 
     public Mono<Boolean> isOwner(Long communityId, Long userId) {
-        return communityRepository.isOwnerOfCommunity(communityId, userId);
+        return communityRepository.isOwnerOfCommunity(communityId, userId).flatMap(
+            owner -> owner ? Mono.just(true) : Mono.error(new NotOwnerException())
+        );
     }
 
     public Flux<Community> getAllCommunities(){
@@ -50,7 +54,7 @@ public class CommunityService {
 
     // Link is create without domain name
     // I'm not sure if it should be added here or at the frontend
-    public Mono<String> createInvitation(Long id, Integer days){
+    public Mono<InvitationResponseDTO> createInvitation(Long id, Integer days){
         Invitation invitation = Invitation
                 .builder()
                 .communityId(id)
@@ -58,11 +62,15 @@ public class CommunityService {
                 .build();
 
         return invitationRepository.save(invitation)
-                .flatMap(inv -> Mono.just(inv.toLink()));
+                .flatMap(inv -> Mono.just(new InvitationResponseDTO(inv.toLink())));
     }
 
+
+    // for now user can join same community two times
+    // TODO handle errors
     public Mono<CommunityMember> addMemberToCommunity(Long communityId, Long invitationId, Long userId){
         // check if invitation is valid
+        // for now link won't be deleted from db after accepting invitation
         return invitationRepository.isValid(invitationId, communityId).flatMap(isValid -> {
             if(!isValid) {
                 return Mono.error(new InvalidInvitationException());
@@ -73,12 +81,11 @@ public class CommunityService {
         });
     }
 
-    // I don't know if I am using Mono in right way
     // TODO store image url
     public Mono<Community> save(CommunityCreateDTO communityDTO, CurrentUser user) {
         Community community = Community.builder()
                 .name(communityDTO.name())
-                .owner_id(user.getUserId())
+                .ownerId(user.getUserId())
                 .build();
 
         return communityRepository.save(community)
@@ -92,5 +99,11 @@ public class CommunityService {
                     .flatMap(savedUser -> communityMemberService.create(communityId, savedUser.getId())
                         .then(Mono.just(community)));
             });
+    }
+
+    // won't work because of constraints
+    // cannot set cascade deleting because r2dbc
+    public Mono<Void> delete(Long id){
+        return communityRepository.deleteById(id).doOnSuccess(_ -> System.out.println("Deleted community"));
     }
 }

@@ -5,7 +5,6 @@ export const loggingInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(tap(event => {
     if(event.type === HttpEventType.Response){
       console.log(req.url, "returned response with status ", event.status);
-      console.log(req.body);
     }
   }));
 };

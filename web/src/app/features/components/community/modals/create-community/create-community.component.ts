@@ -10,9 +10,9 @@ import {MatButton, MatFabButton, MatMiniFabButton} from "@angular/material/butto
 import {MatFormField} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
-import {FileUploadComponent} from "../../../../shared/ui/file-upload/file-upload.component";
+import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CommunityService} from "../../../services/community.service";
+import {CommunityService} from "../../../../services/community.service";
 
 
 @Component({
@@ -39,12 +39,11 @@ export class CreateCommunityComponent {
   communityForm = new FormGroup({
     name: new FormControl('', Validators.required),
     //entryCode: new FormControl('', Validators.required)
-  })
+  });
 
   file: File | undefined;
 
-  constructor(private communityService: CommunityService,
-              public dialogRef: MatDialogRef<CreateCommunityComponent>,
+  constructor(public dialogRef: MatDialogRef<CreateCommunityComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 

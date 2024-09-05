@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface CommunityRepository extends R2dbcRepository<Community, Long> {
 
-    @Query("SELECT EXISTS (SELECT 1 FROM communities WHERE id = :community AND owner_id = :owner) AND expired_at < CURRENT_TIMESTAMP")
+    @Query("SELECT EXISTS (SELECT 1 FROM communities WHERE id = :community AND owner_id = :owner)")
     Mono<Boolean> isOwnerOfCommunity(@Param("community") Long community, @Param("owner") Long owner);
 
     // Not sure if I should return dto with owner info

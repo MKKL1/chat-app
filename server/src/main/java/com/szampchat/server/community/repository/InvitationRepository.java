@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface InvitationRepository extends R2dbcRepository<Invitation, Long> {
 
-    @Query("SELECT EXISTS (SELECT 1 FROM invitation WHERE id = :invitation AND community_id = :community)")
+    @Query("SELECT EXISTS (SELECT 1 FROM invitations WHERE id = :invitation AND community_id = :community)")
     Mono<Boolean> isValid(@Param("invitation") Long invitation, @Param("community") Long community);
 
 }

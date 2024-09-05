@@ -27,6 +27,6 @@ public class Invitation {
     private LocalDateTime expiredAt;
 
     public String toLink(){
-        return STR."community/\{communityId}/join\{id}";
+        return "community/" + communityId + "/join/" + id;
     }
 }

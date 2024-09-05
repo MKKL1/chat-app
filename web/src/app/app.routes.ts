@@ -12,6 +12,7 @@ import {OverviewComponent} from "./features/components/community/overview/overvi
 import {RolesComponent} from "./features/components/community/roles/roles.component";
 import {UsersListComponent} from "./features/components/community/users-list/users-list.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
+import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
 
 // train at 21:50
 // bus at 21:04 :(
@@ -28,6 +29,11 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent
+  },
+  {
+    path: 'community/:communityId/join/:invitationId',
+    component: InvitationComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'app',
