@@ -35,15 +35,15 @@ public class MessageService {
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
-    private Flux<Message> findLatestMessages(Long channelId, int limit) {
+    Flux<Message> findLatestMessages(Long channelId, int limit) {
         return messageRepository.findMessagesByChannelOrderByIdDesc(channelId, Limit.of(limit));
     }
 
-    private Flux<Message> findMessagesBefore(Long channel, Long before, int limit) {
+    Flux<Message> findMessagesBefore(Long channel, Long before, int limit) {
         return messageRepository.findMessagesByChannel(channel, before, limit);
     }
 
-    private Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
+    Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
         return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
                 .collectList()
                 .map(reactionPreviews -> {
