@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Generate invitation to your community</h2>
+<form [formGroup]="daysForm" (ngSubmit)="generate()">
+<mat-dialog-content>
+  <mat-form-field appearance="outline" style="margin-top: 5px">
+    <mat-label>Time to expiration</mat-label>
+    <input matInput formControlName="days">
+  </mat-form-field>
+  @if(daysForm.get('days')?.invalid && daysForm.get('days')?.dirty){
+    <p style="color: darkred">The time to expiration should be a number of days between 1 and 365</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button type="submit" [disabled]="daysForm.invalid">Generate</button>
+</mat-dialog-actions>
+</form>

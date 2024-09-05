@@ -3,6 +3,7 @@ import {MatFabButton} from "@angular/material/button";
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from "keycloak-angular";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
+import {CommunityService} from "../../../services/community.service";
 
 @Component({
   selector: 'app-profile',
@@ -17,7 +18,7 @@ import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.co
 })
 export class ProfileComponent implements OnInit{
 
-  constructor(private keycloackServie: KeycloakService) {
+  constructor(private keycloakService: KeycloakService, private cs: CommunityService) {
   }
 
   ngOnInit() {
@@ -25,7 +26,10 @@ export class ProfileComponent implements OnInit{
   }
 
   openUserSettings(){
-    this.keycloackServie.getKeycloakInstance().accountManagement();
+    this.keycloakService.getKeycloakInstance().accountManagement();
   }
 
+  logout(){
+    this.keycloakService.logout();
+  }
 }

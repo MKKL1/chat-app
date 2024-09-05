@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import {inject} from "@angular/core";
-import {AuthService} from "./auth.service";
+import {AuthService} from "../auth/auth.service";
 import {KeycloakService} from "keycloak-angular";
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {

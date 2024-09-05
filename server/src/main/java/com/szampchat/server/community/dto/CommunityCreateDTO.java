@@ -1,4 +1,5 @@
 package com.szampchat.server.community.dto;
 
-public class CommunityCreateDTO {
+public record CommunityCreateDTO(String name) {
+
 }

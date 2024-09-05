@@ -1,1 +1,11 @@
-<p>overview works!</p>
+<!-- Add css later -->
+<p>overview works! {{ community?.id }} | {{ community?.name }}</p>
+@if(userService.getUser().id === community?.ownerId){
+  <button mat-flat-button (click)="deleteCommunity(community?.id)">Delete community</button>
+  <button mat-flat-button (click)="openDialog()">Create link</button>
+  @if(linkCreated){
+    <div>
+      <p>{{link}} <mat-icon (click)="copyToClipboard()" fontIcon="content_copy" matTooltip="Copy to clipboard"></mat-icon></p>
+    </div>
+  }
+}

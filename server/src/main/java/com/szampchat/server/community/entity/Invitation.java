@@ -8,22 +8,25 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("communities")
-public class Community {
-    @Id
+@Table("invitations")
+public class Invitation {
+    @Id()
     @Column("id")
     private Long id;
 
-    @Column("name")
-    private String name;
+    @Column("community_id")
+    private Long communityId;
 
-    @Column("owner_id")
-    private Long ownerId;
+    @Column("expired_at")
+    private LocalDateTime expiredAt;
 
-    @Column("image_url")
-    private String imageUrl;
+    public String toLink(){
+        return "community/" + communityId + "/join/" + id;
+    }
 }
