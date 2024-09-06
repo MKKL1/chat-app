@@ -22,9 +22,13 @@ public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final ModelMapper modelMapper;
 
-    // communityId is different from one in db
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
+    }
+
+    // maybe just write query instead
+    public Mono<Boolean> isNotMember(Long communityId, Long userId) {
+        return isMember(communityId, userId).map(val -> !val);
     }
 
     //Although it is named CommunityMemberDTO it is not meant to be converted directly to CommunityMember

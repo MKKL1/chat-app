@@ -82,15 +82,17 @@ public class CommunityController {
         return communityService.createInvitation(communityId, invitationDTO.getDays());
     }
 
-    // What if user is already in community?
-    //TODO
-    //For when user accepts invite link
     //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
     //            To make sure that user used invite link to join this community, invite's id has to be provided with this request
     //            When invite link expires, the provided id will no longed be valid -> 403 / 404
     //Maybe invite id should be something less repeatable then snowflake, maybe use uuid
+
+    // After getting invitation link user is redirected to page with accept button
+    // which will send request to this endpoint after clicking
+    // I use isNotMember to ensure that user won't be added as member of community another time
     // Don't use @RequestParam in @PostMapping
     @PostMapping("/{communityId}/join")
+    @PreAuthorize("@communityMemberService.isNotMember(#communityId, #currentUser.userId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return communityService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
@@ -103,14 +105,13 @@ public class CommunityController {
 
     @PatchMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<CommunityDTO> editCommunity(@PathVariable Long communityId, @RequestBody CommunityEditDTO communityEditDTO, CurrentUser currentUser) {
-        return Mono.empty();
+    public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community, CurrentUser currentUser) {
+        return communityService.editCommunity(communityId, community);
     }
 
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        System.out.println("jazda");
         return communityService.delete(communityId);
     }
 }
