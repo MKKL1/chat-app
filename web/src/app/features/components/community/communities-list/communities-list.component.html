@@ -1,3 +1,13 @@
-<div *ngFor="let community of communities$ | async" class="communities">
-  <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
-</div>
+<!-- Make dark theme here -->
+<mat-tab-group>
+  <mat-tab label="All">
+    <div *ngFor="let community of communities$ | async" class="communities">
+      <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
+    </div>
+  </mat-tab>
+  <mat-tab label="Owned">
+    <div *ngFor="let community of ownedCommunities$ | async" class="communities">
+      <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
+    </div>
+  </mat-tab>
+</mat-tab-group>

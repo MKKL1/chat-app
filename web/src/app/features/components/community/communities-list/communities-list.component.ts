@@ -5,6 +5,7 @@ import {Community} from "../../../models/community";
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Observable} from "rxjs";
 import {CommunityService} from "../../../services/community.service";
+import {MatTab, MatTabGroup} from "@angular/material/tabs";
 
 @Component({
   selector: 'app-communities-list',
@@ -13,7 +14,9 @@ import {CommunityService} from "../../../services/community.service";
     CommunityCardComponent,
     RouterLink,
     NgForOf,
-    AsyncPipe
+    AsyncPipe,
+    MatTabGroup,
+    MatTab
   ],
   templateUrl: './communities-list.component.html',
   styleUrl: './communities-list.component.scss'
@@ -30,6 +33,10 @@ export class CommunitiesListComponent implements OnInit {
 
   get communities$(){
     return this.communityService.getUserCommunities();
+  }
+
+  get ownedCommunities$(){
+    return this.communityService.getOwnedCommunities();
   }
 
   selectCommunity(id: string){
