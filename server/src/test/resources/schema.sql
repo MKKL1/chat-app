@@ -4,6 +4,9 @@ create table communities
         constraint pk_communities
             primary key,
     name      varchar(255) not null,
+    owner_id bigint not null
+        constraint fk_communities_on_user
+            references users,
     image_url varchar(255)
 );
 
@@ -130,3 +133,9 @@ create table user_subject
         primary key (user_id, sub)
 );
 
+create table invitations
+(
+  id bigint not null constraint pk_invitation primary key,
+  community_id bigint not null constraint fk_invitations_on_community references communities,
+  expired_at timestamp not null
+);

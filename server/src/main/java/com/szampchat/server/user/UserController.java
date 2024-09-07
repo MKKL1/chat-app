@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -26,8 +27,8 @@ public class UserController {
     //TODO save image
     //This endpoint is secured by oauth resource server without CustomJwtAuthenticationConverter, so we cannot apply CustomUser here
     @PostMapping("/users")
-    public Mono<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO, CurrentUser currentUser) {
-        return userService.createUser(userCreateDTO, UUID.fromString(currentUser.getName()));
+    public Mono<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO, Principal principal) {
+        return userService.createUser(userCreateDTO, UUID.fromString(principal.getName()));
     }
 
     @GetMapping("/users/{userId}")

@@ -4,9 +4,8 @@ import {RouterLink} from "@angular/router";
 import {Community} from "../../../models/community";
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {Observable} from "rxjs";
-import {Store} from "@ngrx/store";
-import * as CommunitySelectors from '../../../store/community/community.selector';
-import * as CommunityActions from '../../../store/community/community.actions';
+import {CommunityService} from "../../../services/community.service";
+import {MatTab, MatTabGroup} from "@angular/material/tabs";
 
 @Component({
   selector: 'app-communities-list',
@@ -15,24 +14,33 @@ import * as CommunityActions from '../../../store/community/community.actions';
     CommunityCardComponent,
     RouterLink,
     NgForOf,
-    AsyncPipe
+    AsyncPipe,
+    MatTabGroup,
+    MatTab
   ],
   templateUrl: './communities-list.component.html',
   styleUrl: './communities-list.component.scss'
 })
 
-// ng store is create in components, but i wonder if it isn't too much boilerplate for simple things
-
 export class CommunitiesListComponent implements OnInit {
-  communities$: Observable<Community[]>;
 
-  constructor(private store: Store) {
-    this.communities$ = this.store.select(CommunitySelectors.selectCommunities);
+  constructor(private communityService: CommunityService) {
   }
 
   ngOnInit() {
-    this.store.dispatch(CommunityActions.loadCommunities());
+    this.communityService.fetchCommunities();
   }
 
+  get communities$(){
+    return this.communityService.getUserCommunities();
+  }
+
+  get ownedCommunities$(){
+    return this.communityService.getOwnedCommunities();
+  }
+
+  selectCommunity(id: string){
+    this.communityService.fetchCommunity(id);
+  }
 
 }

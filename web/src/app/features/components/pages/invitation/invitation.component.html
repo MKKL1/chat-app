@@ -1,0 +1,7 @@
+<p>invitation works!</p>
+@if (loadedInvitation) {
+  <h1>You were invited to community {{community?.name}} by {{community?.ownerId}}</h1>
+  <button (click)="acceptInvitation()">Accept</button>
+} @else {
+  <mat-spinner></mat-spinner>
+}

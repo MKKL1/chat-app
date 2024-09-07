@@ -4,7 +4,7 @@ import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.compone
 import {MatFabButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
-import {CreateCommunityComponent} from "../../community/create-community/create-community.component";
+import {CreateCommunityComponent} from "../../community/dialogs/create-community/create-community.component";
 import {CommunitiesListComponent} from "../../community/communities-list/communities-list.component";
 import {CommunityService} from "../../../services/community.service";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
@@ -33,12 +33,7 @@ export class CommunityComponent {
     openDialog(){
       const dialogRef = this.dialog.open(CreateCommunityComponent, {width: '60vw'});
       dialogRef.afterClosed().subscribe(result => {
-        console.log("Dialog result: ");
-        console.log(result);
-        this.communityService.createCommunity(result.form).subscribe(res => {
-          console.log("Created community!");
-          console.log(res);
-        });
-      })
+        this.communityService.createCommunity(result.form);
+      });
     }
 }

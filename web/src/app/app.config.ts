@@ -1,21 +1,24 @@
-import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  ErrorHandler,
+  importProvidersFrom,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {provideHttpClient, withInterceptors} from "@angular/common/http";
-import {loggingInterceptor} from "./core/auth/logging.interceptor";
-import {authInterceptor} from "./core/auth/auth.interceptor";
+import {loggingInterceptor} from "./core/interceptors/logging.interceptor";
+import {authInterceptor} from "./core/interceptors/auth.interceptor";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
-import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import {communityReducer} from "./features/store/community/community.reducer";
-import {CommunityEffects} from "./features/store/community/community.effects";
+import {GlobalErrorHandler} from "./core/global.error.handler";
 
 // Using keycloack auth system:
 // 1. Sign up/ sign in in keycloack form after being redirected from angular app
-// 2. Get your user token (I get it from di service in angular app beacuse I don't see any other way
+// 2. Get your user token (I get it from di service in angular app beacuse I don't see any other way)
 // 3. Make request to spring backend (/api/users) with token and username
 // 4. New account is created
 
@@ -43,14 +46,13 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([loggingInterceptor, authInterceptor])),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     importProvidersFrom(KeycloakAngularModule),
     {
         provide: APP_INITIALIZER,
         useFactory: initializeKeycloak,
         multi: true,
         deps: [KeycloakService]
-    },
-    provideStore({communitiesState: communityReducer}),
-    provideEffects([CommunityEffects])
+    }
 ]
 };

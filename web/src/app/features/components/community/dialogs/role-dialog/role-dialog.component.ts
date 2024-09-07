@@ -6,7 +6,7 @@ import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput, MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
-import {FileUploadComponent} from "../../../../shared/ui/file-upload/file-upload.component";
+import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
 
 @Component({
   selector: 'app-role-dialog',

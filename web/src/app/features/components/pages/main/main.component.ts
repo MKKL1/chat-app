@@ -4,6 +4,8 @@ import {AppbarComponent} from "../../../../core/components/appbar/appbar.compone
 import {KeycloakService} from "keycloak-angular";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../../../environment";
+import {UserService} from "../../../services/user.service";
+import {User} from "../../../models/user";
 
 @Component({
   selector: 'app-main',
@@ -17,24 +19,18 @@ import {environment} from "../../../../../environment";
 })
 export class MainComponent implements OnInit {
 
-  constructor(private keycloakService: KeycloakService, private http: HttpClient) {
+  constructor(private userService: UserService, private keycloakService: KeycloakService) {
   }
 
-  // Sending request to backend to create new user
-  // It should be handled entirely by backend, but it's not ready yet
   ngOnInit(): void {
-    this.http.post(
-      environment.api + "users",
-      {username: this.keycloakService.getUsername()})
-      .subscribe(res => {
-        console.log(res);
-      });
+    // after entering part of app available to authorized users
+    // basic data about current user should be saved in service for further use
+    this.userService.fetchUserData();
 
-    // TODO call user service to get user data stored on client side
-    // for now there is no data beside sub id ???
-    this.http.get(environment.api + "users/me").subscribe(res => {
-      console.log(res);
-    })
+    this.keycloakService.getToken().then(token => {
+      console.log(token);
+    });
+
   }
 
 }
