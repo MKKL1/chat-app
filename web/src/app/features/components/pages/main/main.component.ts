@@ -19,31 +19,18 @@ import {User} from "../../../models/user";
 })
 export class MainComponent implements OnInit {
 
-  constructor(private keycloakService: KeycloakService, private http: HttpClient, private userService: UserService) {
+  constructor(private userService: UserService, private keycloakService: KeycloakService) {
   }
 
-  // Sending request to backend to create new user
-  // It should be handled entirely by backend, but it's not ready yet
   ngOnInit(): void {
+    // after entering part of app available to authorized users
+    // basic data about current user should be saved in service for further use
+    this.userService.fetchUserData();
+
     this.keycloakService.getToken().then(token => {
       console.log(token);
     });
 
-    // TODO store user data
-    this.http.post(
-      environment.api + "users",
-      {username: this.keycloakService.getUsername()})
-      .subscribe(res => {
-        console.log(res);
-      });
-
-    // TODO call user service to get user data stored on client side
-    // for now there is no data beside sub id ???
-    this.http.get<User>(environment.api + "users/me").subscribe(
-      (user: User) => {
-        this.userService.setUser(user);
-      }
-    );
   }
 
 }

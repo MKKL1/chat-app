@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
 import {User} from "../models/user";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
+import {KeycloakService} from "keycloak-angular";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {environment} from "../../../environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private readonly api: string = environment.api;
+  private readonly errorStatus: number = 419;
+
   //private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>({description: "", id: 0, imageUrl: "", username: ""});
   private user: User = {
     id: '',
@@ -13,6 +19,9 @@ export class UserService {
     description: "",
     imageUrl: "",
   };
+
+  constructor(private http: HttpClient, private keycloakService: KeycloakService) {
+  }
 
   public getUser(): User {
     return this.user;
@@ -23,5 +32,29 @@ export class UserService {
     this.user = user;
   }
 
-  constructor() { }
+  // why it's fetching sub id instead of name??
+  fetchUserData(){
+      this.http.get<User>(this.api + "users/me").subscribe({
+        next: (user) => {
+          this.setUser(user);
+        },
+        error: (err: HttpErrorResponse) => {
+          // if backend returns error with status 419, it means user is not fully registered yet
+          // to complete registration another request to backend must be sent
+          if(err.status === this.errorStatus){
+            this.registerUser().subscribe(res => {
+              // after registering user, we are trying to
+              // get user data from api once again
+              this.fetchUserData();
+            });
+          }
+        }
+      });
+  }
+
+  registerUser(): Observable<any>{
+    return this.http.post<User>(this.api + "users",
+      {username: this.keycloakService.getUsername()});
+  }
+
 }

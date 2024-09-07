@@ -29,21 +29,21 @@ public class ChannelController {
     @PostMapping("/channels")
     @PreAuthorize("@communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)")
     //TODO Check if user has permission to create channels in community
-    public Mono<ChannelDTO> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO, CurrentUser currentUser) {
-        return Mono.empty();
+    public Mono<Channel> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO, CurrentUser currentUser) {
+        return channelService.createChannel(channelCreateDTO);
     }
 
     @PatchMapping("/channels/{channelId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to edit this channel
-    public Mono<Channel> editChannel(@PathVariable("channelId") Long channelId, @Param("currentUser") CurrentUser currentUser) {
-        return Mono.empty();
+    public Mono<Channel> editChannel(@PathVariable("channelId") Long channelId, Channel channel, @Param("currentUser") CurrentUser currentUser) {
+        return channelService.editChannel(channelId, channel);
     }
 
     @DeleteMapping("/channels/{channelId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to delete this channel
     public Mono<Void> deleteChannel(@PathVariable Long channelId, CurrentUser currentUser) {
-        return Mono.empty();
+        return channelService.deleteChannel(channelId);
     }
 }

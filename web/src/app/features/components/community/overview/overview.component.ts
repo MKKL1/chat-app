@@ -7,7 +7,7 @@ import {MatButton} from "@angular/material/button";
 import {CommunityService} from "../../../services/community.service";
 import {UserService} from "../../../services/user.service";
 import {MatDialog} from "@angular/material/dialog";
-import {GenerateInvitationComponent} from "../modals/generate-invitation/generate-invitation.component";
+import {GenerateInvitationComponent} from "../dialogs/generate-invitation/generate-invitation.component";
 import {environment} from "../../../../../environment";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";

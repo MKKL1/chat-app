@@ -3,8 +3,8 @@ import {MatTableModule} from "@angular/material/table";
 import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
-import {CreateCommunityComponent} from "../modals/create-community/create-community.component";
-import {RoleDialogComponent} from "../role-dialog/role-dialog.component";
+import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
+
 
 export interface Role{
   name: string;

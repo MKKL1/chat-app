@@ -1,4 +1,10 @@
-import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  ErrorHandler,
+  importProvidersFrom,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -8,6 +14,7 @@ import {loggingInterceptor} from "./core/interceptors/logging.interceptor";
 import {authInterceptor} from "./core/interceptors/auth.interceptor";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
+import {GlobalErrorHandler} from "./core/global.error.handler";
 
 // Using keycloack auth system:
 // 1. Sign up/ sign in in keycloack form after being redirected from angular app
@@ -39,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([loggingInterceptor, authInterceptor])),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     importProvidersFrom(KeycloakAngularModule),
     {
         provide: APP_INITIALIZER,

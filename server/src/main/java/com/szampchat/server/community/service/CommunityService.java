@@ -66,7 +66,6 @@ public class CommunityService {
     }
 
 
-    // for now user can join same community two times
     // TODO handle errors
     public Mono<CommunityMember> addMemberToCommunity(Long communityId, Long invitationId, Long userId){
         // check if invitation is valid
@@ -98,6 +97,14 @@ public class CommunityService {
                     .switchIfEmpty(Mono.error(new Exception("User not found")))
                     .flatMap(savedUser -> communityMemberService.create(communityId, savedUser.getId())
                         .then(Mono.just(community)));
+            });
+    }
+
+    public Mono<Community> editCommunity(Long id, Community community){
+        return communityRepository.findById(id)
+            .flatMap(existingCommunity -> {
+                existingCommunity = community;
+               return communityRepository.save(existingCommunity);
             });
     }
 
