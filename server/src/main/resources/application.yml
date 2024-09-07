@@ -28,6 +28,7 @@ spring:
     server:
       port: 7000
       mapping-path: /rsocket  # Defines the RSocket mapping path
+      transport: websocket
 server:
   error:
     include-message: always
