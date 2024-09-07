@@ -39,7 +39,6 @@ public class UserService {
         return findUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }
-
     public Mono<UserDTO> createUser(UserCreateDTO userCreateDTO, UUID currentUserId) {
         //If user doesn't exist, create user
         return findUserIdBySub(currentUserId)

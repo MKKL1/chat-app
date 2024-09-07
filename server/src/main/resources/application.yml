@@ -24,11 +24,14 @@ spring:
     web-application-type: reactive
   webflux:
     base-path: /api
+  rsocket:
+    server:
+      port: 7000
+      mapping-path: /rsocket  # Defines the RSocket mapping path
 server:
   error:
     include-message: always
   port: 8081
-
 
 logging:
   level:

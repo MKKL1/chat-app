@@ -77,6 +77,11 @@
 <!--			<artifactId>mockito-core</artifactId>-->
 <!--			<version>5.12.0</version>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-rsocket</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
