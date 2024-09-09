@@ -39,4 +39,3 @@ logging:
     org:
       springframework:
         security: TRACE
-

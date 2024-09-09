@@ -3,9 +3,16 @@ import {Injectable, OnInit} from '@angular/core';
 // if there are troubles with finding those modules use commands:
 // npm install -D @types/rsocket-core
 // npm install -D @types/rsocket-websocket-client
-
-import {encodeCompositeMetadata, encodeRoute, RSocketClient} from 'rsocket-core';
+import {
+  APPLICATION_JSON, BufferEncoders,
+  encodeBearerAuthMetadata,
+  encodeCompositeMetadata, encodeRoute, JsonSerializer,
+  MESSAGE_RSOCKET_AUTHENTICATION,
+  MESSAGE_RSOCKET_COMPOSITE_METADATA, MESSAGE_RSOCKET_ROUTING,
+  RSocketClient, TEXT_PLAIN
+} from 'rsocket-core';
 import RSocketWebsocketClient from 'rsocket-websocket-client';
+import {KeycloakService} from "keycloak-angular";
 
 // this service is injected in MainComponent.ts
 // which will be created after user sign in/up
@@ -18,13 +25,14 @@ import RSocketWebsocketClient from 'rsocket-websocket-client';
   providedIn: 'root'
 })
 export class RsocketService implements OnInit{
+
   // TODO get localhost:7000 from environment file instead of hard coding it
   // constant storing websocket url
   private readonly websocketUrl: string = 'ws://localhost:7000/rsocket';
 
   private client: RSocketClient<any, any> | undefined;
 
-  constructor() { }
+  constructor(private keycloakService: KeycloakService) { }
 
   ngOnInit() {
   }
@@ -32,8 +40,7 @@ export class RsocketService implements OnInit{
   // this method is used to call service for first time in MainComponent.ts
   public init(){
     console.log("Initializing RSocket client");
-    const client = this.initRSocketClient();
-    this.client = client;
+    this.client = this.initRSocketClient();
     this.connect();
   }
 
@@ -43,26 +50,47 @@ export class RsocketService implements OnInit{
 
   // later we can add json serializer here
   private initRSocketClient() {
+    let idToken = this.keycloakService.getKeycloakInstance().idToken;
+    if(!idToken) {
+      console.error("Not authenticated");
+      return;
+    }
+
     return new RSocketClient({
       transport: new RSocketWebsocketClient({
         url: this.websocketUrl,
-        // only needed with tauri, browser handles websockets by itself
-        wsCreator: (url: any) => {
-          return new WebSocket(url);
-        }
-      }),
+      }, BufferEncoders),
+      // serializers: {
+      //   data:
+      //   metadata: JsonSerializer,
+      // },
       setup: {
-        keepAlive: 1000000,
-        lifetime: 100000,
-        dataMimeType: 'text/plain',
-        metadataMimeType: 'message/x.rsocket.routing.v0'
+        keepAlive: 60000,
+        lifetime: 180000,
+        dataMimeType: APPLICATION_JSON.string,
+        metadataMimeType: MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
+        payload: {
+          metadata: encodeCompositeMetadata([
+            [TEXT_PLAIN, Buffer.from('Hello World')],
+            [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
+          ])
+        },
       }
+
     });
   }
 
   // I write any as type everywhere because for now it's simpler than searching for types in this library
   private connect(){
     if(!this.client){
+      return;
+    }
+
+    const decoder = new TextDecoder();
+
+    let idToken = this.keycloakService.getKeycloakInstance().idToken;
+    if(!idToken) {
+      console.error("Not authenticated");
       return;
     }
 
@@ -74,9 +102,11 @@ export class RsocketService implements OnInit{
         // TODO abstract this to function which can be then used in other parts of app
         // for now it's just to showcase, app run and sends something to backend
         socket.requestStream({
-          // data send to spring
-          data: 'Hello RSocket',
-          metadata: String.fromCharCode('events.stream'.length) + 'events.stream'
+          data: Buffer.from('OK'),
+          metadata: encodeCompositeMetadata([
+            [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
+            [MESSAGE_RSOCKET_ROUTING, encodeRoute('events.stream')]
+          ])
         }).subscribe({
           onComplete: () => {
             console.log("Message send")
@@ -85,7 +115,8 @@ export class RsocketService implements OnInit{
             console.error("RSocket error occured: ", error)
           },
           onNext: (payload: any) => {
-            console.log(payload);
+            const dataAsString = decoder.decode(payload.data);
+            console.log(dataAsString);
           },
           // I don't know why but without it, rsocket won't work
           onSubscribe: (subscription: any) => {

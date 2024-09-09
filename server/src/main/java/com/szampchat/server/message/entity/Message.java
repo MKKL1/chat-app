@@ -1,9 +1,6 @@
 package com.szampchat.server.message.entity;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -12,6 +9,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @Table(name = "messages")
 public class Message {
     @Column("message_id")
