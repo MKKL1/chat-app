@@ -46,6 +46,12 @@ public class CommunityController {
         return communityService.findById(communityId).doOnSuccess(System.out::println);
     }
 
+    @GetMapping("/{communityId}/info")
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
+    public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId, CurrentUser currentUser){
+        return communityService.getFullCommunityInfo(communityId);
+    }
+
     // Maybe instead of dozens of small request it will be better to make
     // huge request which will get all data about community?
     @GetMapping("/{communityId}/members")
@@ -60,22 +66,11 @@ public class CommunityController {
         return communityMemberService.create(communityId, currentUser.getUserId());
     }
 
-    // only for testing
-    @GetMapping("/all")
-    public Flux<Community> getAllCommunities(){
-        return communityService.getAllCommunities();
-    }
-
     @GetMapping()
     public Flux<Community> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
-    // unnecessary - it can be filtered on frontend instead calling api another time
-    @GetMapping("/owned")
-    public Flux<Community> getOwnedCommunities(CurrentUser user){
-        return communityService.getOwnedCommunities(user.getUserId());
-    }
 
     // this endpoint will create link to community which then can be shared with other users to join your community
     @PostMapping("/{communityId}/invite")
@@ -83,11 +78,6 @@ public class CommunityController {
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, @RequestBody CreateInvitationDTO invitationDTO, CurrentUser currentUser){
         return invitationService.createInvitation(communityId, invitationDTO.getDays());
     }
-
-    //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
-    //            To make sure that user used invite link to join this community, invite's id has to be provided with this request
-    //            When invite link expires, the provided id will no longed be valid -> 403 / 404
-    //Maybe invite id should be something less repeatable then snowflake, maybe use uuid
 
     // After getting invitation link user is redirected to page with accept button
     // which will send request to this endpoint after clicking

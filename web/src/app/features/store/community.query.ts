@@ -6,10 +6,10 @@ import {Injectable} from "@angular/core";
 
 @Injectable({ providedIn: 'root' })
 export class CommunityQuery extends Query<CommunityState> {
-  community$: Observable<Community> = this.select(state => state.community);
+  community$: Observable<Community> = this.select(state => state.selectedCommunity);
 
   isCommunitySelected$: Observable<boolean> = this.select(state => {
-    return state.community.id !== '';
+    return state.selectedCommunity.id !== '';
   });
 
   constructor(protected override store: CommunityStore) {

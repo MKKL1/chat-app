@@ -35,7 +35,7 @@ class ChannelServiceTests {
         Long communityId = 3L;
 
         Channel channel = new Channel();
-        channel.setCommunity(communityId);
+        channel.setCommunityId(communityId);
 
         when(channelRepository.findById(eq(channelId)))
                 .thenReturn(Mono.just(channel));
