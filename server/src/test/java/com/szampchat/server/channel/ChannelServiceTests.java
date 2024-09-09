@@ -57,7 +57,7 @@ class ChannelServiceTests {
         Long communityId = 3L;
 
         Channel channel = new Channel();
-        channel.setCommunity(communityId);
+        channel.setCommunityId(communityId);
 
         // Mocking the channel repository to return a channel
         when(channelRepository.findById(eq(channelId)))

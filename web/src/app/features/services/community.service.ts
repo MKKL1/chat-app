@@ -18,10 +18,21 @@ export class CommunityService {
   constructor(private http: HttpClient, private communityStore: CommunityStore, private userService: UserService) { }
 
   fetchCommunity(id: string){
-    this.http.get<Community>(this.apiPath + "/" + id + "/info").subscribe({
-      next: (community: Community) => {
-        console.log(community);
-        this.communityStore.addCommunity(community);
+    this.http.get(this.apiPath + "/" + id + "/info").pipe(
+      map((res: any) => {
+        // maybe map this on backend
+        return {
+          id: res.community.id,
+          name: res.community.name,
+          imageUrl: res.community.imageUrl,
+          ownerId: res.community.ownerId,
+          roles: res.roles,
+          members: res.members,
+          channels: res.channels
+        }
+      })
+    ).subscribe({
+      next: (community) => {
         this.communityStore.selectCommunity(community);
       },
       error: (err) => console.error(err)

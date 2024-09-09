@@ -10,4 +10,7 @@ export interface Community {
   channels: Channel[];
   members: Member[];
   roles: Role[];
+  // channels: [];
+  // members: [];
+  // roles: [];
 }
