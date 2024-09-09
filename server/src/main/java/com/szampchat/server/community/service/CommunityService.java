@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 @Service
 public class CommunityService {
     private final CommunityRepository communityRepository;
-    private final InvitationRepository invitationRepository;
     private final UserService userService;
     private final CommunityMemberService communityMemberService;
     private final Snowflake snowflake;
@@ -50,34 +49,6 @@ public class CommunityService {
 
     public Flux<Community> getOwnedCommunities(Long id){
         return communityRepository.ownedCommunities(id);
-    }
-
-    // Link is create without domain name
-    // I'm not sure if it should be added here or at the frontend
-    public Mono<InvitationResponseDTO> createInvitation(Long id, Integer days){
-        Invitation invitation = Invitation
-                .builder()
-                .communityId(id)
-                .expiredAt(LocalDateTime.now().plusDays(days))
-                .build();
-
-        return invitationRepository.save(invitation)
-                .flatMap(inv -> Mono.just(new InvitationResponseDTO(inv.toLink())));
-    }
-
-
-    // TODO handle errors
-    public Mono<CommunityMember> addMemberToCommunity(Long communityId, Long invitationId, Long userId){
-        // check if invitation is valid
-        // for now link won't be deleted from db after accepting invitation
-        return invitationRepository.isValid(invitationId, communityId).flatMap(isValid -> {
-            if(!isValid) {
-                return Mono.error(new InvalidInvitationException());
-            }
-
-            // add invited user as member of community
-            return communityMemberService.create(communityId, userId);
-        });
     }
 
     // TODO store image url
@@ -108,8 +79,6 @@ public class CommunityService {
             });
     }
 
-    // won't work because of constraints
-    // cannot set cascade deleting because r2dbc
     public Mono<Void> delete(Long id){
         return communityRepository.deleteById(id).doOnSuccess(_ -> System.out.println("Deleted community"));
     }

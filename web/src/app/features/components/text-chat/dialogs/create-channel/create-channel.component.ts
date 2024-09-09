@@ -47,7 +47,7 @@ export class CreateChannelComponent {
   }
 
   createChannel(){
-
+    this.channelService.createChannel(this.channelForm.value);
   }
 
 }

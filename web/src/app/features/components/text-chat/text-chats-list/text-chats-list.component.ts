@@ -5,6 +5,7 @@ import {MatButton} from "@angular/material/button";
 import {MatDialog} from "@angular/material/dialog";
 import {CreateCommunityComponent} from "../../community/dialogs/create-community/create-community.component";
 import {CreateChannelComponent} from "../dialogs/create-channel/create-channel.component";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -12,7 +13,8 @@ import {CreateChannelComponent} from "../dialogs/create-channel/create-channel.c
   imports: [
     MatListModule,
     TextChannelInfoComponent,
-    MatButton
+    MatButton,
+    MatIcon
   ],
   templateUrl: './text-chats-list.component.html',
   styleUrl: './text-chats-list.component.scss'

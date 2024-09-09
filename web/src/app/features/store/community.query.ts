@@ -8,6 +8,10 @@ import {Injectable} from "@angular/core";
 export class CommunityQuery extends Query<CommunityState> {
   community$: Observable<Community> = this.select(state => state.community);
 
+  isCommunitySelected$: Observable<boolean> = this.select(state => {
+    return state.community.id !== '';
+  });
+
   constructor(protected override store: CommunityStore) {
     super(store);
   }

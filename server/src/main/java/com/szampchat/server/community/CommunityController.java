@@ -7,6 +7,7 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.entity.Invitation;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
+import com.szampchat.server.community.service.InvitationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +31,7 @@ import reactor.core.publisher.Mono;
 public class CommunityController {
     private final CommunityService communityService;
     private final CommunityMemberService communityMemberService;
+    private final InvitationService invitationService;
 
 
     // We need another endpoint with community info for user who want to join it
@@ -79,7 +81,7 @@ public class CommunityController {
     @PostMapping("/{communityId}/invite")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, @RequestBody CreateInvitationDTO invitationDTO, CurrentUser currentUser){
-        return communityService.createInvitation(communityId, invitationDTO.getDays());
+        return invitationService.createInvitation(communityId, invitationDTO.getDays());
     }
 
     //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
@@ -94,7 +96,7 @@ public class CommunityController {
     @PostMapping("/{communityId}/join")
     @PreAuthorize("@communityMemberService.isNotMember(#communityId, #currentUser.userId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
-        return communityService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
+        return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
@@ -112,6 +114,6 @@ public class CommunityController {
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return communityService.delete(communityId);
+        return Mono.just(communityId).doFirst(() -> System.out.println("Siema")).flatMap(communityService::delete);
     }
 }

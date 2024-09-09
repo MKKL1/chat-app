@@ -110,7 +110,7 @@ class ChannelServiceTests {
         Channel channel1 = new Channel();
         Channel channel2 = new Channel();
 
-        when(channelRepository.findChannelsByCommunity(eq(communityId)))
+        when(channelRepository.findChannelsByCommunityId(eq(communityId)))
                 .thenReturn(Flux.just(channel1, channel2));
 
         Flux<Channel> result = channelService.findChannelsForCommunity(communityId);

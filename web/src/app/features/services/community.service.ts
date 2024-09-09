@@ -17,17 +17,13 @@ export class CommunityService {
 
   constructor(private http: HttpClient, private communityStore: CommunityStore, private userService: UserService) { }
 
-  // after fetching all records beside first return error
   fetchCommunity(id: string){
-    console.log("id in service: " + id);
     this.http.get<Community>(this.apiPath + "/" + id).subscribe({
       next: (community: Community) => this.communityStore.selectCommunity(community),
       error: (err) => console.error(err)
     });
   }
 
-  // for now backend returns community without owner
-  // communities list has changed id's
   fetchCommunities() {
      this.http.get<Community[]>(this.apiPath
      ).subscribe({
@@ -61,9 +57,11 @@ export class CommunityService {
       );
   }
 
-  // backend don't work yet
+  // handle response -> delete community from list, message, navigate from community etc.
   deleteCommunity(id: string) {
-    return this.http.delete(this.apiPath + "/" + id);
+    return this.http.delete(this.apiPath + "/" + id).subscribe(
+      res => console.log(res)
+    );
   }
 
   createInvitation(id: string, days: number){

@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    mat.$private-use-system-color-variables: true
+  ),
+  //typography: (
+  //  brand-family: 'Comic Sans',
+  //  bold-weight: 900
+  //),
+  //density: (
+  //  scale: -1
+  //)
+));
+
+html {
+  @include mat.all-component-themes($theme);
+}

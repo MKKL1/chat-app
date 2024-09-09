@@ -3,7 +3,7 @@ import {LandingComponent} from "./features/components/pages/landing/landing.comp
 import {LoginComponent} from "./features/components/pages/login/login.component";
 import {RegisterComponent} from "./features/components/pages/register/register.component";
 import {MainComponent} from "./features/components/pages/main/main.component";
-import {AuthGuard} from "./core/auth/auth.guard";
+import {AuthGuard} from "./core/guards/auth.guard";
 import {TextChannelComponent} from "./features/components/pages/text-channel/text-channel.component";
 import {VoiceChannelComponent} from "./features/components/pages/voice-channel/voice-channel.component";
 import {CommunityComponent} from "./features/components/pages/community/community.component";
@@ -13,6 +13,7 @@ import {RolesComponent} from "./features/components/community/roles/roles.compon
 import {UsersListComponent} from "./features/components/community/users-list/users-list.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
+import {communityGuard} from "./core/guards/community.guard";
 
 // train at 21:50
 // bus at 21:04 :(
@@ -42,11 +43,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'text',
-        component: TextChannelComponent
+        component: TextChannelComponent,
+        canActivate: [communityGuard]
       },
       {
         path: 'voice',
-        component: VoiceChannelComponent
+        component: VoiceChannelComponent,
+        canActivate: [communityGuard]
       },
       {
         path: 'communities',
