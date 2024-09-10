@@ -22,8 +22,11 @@ public class ChannelService {
     private final Snowflake snowflake;
 
     //TODO cache it (this method will be called on most api operations)
+    // broken
+    // channelId is null, even though in controller it has proper value
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
+                .doFirst(() -> System.out.println(channelId + " " + userId))
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 

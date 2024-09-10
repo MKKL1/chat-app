@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
-import {CommunityQuery} from "../../../store/community.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 import {Observable} from "rxjs";
 import {Community} from "../../../models/community";
 import {AsyncPipe} from "@angular/common";
@@ -41,7 +41,6 @@ export class OverviewComponent implements OnInit{
 
   ngOnInit() {
     this.communityQuery.community$.subscribe(community => {
-      console.log(community);
       this.community = community;
     });
   }

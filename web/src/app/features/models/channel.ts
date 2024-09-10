@@ -2,5 +2,10 @@ export interface Channel{
   id: string | null;
   name: string;
   communityId: string;
-  type: 'TEXT' | 'VOICE';
+  type: ChannelType;
+}
+
+export enum ChannelType {
+  Text = 0,
+  Voice = 1
 }

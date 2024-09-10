@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>Create new channel</h2>
-<form [formGroup]="channelForm" (ngSubmit)="createChannel()">
+<form [formGroup]="channelForm" (ngSubmit)="submitChannelForm()">
   <mat-dialog-content style="display: flex; flex-direction: column">
     <mat-form-field appearance="outline" style="margin-top: 5px">
       <mat-label>Name</mat-label>
@@ -15,6 +15,15 @@
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button type="submit" [disabled]="channelForm.invalid">Create</button>
+    @if (editing){
+      <button mat-button (click)="deleteChannel(); $event.preventDefault()">Delete</button>
+    }
+    <button mat-button type="submit" [disabled]="channelForm.invalid">
+      @if (loading) {
+        <mat-spinner [diameter]="20"></mat-spinner>
+      } @else {
+        <span>{{ editing ? 'Edit' : 'Create' }}</span>
+      }
+    </button>
   </mat-dialog-actions>
 </form>

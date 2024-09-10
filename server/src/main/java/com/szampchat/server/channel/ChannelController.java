@@ -26,17 +26,18 @@ public class ChannelController {
                 .map(channel -> modelMapper.map(channel, ChannelDTO.class));
     }
 
+    // broken
     @PostMapping("/channels")
-    @PreAuthorize("@communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)")
+    //@PreAuthorize("@communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)")
     //TODO Check if user has permission to create channels in community
     public Mono<Channel> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO, CurrentUser currentUser) {
         return channelService.createChannel(channelCreateDTO);
     }
 
-    @PatchMapping("/channels/{channelId}")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+    @PutMapping("/channels/{channelId}")
+    //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to edit this channel
-    public Mono<Channel> editChannel(@PathVariable("channelId") Long channelId, Channel channel, @Param("currentUser") CurrentUser currentUser) {
+    public Mono<Channel> editChannel(@PathVariable("channelId") Long channelId, @RequestBody Channel channel, @Param("currentUser") CurrentUser currentUser) {
         return channelService.editChannel(channelId, channel);
     }
 

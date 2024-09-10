@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {
   MatAccordion,
   MatExpansionPanel,
@@ -14,6 +14,10 @@ import {MatButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {CreateChannelComponent} from "../../text-chat/dialogs/create-channel/create-channel.component";
+import {ChannelStore} from "../../../store/channel/channel.store";
+import {ChannelQuery} from "../../../store/channel/channel.query";
+import {Channel} from "../../../models/channel";
+import {ChannelService} from "../../../services/channel.service";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -34,25 +38,27 @@ import {CreateChannelComponent} from "../../text-chat/dialogs/create-channel/cre
   templateUrl: './users-list-voice.component.html',
   styleUrl: './users-list-voice.component.scss'
 })
-export class UsersListVoiceComponent {
+export class UsersListVoiceComponent  implements OnInit{
   readonly dialog = inject(MatDialog);
   readonly panelOpenState = signal(false);
 
-  channels: any[] = [
-    {
-      name: "Channel 1",
-      users: [
-        {username: "User 1"},
-        {username: "User 2"},
-        {username: "User 3"}
-      ]
-    },
-    {name: "Channel 2"},
-    {name: "Channel 3"}
-  ];
+  voiceChannels: Channel[] = [];
+
+  constructor(private channelQuery: ChannelQuery, private channelService: ChannelService) {
+  }
+
+  ngOnInit() {
+    this.channelQuery.voiceChannels$.subscribe(channels => {
+      this.voiceChannels = channels;
+    });
+  }
 
   addChannel(){
     const dialogRef = this.dialog.open(CreateChannelComponent, {width: '60vw'});
+  }
+
+  selectChannel(channel: Channel){
+    this.channelService.selectVoiceChannel(channel);
   }
 
 }

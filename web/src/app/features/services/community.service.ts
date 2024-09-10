@@ -4,8 +4,10 @@ import {environment} from "../../../environment";
 import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs";
 import {Community} from "../models/community";
 import {UserService} from "./user.service";
-import {CommunityStore} from "../store/community.store";
+import {CommunityStore} from "../store/community/community.store";
 import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
+import {Channel} from "../models/channel";
+import {ChannelStore} from "../store/channel/channel.store";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,12 @@ export class CommunityService {
 
   private communitiesSubject: BehaviorSubject<Community[]> = new BehaviorSubject<Community[]>([]);
 
-  constructor(private http: HttpClient, private communityStore: CommunityStore, private userService: UserService) { }
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+    private communityStore: CommunityStore,
+    private channelStore: ChannelStore
+  ) { }
 
   fetchCommunity(id: string){
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
@@ -34,6 +41,7 @@ export class CommunityService {
     ).subscribe({
       next: (community) => {
         this.communityStore.selectCommunity(community);
+        this.channelStore.selectChannels(community.channels);
       },
       error: (err) => console.error(err)
     });
