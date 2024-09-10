@@ -60,8 +60,9 @@ export class RsocketService implements OnInit{
       transport: new RSocketWebsocketClient({
         url: this.websocketUrl,
       }, BufferEncoders),
+      //For unknown reason, applying serializers causes client to stop receiving messages (Nothing is showing in console)
       // serializers: {
-      //   data:
+      //   data: JsonSerializer,
       //   metadata: JsonSerializer,
       // },
       setup: {
@@ -86,8 +87,8 @@ export class RsocketService implements OnInit{
       return;
     }
 
-    const decoder = new TextDecoder();
 
+    // Not sure if token has to be provided after setup frame, leaving it for now
     let idToken = this.keycloakService.getKeycloakInstance().idToken;
     if(!idToken) {
       console.error("Not authenticated");
@@ -99,10 +100,10 @@ export class RsocketService implements OnInit{
         // actual code executed after setting up connection starts here
         console.log("Connected with Spring");
 
-        // TODO abstract this to function which can be then used in other parts of app
-        // for now it's just to showcase, app run and sends something to backend
+        // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
+        // TODO handle events based on provided id
         socket.requestStream({
-          data: Buffer.from('OK'),
+          data: Buffer.from('{}'),
           metadata: encodeCompositeMetadata([
             [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
             [MESSAGE_RSOCKET_ROUTING, encodeRoute('events.stream')]
@@ -115,10 +116,12 @@ export class RsocketService implements OnInit{
             console.error("RSocket error occured: ", error)
           },
           onNext: (payload: any) => {
-            const dataAsString = decoder.decode(payload.data);
-            console.log(dataAsString);
+            // const dataAsString = decoder.decode(payload.data);
+            console.log(payload);
           },
-          // I don't know why but without it, rsocket won't work
+
+
+          //How many requests client can handle, when this count runs out, another request should be made
           onSubscribe: (subscription: any) => {
             subscription.request(1000000);
           }
