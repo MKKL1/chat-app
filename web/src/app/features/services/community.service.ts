@@ -8,6 +8,7 @@ import {CommunityStore} from "../store/community/community.store";
 import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 import {Channel} from "../models/channel";
 import {ChannelStore} from "../store/channel/channel.store";
+import {CommunityQuery} from "../store/community/community.query";
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +21,12 @@ export class CommunityService {
   constructor(
     private http: HttpClient,
     private userService: UserService,
+    private communityQuery: CommunityQuery,
     private communityStore: CommunityStore,
     private channelStore: ChannelStore
   ) { }
 
+  // TODO to change community user need to click two times, also it catches community every time
   fetchCommunity(id: string){
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {

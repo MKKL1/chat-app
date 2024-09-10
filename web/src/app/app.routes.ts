@@ -15,8 +15,7 @@ import {ProfileComponent} from "./features/components/pages/profile/profile.comp
 import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
 import {communityGuard} from "./core/guards/community.guard";
 
-// train at 21:50
-// bus at 21:04 :(
+// TODO to select community I need to click it two times, but only when I see all (not only owned)
 
 export const routes: Routes = [
   {
@@ -58,20 +57,6 @@ export const routes: Routes = [
       {
         path: 'communities/details',
         component: CommunityDetailsComponent,
-        children: [
-          {
-            path: 'overview',
-            component: OverviewComponent
-          },
-          {
-            path: 'roles',
-            component: RolesComponent
-          },
-          {
-            path: 'members',
-            component: UsersListComponent
-          }
-        ]
       },
       {
         path: 'profile',

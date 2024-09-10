@@ -12,9 +12,7 @@ export class CommunityQuery extends Query<CommunityState> {
 
   ownerId$: Observable<string> = this.select(state => state.selectedCommunity.ownerId);
 
-  isCommunitySelected$: Observable<boolean> = this.select(state => {
-    return state.selectedCommunity.id !== '';
-  });
+  isCommunitySelected$: Observable<boolean> = this.select(state => state.selectedCommunity.id !== '');
 
   constructor(protected override store: CommunityStore) {
     super(store);

@@ -4,8 +4,8 @@ import {Injectable} from "@angular/core";
 
 export interface ChannelState {
   channels: Channel[];
-  selectedVoiceChannel: Channel | null;
-  selectedTextChannel: Channel | null;
+  selectedVoiceChannel: Channel;
+  selectedTextChannel: Channel;
 }
 
 function createInitState(): ChannelState {

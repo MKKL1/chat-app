@@ -41,10 +41,6 @@ export class CommunityStore extends Store<CommunityState> {
     this.update(state => ({selectedCommunity: community}));
   }
 
-  addCommunity(community: Community){
-    this.update(state => ({communities: [...state.communities, community]}));
-  }
-
   updateCommunity(updatedCommunity: Community){
     this.update(state => ({communities: state.communities.map(community =>
         community.id === updatedCommunity.id ? { ...community, ...updatedCommunity } : community
