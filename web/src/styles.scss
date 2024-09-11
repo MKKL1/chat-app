@@ -16,3 +16,21 @@ body {
 .showOnScroll{
   opacity: 1;
 }
+
+.flex {
+  display: flex;
+}
+
+.align-center{
+  align-items: center;
+}
+
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.w-100{
+  width: 100%;
+}

@@ -35,7 +35,7 @@ class ChannelServiceTests {
         Long communityId = 3L;
 
         Channel channel = new Channel();
-        channel.setCommunity(communityId);
+        channel.setCommunityId(communityId);
 
         when(channelRepository.findById(eq(channelId)))
                 .thenReturn(Mono.just(channel));
@@ -57,7 +57,7 @@ class ChannelServiceTests {
         Long communityId = 3L;
 
         Channel channel = new Channel();
-        channel.setCommunity(communityId);
+        channel.setCommunityId(communityId);
 
         // Mocking the channel repository to return a channel
         when(channelRepository.findById(eq(channelId)))
@@ -110,7 +110,7 @@ class ChannelServiceTests {
         Channel channel1 = new Channel();
         Channel channel2 = new Channel();
 
-        when(channelRepository.findChannelsByCommunity(eq(communityId)))
+        when(channelRepository.findChannelsByCommunityId(eq(communityId)))
                 .thenReturn(Flux.just(channel1, channel2));
 
         Flux<Channel> result = channelService.findChannelsForCommunity(communityId);

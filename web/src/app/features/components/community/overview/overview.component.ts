@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommunityQuery} from "../../../store/community.query";
+import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {CommunityQuery} from "../../../store/community/community.query";
 import {Observable} from "rxjs";
 import {Community} from "../../../models/community";
 import {AsyncPipe} from "@angular/common";

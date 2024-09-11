@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {UsersListComponent} from "../../community/users-list/users-list.component";
 import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.component";
 import {MatFabButton} from "@angular/material/button";
@@ -8,6 +8,8 @@ import {CreateCommunityComponent} from "../../community/dialogs/create-community
 import {CommunitiesListComponent} from "../../community/communities-list/communities-list.component";
 import {CommunityService} from "../../../services/community.service";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
+import {CommunityDetailsComponent} from "../../community/community-details/community-details.component";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-community',
@@ -18,22 +20,26 @@ import {LayoutComponent} from "../../../../core/components/layout/layout.compone
     MatFabButton,
     MatIcon,
     CommunitiesListComponent,
-    LayoutComponent
+    LayoutComponent,
+    CommunityDetailsComponent
   ],
   templateUrl: './community.component.html',
   styleUrl: './community.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CommunityComponent {
+export class CommunityComponent implements OnInit{
     readonly dialog: MatDialog = inject(MatDialog);
+    isCommunitySelected: boolean = false;
 
-    constructor(private communityService: CommunityService) {}
+    constructor(private communityQuery: CommunityQuery) {}
 
-    // TODO specify types and handle response
-    openDialog(){
-      const dialogRef = this.dialog.open(CreateCommunityComponent, {width: '60vw'});
-      dialogRef.afterClosed().subscribe(result => {
-        this.communityService.createCommunity(result.form);
+    ngOnInit() {
+      this.communityQuery.isCommunitySelected$.subscribe(selected => {
+        this.isCommunitySelected = selected;
       });
+    }
+
+  openDialog(){
+      const dialogRef = this.dialog.open(CreateCommunityComponent, {width: '60vw'});
     }
 }

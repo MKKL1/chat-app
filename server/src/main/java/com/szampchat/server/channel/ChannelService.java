@@ -3,10 +3,13 @@ package com.szampchat.server.channel;
 import com.szampchat.server.channel.dto.ChannelCreateDTO;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.repository.ChannelRepository;
+import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,9 +22,12 @@ public class ChannelService {
     private final Snowflake snowflake;
 
     //TODO cache it (this method will be called on most api operations)
+    // broken
+    // channelId is null, even though in controller it has proper value
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
-                .flatMap(channel -> communityMemberService.isMember(channel.getCommunity(), userId));
+                .doFirst(() -> System.out.println(channelId + " " + userId))
+                .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 
     public Mono<Channel> getChannel(Long channelId) {
@@ -29,18 +35,21 @@ public class ChannelService {
     }
 
     public Flux<Channel> findChannelsForCommunity(Long communityId) {
-        return channelRepository.findChannelsByCommunity(communityId);
+        return channelRepository.findChannelsByCommunityId(communityId);
     }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel){
-        return channelRepository.save(
-                Channel.builder()
-                        .id(snowflake.nextId())
+        return channelRepository.doesChannelExist(channel.getName())
+            .flatMap(existingChannel -> existingChannel ?
+                Mono.error(new ChannelAlreadyExistsException()) :
+                channelRepository.save(
+                    Channel.builder()
                         .name(channel.getName())
-                        .community(channel.getCommunityId())
+                        .communityId(channel.getCommunityId())
                         .type(channel.getType().getValue())
                         .build()
-        );
+                    )
+                );
     }
 
     public Mono<Channel> editChannel(Long id, Channel channel){

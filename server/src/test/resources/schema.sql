@@ -6,7 +6,7 @@ create table communities
     name      varchar(255) not null,
     owner_id bigint not null
         constraint fk_communities_on_user
-            references users,
+            references users on delete cascade ,
     image_url varchar(255)
 );
 
@@ -19,7 +19,7 @@ create table channels
     type         smallint     not null,
     community_id bigint       not null
         constraint fk_channels_on_community
-            references communities
+            references communities on delete cascade
 );
 
 create table roles
@@ -31,7 +31,7 @@ create table roles
     permission   bigint       not null,
     community_id bigint       not null
         constraint fk_roles_on_community
-            references communities
+            references communities on delete cascade
 );
 
 create table users
@@ -54,10 +54,10 @@ create table community_members
 (
     community_id bigint not null
         constraint fk_commem_on_community
-            references communities,
+            references communities on delete cascade ,
     user_id      bigint not null
         constraint fk_commem_on_user
-            references users,
+            references users on delete cascade,
     constraint pk_community_members
         primary key (community_id, user_id)
 );
@@ -72,12 +72,12 @@ create table messages
     message_id             bigint       not null,
     channel_id             bigint       not null
         constraint fk_messages_on_channel
-            references channels,
+            references channels on delete cascade ,
     responds_to_message_id bigint,
     constraint pk_messages
         primary key (message_id, channel_id),
     constraint fk_messages_on_retomeidretochid
-        foreign key (responds_to_message_id, channel_id) references messages
+        foreign key (responds_to_message_id, channel_id) references messages on delete cascade
 );
 
 create table message_attachment
@@ -91,7 +91,7 @@ create table message_attachment
     message_id bigint,
     channel_id bigint,
     constraint fk_message_attachment_on_meidchid
-        foreign key (message_id, channel_id) references messages
+        foreign key (message_id, channel_id) references messages on delete cascade
 );
 
 create table reactions
@@ -99,26 +99,26 @@ create table reactions
     emoji       char   not null,
     user_id     bigint not null
         constraint fk_reactions_on_user
-            references users,
+            references users on delete cascade ,
     reaction_id bigint not null,
     channel_id  bigint not null
         constraint fk_reactions_on_channel
-            references channels,
+            references channels on delete cascade ,
     message_id  bigint,
     constraint pk_reactions
         primary key (reaction_id, channel_id),
     constraint fk_reactions_on_meidmechid
-        foreign key (message_id, channel_id) references messages
+        foreign key (message_id, channel_id) references messages on delete cascade
 );
 
 create table user_roles
 (
     role_id bigint not null
         constraint fk_userol_on_role
-            references roles,
+            references roles on delete cascade ,
     user_id bigint not null
         constraint fk_userol_on_user
-            references users,
+            references users on delete cascade ,
     constraint pk_user_roles
         primary key (role_id, user_id)
 );
@@ -127,7 +127,7 @@ create table user_subject
 (
     user_id bigint not null
         constraint user_subject_users_id_fk
-            references users,
+            references users on delete cascade ,
     sub     uuid   not null,
     constraint pk_user_subject
         primary key (user_id, sub)
