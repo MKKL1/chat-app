@@ -2,7 +2,8 @@
   <!-- messages -->
   <div class="messages">
     @for(message of messages; track message){
-      <app-message appFadeInOutScroll class="hideOnScroll"></app-message>
+      <app-message [message]="message" [userId]="userService.getUser().id" (respondsTo)="setResponse($event)"
+                   appFadeInOutScroll class="hideOnScroll"></app-message>
     }
   </div>
   <!-- input for sending message -->
@@ -11,10 +12,16 @@
       <img src='{{selectedGif}}'>
     </div>
   }
+
+  <!-- display message to which user is responding -->
+  @if(responding){
+    <p>{{messageToRespondId?.text}}</p>
+  }
+
   <div class="message-input">
       <!-- preventing from displaying additional margin at bottom (place for hint) -->
       <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
-        <input [(ngModel)]="message" matInput placeholder="Write something here...">
+        <input [(ngModel)]="message" autocomplete="off" matInput placeholder="Write something here...">
       </mat-form-field>
     <!-- make icons prettier -->
     <div class="icons">
@@ -22,7 +29,7 @@
       <mat-icon (click)="triggerFileInput()" fontIcon="attach_file" matTooltip="Choose file to attach"></mat-icon>
       <mat-icon fontIcon="gif" matTooltip="Add gif to message" (click)="toggleGifSearch()"></mat-icon>
       <mat-icon fontIcon="add_reaction" matTooltip="Add emoji to message" (click)="toggleEmojiPicker()"></mat-icon>
-      <mat-icon fontIcon="send" matTooltip="Send message"></mat-icon>
+      <mat-icon (click)="sendMessage()" fontIcon="send" matTooltip="Send message"></mat-icon>
     </div>
   </div>
   @if(showEmojiPicker){

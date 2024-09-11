@@ -8,14 +8,11 @@ import {TextChannelComponent} from "./features/components/pages/text-channel/tex
 import {VoiceChannelComponent} from "./features/components/pages/voice-channel/voice-channel.component";
 import {CommunityComponent} from "./features/components/pages/community/community.component";
 import {CommunityDetailsComponent} from "./features/components/community/community-details/community-details.component";
-import {OverviewComponent} from "./features/components/community/overview/overview.component";
-import {RolesComponent} from "./features/components/community/roles/roles.component";
-import {UsersListComponent} from "./features/components/community/users-list/users-list.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
-import {communityGuard} from "./core/guards/community.guard";
 
 // TODO to select community I need to click it two times, but only when I see all (not only owned)
+// community guard is missing??
 
 export const routes: Routes = [
   {
@@ -42,13 +39,11 @@ export const routes: Routes = [
     children: [
       {
         path: 'text',
-        component: TextChannelComponent,
-        canActivate: [communityGuard]
+        component: TextChannelComponent
       },
       {
         path: 'voice',
-        component: VoiceChannelComponent,
-        canActivate: [communityGuard]
+        component: VoiceChannelComponent
       },
       {
         path: 'communities',

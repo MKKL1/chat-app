@@ -10,7 +10,7 @@ export interface CommunityState {
   selectedCommunity: Community;
 }
 
-export function createInitState(): CommunityState {
+function createInitState(): CommunityState {
   return {
     communities: [],
     selectedCommunity: {
@@ -33,11 +33,11 @@ export class CommunityStore extends Store<CommunityState> {
     super(createInitState());
   }
 
-  // maybe split those methods into seperated files
   // all those functions are shit
   // beside simply updating community I cannot do anything else
   // i must split it into separated stores and handle changes
   selectCommunity(community: Community){
+    console.log("Select community store");
     this.update(state => ({selectedCommunity: community}));
   }
 
@@ -49,14 +49,6 @@ export class CommunityStore extends Store<CommunityState> {
 
   deleteCommunity(id: string){
     this.update(state => ({communities: state.communities.filter(community => community.id !== id)}));
-  }
-
-  setChannels(id: string, channels: Channel[]){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id ? { ...community, channels: [...community.channels, ...channels] } : community
-      )
-    }));
   }
 
   setMembers(id: string, members: Member[]){

@@ -34,3 +34,10 @@ body {
 .w-100{
   width: 100%;
 }
+
+app-emoji-picker, app-gif-search{
+  position: absolute;
+  right: 20px;
+  bottom: 10%;
+  z-index: 100;
+}

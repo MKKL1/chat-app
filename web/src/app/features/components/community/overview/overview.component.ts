@@ -41,6 +41,7 @@ export class OverviewComponent implements OnInit{
 
   ngOnInit() {
     this.communityQuery.community$.subscribe(community => {
+      console.log("select community overview");
       this.community = community;
     });
   }
