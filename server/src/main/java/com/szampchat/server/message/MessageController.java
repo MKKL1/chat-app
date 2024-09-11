@@ -4,6 +4,8 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.EventBus;
 import com.szampchat.server.event.MessageCreateEvent;
+import com.szampchat.server.event.Recipient;
+import com.szampchat.server.event.SendEvent;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
@@ -11,7 +13,6 @@ import com.szampchat.server.message.entity.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 @RestController
 public class MessageController {
     private final MessageService messageService;
+    private final ChannelService channelService; //For test
     private final EventBus eventBus;
 
     @Operation(summary = "Get messages for given channel")
@@ -36,14 +38,22 @@ public class MessageController {
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<MessageDTO> createMessage(@PathVariable Long channelId, MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
-        return Mono.fromRunnable(() -> eventBus.publish(MessageCreateEvent.builder()
-                        .message(Message.builder()
-                                .id(123L)
-                                .text("ADD")
-                                .user(currentUser.getUserId())
-                                .channel(channelId)
-                                .build())
-                .build()));
+        //TODO replace with actual message creation
+        return channelService.getChannel(channelId)
+                .map(channel -> {
+                    MessageDTO message = MessageDTO.builder() //TODO Use data from messageCreateDTO...
+                            .id(123L)
+                            .text("TEST TEXT")
+                            .user(currentUser.getUserId())
+                            .channel(channelId)
+                            .build();
+                    eventBus.publish(MessageCreateEvent.builder()
+                            .data(message)
+                            .recipient(Recipient.toCommunity(channel.getCommunity()))
+                            .build());
+
+                    return message;
+                });
     }
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")

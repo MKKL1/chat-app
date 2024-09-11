@@ -34,13 +34,16 @@ public class RSocketConfiguration {
         return rsocket.build();
     }
 
+    //Not needed probably
     private JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager() {
         JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager = new JwtReactiveAuthenticationManager(reactiveJwtDecoder);
 
         JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
         jwtReactiveAuthenticationManager.setJwtAuthenticationConverter(customJwtAuthenticationConverter);
         return jwtReactiveAuthenticationManager;
     }

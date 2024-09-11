@@ -1,8 +1,6 @@
 package com.szampchat.server.event;
 
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Scheduler;
@@ -15,14 +13,14 @@ public class EventBus {
     private final Scheduler scheduler = Schedulers.boundedElastic();
 
     private final Sinks.EmitFailureHandler emitFailureHandler = (_, emitResult) -> emitResult.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
-    private final Sinks.Many<AbstractEvent> events = Sinks.many().multicast().onBackpressureBuffer(bufferSize, false);
+    private final Sinks.Many<SendEvent<?>> events = Sinks.many().multicast().onBackpressureBuffer(bufferSize, false);
 
-    public void publish(AbstractEvent event) {
-        log.debug(STR."Publishing event \{event}");
+    public void publish(SendEvent<?> event) {
+        log.debug("Publishing event {}", event);
         events.emitNext(event, emitFailureHandler);
     }
 
-    public <E extends AbstractEvent> Flux<E> on(Class<E> clazz) {
+    public <E extends SendEvent<?>> Flux<E> on(Class<E> clazz) {
         return events.asFlux().publishOn(scheduler).ofType(clazz);
     }
 }

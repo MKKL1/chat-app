@@ -88,6 +88,8 @@ export class RsocketService implements OnInit{
     }
 
 
+    let decoder = new TextDecoder();
+
     // Not sure if token has to be provided after setup frame, leaving it for now
     let idToken = this.keycloakService.getKeycloakInstance().idToken;
     if(!idToken) {
@@ -106,7 +108,7 @@ export class RsocketService implements OnInit{
           data: Buffer.from('{}'),
           metadata: encodeCompositeMetadata([
             [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
-            [MESSAGE_RSOCKET_ROUTING, encodeRoute('events.stream')]
+            [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657983/messages')]
           ])
         }).subscribe({
           onComplete: () => {
@@ -116,8 +118,8 @@ export class RsocketService implements OnInit{
             console.error("RSocket error occured: ", error)
           },
           onNext: (payload: any) => {
-            // const dataAsString = decoder.decode(payload.data);
-            console.log(payload);
+            const dataAsString = decoder.decode(payload.data);
+            console.log(dataAsString);
           },
 
 
