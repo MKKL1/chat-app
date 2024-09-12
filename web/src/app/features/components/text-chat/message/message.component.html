@@ -1,9 +1,9 @@
 <div class="message-container" [ngStyle]="fromClient ? {'align-items': 'flex-end'} : {'align-items': 'flex-start'}">
-  <p>user {{message.updatedAt.toDateString()}} {{message?.edited ? '(edited)' : ''}}</p>
+  <p>user {{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>
   <div class="message-wrapper" [ngStyle]="fromClient ? {'flex-direction': 'row-reverse'} : {'flex-direction': 'row'}">
     <app-avatar></app-avatar>
     <div class="message-content" [ngStyle]="fromClient ? {'background': '#13574f'} : {'background': '#565656'}">
-      {{message?.text}}
+      {{message.text}}
     </div>
     <!--  Menu with additional actions  -->
     <div class="message-menu">
