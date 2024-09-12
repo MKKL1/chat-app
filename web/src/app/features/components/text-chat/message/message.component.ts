@@ -3,13 +3,13 @@ import {MatIcon} from "@angular/material/icon";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIconButton} from "@angular/material/button";
 import {NgClass, NgStyle} from "@angular/common";
-import {AvatarComponent} from "../../../../core/components/avatar/avatar.component";
 import {Message} from "../../../models/message";
 import {MessageService} from "../../../services/message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EditMessageComponent} from "../dialogs/edit-message/edit-message.component";
 import {DeleteMessageComponent} from "../dialogs/delete-message/delete-message.component";
 import {EmojiPickerComponent} from "../../../../shared/ui/emoji-picker/emoji-picker.component";
+import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 
 @Component({
   selector: 'app-message',

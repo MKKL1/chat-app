@@ -59,4 +59,16 @@ public class UserService {
                 .map(savedUser -> modelMapper.map(savedUser, UserDTO.class));
 
     }
+
+    Mono<UserDTO> editAvatar(){
+        return Mono.empty();
+    }
+
+    Mono<UserDTO> editDescription(String description, Long id){
+        return Mono.empty();
+    }
+
+    Mono<Void> deleteUser(Long id){
+        return userRepository.deleteById(id);
+    }
 }

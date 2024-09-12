@@ -1,3 +1,36 @@
-<p>profile works!</p>
-<button (click)="openUserSettings()">Open user settings</button>
-<button (click)="logout()">Logout</button>
+<!-- Change colors -->
+<!-- And layout -->
+<!-- And do something with avatar -->
+
+<!-- User avatar and name -->
+<mat-card>
+  <mat-card-header>
+    <h2>{{username}}</h2>
+  </mat-card-header>
+  <mat-card-content>
+    <app-avatar (click)="editAvatar()"></app-avatar>
+    <button mat-flat-button (click)="openUserSettings()">Open user settings</button>
+  </mat-card-content>
+</mat-card>
+
+<!-- Changing description -->
+<mat-card>
+  <mat-card-header>
+    <h2>Change your description</h2>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field appearance="outline" style="margin-top: 5px">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="userDescription"></textarea>
+    </mat-form-field>
+    <button mat-button>Save</button>
+  </mat-card-content>
+</mat-card>
+
+<!-- Logout and delete account -->
+<mat-card>
+  <mat-card-content>
+    <app-button-danger (click)="logout()">Logout</app-button-danger>
+    <app-button-danger (click)="deleteAccount()">Delete account</app-button-danger>
+  </mat-card-content>
+</mat-card>
