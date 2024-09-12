@@ -108,7 +108,7 @@ export class RsocketService implements OnInit{
           data: Buffer.from('{}'),
           metadata: encodeCompositeMetadata([
             [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
-            [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657983/messages')]
+            [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657984/messages')]
           ])
         }).subscribe({
           onComplete: () => {

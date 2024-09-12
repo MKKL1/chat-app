@@ -20,6 +20,6 @@ public class RSocketPrincipalProvider {
                 .map(context -> context.getAuthentication().getPrincipal())
                 .filter(principal -> principal instanceof Jwt)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Not jwt"))) //Not sure if it is even possible to happen
-                .flatMap(jwt -> customJwtAuthenticationConverter.convert((Jwt) jwt));
+                .flatMap(jwt -> customJwtAuthenticationConverter.convert((Jwt) jwt)); //Shows that jwt could be null, but it is checked above
     }
 }

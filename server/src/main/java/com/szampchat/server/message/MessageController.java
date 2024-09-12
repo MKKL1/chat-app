@@ -2,14 +2,12 @@ package com.szampchat.server.message;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.event.EventBus;
+import com.szampchat.server.event.MessageEventBus;
 import com.szampchat.server.event.MessageCreateEvent;
 import com.szampchat.server.event.Recipient;
-import com.szampchat.server.event.SendEvent;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
-import com.szampchat.server.message.entity.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
@@ -24,7 +22,7 @@ import reactor.core.publisher.Mono;
 public class MessageController {
     private final MessageService messageService;
     private final ChannelService channelService; //For test
-    private final EventBus eventBus;
+    private final MessageEventBus messageEventBus;
 
     @Operation(summary = "Get messages for given channel")
     @GetMapping("/channels/{channelId}/messages")
@@ -47,9 +45,9 @@ public class MessageController {
                             .user(currentUser.getUserId())
                             .channel(channelId)
                             .build();
-                    eventBus.publish(MessageCreateEvent.builder()
+                    messageEventBus.publish(MessageCreateEvent.builder()
                             .data(message)
-                            .recipient(Recipient.toCommunity(channel.getCommunity()))
+                            .recipient(Recipient.fromCommunity(channel.getCommunity()))
                             .build());
 
                     return message;
