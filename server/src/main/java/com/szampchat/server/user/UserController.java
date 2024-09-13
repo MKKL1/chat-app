@@ -3,6 +3,7 @@ package com.szampchat.server.user;
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.dto.UserDTO;
+import com.szampchat.server.user.dto.UserDescriptionDTO;
 import com.szampchat.server.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -37,5 +38,23 @@ public class UserController {
         return userService.findUser(userId)
                 .switchIfEmpty(Mono.error(new UserNotFoundException()))
                 .map(user -> modelMapper.map(user, UserDTO.class));
+    }
+
+    // What if user changes his name in keycloak panel?
+
+    @PatchMapping("/users/avatar")
+    public Mono<UserDTO> editAvatar(){
+        return Mono.empty();
+    }
+
+    @PatchMapping("/users/description")
+    public Mono<UserDTO> editDescription(UserDescriptionDTO descriptionDTO, CurrentUser user){
+        return userService.editDescription(descriptionDTO.description(), user.getUserId());
+    }
+
+    // user also need to be deleted in keycloak
+    @DeleteMapping("/users")
+    public Mono<Void> deleteUser(CurrentUser user){
+        return userService.deleteUser(user.getUserId());
     }
 }

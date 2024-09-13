@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Edit your message</h2>
+<form [formGroup]="messageForm" (ngSubmit)="submitMessage()">
+  <mat-dialog-content style="display: flex; flex-direction: column">
+    <mat-form-field appearance="outline" style="margin-top: 5px">
+      <mat-label>Message text</mat-label>
+      <textarea matInput formControlName="text"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button type="submit" [disabled]="messageForm.invalid">
+      Edit message
+    </button>
+  </mat-dialog-actions>
+</form>

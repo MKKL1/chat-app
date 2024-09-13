@@ -9,7 +9,7 @@ import {environment} from "../../../environment";
   providedIn: 'root'
 })
 export class UserService {
-  private readonly api: string = environment.api;
+  private readonly api: string = environment.api + "users";
   private readonly errorStatus: number = 419;
 
   //private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>({description: "", id: 0, imageUrl: "", username: ""});
@@ -34,7 +34,7 @@ export class UserService {
 
   // why it's fetching sub id instead of name??
   fetchUserData(){
-      this.http.get<User>(this.api + "users/me").subscribe({
+      this.http.get<User>(this.api + "/me").subscribe({
         next: (user) => {
           this.setUser(user);
         },
@@ -53,8 +53,23 @@ export class UserService {
   }
 
   registerUser(): Observable<any>{
-    return this.http.post<User>(this.api + "users",
+    return this.http.post<User>(this.api,
       {username: this.keycloakService.getUsername()});
+  }
+
+  editDescription(description: string){
+    return this.http.patch<User>(this.api, {description: description});
+  }
+
+  // todo implement when handling files on backend will be ready
+  editAvatar(){
+
+  }
+
+  deleteAccount(){
+    this.http.delete(this.api).subscribe(res => {
+      this.keycloakService.logout();
+    });
   }
 
 }

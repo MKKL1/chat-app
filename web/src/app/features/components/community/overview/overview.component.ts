@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {CommunityQuery} from "../../../store/community/community.query";
 import {Observable} from "rxjs";
 import {Community} from "../../../models/community";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {CommunityService} from "../../../services/community.service";
 import {UserService} from "../../../services/user.service";
@@ -20,28 +20,33 @@ import {MatSnackBar} from "@angular/material/snack-bar";
     AsyncPipe,
     MatButton,
     MatIcon,
-    MatTooltip
+    MatTooltip,
+    NgIf
   ],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss'
 })
+
+// changes in this component are messed up
+// maybe turn it back into routes?
+
 export class OverviewComponent implements OnInit{
   readonly dialog: MatDialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
-  community: Community | undefined;
+  selectedCommunity: Community | undefined;
   linkCreated: boolean = false;
   link: string | undefined;
 
   constructor(
-    private communityQuery: CommunityQuery,
+    protected communityQuery: CommunityQuery,
     private communityService: CommunityService,
     protected userService: UserService) {
   }
 
   ngOnInit() {
     this.communityQuery.community$.subscribe(community => {
-      this.community = community;
+      this.selectedCommunity = community;
     });
   }
 
@@ -61,11 +66,13 @@ export class OverviewComponent implements OnInit{
   }
 
   createInvitation(days: number){
-    if(this.community?.id){
-      this.communityService.createInvitation(this.community?.id, days).subscribe({
+    if(this.selectedCommunity?.id){
+      this.communityService.createInvitation(this.selectedCommunity?.id, days).subscribe({
         next: res => {
+          console.log(res.link);
           this.link = environment.domain + res.link;
           this.linkCreated = true;
+          console.log(this.linkCreated);
         },
         error: err => {console.log(err)}
       });
