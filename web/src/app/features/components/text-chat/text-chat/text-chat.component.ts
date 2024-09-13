@@ -16,6 +16,7 @@ import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 import {UserService} from "../../../services/user.service";
+import {MessageInputComponent} from "../message-input/message-input.component";
 
 // maybe split it into component with messages to read, and component with input to create new message
 
@@ -32,7 +33,8 @@ import {UserService} from "../../../services/user.service";
     FormsModule,
     MessageComponent,
     GifSearchComponent,
-    FadeInOutScrollDirective
+    FadeInOutScrollDirective,
+    MessageInputComponent
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
@@ -41,21 +43,10 @@ export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
   messages: Message[] = [];
 
-  message: string = '';
-
-  responding: boolean = false;
-  messageToRespondId?: { id: string, text: string };
-
-  selectedFile: File | null = null;
-  fileName: string | null = null;
-  selectedGif: string = '';
-
-  showEmojiPicker: boolean = false;
-  showGifSearch: boolean = false;
+  messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
     protected userService: UserService,
-    private messageService: MessageService,
     private channelQuery: ChannelQuery,
     private messageQuery: MessageQuery
   ) {}
@@ -72,70 +63,8 @@ export class TextChatComponent implements OnInit{
     });
   }
 
-  sendMessage(){
-    if(this.message.length === 0){
-      return;
-    }
-
-    const messageDTO: CreateMessageDto = {
-      channelId: this.channel.id ?? '',
-      userId: this.userService.getUser().id,
-      text: this.message
-    };
-
-    // if created message responds to another message
-    // add id od this message
-    if(this.messageToRespondId !== undefined){
-
-    }
-
-    this.messageService.sendMessage(messageDTO, this.selectedFile);
-
-    this.message = '';
-  }
-
-  onFileSelected(event: Event){
-    // handle attaching file
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-    }
-  }
-
-  triggerFileInput(): void{
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.click();
-  }
-
   setResponse(event: { id: string, text: string }){
-    this.responding = true;
-    this.messageToRespondId = event;
-  }
-
-  appendEmojiToInputField(emoji: string){
-    this.message += emoji;
-  }
-
-  toggleEmojiPicker(){
-    this.showEmojiPicker = !this.showEmojiPicker;
-  }
-
-  closeEmojiPicker(){
-    this.showEmojiPicker = false;
-  }
-
-  selectGif(gifUrl: string){
-    console.log(gifUrl);
-    this.selectedGif = gifUrl;
-  }
-
-  toggleGifSearch(){
-    this.showGifSearch = !this.showGifSearch;
-  }
-
-  closeGifSearch(){
-    this.showGifSearch = false;
+    this.messageToRespond = event;
   }
 
 }

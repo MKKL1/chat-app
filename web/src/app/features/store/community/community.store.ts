@@ -37,7 +37,6 @@ export class CommunityStore extends Store<CommunityState> {
   // beside simply updating community I cannot do anything else
   // i must split it into separated stores and handle changes
   selectCommunity(community: Community){
-    console.log("Select community store");
     this.update(state => ({selectedCommunity: community}));
   }
 

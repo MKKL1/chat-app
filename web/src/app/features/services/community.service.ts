@@ -28,7 +28,6 @@ export class CommunityService {
 
   // TODO to change community user need to click two times, also it catches community every time
   fetchCommunity(id: string){
-    console.log("Select community service");
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
         // maybe map this on backend

@@ -10,6 +10,7 @@ import {CommunityComponent} from "./features/components/pages/community/communit
 import {CommunityDetailsComponent} from "./features/components/community/community-details/community-details.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
+import {communityGuard} from "./core/guards/community.guard";
 
 // TODO to select community I need to click it two times, but only when I see all (not only owned)
 // community guard is missing??
@@ -39,11 +40,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'text',
-        component: TextChannelComponent
+        component: TextChannelComponent,
+        canActivate: [communityGuard]
       },
       {
         path: 'voice',
-        component: VoiceChannelComponent
+        component: VoiceChannelComponent,
+        canActivate: [communityGuard]
       },
       {
         path: 'communities',
