@@ -7,6 +7,7 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.entity.Invitation;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
+import com.szampchat.server.community.service.InvitationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +31,7 @@ import reactor.core.publisher.Mono;
 public class CommunityController {
     private final CommunityService communityService;
     private final CommunityMemberService communityMemberService;
+    private final InvitationService invitationService;
 
 
     // We need another endpoint with community info for user who want to join it
@@ -42,6 +44,12 @@ public class CommunityController {
     @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Mono<Community> getCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
         return communityService.findById(communityId).doOnSuccess(System.out::println);
+    }
+
+    @GetMapping("/{communityId}/info")
+    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
+    public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId, CurrentUser currentUser){
+        return communityService.getFullCommunityInfo(communityId);
     }
 
     // Maybe instead of dozens of small request it will be better to make
@@ -58,34 +66,18 @@ public class CommunityController {
         return communityMemberService.create(communityId, currentUser.getUserId());
     }
 
-    // only for testing
-    @GetMapping("/all")
-    public Flux<Community> getAllCommunities(){
-        return communityService.getAllCommunities();
-    }
-
     @GetMapping()
     public Flux<Community> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
-    // unnecessary - it can be filtered on frontend instead calling api another time
-    @GetMapping("/owned")
-    public Flux<Community> getOwnedCommunities(CurrentUser user){
-        return communityService.getOwnedCommunities(user.getUserId());
-    }
 
     // this endpoint will create link to community which then can be shared with other users to join your community
     @PostMapping("/{communityId}/invite")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, @RequestBody CreateInvitationDTO invitationDTO, CurrentUser currentUser){
-        return communityService.createInvitation(communityId, invitationDTO.getDays());
+        return invitationService.createInvitation(communityId, invitationDTO.getDays());
     }
-
-    //First idea: User is shown a form when they click invite link, then when button is pressed, request is sent to this endpoint
-    //            To make sure that user used invite link to join this community, invite's id has to be provided with this request
-    //            When invite link expires, the provided id will no longed be valid -> 403 / 404
-    //Maybe invite id should be something less repeatable then snowflake, maybe use uuid
 
     // After getting invitation link user is redirected to page with accept button
     // which will send request to this endpoint after clicking
@@ -94,7 +86,7 @@ public class CommunityController {
     @PostMapping("/{communityId}/join")
     @PreAuthorize("@communityMemberService.isNotMember(#communityId, #currentUser.userId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
-        return communityService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
+        return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
@@ -112,6 +104,6 @@ public class CommunityController {
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return communityService.delete(communityId);
+        return Mono.just(communityId).doFirst(() -> System.out.println("Siema")).flatMap(communityService::delete);
     }
 }

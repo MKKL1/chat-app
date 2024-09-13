@@ -11,6 +11,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @EnableWebFluxSecurity
+@EnableScheduling
 @Configuration
 @EnableReactiveMethodSecurity
 @AllArgsConstructor

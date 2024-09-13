@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CommunityService} from "../../../services/community.service";
-import {CommunityQuery} from "../../../store/community.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 import {Community} from "../../../models/community";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 

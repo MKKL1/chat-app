@@ -1,20 +1,13 @@
 <div>
-  <app-layout>
-    <div sidebar>
-      <mat-list>
-        <mat-list-item routerLink="/app/communities/details/overview" routerLinkActive="active">
-          Overview
-        </mat-list-item>
-        <mat-list-item routerLink="/app/communities/details/roles" routerLinkActive="active">
-          Roles
-        </mat-list-item>
-        <mat-list-item routerLink="/app/communities/details/members" routerLinkActive="active">
-          Members
-        </mat-list-item>
-      </mat-list>
-    </div>
-    <div content style="width: 100%; margin: 20px;">
-      <router-outlet></router-outlet>
-    </div>
-  </app-layout>
+  <mat-tab-group>
+    <mat-tab label="Overview">
+      <app-overview></app-overview>
+    </mat-tab>
+    <mat-tab label="Roles">
+      <app-roles></app-roles>
+    </mat-tab>
+    <mat-tab label="Members">
+      <app-users-list></app-users-list>
+    </mat-tab>
+  </mat-tab-group>
 </div>

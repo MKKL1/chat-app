@@ -22,8 +22,10 @@ public class Channel {
     private String name;
 
     @Column("community_id")
-    private Long community;
+    private Long communityId;
 
+    // 0 - text
+    // 1 - voice
     @Column("type")
     private Byte type;
 

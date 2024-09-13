@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AvatarComponent} from "../avatar/avatar.component";
+import {AvatarComponent} from "../../../shared/ui/avatar/avatar.component";
 
 @Component({
   selector: 'app-user-basic-info',

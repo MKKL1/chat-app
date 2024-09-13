@@ -1,12 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+
+@include mat.core();
 
 html, body { height: 100%; }
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  // make theme for app
   color: black;
 }
+
+// defining app theme
+$material-app-theme: mat.define-theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+        use-system-variables: true,
+      ),
+      typography: (
+        use-system-variables: true,
+      ),
+      density: (
+        scale: 0,
+      ),
+    )
+);
+
+
+:root {
+  @include mat.all-component-themes($material-app-theme);
+  @include mat.system-level-colors($material-app-theme);
+  @include mat.system-level-typography($material-app-theme);
+}
+// end of theme
+
+
 
 .hideOnScroll{
   opacity: 0;
@@ -15,4 +45,29 @@ body {
 
 .showOnScroll{
   opacity: 1;
+}
+
+.flex {
+  display: flex;
+}
+
+.align-center{
+  align-items: center;
+}
+
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.w-100{
+  width: 100%;
+}
+
+app-emoji-picker, app-gif-search{
+  position: absolute;
+  right: 20px;
+  bottom: 10%;
+  z-index: 100;
 }

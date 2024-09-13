@@ -2,9 +2,9 @@ import {Component, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import {MatNavList} from "@angular/material/list";
 import {KeycloakService} from "keycloak-angular";
-import {AvatarComponent} from "../../../../core/components/avatar/avatar.component";
 import {MatChip, MatChipSet} from "@angular/material/chips";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
+import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 
 
 @Component({

@@ -8,6 +8,7 @@ import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
+import {ChannelQuery} from "../../../store/channel/channel.query";
 
 @Component({
   selector: 'app-text-channel',
@@ -25,32 +26,12 @@ import {LayoutComponent} from "../../../../core/components/layout/layout.compone
   templateUrl: './text-channel.component.html',
   styleUrl: './text-channel.component.scss'
 })
-export class TextChannelComponent implements OnInit{
-  @ViewChild(MatSidenav)
-  sidenav!: MatSidenav;
-  isMobile= true;
-  isCollapsed = true;
+export class TextChannelComponent{
+  isChannelSelected: boolean = false;
 
-
-  constructor(private observer: BreakpointObserver) {}
-
-  ngOnInit() {
-    this.observer.observe(['(max-width: 800px)']).subscribe((screenSize) => {
-      if(screenSize.matches){
-        this.isMobile = true;
-      } else {
-        this.isMobile = false;
-      }
+  constructor(private channelQuery: ChannelQuery) {
+    this.channelQuery.isTextChannelSelected$.subscribe(isSelected => {
+      this.isChannelSelected = isSelected;
     });
-  }
-
-  toggleMenu() {
-    if(this.isMobile){
-      this.sidenav.toggle();
-      this.isCollapsed = false; // On mobile, the menu can never be collapsed
-    } else {
-      this.sidenav.open(); // On desktop/tablet, the menu can never be fully closed
-      this.isCollapsed = !this.isCollapsed;
-    }
   }
 }

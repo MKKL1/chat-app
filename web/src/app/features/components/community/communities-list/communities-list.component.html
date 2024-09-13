@@ -1,13 +1,13 @@
-<!-- Make dark theme here -->
-<mat-tab-group>
-  <mat-tab label="All">
-    <div *ngFor="let community of communities$ | async" class="communities">
-      <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
-    </div>
-  </mat-tab>
-  <mat-tab label="Owned">
-    <div *ngFor="let community of ownedCommunities$ | async" class="communities">
-      <app-community-card (click)="selectCommunity(community.id)" [community]="community" routerLink="/app/communities/details/overview"></app-community-card>
-    </div>
-  </mat-tab>
-</mat-tab-group>
+<mat-button-toggle-group style="margin: 20px;" name="showOnlyOwned" aria-label="Show only owned" (change)="onToggleChange($event.value)">
+  <mat-button-toggle value="all">All</mat-button-toggle>
+  <mat-button-toggle value="owned">Only owned</mat-button-toggle>
+</mat-button-toggle-group>
+@if (showOnlyOwned){
+  <div *ngFor="let community of ownedCommunities$ | async" class="communities">
+    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>
+  </div>
+} @else {
+  <div *ngFor="let community of communities$ | async" class="communities">
+    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>
+  </div>
+}

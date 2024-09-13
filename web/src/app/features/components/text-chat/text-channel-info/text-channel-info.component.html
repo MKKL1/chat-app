@@ -1,4 +1,5 @@
 <mat-list-item (click)="changeTextChannel()">
-  <span matListItemTitle>{{ channelName }}</span>
+  <span matListItemTitle>{{ channel?.name }}
+  </span>
   <span matListItemLine>{{username}}: {{message | short}} {{date | date}}</span>
 </mat-list-item>

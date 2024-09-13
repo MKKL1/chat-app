@@ -1,6 +1,12 @@
 <mat-list>
+  <div>
+    <button (click)="addChannel()" mat-button>Add new channel <mat-icon fontIcon="add"></mat-icon></button>
+  </div>
+
   @for(channel of textChannels; track channel){
-    <app-text-channel-info></app-text-channel-info>
+    <div style="display: flex; flex-direction: row; align-items: center">
+      <app-text-channel-info (click)="selectChannel(channel)" [channel]="channel"></app-text-channel-info>
+      <button *appIsOwner (click)="editChannel(channel)" mat-icon-button><mat-icon fontIcon="edit"></mat-icon></button>
+    </div>
   }
-  <button (click)="addChannel()" mat-button>Add channel</button>
 </mat-list>

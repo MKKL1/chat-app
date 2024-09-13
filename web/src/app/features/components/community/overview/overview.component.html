@@ -1,4 +1,5 @@
 <!-- Add css later -->
+<div *ngIf="communityQuery.community$ | async as community">
 <p>overview works! {{ community?.id }} | {{ community?.name }}</p>
 @if(userService.getUser().id === community?.ownerId){
   <button mat-flat-button (click)="deleteCommunity(community?.id)">Delete community</button>
@@ -9,3 +10,4 @@
     </div>
   }
 }
+</div>

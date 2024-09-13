@@ -37,14 +37,13 @@ import {CommunityService} from "../../../../services/community.service";
 })
 export class CreateCommunityComponent {
   communityForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    //entryCode: new FormControl('', Validators.required)
+    name: new FormControl('', Validators.required)
   });
 
   file: File | undefined;
 
-  constructor(public dialogRef: MatDialogRef<CreateCommunityComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+  constructor(private communityService: CommunityService,
+    public dialogRef: MatDialogRef<CreateCommunityComponent>) {
   }
 
   setFile(file: File){
@@ -52,9 +51,9 @@ export class CreateCommunityComponent {
   }
 
   closeDialog(): void {
-    this.dialogRef.close({
-      file: this.file,
-      form: this.communityForm.value
-    });
+    if(typeof this.communityForm.value.name === 'string'){
+      this.communityService.createCommunity({name: this.communityForm.value.name});
+    }
+    this.dialogRef.close();
   }
 }
