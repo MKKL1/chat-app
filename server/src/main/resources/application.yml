@@ -26,8 +26,8 @@ spring:
     base-path: /api
   rsocket:
     server:
-      port: 7000
-      mapping-path: /rsocket  # Defines the RSocket mapping path
+      port: 8083
+      mapping-path: /events
       transport: websocket
   jackson:
     default-property-inclusion: NON_NULL
@@ -35,8 +35,8 @@ server:
   error:
     include-message: always
   port: 8081
-logging:
-  level:
-    org:
-      springframework:
-        security: TRACE
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: TRACE

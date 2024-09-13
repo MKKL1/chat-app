@@ -27,8 +27,12 @@ import {KeycloakService} from "keycloak-angular";
 export class RsocketService implements OnInit{
 
   // TODO get localhost:7000 from environment file instead of hard coding it
-  // constant storing websocket url
-  private readonly websocketUrl: string = 'ws://localhost:7000/rsocket';
+  // constant storing websocket ur
+  private readonly websocketUrl: string = 'ws://localhost:8083/events';
+
+  //Magical number representing maximal number of request client can make
+  // Probably should be lower to make use of backpressure
+  private readonly requestCount: number = 2147483647;
 
   private client: RSocketClient<any, any> | undefined;
 
@@ -50,6 +54,7 @@ export class RsocketService implements OnInit{
 
   // later we can add json serializer here
   private initRSocketClient() {
+    //TODO idToken doesn't refresh/expires when page is not reloaded for long time?
     let idToken = this.keycloakService.getKeycloakInstance().idToken;
     if(!idToken) {
       console.error("Not authenticated");
@@ -72,13 +77,16 @@ export class RsocketService implements OnInit{
         metadataMimeType: MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         payload: {
           metadata: encodeCompositeMetadata([
-            [TEXT_PLAIN, Buffer.from('Hello World')],
+            // [TEXT_PLAIN, Buffer.from('Hello World')],
             [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
           ])
         },
       }
 
     });
+  }
+
+  public requestStream(path: string) { // out event stream or somethign
   }
 
   // I write any as type everywhere because for now it's simpler than searching for types in this library
@@ -90,12 +98,6 @@ export class RsocketService implements OnInit{
 
     let decoder = new TextDecoder();
 
-    // Not sure if token has to be provided after setup frame, leaving it for now
-    let idToken = this.keycloakService.getKeycloakInstance().idToken;
-    if(!idToken) {
-      console.error("Not authenticated");
-      return;
-    }
 
     this.client.connect().subscribe({
       onComplete: (socket: any) => {
@@ -105,9 +107,8 @@ export class RsocketService implements OnInit{
         // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
         // TODO handle events based on provided id
         socket.requestStream({
-          data: Buffer.from('{}'),
+          data: Buffer.from('{}'), //Placeholder for request data, if ever needed / May be removed
           metadata: encodeCompositeMetadata([
-            [MESSAGE_RSOCKET_AUTHENTICATION, encodeBearerAuthMetadata(idToken)],
             [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657984/messages')]
           ])
         }).subscribe({
@@ -119,13 +120,13 @@ export class RsocketService implements OnInit{
           },
           onNext: (payload: any) => {
             const dataAsString = decoder.decode(payload.data);
+            //dataAsString is json string
             console.log(dataAsString);
           },
 
-
-          //How many requests client can handle, when this count runs out, another request should be made
           onSubscribe: (subscription: any) => {
-            subscription.request(1000000);
+            //How many requests client can handle, when this count runs out, another request should be made
+            subscription.request(this.requestCount);
           }
         });
 

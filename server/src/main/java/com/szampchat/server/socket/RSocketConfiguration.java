@@ -19,8 +19,6 @@ import org.springframework.security.rsocket.core.PayloadSocketAcceptorIntercepto
 @EnableRSocketSecurity
 @AllArgsConstructor
 public class RSocketConfiguration {
-    private final ReactiveJwtDecoder reactiveJwtDecoder;
-    private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
 
     @Bean
     PayloadSocketAcceptorInterceptor rsocketInterceptor(RSocketSecurity rsocket) {
@@ -30,21 +28,21 @@ public class RSocketConfiguration {
                                 .anyRequest().authenticated()
                                 .anyExchange().permitAll()
                 )
-                .jwt(jwt -> jwt.authenticationManager(jwtReactiveAuthenticationManager()));
+                .jwt(Customizer.withDefaults());
         return rsocket.build();
     }
 
-    //Not needed probably
-    private JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager() {
-        JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager = new JwtReactiveAuthenticationManager(reactiveJwtDecoder);
-
-        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-
-        jwtReactiveAuthenticationManager.setJwtAuthenticationConverter(customJwtAuthenticationConverter);
-        return jwtReactiveAuthenticationManager;
-    }
+//    //Not needed probably
+//    private JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager() {
+//        JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager = new JwtReactiveAuthenticationManager(reactiveJwtDecoder);
+//
+//        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+//
+//        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+//        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+//        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+//
+//        jwtReactiveAuthenticationManager.setJwtAuthenticationConverter(customJwtAuthenticationConverter);
+//        return jwtReactiveAuthenticationManager;
+//    }
 }

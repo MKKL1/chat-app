@@ -27,10 +27,11 @@ public class EventController {
         //I had to get principal manually, as providing it in method parameter caused error
         Recipient recipient = Recipient.fromCommunity(communityId);
         return rSocketPrincipalProvider.getPrincipal()
-                .doOnNext(user -> log.info("User {} subscribes to /community/{}/messages", user.getUserId(), communityId))
+                .doOnNext(user -> log.debug("User {} subscribes to /community/{}/messages", user.getUserId(), communityId))
                 //This part seems like it could slow down entire system
                 // All events have to make a check for each user
                 // Maybe MessageChannel should be used here
+                //TODO spring integration's MessageChannels
                 .flatMapMany(user -> messageEventBus.on(MessageCreateEvent.class)
                                 //Those filters should be replaced by some routing function
                                 .filter(event -> event.getRecipient().equals(recipient))
