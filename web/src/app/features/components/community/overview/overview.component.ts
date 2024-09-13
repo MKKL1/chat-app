@@ -5,7 +5,7 @@ import {Community} from "../../../models/community";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {CommunityService} from "../../../services/community.service";
-import {UserService} from "../../../services/user.service";
+import {UserService} from "../../../../core/services/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {GenerateInvitationComponent} from "../dialogs/generate-invitation/generate-invitation.component";
 import {environment} from "../../../../../environment";

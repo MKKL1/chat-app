@@ -1,6 +1,7 @@
 package com.szampchat.server.auth;
 
 import com.szampchat.server.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class CustomJwtAuthenticationConverter implements Converter<Jwt, Mono<CurrentUser>> {
 
@@ -23,5 +25,6 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Mono<Cur
                 .flatMap(keycloakId -> userService.findUserBySub(UUID.fromString(keycloakId)))
                 .switchIfEmpty(Mono.error(new UserNotRegisteredException()))
                 .map(user -> new CurrentUser(jwt, null, user.getId()));
+//                .doOnNext(user -> log.info("CurrentUser {}", user.getUserId()));
     }
 }

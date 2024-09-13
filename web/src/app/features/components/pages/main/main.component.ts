@@ -4,8 +4,9 @@ import {AppbarComponent} from "../../../../core/components/appbar/appbar.compone
 import {KeycloakService} from "keycloak-angular";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../../../environment";
-import {UserService} from "../../../services/user.service";
+import {UserService} from "../../../../core/services/user.service";
 import {User} from "../../../models/user";
+import {RsocketService} from "../../../../core/services/rsocket.service";
 
 @Component({
   selector: 'app-main',
@@ -19,7 +20,7 @@ import {User} from "../../../models/user";
 })
 export class MainComponent implements OnInit {
 
-  constructor(private userService: UserService, private keycloakService: KeycloakService) {
+  constructor(private userService: UserService, private keycloakService: KeycloakService, private rsocketService: RsocketService) {
   }
 
   ngOnInit(): void {
@@ -27,9 +28,12 @@ export class MainComponent implements OnInit {
     // basic data about current user should be saved in service for further use
     this.userService.fetchUserData();
 
-    this.keycloakService.getToken().then(token => {
-      console.log(token);
-    });
+    // this method show your actual token
+    // this.keycloakService.getToken().then(token => {
+    //   console.log(token);
+    // });
+
+    this.rsocketService.init();
 
   }
 

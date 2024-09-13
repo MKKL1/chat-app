@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs";
 import {Community} from "../models/community";
-import {UserService} from "./user.service";
+import {UserService} from "../../core/services/user.service";
 import {CommunityStore} from "../store/community/community.store";
 import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 import {Channel} from "../models/channel";

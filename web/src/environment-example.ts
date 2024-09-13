@@ -1,4 +1,4 @@
-export const environmentExample = {
+export const environment = {
   production: false,
   // key required to use gif search component
   // https://developers.giphy.com/

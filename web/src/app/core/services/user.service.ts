@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {User} from "../models/user";
+import {User} from "../../features/models/user";
 import {BehaviorSubject, Observable} from "rxjs";
 import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";

@@ -24,15 +24,19 @@ spring:
     web-application-type: reactive
   webflux:
     base-path: /api
+  rsocket:
+    server:
+      port: 8083
+      mapping-path: /events
+      transport: websocket
+  jackson:
+    default-property-inclusion: NON_NULL
 server:
   error:
     include-message: always
   port: 8081
-
-
-logging:
-  level:
-    org:
-      springframework:
-        security: TRACE
-
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: TRACE
