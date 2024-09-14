@@ -22,6 +22,10 @@ public class Recipient {
         this.context = context;
     }
 
+    public static Recipient fromChannel(long channelId) {
+        return new Recipient(channelId, Context.CHANNEL);
+    }
+
     public static Recipient fromCommunity(long communityId) {
         return new Recipient(communityId, Context.COMMUNITY);
     }
@@ -49,6 +53,7 @@ public class Recipient {
 
     public enum Context {
         COMMUNITY,
-        USER
+        USER,
+        CHANNEL
     }
 }

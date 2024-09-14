@@ -3,7 +3,7 @@ package com.szampchat.server.socket;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.MessageCreateEvent;
 import com.szampchat.server.event.Recipient;
-import com.szampchat.server.event.MessageEventBus;
+import com.szampchat.server.event.EventPublisherService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @Controller
 public class EventController {
-    private final MessageEventBus messageEventBus;
+    private final EventPublisherService eventSender;
     private final ChannelService channelService;
     private final RSocketPrincipalProvider rSocketPrincipalProvider;
 
@@ -32,7 +32,7 @@ public class EventController {
                 // All events have to make a check for each user
                 // Maybe MessageChannel should be used here
                 //TODO spring integration's MessageChannels
-                .flatMapMany(user -> messageEventBus.on(MessageCreateEvent.class)
+                .flatMapMany(user -> eventSender.on(MessageCreateEvent.class)
                                 //Those filters should be replaced by some routing function
                                 .filter(event -> event.getRecipient().equals(recipient))
                                 //ChannelService#isParticipant will be cached so it should hopefully work flawlessly

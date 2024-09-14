@@ -34,7 +34,17 @@ services:
       - "8082:8080"
     command:
       - "start-dev"
-
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.13-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    volumes:
+      - ~/apps/rabbitmq:/var/lib/rabbitmq
 volumes:
   keycloak:
   # add postgres volume here

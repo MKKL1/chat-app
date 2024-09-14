@@ -1,16 +1,21 @@
 package com.szampchat.server.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.rabbitmq.Sender;
 
 /**
  * Publisher of message events, which can be later consumed by required message streams
  */
 @Slf4j
-public class MessageEventBus {
+@Service
+public class EventPublisherService {
 
     private final int bufferSize = 10;
     private final Scheduler scheduler = Schedulers.boundedElastic();
@@ -23,9 +28,7 @@ public class MessageEventBus {
         events.emitNext(event, emitFailureHandler);
     }
 
-    public <E extends MessageEvent<?>> Flux<E> on(Class<E> clazz) {
-        return events.asFlux().publishOn(scheduler).ofType(clazz);
+    public Flux<MessageEvent<?>> asFlux() {
+        return events.asFlux().publishOn(scheduler);
     }
-
-    //TODO method for subscribing to events from given recipient
 }
