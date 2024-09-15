@@ -47,7 +47,11 @@ public class MessageController {
                             .build();
                     eventSender.publish(MessageCreateEvent.builder()
                             .data(message)
-                            .recipient(Recipient.fromCommunity(channel.getCommunityId()))
+                            .recipient(Recipient.builder()
+                                    .type(Recipient.Type.MESSAGES)
+                                    .context(Recipient.Context.COMMUNITY)
+                                    .id(channel.getCommunityId())
+                                    .build())
                             .build());
 
                     return message;

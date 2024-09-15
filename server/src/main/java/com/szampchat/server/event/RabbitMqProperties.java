@@ -10,4 +10,5 @@ import org.springframework.stereotype.Component;
 @Getter
 public class RabbitMqProperties {
     private final String chatExchange = "chat.exchange";
+    private final String messageExchange = "chat.exchange.messages";
 }

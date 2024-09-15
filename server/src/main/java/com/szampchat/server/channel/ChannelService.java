@@ -34,9 +34,15 @@ public class ChannelService {
         return channelRepository.findById(channelId);
     }
 
+
     public Flux<Channel> findChannelsForCommunity(Long communityId) {
         return channelRepository.findChannelsByCommunityId(communityId);
     }
+
+//    //TODO right now there is no channel access permissions
+//    public Flux<Channel> getChannelsUserCanAccess(Long communityId, Long userId) {
+//        return findChannelsForCommunity(communityId);
+//    }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel){
         return channelRepository.doesChannelExist(channel.getName())
