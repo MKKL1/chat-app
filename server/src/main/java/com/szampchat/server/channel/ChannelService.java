@@ -26,7 +26,7 @@ public class ChannelService {
     // channelId is null, even though in controller it has proper value
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
-                .doFirst(() -> System.out.println(channelId + " " + userId))
+//                .doFirst(() -> System.out.println(channelId + " " + userId))
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 

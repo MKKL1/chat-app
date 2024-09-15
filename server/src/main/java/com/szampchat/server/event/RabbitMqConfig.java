@@ -1,6 +1,7 @@
 package com.szampchat.server.event;
 
 import com.rabbitmq.client.ConnectionFactory;
+import lombok.Getter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
@@ -9,6 +10,7 @@ import reactor.rabbitmq.Sender;
 import reactor.rabbitmq.SenderOptions;
 
 @Configuration
+@Getter
 public class RabbitMqConfig {
     @Bean
     public Sender rabbitMqSender() {
