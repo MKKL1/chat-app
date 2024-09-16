@@ -1,5 +1,7 @@
 package com.szampchat.server.socket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Delivery;
 import com.szampchat.server.channel.ChannelService;
@@ -25,25 +27,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Controller
 public class EventController {
-    private final EventPublisherService eventSender;
-    private final ChannelService channelService;
-    private final RSocketPrincipalProvider rSocketPrincipalProvider;
-    private final Receiver receiver;
-    private final Sender sender;
+    private final ReceiverTemplate receiverTemplate;
+
 
     // Send a stream of events to the client
     @MessageMapping("/community/{communityId}/messages")
     public Flux<byte[]> streamEvents(@DestinationVariable Long communityId, @Payload Mono<EventRequestDTO> eventRequestDTO) {
-        //I had to get principal manually, as providing it in method parameter caused error
-        return rSocketPrincipalProvider.getPrincipal()
-                .doOnNext(user -> log.debug("User {} subscribes to /community/{}/messages", user.getUserId(), communityId))
-                .flatMapMany(currentUser -> {
-                    String queue = "user." + UUID.randomUUID();
-                    return sender.declare(QueueSpecification.queue(queue).autoDelete(true))
-                            .then(sender.bind(BindingSpecification.queueBinding("chat.exchange.messages", "messages.community.*", queue)))
-                            .thenMany(receiver.consumeAutoAck(queue))
-                            .map(Delivery::getBody);
-
-                });
+        return receiverTemplate.receiveCommunityEvents(
+                        communityId,
+                        "chat.exchange.messages",
+                        "messages.community." + communityId)
+                .map(Delivery::getBody);
     }
 }

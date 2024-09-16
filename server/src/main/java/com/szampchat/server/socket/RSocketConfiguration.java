@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.rsocket.core.PayloadSocketAcceptorInterceptor;
+import org.springframework.security.rsocket.util.matcher.PayloadExchangeMatcher;
 
 @Configuration
 @EnableRSocketSecurity
@@ -25,24 +26,10 @@ public class RSocketConfiguration {
         rsocket
                 .authorizePayload(authorize ->
                         authorize
-                                .anyRequest().authenticated()
-                                .anyExchange().permitAll()
+//                                .route("/community/{communityId}/messages").access((authentication, object) -> object.)
+                                .anyExchange().authenticated()
                 )
                 .jwt(Customizer.withDefaults());
         return rsocket.build();
     }
-
-//    //Not needed probably
-//    private JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager() {
-//        JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager = new JwtReactiveAuthenticationManager(reactiveJwtDecoder);
-//
-//        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-//
-//        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-//        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-//        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-//
-//        jwtReactiveAuthenticationManager.setJwtAuthenticationConverter(customJwtAuthenticationConverter);
-//        return jwtReactiveAuthenticationManager;
-//    }
 }
