@@ -14,9 +14,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.rabbitmq.BindingSpecification;
 import reactor.rabbitmq.QueueSpecification;
 import reactor.rabbitmq.Receiver;
 import reactor.rabbitmq.Sender;
+
+import java.util.UUID;
 
 @Slf4j
 @AllArgsConstructor
@@ -25,7 +28,7 @@ public class EventController {
     private final EventPublisherService eventSender;
     private final ChannelService channelService;
     private final RSocketPrincipalProvider rSocketPrincipalProvider;
-    private final RabbitMqReceiverService rabbitMqReceiverService;
+    private final Receiver receiver;
     private final Sender sender;
 
     // Send a stream of events to the client
@@ -35,9 +38,10 @@ public class EventController {
         return rSocketPrincipalProvider.getPrincipal()
                 .doOnNext(user -> log.debug("User {} subscribes to /community/{}/messages", user.getUserId(), communityId))
                 .flatMapMany(currentUser -> {
-                    String queue = "user." + currentUser.getUserId();
+                    String queue = "user." + UUID.randomUUID();
                     return sender.declare(QueueSpecification.queue(queue).autoDelete(true))
-                            .thenMany(rabbitMqReceiverService.getOrCreateConsumer(queue))
+                            .then(sender.bind(BindingSpecification.queueBinding("chat.exchange.messages", "messages.community.*", queue)))
+                            .thenMany(receiver.consumeAutoAck(queue))
                             .map(Delivery::getBody);
 
                 });
