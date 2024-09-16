@@ -6,13 +6,13 @@ import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.co
 import {CommunityService} from "../../../services/community.service";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {ButtonDangerComponent} from "../../../../shared/ui/button-danger/button-danger.component";
-import {UserService} from "../../../services/user.service";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {EditAvatarComponent} from "../../../../shared/ui/edit-avatar/edit-avatar.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-profile',

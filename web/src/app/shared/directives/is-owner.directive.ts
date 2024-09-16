@@ -1,5 +1,5 @@
 import {Directive, TemplateRef, ViewContainerRef} from "@angular/core";
-import {UserService} from "../../features/services/user.service";
+import {UserService} from "../../core/services/user.service";
 import {CommunityQuery} from "../../features/store/community/community.query";
 
 // Is it performant?
