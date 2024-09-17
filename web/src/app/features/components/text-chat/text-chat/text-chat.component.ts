@@ -15,7 +15,7 @@ import {MessageService} from "../../../services/message.service";
 import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
 import {CreateMessageDto} from "../../../models/create.message.dto";
-import {UserService} from "../../../services/user.service";
+import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
 
 // maybe split it into component with messages to read, and component with input to create new message
