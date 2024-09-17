@@ -1,10 +1,8 @@
-package com.szampchat.server.event;
+package com.szampchat.server.event.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Objects;
 
 //Recipient could be implemented to represent sets of recipients, like for example multiple communities or users.
 // Not sure how it would be useful, but this implementation is open to change
@@ -20,15 +18,11 @@ import java.util.Objects;
 public class Recipient {
     private final long id;
     private final Context context;
-    private final Type type;
+
 
     public enum Context {
         COMMUNITY,
         USER,
         CHANNEL
-    }
-
-    public enum Type {
-        MESSAGES
     }
 }

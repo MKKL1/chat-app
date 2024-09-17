@@ -2,9 +2,9 @@ package com.szampchat.server.message;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.event.EventPublisherService;
-import com.szampchat.server.event.MessageCreateEvent;
-import com.szampchat.server.event.Recipient;
+import com.szampchat.server.event.EventSinkService;
+import com.szampchat.server.message.event.MessageCreateEvent;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 public class MessageController {
     private final MessageService messageService;
     private final ChannelService channelService; //For test
-    private final EventPublisherService eventSender;
+    private final EventSinkService eventSender;
 
     @Operation(summary = "Get messages for given channel")
     @GetMapping("/channels/{channelId}/messages")
@@ -48,7 +48,6 @@ public class MessageController {
                     eventSender.publish(MessageCreateEvent.builder()
                             .data(message)
                             .recipient(Recipient.builder()
-                                    .type(Recipient.Type.MESSAGES)
                                     .context(Recipient.Context.COMMUNITY)
                                     .id(channel.getCommunityId())
                                     .build())

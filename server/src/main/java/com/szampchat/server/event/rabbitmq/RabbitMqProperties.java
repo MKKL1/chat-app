@@ -1,4 +1,4 @@
-package com.szampchat.server.event;
+package com.szampchat.server.event.rabbitmq;
 
 
 import lombok.Getter;
