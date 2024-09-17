@@ -44,7 +44,7 @@ Events can be published to internal event sink by:
 ```
 eventSinkService.publish(event);
 ```
-From there client (programmer) can listen to events using `asFlux` method.
+From there user (programmer) can listen to events using `asFlux` method.
 Example where only events of class `MessageCreateEvent`, are acquired:
 ```
 eventSinkService.asFlux()
@@ -55,7 +55,7 @@ eventSinkService.asFlux()
 
 To actually publish events to RabbitMq, `RabbitMqPublisher` component is used.
 It is configured with `RabbitMqConfiguration` and `RabbitMqProperties`.
-Except for configuration in those classes, client doesn't have to do anything to publish events,
+Except for configuration in those classes, user doesn't have to do anything to publish events,
 as `RabbitMqPublisher` takes all events from `EventSinkService`, converts them to appropriate message 
 and sends finally sends them to main exchange (explained later).
 
@@ -69,7 +69,7 @@ RabbitMq uses exchanges and queues to deliver messages to clients.
 **Queue** is a FIFO collection, where each message can be consumed only by one of many consumers.
 
 
-![](docs\rabbitmq-diagram.png)
+![](docs/rabbitmq-diagram.png)
 
 In this diagram, **client** is a rsocket requester (android application or user of website)
 

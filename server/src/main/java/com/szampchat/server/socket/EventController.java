@@ -1,6 +1,7 @@
 package com.szampchat.server.socket;
 
 import com.rabbitmq.client.Delivery;
+import com.szampchat.server.socket.data.EventRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

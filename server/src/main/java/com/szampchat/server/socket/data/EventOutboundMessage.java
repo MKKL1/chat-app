@@ -1,4 +1,4 @@
-package com.szampchat.server.socket;
+package com.szampchat.server.socket.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.szampchat.server.event.data.InternalEvent;

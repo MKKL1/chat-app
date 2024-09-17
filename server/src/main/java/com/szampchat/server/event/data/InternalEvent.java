@@ -1,6 +1,6 @@
 package com.szampchat.server.event.data;
 
-import com.szampchat.server.socket.EventOutboundMessage;
+import com.szampchat.server.socket.data.EventOutboundMessage;
 
 /**
  * Internal form of event before it's sent to event channel given by {@link Recipient}.

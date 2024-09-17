@@ -3,11 +3,9 @@ package com.szampchat.server.socket;
 import com.rabbitmq.client.Delivery;
 import com.szampchat.server.community.exception.NotCommunityMemberException;
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.community.service.CommunityService;
+import com.szampchat.server.socket.auth.RSocketPrincipalProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authorization.AuthorizationDeniedException;
-import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,6 +29,7 @@ public class ReceiverTemplate {
     public Flux<Delivery> receiveCommunityEvents(final long communityId, final String exchange, final String routingKey) {
         //I had to get principal manually, as providing it in method parameter caused error
         return principalProvider.getPrincipal()
+                //In the same way I had to get principal manually, I have to check permission manually
                 .flatMap(currentUser -> communityMemberService.isMember(communityId, currentUser.getUserId())
                         .flatMap(isMember -> {
                             if (!isMember) return Mono.error(new NotCommunityMemberException());
@@ -38,8 +37,10 @@ public class ReceiverTemplate {
                         }))
                 .flatMapMany(currentUser -> {
                     final String queue = "user." + currentUser.getUserId() + "-" + UUID.randomUUID();
+                    //Declaring a unique temporary queue for this stream request
                     return sender.declare(QueueSpecification.queue(queue).autoDelete(true))
                             .then(sender.bind(BindingSpecification.queueBinding(exchange, routingKey, queue)))
+                            //Receiving messages to flux
                             .thenMany(receiver.consumeAutoAck(queue));
                 });
     }
