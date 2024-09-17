@@ -2,7 +2,7 @@ package com.szampchat.server.message;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.event.EventSinkService;
+import com.szampchat.server.event.EventSink;
 import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 public class MessageController {
     private final MessageService messageService;
     private final ChannelService channelService; //For test
-    private final EventSinkService eventSender;
+    private final EventSink eventSender;
 
     @Operation(summary = "Get messages for given channel")
     @GetMapping("/channels/{channelId}/messages")

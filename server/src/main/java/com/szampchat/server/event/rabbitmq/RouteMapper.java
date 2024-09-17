@@ -26,18 +26,30 @@ public class RouteMapper {
     private final EnumMap<EventType, String> recipientToTypeMap = new EnumMap<>(EventType.class);
 
     public RouteMapper() {
-        recipientToContextMap.put(Recipient.Context.USER, "user.");
-        recipientToContextMap.put(Recipient.Context.COMMUNITY, "community.");
-        recipientToContextMap.put(Recipient.Context.CHANNEL, "channel.");
+        recipientToContextMap.put(Recipient.Context.USER, "user");
+        recipientToContextMap.put(Recipient.Context.COMMUNITY, "community");
+//        recipientToContextMap.put(Recipient.Context.CHANNEL, "channel.");
 
-        recipientToTypeMap.put(EventType.MESSAGES, "messages.");
+        recipientToTypeMap.put(EventType.MESSAGES, "messages");
     }
 
+    /**
+     * Converts event RabbitMQ routing key
+     */
     public String toRouteKey(InternalEvent<?> event) {
         return toRouteKey(event.getType(), event.getRecipient());
     }
 
+    /**
+     * Converts event data RabbitMQ routing key
+     */
     public String toRouteKey(EventType eventType, Recipient recipient) {
-        return recipientToTypeMap.get(eventType) + recipientToContextMap.get(recipient.getContext()) + recipient.getId();
+        String type = recipientToTypeMap.get(eventType);
+        if(type == null) throw new IllegalArgumentException("Unknown EventType " + eventType.name());
+
+        String rec = recipientToContextMap.get(recipient.getContext());
+        if(rec == null) throw new IllegalArgumentException("Unknown Recipient.Context" + recipient.getContext().name());
+
+        return type + "." + rec + "." + recipient.getId();
     }
 }

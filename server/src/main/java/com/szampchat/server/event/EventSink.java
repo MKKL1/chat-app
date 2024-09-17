@@ -2,6 +2,7 @@ package com.szampchat.server.event;
 
 import com.szampchat.server.event.data.InternalEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -12,8 +13,8 @@ import reactor.core.scheduler.Schedulers;
  * Publisher of events, which can be later consumed by required event streams
  */
 @Slf4j
-@Service //Not sure if it should be service
-public class EventSinkService {
+@Component //Not sure if it should be service
+public class EventSink {
 
     //Those variables could be defined somewhere else for easier configuration, but I am not sure where
     private final int bufferSize = 10;

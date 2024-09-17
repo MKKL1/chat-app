@@ -2,7 +2,7 @@ package com.szampchat.server.event.rabbitmq;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.szampchat.server.event.EventSinkService;
+import com.szampchat.server.event.EventSink;
 import com.szampchat.server.socket.data.EventOutboundMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import reactor.rabbitmq.OutboundMessage;
 import reactor.rabbitmq.Sender;
 
 /**
- * Component that consumes events from {@link EventSinkService} and publishes them in rabbitmq
+ * Component that consumes events from {@link EventSink} and publishes them in rabbitmq
  */
 @Component
 @AllArgsConstructor
@@ -23,7 +23,7 @@ import reactor.rabbitmq.Sender;
 class RabbitMqPublisher {
 
     private final Sender sender;
-    private final EventSinkService eventSinkService;
+    private final EventSink eventSink;
     private final RouteMapper routeMapper;
     private final ObjectMapper objectMapper;
     private final RabbitMqProperties rabbitMqProperties;
@@ -32,7 +32,7 @@ class RabbitMqPublisher {
     private void init() {
         final String chatExchange = rabbitMqProperties.getChatExchange();
         configureRabbitMq().then(
-            sender.send(eventSinkService.asFlux()
+            sender.send(eventSink.asFlux()
                     .flatMap(event -> {
 
                         //Convert event data to byte buffer

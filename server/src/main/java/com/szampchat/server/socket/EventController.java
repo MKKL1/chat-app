@@ -15,13 +15,13 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @Controller
 public class EventController {
-    private final ReceiverTemplate receiverTemplate;
+    private final EventService eventService;
 
 
     // Send a stream of events to the client
     @MessageMapping("/community/{communityId}/messages")
     public Flux<byte[]> streamEvents(@DestinationVariable Long communityId, @Payload Mono<EventRequestDTO> eventRequestDTO) {
-        return receiverTemplate.receiveCommunityEvents(
+        return eventService.receiveCommunityEvents(
                         communityId,
                         "chat.exchange.messages",
                         "messages.community." + communityId)
