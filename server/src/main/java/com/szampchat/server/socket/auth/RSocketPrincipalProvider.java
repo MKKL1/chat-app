@@ -1,10 +1,8 @@
-package com.szampchat.server.socket;
+package com.szampchat.server.socket.auth;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
-import com.szampchat.server.auth.UserNotRegisteredException;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;

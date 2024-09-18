@@ -1,5 +1,8 @@
-package com.szampchat.server.event;
+package com.szampchat.server.message.event;
 
+import com.szampchat.server.event.data.EventType;
+import com.szampchat.server.event.data.InternalEvent;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.MessageDTO;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +14,10 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-public class MessageCreateEvent implements MessageEvent<MessageDTO> {
+public class MessageCreateEvent implements InternalEvent<MessageDTO> {
     private final String name = "MESSAGE_CREATE_EVENT";
+    private final EventType type = EventType.MESSAGES;
+
     private final Recipient recipient;
     private final MessageDTO data;
 }

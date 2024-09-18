@@ -26,7 +26,7 @@ public class ChannelService {
     // channelId is null, even though in controller it has proper value
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
-                .doFirst(() -> System.out.println(channelId + " " + userId))
+//                .doFirst(() -> System.out.println(channelId + " " + userId))
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 
@@ -34,9 +34,15 @@ public class ChannelService {
         return channelRepository.findById(channelId);
     }
 
+
     public Flux<Channel> findChannelsForCommunity(Long communityId) {
         return channelRepository.findChannelsByCommunityId(communityId);
     }
+
+//    //TODO right now there is no channel access permissions
+//    public Flux<Channel> getChannelsUserCanAccess(Long communityId, Long userId) {
+//        return findChannelsForCommunity(communityId);
+//    }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel){
         return channelRepository.doesChannelExist(channel.getName())
