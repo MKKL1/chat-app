@@ -1,5 +1,7 @@
 package com.szampchat.server.community;
 
+import com.szampchat.server.PostgresTestContainer;
+import com.szampchat.server.RabbitMQTestContainer;
 import com.szampchat.server.RdbcUrlUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -15,30 +17,24 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CommunityControllerIT {
+public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTestContainer {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
     @BeforeAll
     static void beforeAll() {
         postgres.start();
+        rabbitmq.start();
     }
 
     @AfterAll
     static void afterAll() {
         postgres.stop();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.r2dbc.url", RdbcUrlUtil.getR2dbcUrl(postgres));
-        registry.add("spring.r2dbc.username", postgres::getUsername);
-        registry.add("spring.r2dbc.password", postgres::getPassword);
+        rabbitmq.stop();
     }
 
     @Test
-    void connectionEstablished() {
-        Assertions.assertTrue(postgres.isCreated());
-        Assertions.assertTrue(postgres.isRunning());
+    @Override
+    public void connectionEstablished() {
+        PostgresTestContainer.super.connectionEstablished();
+        RabbitMQTestContainer.super.connectionEstablished();
     }
 }
