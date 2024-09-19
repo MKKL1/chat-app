@@ -11,13 +11,8 @@ import reactor.rabbitmq.ReceiverOptions;
 @Configuration
 public class RabbitMqReceiverConfig {
     @Bean
-    public Receiver rabbitMqReceiver() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.useNio();
-        connectionFactory.setHost("localhost");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root");
-
+    //Injecting ConnectionFactory from other module, that maybe will be separated
+    public Receiver rabbitMqReceiver(ConnectionFactory connectionFactory) {
         return RabbitFlux.createReceiver(
                 new ReceiverOptions()
                         .connectionFactory(connectionFactory)

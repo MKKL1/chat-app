@@ -11,15 +11,22 @@ import reactor.rabbitmq.SenderOptions;
 @Configuration
 @Getter
 public class RabbitMqConfiguration {
+
     @Bean
-    public Sender rabbitMqSender() {
+    public ConnectionFactory connectionFactoryRabbitMq(RabbitMqConnectionProperties properties) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.useNio();
         //Hardcoding it for now
-        connectionFactory.setHost("localhost");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root");
+        connectionFactory.setHost(properties.getHost());
+        connectionFactory.setPort(properties.getPort());
+        connectionFactory.setUsername(properties.getUsername());
+        connectionFactory.setPassword(properties.getPassword());
+        return connectionFactory;
+    }
 
+    @Bean
+    public Sender rabbitMqSender(ConnectionFactory connectionFactory) {
+        //TODO log to console when connection was successful
         return RabbitFlux.createSender(
                 new SenderOptions()
                         .connectionFactory(connectionFactory)
