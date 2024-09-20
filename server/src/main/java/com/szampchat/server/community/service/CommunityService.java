@@ -20,6 +20,7 @@ import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.snowflake.Snowflake;
 import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,6 +29,7 @@ import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class CommunityService {
@@ -54,6 +56,7 @@ public class CommunityService {
     // members not
     // I don't checked roles
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(Long id){
+        //TODO why not just use findById from CommunityService
         return communityRepository.findById(id)
             .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
             .flatMap(community -> {
@@ -77,10 +80,10 @@ public class CommunityService {
 
 
     // TODO store image url
-    public Mono<Community> save(CommunityCreateDTO communityDTO, CurrentUser user) {
+    public Mono<Community> save(CommunityCreateDTO communityDTO, Long ownerId) {
         Community community = Community.builder()
                 .name(communityDTO.name())
-                .ownerId(user.getUserId())
+                .ownerId(ownerId)
                 .build();
 
         return communityRepository.save(community)
@@ -89,7 +92,7 @@ public class CommunityService {
                 Long communityId = savedCommunity.getId();
 
                 // After creating community its owner also need to be added as its member
-                return userService.findUser(user.getUserId())
+                return userService.findUser(ownerId)
                     .switchIfEmpty(Mono.error(new Exception("User not found")))
                     .flatMap(savedUser -> communityMemberService.create(communityId, savedUser.getId())
                         .then(Mono.just(community)));
@@ -105,6 +108,7 @@ public class CommunityService {
     }
 
     public Mono<Void> delete(Long id){
-        return communityRepository.deleteById(id).doOnSuccess(_ -> System.out.println("Deleted community"));
+        return communityRepository.deleteById(id)
+                .doOnSuccess(_ -> log.info("Deleted community by id: {}", id));
     }
 }

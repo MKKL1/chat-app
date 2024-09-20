@@ -18,6 +18,10 @@ public interface PostgresTestContainer {
         registry.add("spring.r2dbc.password", postgres::getPassword);
     }
 
+    static void populate() {
+        postgres.withInitScript("schema.sql");
+    }
+
     @Test
     default void connectionEstablished() {
         Assertions.assertTrue(postgres.isCreated());

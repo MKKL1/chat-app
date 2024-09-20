@@ -43,7 +43,7 @@ public class CommunityController {
     @GetMapping("/{communityId}")
     @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Mono<Community> getCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return communityService.findById(communityId).doOnSuccess(System.out::println);
+        return communityService.findById(communityId);
     }
 
     @GetMapping("/{communityId}/info")
@@ -92,7 +92,7 @@ public class CommunityController {
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
     public Mono<Community> createCommunity(@RequestBody CommunityCreateDTO community, CurrentUser user) {
-        return communityService.save(community, user);
+        return communityService.save(community, user.getUserId());
     }
 
     @PatchMapping("/{communityId}")
