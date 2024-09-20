@@ -1,4 +1,4 @@
-package com.szampchat.server;
+package com.szampchat.server.tools;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 

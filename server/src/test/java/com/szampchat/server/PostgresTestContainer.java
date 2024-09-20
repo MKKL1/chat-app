@@ -1,5 +1,6 @@
 package com.szampchat.server;
 
+import com.szampchat.server.tools.RdbcUrlUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.DynamicPropertyRegistry;
