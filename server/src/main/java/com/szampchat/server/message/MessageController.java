@@ -21,8 +21,6 @@ import reactor.core.publisher.Mono;
 @RestController
 public class MessageController {
     private final MessageService messageService;
-    private final ChannelService channelService; //For test
-    private final EventSink eventSender;
 
     @Operation(summary = "Get messages for given channel")
     @GetMapping("/channels/{channelId}/messages")
@@ -35,26 +33,8 @@ public class MessageController {
 
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<MessageDTO> createMessage(@PathVariable Long channelId, MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
-        //TODO replace with actual message creation
-        return channelService.getChannel(channelId)
-                .map(channel -> {
-                    MessageDTO message = MessageDTO.builder() //TODO Use data from messageCreateDTO...
-                            .id(123L)
-                            .text("TEST TEXT")
-                            .user(currentUser.getUserId())
-                            .channel(channelId)
-                            .build();
-                    eventSender.publish(MessageCreateEvent.builder()
-                            .data(message)
-                            .recipient(Recipient.builder()
-                                    .context(Recipient.Context.COMMUNITY)
-                                    .id(channel.getCommunityId())
-                                    .build())
-                            .build());
-
-                    return message;
-                });
+    public Mono<MessageDTO> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
+        return messageService.createMessage(messageCreateDTO, currentUser.getUserId());
     }
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")

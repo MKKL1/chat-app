@@ -45,21 +45,24 @@ export class MessageInputComponent {
   ) {
   }
 
+  sendMessageKeyboard(event: KeyboardEvent){
+    if(event.key === 'Enter'){
+      this.sendMessage();
+    }
+  }
+
   sendMessage(){
     if(this.message.length === 0){
       return;
     }
 
     // if created message responds to another message
-    // add id od this message
+    // add id of this message
     if(this.messageToRespond !== undefined){
 
     }
 
-    // this.messageService.sendMessage(this.message, this.selectedFile).subscribe({
-    //   next: value => console.log(value),
-    //   error: err => console.error(err)
-    // });
+    this.messageService.sendMessage(this.message);
 
     this.message = '';
   }

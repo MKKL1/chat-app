@@ -15,10 +15,10 @@ import java.util.List;
 @Builder
 public class MessageDTO {
     private Long id;
-    private Long channel;
+    private Long channelId;
     private String text;
     private Instant updated_at;
-    private Long user;
+    private Long userId;
     private Long respondsToMessage;
 
     private List<MessageAttachmentDTO> attachments;

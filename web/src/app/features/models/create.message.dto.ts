@@ -1,5 +1,5 @@
 export interface CreateMessageDto {
   channelId: string;
-  userId: string;
+  communityId: string;
   text: string;
 }

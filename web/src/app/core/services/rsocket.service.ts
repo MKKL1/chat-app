@@ -13,6 +13,7 @@ import {
 } from 'rsocket-core';
 import RSocketWebsocketClient from 'rsocket-websocket-client';
 import {KeycloakService} from "keycloak-angular";
+import {Observable, Subject} from "rxjs";
 
 // this service is injected in MainComponent.ts
 // which will be created after user sign in/up
@@ -35,6 +36,10 @@ export class RsocketService implements OnInit{
   private readonly requestCount: number = 2147483647;
 
   private client: RSocketClient<any, any> | undefined;
+
+  // Intellij shows that returned socket is of type ReactiveSocket<any, any>
+  // but I can't import it
+  private rsocket: any;
 
   constructor(private keycloakService: KeycloakService) { }
 
@@ -86,7 +91,46 @@ export class RsocketService implements OnInit{
     });
   }
 
-  public requestStream(path: string) { // out event stream or somethign
+  public requestStream<T>(path: string): Observable<T> {
+    let decoder = new TextDecoder();
+
+    return new Observable<any>(subscriber => {
+      const subscription = this.rsocket.requestStream({
+        data: Buffer.from('{}'), //Placeholder for request data, if ever needed / May be removed
+        metadata: encodeCompositeMetadata([
+          //'/community/9895314911657984/messages'
+          [MESSAGE_RSOCKET_ROUTING, encodeRoute(path)]
+        ])
+      }).subscribe({
+        onComplete: () => {
+          console.log("Message send")
+        },
+        onError: (error: any) => {
+          console.error("RSocket error occured: ", error)
+        },
+        onNext: (payload: any) => {
+          const dataAsString = decoder.decode(payload.data);
+          //dataAsString is json string
+          console.log(dataAsString);
+
+          // Instead of returning plane string trying to map it to generic type
+          try{
+            const parsedData: T = JSON.parse(dataAsString).data;
+            subscriber.next(parsedData);
+          } catch(error){
+            console.error("Error parsing JSON: ", error);
+            subscriber.error(error);
+          }
+        },
+
+        onSubscribe: (subscription: any) => {
+          //How many requests client can handle, when this count runs out, another request should be made
+          subscription.request(this.requestCount);
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    });
   }
 
   // I write any as type everywhere because for now it's simpler than searching for types in this library
@@ -95,41 +139,12 @@ export class RsocketService implements OnInit{
       return;
     }
 
-
-    let decoder = new TextDecoder();
-
-
+    // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
     this.client.connect().subscribe({
-      onComplete: (socket: any) => {
+      onComplete: (socket) => {
         // actual code executed after setting up connection starts here
+        this.rsocket = socket;
         console.log("Connected with Spring");
-
-        // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
-        // TODO handle events based on provided id
-        socket.requestStream({
-          data: Buffer.from('{}'), //Placeholder for request data, if ever needed / May be removed
-          metadata: encodeCompositeMetadata([
-            [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657984/messages')]
-          ])
-        }).subscribe({
-          onComplete: () => {
-            console.log("Message send")
-          },
-          onError: (error: any) => {
-            console.error("RSocket error occured: ", error)
-          },
-          onNext: (payload: any) => {
-            const dataAsString = decoder.decode(payload.data);
-            //dataAsString is json string
-            console.log(dataAsString);
-          },
-
-          onSubscribe: (subscription: any) => {
-            //How many requests client can handle, when this count runs out, another request should be made
-            subscription.request(this.requestCount);
-          }
-        });
-
       },
       // handling errors with connection
       onError: (error: any) => console.error("Error occured: ", error),

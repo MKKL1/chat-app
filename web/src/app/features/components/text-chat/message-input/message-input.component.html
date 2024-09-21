@@ -13,7 +13,7 @@
 <div class="message-input">
   <!-- preventing from displaying additional margin at bottom (place for hint) -->
   <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
-    <input [(ngModel)]="message" autocomplete="off" matInput placeholder="Write something here...">
+    <input [(ngModel)]="message" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
   </mat-form-field>
   <!-- make icons prettier -->
   <div class="icons">

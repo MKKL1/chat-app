@@ -1,11 +1,16 @@
 package com.szampchat.server.message;
 
+import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
+import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
+import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
 import com.szampchat.server.message.repository.ReactionRepository;
+import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Limit;
@@ -23,6 +28,8 @@ public class MessageService {
     private final MessageAttachmentRepository messageAttachmentRepository;
     private final ReactionRepository reactionRepository;
     private final ModelMapper modelMapper;
+    private final Snowflake snowflake;
+    private final EventSink eventSender;
 
     public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO, Long currentUserId) {
         return Mono.just(fetchMessagesDTO)
@@ -33,6 +40,27 @@ public class MessageService {
                     return findMessagesBefore(channelId, request.getBefore(), limit);
                 })
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
+    }
+
+    Mono<MessageDTO> createMessage(MessageCreateDTO creatMessage, Long userId){
+        MessageDTO message = MessageDTO.builder()
+            .id(snowflake.nextId())
+            .text(creatMessage.getText())
+            .userId(userId)
+            .channelId(creatMessage.getChannelId())
+            .build();
+
+        // publishing event
+        eventSender.publish(MessageCreateEvent.builder()
+                .data(message)
+                .recipient(Recipient.builder()
+                        .context(Recipient.Context.COMMUNITY)
+                        .id(creatMessage.getCommunityId())
+                        .build())
+                .build());
+
+        // TODO save in db
+        return Mono.just(message);
     }
 
     Flux<Message> findLatestMessages(Long channelId, int limit) {

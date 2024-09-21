@@ -17,6 +17,7 @@ import {MessageQuery} from "../../../store/message/message.query";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
+import {RsocketService} from "../../../../core/services/rsocket.service";
 
 // maybe split it into component with messages to read, and component with input to create new message
 
@@ -41,14 +42,17 @@ import {MessageInputComponent} from "../message-input/message-input.component";
 })
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
+
+  // for now, I don't use store for messages
   messages: Message[] = [];
 
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
+    private rsocketService: RsocketService,
     protected userService: UserService,
     private channelQuery: ChannelQuery,
-    private messageQuery: MessageQuery
+    private messageQuery: MessageQuery,
   ) {}
 
   ngOnInit() {
@@ -58,9 +62,15 @@ export class TextChatComponent implements OnInit{
       this.channel = channel;
       this.messages = [];
     });
+
     this.messageQuery.messages$(this.channel.id ?? '').subscribe(messages => {
       this.messages = messages;
     });
+
+    this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
+      console.log(message);
+      this.messages.push(message);
+    })
   }
 
   setResponse(event: { id: string, text: string }){
