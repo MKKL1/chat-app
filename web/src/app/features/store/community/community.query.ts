@@ -6,6 +6,8 @@ import {Injectable} from "@angular/core";
 
 @Injectable({ providedIn: 'root' })
 export class CommunityQuery extends Query<CommunityState> {
+  communities$: Observable<Community[]> = this.select(state => state.communities);
+
   community$: Observable<Community> = this.select(state => state.selectedCommunity);
 
   communityId$: Observable<string> = this.select(state => state.selectedCommunity.id);

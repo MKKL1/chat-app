@@ -10,6 +10,8 @@ import {CommunityService} from "../../../services/community.service";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
 import {CommunityDetailsComponent} from "../../community/community-details/community-details.component";
 import {CommunityQuery} from "../../../store/community/community.query";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-community',
@@ -21,7 +23,9 @@ import {CommunityQuery} from "../../../store/community/community.query";
     MatIcon,
     CommunitiesListComponent,
     LayoutComponent,
-    CommunityDetailsComponent
+    CommunityDetailsComponent,
+    NgIf,
+    AsyncPipe
   ],
   templateUrl: './community.component.html',
   styleUrl: './community.component.scss',
@@ -29,17 +33,15 @@ import {CommunityQuery} from "../../../store/community/community.query";
 })
 export class CommunityComponent implements OnInit{
     readonly dialog: MatDialog = inject(MatDialog);
-    isCommunitySelected: boolean = false;
+    isCommunitySelected$!: Observable<boolean>;
 
     constructor(private communityQuery: CommunityQuery) {}
 
     ngOnInit() {
-      this.communityQuery.isCommunitySelected$.subscribe(selected => {
-        this.isCommunitySelected = selected;
-      });
+      this.isCommunitySelected$ = this.communityQuery.isCommunitySelected$;
     }
 
-  openDialog(){
-      const dialogRef = this.dialog.open(CreateCommunityComponent, {width: '60vw'});
+    openDialog(){
+      this.dialog.open(CreateCommunityComponent, {width: '60vw'});
     }
 }

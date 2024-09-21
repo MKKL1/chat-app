@@ -53,10 +53,6 @@ export const routes: Routes = [
         component: CommunityComponent,
       },
       {
-        path: 'communities/details',
-        component: CommunityDetailsComponent,
-      },
-      {
         path: 'profile',
         component: ProfileComponent
       }

@@ -8,6 +8,11 @@
   @if(daysForm.get('days')?.invalid && daysForm.get('days')?.dirty){
     <p style="color: darkred">The time to expiration should be a number of days between 1 and 365</p>
   }
+  @if(linkCreated){
+    <div>
+      <p>{{link}} <mat-icon (click)="copyToClipboard()" fontIcon="content_copy" matTooltip="Copy to clipboard"></mat-icon></p>
+    </div>
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>

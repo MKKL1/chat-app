@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs";
@@ -9,6 +9,7 @@ import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 import {Channel} from "../models/channel";
 import {ChannelStore} from "../store/channel/channel.store";
 import {CommunityQuery} from "../store/community/community.query";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,13 @@ export class CommunityService {
 
   private communitiesSubject: BehaviorSubject<Community[]> = new BehaviorSubject<Community[]>([]);
 
+  private snackBar = inject(MatSnackBar);
+
   constructor(
     private http: HttpClient,
     private userService: UserService,
-    private communityQuery: CommunityQuery,
     private communityStore: CommunityStore,
+    private communityQuery: CommunityQuery,
     private channelStore: ChannelStore
   ) { }
 
@@ -85,9 +88,29 @@ export class CommunityService {
 
   // handle response -> delete community from list, message, navigate from community etc.
   deleteCommunity(id: string) {
-    return this.http.delete(this.apiPath + "/" + id).subscribe(
-      res => console.log(res)
-    );
+    this.http.delete(this.apiPath + "/" + id).pipe()
+      .subscribe({
+      next: _ => {
+        // ???
+        this.communityStore.deleteCommunity(id);
+
+        // updating list state
+        const currentCommunities = this.communitiesSubject.getValue();
+        const updatedCommunities = currentCommunities.filter(community => community.id !== id);
+        this.communitiesSubject.next(updatedCommunities);
+
+        // need to unselect community if deleted one was actually selected
+        this.communityQuery.community$.subscribe(community => {
+          if(community.id === id){
+            this.communityStore.clear();
+          }
+        });
+
+        // global info
+        this.snackBar.open("Community deleted", 'Ok', {duration: 3000})
+      },
+      error: err => this.snackBar.open("Error occurred during deleting community " + err)
+    });
   }
 
   createInvitation(id: string, days: number){

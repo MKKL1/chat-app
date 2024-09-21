@@ -35,8 +35,6 @@ export class OverviewComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
 
   selectedCommunity: Community | undefined;
-  linkCreated: boolean = false;
-  link: string | undefined;
 
   constructor(
     protected communityQuery: CommunityQuery,
@@ -57,33 +55,7 @@ export class OverviewComponent implements OnInit{
   }
 
   openDialog(){
-    const dialogRef = this.dialog.open(GenerateInvitationComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      if(result.generated){
-        this.createInvitation(result.days);
-      }
-    });
-  }
-
-  createInvitation(days: number){
-    if(this.selectedCommunity?.id){
-      this.communityService.createInvitation(this.selectedCommunity?.id, days).subscribe({
-        next: res => {
-          console.log(res.link);
-          this.link = environment.domain + res.link;
-          this.linkCreated = true;
-          console.log(this.linkCreated);
-        },
-        error: err => {console.log(err)}
-      });
-    }
-  }
-
-  copyToClipboard(){
-    if (typeof this.link === "string") {
-      navigator.clipboard.writeText(this.link);
-      this.snackBar.open('Copied to clipboard');
-    }
+    this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity?.id}});
   }
 
 }
