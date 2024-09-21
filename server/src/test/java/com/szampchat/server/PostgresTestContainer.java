@@ -10,17 +10,14 @@ import org.testcontainers.junit.jupiter.Container;
 
 public interface PostgresTestContainer {
     @Container
-    PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+    PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
+            .withInitScript("schema.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.r2dbc.url", RdbcUrlUtil.getR2dbcUrl(postgres));
         registry.add("spring.r2dbc.username", postgres::getUsername);
         registry.add("spring.r2dbc.password", postgres::getPassword);
-    }
-
-    static void populate() {
-        postgres.withInitScript("schema.sql");
     }
 
     @Test

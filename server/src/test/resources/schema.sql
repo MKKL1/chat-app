@@ -1,3 +1,19 @@
+create table users
+(
+    id          bigint       not null
+        constraint pk_users
+            primary key,
+    name        varchar(255) not null
+        constraint uc_users_name
+            unique,
+    email       varchar(255)
+        constraint uc_users_email
+            unique,
+    image_url   varchar(255),
+    description varchar(255),
+    sub         uuid
+);
+
 create table communities
 (
     id        bigint       not null
@@ -32,22 +48,6 @@ create table roles
     community_id bigint       not null
         constraint fk_roles_on_community
             references communities on delete cascade
-);
-
-create table users
-(
-    id          bigint       not null
-        constraint pk_users
-            primary key,
-    name        varchar(255) not null
-        constraint uc_users_name
-            unique,
-    email       varchar(255)
-        constraint uc_users_email
-            unique,
-    image_url   varchar(255),
-    description varchar(255),
-    sub         uuid
 );
 
 create table community_members

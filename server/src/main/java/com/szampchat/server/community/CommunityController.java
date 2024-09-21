@@ -35,6 +35,7 @@ public class CommunityController {
 
 
     // We need another endpoint with community info for user who want to join it
+    //TODO It really should be CommunityDTO
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Community by given ID was not found", content = @Content),
