@@ -15,10 +15,6 @@ import java.lang.annotation.*;
 
 /**
  * Annotation to inject fake user data into {@link SecurityContext}.
- * <p>
- * Skips most security checks by injecting user information directly to SecurityContext
- * For example: user could act like owner of community, while not even being it's member.
- * In conclusion, do NOT test authorization with this annotation
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
