@@ -114,8 +114,15 @@ export class RsocketService implements OnInit{
           console.log(dataAsString);
 
           // Instead of returning plane string trying to map it to generic type
+          // Also it has to parse all numbers to string to not broke ids
           try{
-            const parsedData: T = JSON.parse(dataAsString).data;
+            const parsedData: T = JSON.parse(dataAsString, (key, value) => {
+              if(typeof value === 'number'){
+                value = BigInt(value).toString();
+              }
+
+              return value;
+            }).data;
             subscriber.next(parsedData);
           } catch(error){
             console.error("Error parsing JSON: ", error);

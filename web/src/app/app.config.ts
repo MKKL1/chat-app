@@ -15,6 +15,7 @@ import {authInterceptor} from "./core/interceptors/auth.interceptor";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
 import {GlobalErrorHandler} from "./core/global.error.handler";
+import {numbersDeserializationInterceptor} from "./core/interceptors/numbers.deserialization.interceptor";
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -39,7 +40,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([loggingInterceptor, authInterceptor])),
+    provideHttpClient(withInterceptors([
+      numbersDeserializationInterceptor,
+      loggingInterceptor,
+      authInterceptor
+    ])),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     importProvidersFrom(KeycloakAngularModule),
     {

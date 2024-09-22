@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Channel} from "../models/channel";
+import {Channel, ChannelType} from "../models/channel";
 import {environment} from "../../../environment";
 import {Observable, tap} from "rxjs";
 import {CommunityQuery} from "../store/community/community.query";
@@ -35,6 +35,11 @@ export class ChannelService {
 
     return this.http.post<Channel>(this.apiPath, channel).pipe(
       tap(newChannel => {
+        // it wouldn't be necessary if I could just pass numbers in json,
+        // but I can't because ids are too big and I have to map them to string
+        // and I can't tell if number is other value than id, so it also is mapped to string
+        // @ts-ignore
+        newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
         this.store.addChannel(newChannel);
       })
     );

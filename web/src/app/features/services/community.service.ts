@@ -1,12 +1,11 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {BehaviorSubject, filter, map, mergeMap, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {Community} from "../models/community";
 import {UserService} from "../../core/services/user.service";
 import {CommunityStore} from "../store/community/community.store";
-import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
-import {Channel} from "../models/channel";
+import {ChannelType} from "../models/channel";
 import {ChannelStore} from "../store/channel/channel.store";
 import {CommunityQuery} from "../store/community/community.query";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -41,7 +40,10 @@ export class CommunityService {
           ownerId: res.community.ownerId,
           roles: res.roles,
           members: res.members,
-          channels: res.channels
+          channels: res.channels.map((channel: any) => ({
+            ...channel,
+            type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
+          }))
         }
       })
     ).subscribe({
@@ -56,7 +58,9 @@ export class CommunityService {
   fetchCommunities() {
      this.http.get<Community[]>(this.apiPath
      ).subscribe({
-       next: (communities) => this.communitiesSubject.next(communities),
+       next: (communities) => {
+         this.communitiesSubject.next(communities)
+       },
        error: (err) => console.error(err)
      });
   }
