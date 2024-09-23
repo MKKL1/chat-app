@@ -28,9 +28,11 @@ export class MessageService {
 
   }
 
-  // todo call api for few first messages in chat, and store them in message store
-  getMessages(channelId: string){
-
+  // todo get only few first messages, load more later as user scroll to the top of text-chat component
+  getMessages(){
+    this.http.get<Message[]>(this.api).subscribe(messages => {
+      this.messageStore.addMessages(messages);
+    });
   }
 
   // we only want to send communityId, channelId and message text
@@ -61,14 +63,18 @@ export class MessageService {
     });
   }
 
-  editMessage(message: Message){
-    // todo send message to api and wait for response
-    this.messageStore.editMessage(message);
+  editMessage(id: string, text: string){
+    this.http.patch<Message>(this.api + `/${id}`, {
+      text: text
+    }).subscribe(message => {
+      this.messageStore.editMessage(message);
+    });
   }
 
   deleteMessage(id: string){
-    // todo send message to api and wait for response
-    this.messageStore.deleteMessage(id);
+    this.http.delete(this.api + `/${id}`).subscribe(res => {
+      this.messageStore.deleteMessage(id);
+    });
   }
 
   // todo implement

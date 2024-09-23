@@ -3,6 +3,8 @@ package com.szampchat.server.message;
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.EventSink;
+import com.szampchat.server.message.dto.EditMessageDTO;
+import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
@@ -33,19 +35,25 @@ public class MessageController {
 
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<MessageDTO> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
+    public Mono<Message> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
         return messageService.createMessage(messageCreateDTO, currentUser.getUserId());
     }
 
+    // maybe just check if user created this message
+    // Only think which makes sense to change is text
+    // We don't want to do changing images, responds etc.
+    // TODO message is inserted instead of update
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<MessageDTO> editMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
-        return Mono.empty();
+    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageDTO editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
+        return messageService.editMessage(editMessage.text(), messageId, currentUser.getUserId());
     }
 
+    // maybe just check if user created this message
+    // TODO Delete file if attached
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<MessageDTO> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
-        return Mono.empty();
+    public Mono<Void> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
+        return messageService.deleteMessage(messageId, currentUser.getUserId());
     }
 }

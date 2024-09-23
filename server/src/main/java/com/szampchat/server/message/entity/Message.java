@@ -17,7 +17,7 @@ public class Message {
     private Long id;
 
     @Column("channel_id")
-    private Long channel;
+    private Long channelId;
 
     @Column("text")
     private String text;
@@ -26,7 +26,7 @@ public class Message {
     private Instant updated_at;
 
     @Column("user_id")
-    private Long user;
+    private Long userId;
 
     @Column("responds_to_message_id")
     private Long respondsToMessage;

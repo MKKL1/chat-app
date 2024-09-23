@@ -2,12 +2,32 @@
   <mat-button-toggle value="all">All</mat-button-toggle>
   <mat-button-toggle value="owned">Only owned</mat-button-toggle>
 </mat-button-toggle-group>
-@if (showOnlyOwned){
-  <div *ngFor="let community of ownedCommunities$ | async" class="communities">
-    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>
-  </div>
-} @else {
-  <div *ngFor="let community of communities$ | async" class="communities">
-    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>
-  </div>
+
+<!-- copy paste it everywhere where async collection is loaded -->
+@if(isLoading){
+  <mat-spinner></mat-spinner>
 }
+
+@if(errorMessage){
+  <p>{{errorMessage}}</p>
+}
+
+@if(communities$ | async; as communities){
+    @if(communities.length){
+      @for(community of communities; track community.id){
+        <app-community-card (click)="selectCommunity(community.id)" [community]="community">
+        </app-community-card>
+      }
+    } @else {
+      <h1>You don't belong to any community yet</h1>
+    }
+}
+<!--@if (showOnlyOwned){-->
+<!--  <div *ngFor="let community of ownedCommunities$ | async" class="communities">-->
+<!--    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>-->
+<!--  </div>-->
+<!--} @else {-->
+<!--  <div *ngFor="let community of communities$ | async" class="communities">-->
+<!--    <app-community-card (click)="selectCommunity(community.id)" [community]="community"></app-community-card>-->
+<!--  </div>-->
+<!--}-->

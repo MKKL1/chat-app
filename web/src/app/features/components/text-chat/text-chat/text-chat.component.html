@@ -1,11 +1,11 @@
 <div class="text-chat-container">
   <!-- messages -->
   <div class="messages">
-    @for(message of messages; track message){
+    @for(message of messages$ | async; track message){
       <app-message [message]="message" [userId]="userService.getUser().id" (respondsTo)="setResponse($event)"
                    appFadeInOutScroll class="hideOnScroll"></app-message>
     }
   </div>
-
+  <!-- message input -->
   <app-message-input [messageToRespond]="messageToRespond"></app-message-input>
 </div>

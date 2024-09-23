@@ -24,6 +24,10 @@ export class MessageStore extends Store<MessageState>{
     this.update(state => ({messages: [...state.messages, message]}));
   }
 
+  addMessages(messages: Message[]) {
+    this.update(state => ({messages: [...state.messages, ...messages]}));
+  }
+
   // TODO implement
   editMessage(message: Message){
 

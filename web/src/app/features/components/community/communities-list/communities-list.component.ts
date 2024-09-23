@@ -2,13 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {CommunityCardComponent} from "../community-card/community-card.component";
 import {RouterLink} from "@angular/router";
 import {Community} from "../../../models/community";
-import {AsyncPipe, NgForOf} from "@angular/common";
-import {Observable} from "rxjs";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {catchError, finalize, Observable, of} from "rxjs";
 import {CommunityService} from "../../../services/community.service";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {FormsModule} from "@angular/forms";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-communities-list',
@@ -23,7 +24,9 @@ import {FormsModule} from "@angular/forms";
     MatSlideToggle,
     MatButtonToggleGroup,
     MatButtonToggle,
-    FormsModule
+    FormsModule,
+    NgIf,
+    MatProgressSpinner
   ],
   templateUrl: './communities-list.component.html',
   styleUrl: './communities-list.component.scss'
@@ -31,6 +34,8 @@ import {FormsModule} from "@angular/forms";
 
 export class CommunitiesListComponent implements OnInit {
   showOnlyOwned: boolean = false;
+  errorMessage: string | null = null;
+  isLoading: boolean = true;
 
   constructor(private communityService: CommunityService) {
   }
@@ -40,7 +45,13 @@ export class CommunitiesListComponent implements OnInit {
   }
 
   get communities$(){
-    return this.communityService.getUserCommunities();
+    return this.communityService.getUserCommunities().pipe(
+      catchError(error => {
+        this.errorMessage = "Cannot load communities"
+        return of([]);
+      }),
+      finalize(() => this.isLoading = false)
+    );
   }
 
   get ownedCommunities$(){

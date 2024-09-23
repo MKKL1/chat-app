@@ -11,15 +11,15 @@ import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.co
 import {FadeInOutScrollDirective} from "../../../../shared/directives/fade-in-out-scroll.directive";
 import {ChannelQuery} from "../../../store/channel/channel.query";
 import {Channel, ChannelType} from "../../../models/channel";
-import {MessageService} from "../../../services/message.service";
 import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
-import {CreateMessageDto} from "../../../models/create.message.dto";
 import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {RsocketService} from "../../../../core/services/rsocket.service";
-
-// maybe split it into component with messages to read, and component with input to create new message
+import {MessageService} from "../../../services/message.service";
+import {Observable} from "rxjs";
+import {MessageStore} from "../../../store/message/message.store";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
   selector: 'app-text-chat',
@@ -35,7 +35,8 @@ import {RsocketService} from "../../../../core/services/rsocket.service";
     MessageComponent,
     GifSearchComponent,
     FadeInOutScrollDirective,
-    MessageInputComponent
+    MessageInputComponent,
+    AsyncPipe
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
@@ -43,33 +44,32 @@ import {RsocketService} from "../../../../core/services/rsocket.service";
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
 
-  // for now, I don't use store for messages
-  messages: Message[] = [];
+  messages$!: Observable<Message[]>;
 
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
     private rsocketService: RsocketService,
     protected userService: UserService,
+    private messageService: MessageService,
     private channelQuery: ChannelQuery,
     private messageQuery: MessageQuery,
+    private messageStore: MessageStore
   ) {}
 
   ngOnInit() {
+    this.messageService.getMessages();
+
     this.channelQuery.textChannel$.subscribe(channel => {
       console.log("Text channel changed");
       console.log(channel);
       this.channel = channel;
-      this.messages = [];
     });
 
-    this.messageQuery.messages$(this.channel.id ?? '').subscribe(messages => {
-      this.messages = messages;
-    });
+    this.messages$ = this.messageQuery.messages$(this.channel.id ?? '');
 
     this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
-      console.log(message);
-      this.messages.push(message);
+      this.messageStore.addMessage(message);
     })
   }
 
