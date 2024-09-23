@@ -30,4 +30,7 @@ public class Message {
 
     @Column("responds_to_message_id")
     private Long respondsToMessage;
+
+    @Column("gif_link")
+    private String gifLink;
 }

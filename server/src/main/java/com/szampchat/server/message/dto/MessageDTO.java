@@ -20,6 +20,7 @@ public class MessageDTO {
     private Instant updated_at;
     private Long userId;
     private Long respondsToMessage;
+    private String gifLink;
 
     private List<MessageAttachmentDTO> attachments;
     private List<ReactionPreviewDTO> reactions;

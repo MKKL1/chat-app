@@ -11,5 +11,5 @@ export interface Message{
   respondsTo?: string;
   reactions: Reaction[];
   messageAttachment?: MessageAttachment;
-  gifPath?: string
+  gifLink?: string
 }

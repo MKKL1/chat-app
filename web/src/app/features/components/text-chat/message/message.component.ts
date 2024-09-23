@@ -48,6 +48,8 @@ export class MessageComponent implements OnInit{
     if(this.message?.userId === this.userId){
       this.fromClient = true;
     }
+
+    console.log(this.message);
   }
 
   respondToMessage(){

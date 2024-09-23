@@ -1,10 +1,19 @@
+<!-- TODO Fix css -->
+
 <div class="message-container" [ngStyle]="fromClient ? {'align-items': 'flex-end'} : {'align-items': 'flex-start'}">
 <!--  <p>user {{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>-->
   <div class="message-wrapper" [ngStyle]="fromClient ? {'flex-direction': 'row-reverse'} : {'flex-direction': 'row'}">
     <app-avatar></app-avatar>
+
     <div class="message-content" [ngStyle]="fromClient ? {'background': '#0d5043'} : {'background': '#565656'}">
-      {{message.text}}
+      <p style="margin:0;">{{message.text}}</p>
+      @if(message.gifLink !== ''){
+        <div>
+          <img src="{{message.gifLink}}">
+        </div>
+      }
     </div>
+
     <!--  Menu with additional actions  -->
     <div class="message-menu">
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
@@ -18,7 +27,9 @@
       </mat-menu>
     </div>
   </div>
+
 </div>
+
 @if(showReactionPicker){
   <app-emoji-picker (clickOutside)="showReactionPicker = false" (emojiSelect)="appendReaction($event)">
   </app-emoji-picker>

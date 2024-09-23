@@ -74,6 +74,7 @@ create table messages
         constraint fk_messages_on_channel
             references channels on delete cascade ,
     responds_to_message_id bigint,
+    gif_link               varchar(255),
     constraint pk_messages
         primary key (message_id, channel_id),
     constraint fk_messages_on_retomeidretochid

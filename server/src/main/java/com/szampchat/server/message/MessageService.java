@@ -47,10 +47,11 @@ public class MessageService {
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
-    Mono<Message> createMessage(MessageCreateDTO creatMessage, Long userId){
-        Message message = modelMapper.map(creatMessage, Message.class);
+    Mono<Message> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId){
+        Message message = modelMapper.map(createMessage, Message.class);
         message.setId(snowflake.nextId());
         message.setUserId(userId);
+        message.setChannelId(channelId);
         MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 
         // publishing event
@@ -58,7 +59,7 @@ public class MessageService {
                 .data(messageDTO)
                 .recipient(Recipient.builder()
                         .context(Recipient.Context.COMMUNITY)
-                        .id(creatMessage.getCommunityId())
+                        .id(createMessage.getCommunityId())
                         .build())
                 .build());
 

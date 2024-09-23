@@ -1,3 +1,5 @@
+<!-- And css for attaching additional content to message -->
+
 <!-- input for sending message -->
 @if(selectedGif.length !== 0){
   <div class="resources-container">
@@ -7,13 +9,13 @@
 
 <!-- display message to which user is responding -->
 @if(messageToRespond && messageToRespond.id !== ''){
-  <p>{{messageToRespond.text}}</p>
+  <p>Responding to: {{messageToRespond.text}}</p>
 }
 
 <div class="message-input">
   <!-- preventing from displaying additional margin at bottom (place for hint) -->
   <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
-    <input [(ngModel)]="message" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
+    <input [(ngModel)]="text" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
   </mat-form-field>
   <!-- make icons prettier -->
   <div class="icons">

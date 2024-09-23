@@ -36,8 +36,7 @@ export class MessageService {
   }
 
   // we only want to send communityId, channelId and message text
-  sendMessage(message: string, file?: File | null){
-    // todo send message to api and wait for response
+  sendMessage(message: CreateMessageDto, file?: File | null){
     // todo send file and save it on backend
     // faking creating message
     // const message: Message = {
@@ -53,12 +52,10 @@ export class MessageService {
     //   userId: messageDTO.userId
     // };
 
+    message.communityId = this.communityId;
+
     // Message don't have to be added to store, because rsocket is already listening for new messages
-    this.http.post(this.api, {
-      channelId: this.channelId,
-      communityId: this.communityId,
-      text: message
-    }).subscribe(res => {
+    this.http.post(this.api, message).subscribe(res => {
       console.log(res);
     });
   }

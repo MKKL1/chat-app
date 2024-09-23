@@ -36,7 +36,7 @@ public class MessageController {
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<Message> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
-        return messageService.createMessage(messageCreateDTO, currentUser.getUserId());
+        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId);
     }
 
     // maybe just check if user created this message
