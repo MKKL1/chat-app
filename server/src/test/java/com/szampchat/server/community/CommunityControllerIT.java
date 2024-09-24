@@ -2,51 +2,46 @@ package com.szampchat.server.community;
 
 import com.szampchat.server.PostgresTestContainer;
 import com.szampchat.server.RabbitMQTestContainer;
-import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.repository.CommunityRepository;
-import com.szampchat.server.community.service.CommunityService;
-import com.szampchat.server.tools.TestSecurityConfig;
+import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.tools.WithMockCustomUser;
-import com.szampchat.server.user.UserController;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
-import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.core.publisher.Mono;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @Testcontainers
 @AutoConfigureWebTestClient(timeout = "3600000")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestSecurityConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(MockitoExtension.class)
 public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTestContainer {
+
+    @MockBean
+    private CommunityMemberService communityMemberService;
 
     @Autowired
     private CommunityRepository communityRepository;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     protected WebTestClient client;
 
@@ -73,6 +68,8 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     @WithMockCustomUser
     @Test
     void givenAuthenticatedUserAndNotDefinedCommunity_whenGetCommunity_thenNotFound() {
+        when(communityMemberService.isMember(anyLong(), anyLong())).thenReturn(Mono.just(true));
+
         client.get().uri("/communities/1").exchange()
                 .expectStatus().isNotFound();
     }
@@ -80,22 +77,26 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     @WithMockCustomUser
     @Test
     void givenAuthenticatedUserAndDefinedCommunity_whenGetCommunity_thenReturnCommunityDTO() {
+        when(communityMemberService.isMember(anyLong(), anyLong())).thenReturn(Mono.just(true));
 
-        User owner = userRepository.save(User.builder()
-                        .description("")
-                        .username("da")
-                .build()).block();
+        User owner = userRepository.save(Instancio.of(User.class)
+                        .set(field(User::getId), null)
+                    .create())
+                .block();
 
+        assertThat(owner).isNotNull();
 
-        Community community = communityRepository.save(Community.builder()
-                        .name("adad")
-                        .ownerId(owner.getId())
-                        .imageUrl("")
-                .build()).block();
+        Community community = communityRepository.save(Instancio.of(Community.class)
+                        .set(field(Community::getId), null)
+                        .set(field(Community::getOwnerId), owner.getId())
+                    .create())
+                .block();
+
+        assertThat(community).isNotNull();
 
         client.get().uri("/communities/" + community.getId()).exchange()
                 .expectStatus().isOk()
                 .expectBody(Community.class) //TODO It really should be CommunityDTO
-                .value((res) -> assertThat(res.getId()).isEqualTo(1L));
+                .value((res) -> assertThat(res.getId()).isEqualTo(community.getId()));
     }
 }
