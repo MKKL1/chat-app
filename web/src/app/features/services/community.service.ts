@@ -28,8 +28,9 @@ export class CommunityService {
     private channelStore: ChannelStore
   ) { }
 
-  // TODO to change community user need to click two times, also it catches community every time
   fetchCommunity(id: string){
+
+
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
         // maybe map this on backend
@@ -48,6 +49,7 @@ export class CommunityService {
       })
     ).subscribe({
       next: (community) => {
+
         this.communityStore.selectCommunity(community);
         this.channelStore.selectChannels(community.channels);
       },

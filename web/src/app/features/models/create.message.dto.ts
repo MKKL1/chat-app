@@ -1,6 +1,6 @@
 export interface CreateMessageDto {
   text: string;
   communityId?: string;
-  messageToRespond?: string;
+  respondsToMessage?: string;
   gifLink?: string;
 }

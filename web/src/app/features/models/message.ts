@@ -8,7 +8,7 @@ export interface Message{
   userId: string;
   edited: boolean;
   updatedAt: Date;
-  respondsTo?: string;
+  respondsToMessage?: string;
   reactions: Reaction[];
   messageAttachment?: MessageAttachment;
   gifLink?: string

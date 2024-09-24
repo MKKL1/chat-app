@@ -56,7 +56,7 @@ export class MessageService {
 
     // Message don't have to be added to store, because rsocket is already listening for new messages
     this.http.post(this.api, message).subscribe(res => {
-      console.log(res);
+      //console.log(res);
     });
   }
 

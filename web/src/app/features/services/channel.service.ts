@@ -53,7 +53,7 @@ export class ChannelService {
 
   deleteChannel(id: string){
     return this.http.delete(this.apiPath + "/" + id).pipe(
-      tap(deletedChannel => {
+      tap(res => {
         this.store.deleteChannel(id);
       })
     );

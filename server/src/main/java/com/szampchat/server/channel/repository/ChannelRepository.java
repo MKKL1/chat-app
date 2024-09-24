@@ -20,6 +20,6 @@ public interface ChannelRepository extends R2dbcRepository<Channel, Long> {
     @Query("SELECT EXISTS (SELECT 1 FROM community_members WHERE community_id = :community AND user_id = :user)")
     Mono<Boolean> isMemberOfCommunity(@Param("community") Long community, @Param("user") Long user);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM channels WHERE name = :name)")
-    Mono<Boolean> doesChannelExist(@Param("name") String name);
+    @Query("SELECT EXISTS(SELECT 1 FROM channels WHERE name = :name AND community_id = :communityId)")
+    Mono<Boolean> doesChannelExist(@Param("name") String name, @Param("communityId") Long communityId);
 }

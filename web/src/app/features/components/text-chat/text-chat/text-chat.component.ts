@@ -68,6 +68,8 @@ export class TextChatComponent implements OnInit{
 
     this.messages$ = this.messageQuery.messages$(this.channel.id ?? '');
 
+    // this method don't care on which channel user is
+    // don't just add everything here
     this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
       this.messageStore.addMessage(message);
     })

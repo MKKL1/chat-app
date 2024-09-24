@@ -27,7 +27,6 @@ export class ChannelStore extends Store<ChannelState> {
   }
 
   selectChannels(channels: Channel[]){
-    console.log(channels);
     this.update(state => ({channels: channels}));
   }
 

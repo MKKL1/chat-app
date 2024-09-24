@@ -64,7 +64,7 @@ export class MessageInputComponent {
     // if created message responds to another message
     // add id of this message
     if(this.messageToRespond !== undefined){
-      message.messageToRespond = this.messageToRespond.id;
+      message.respondsToMessage = this.messageToRespond.id;
     }
 
     // add gif link to message
@@ -76,6 +76,7 @@ export class MessageInputComponent {
 
     this.text = '';
     this.selectedGif = '';
+    this.messageToRespond = undefined;
     // have to chose specific element
     window.scrollTo(0, document.body.scrollHeight);
   }
