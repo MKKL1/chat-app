@@ -45,10 +45,8 @@ export class InvitationComponent  implements OnInit{
         this.communityService.fetchCommunity(this.communityId);
       }
 
-      this.communityQuery.community$.subscribe(community => {
-        this.community = community;
-        this.loadedInvitation = true;
-      });
+      this.community = this.communityQuery.getActive();
+      this.loadedInvitation = true;
     });
   }
 

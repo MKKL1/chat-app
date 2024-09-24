@@ -27,9 +27,6 @@ import {MatSnackBar} from "@angular/material/snack-bar";
   styleUrl: './overview.component.scss'
 })
 
-// changes in this component are messed up
-// maybe turn it back into routes?
-
 export class OverviewComponent implements OnInit{
   readonly dialog: MatDialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
@@ -43,7 +40,7 @@ export class OverviewComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.communityQuery.community$.subscribe(community => {
+    this.communityQuery.selectActive().subscribe(community => {
       this.selectedCommunity = community;
     });
   }

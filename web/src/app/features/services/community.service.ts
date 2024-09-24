@@ -29,54 +29,81 @@ export class CommunityService {
   ) { }
 
   fetchCommunity(id: string){
+    this.communityQuery.selectEntity(id).subscribe(community => {
+      // community is already stored in app
+      // so instead calling api it is set from storage
+      if(community !== undefined){
+        this.communityStore.setActive(community.id);
+      }
 
-
-    this.http.get(this.apiPath + "/" + id + "/info").pipe(
-      map((res: any) => {
-        // maybe map this on backend
-        return {
-          id: res.community.id,
-          name: res.community.name,
-          imageUrl: res.community.imageUrl,
-          ownerId: res.community.ownerId,
-          roles: res.roles,
-          members: res.members,
-          channels: res.channels.map((channel: any) => ({
-            ...channel,
-            type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
-          }))
-        }
-      })
-    ).subscribe({
-      next: (community) => {
-
-        this.communityStore.selectCommunity(community);
-        this.channelStore.selectChannels(community.channels);
-      },
-      error: (err) => console.error(err)
+      // call api to get community data
+      this.http.get(this.apiPath + "/" + id + "/info").pipe(
+        map((res: any) => {
+          // maybe map this on backend
+          return {
+            id: res.community.id,
+            name: res.community.name,
+            imageUrl: res.community.imageUrl,
+            ownerId: res.community.ownerId,
+            roles: res.roles,
+            members: res.members,
+            channels: res.channels.map((channel: any) => ({
+              ...channel,
+              type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
+            }))
+          }
+        })
+      ).subscribe({
+        // maybe it's too much data duplication?
+        next: (community) => {
+          // adding community to list of communities
+          // next time when this community will be selected
+          // there won't be need to fetch it from api
+          this.communityStore.add(community);
+          // making this community selected one
+          // after this community can be referenced by other parts of app
+          // as a currently chosen one
+          this.communityStore.setActive(community.id);
+          // TODO normalize data
+          // Selecting channels from current community
+          // this line is very dangerous because if I forget to call it
+          // channels from previous community will be showed instead of proper ones
+          this.channelStore.selectChannels(community.channels);
+        },
+        error: (err) => console.error(err)
+      });
     });
   }
 
   fetchCommunities() {
+    // communities already fetched
+    if(this.communityQuery.getCount() !== 0){
+      return;
+    }
+
      this.http.get<Community[]>(this.apiPath
      ).subscribe({
        next: (communities) => {
-         this.communitiesSubject.next(communities)
+         this.communityStore.set(communities);
+         //this.communitiesSubject.next(communities)
        },
        error: (err) => console.error(err)
      });
   }
 
   getUserCommunities(): Observable<Community[]> {
-    return this.communitiesSubject.asObservable();
+    return this.communityQuery.selectAll();
+    //return this.communitiesSubject.asObservable();
   }
 
   getOwnedCommunities(): Observable<Community[]> {
-    return this.communitiesSubject.asObservable().pipe(
-      map((communities: Community[]) =>
-        communities.filter((community: Community) =>
-          community.ownerId == this.userService.getUser().id))
-    );
+    // I don't know how filtering works
+    return this.communityQuery.selectAll();
+    // return this.communitiesSubject.asObservable().pipe(
+    //   map((communities: Community[]) =>
+    //     communities.filter((community: Community) =>
+    //       community.ownerId == this.userService.getUser().id))
+    // );
   }
 
   // change those types
@@ -92,13 +119,12 @@ export class CommunityService {
       );
   }
 
-  // handle response -> delete community from list, message, navigate from community etc.
   deleteCommunity(id: string) {
     this.http.delete(this.apiPath + "/" + id).pipe()
       .subscribe({
       next: _ => {
         // ???
-        this.communityStore.deleteCommunity(id);
+        this.communityStore.remove(id);
 
         // updating list state
         const currentCommunities = this.communitiesSubject.getValue();
@@ -106,11 +132,9 @@ export class CommunityService {
         this.communitiesSubject.next(updatedCommunities);
 
         // need to unselect community if deleted one was actually selected
-        this.communityQuery.community$.subscribe(community => {
-          if(community.id === id){
-            this.communityStore.clear();
-          }
-        });
+        if(this.communityQuery.getActiveId() === id){
+          this.communityStore.removeActive(id);
+        }
 
         // global info
         this.snackBar.open("Community deleted", 'Ok', {duration: 3000})

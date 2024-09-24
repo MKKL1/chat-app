@@ -1,22 +1,15 @@
-import {Query} from "@datorama/akita";
+import {QueryEntity} from "@datorama/akita";
 import {CommunityState, CommunityStore} from "./community.store";
 import {Observable} from "rxjs";
-import {Community} from "../../models/community";
 import {Injectable} from "@angular/core";
 
 @Injectable({ providedIn: 'root' })
-export class CommunityQuery extends Query<CommunityState> {
-  communities$: Observable<Community[]> = this.select(state => state.communities);
-
-  community$: Observable<Community> = this.select(state => state.selectedCommunity);
-
-  communityId$: Observable<string> = this.select(state => state.selectedCommunity.id);
-
-  ownerId$: Observable<string> = this.select(state => state.selectedCommunity.ownerId);
-
-  isCommunitySelected$: Observable<boolean> = this.select(state => state.selectedCommunity.id !== '');
+export class CommunityQuery extends QueryEntity<CommunityState> {
 
   constructor(protected override store: CommunityStore) {
     super(store);
   }
+
+  isCommunitySelected$: Observable<boolean> =
+    this.select(state => state.active !== undefined);
 }

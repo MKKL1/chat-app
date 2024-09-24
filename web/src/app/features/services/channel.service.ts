@@ -11,13 +11,11 @@ import {ChannelStore} from "../store/channel/channel.store";
 })
 export class ChannelService {
   private readonly apiPath: string = environment.api + "channels";
-  private communityId: string | undefined;
+  private readonly communityId: string | undefined;
 
   // getting id of currently chosen community
   constructor(private http: HttpClient, private store: ChannelStore, private communityQuery: CommunityQuery) {
-    this.communityQuery.community$.subscribe(community => {
-      this.communityId = community.id;
-    })
+    this.communityId = String(this.communityQuery.getActiveId());
   }
 
   selectVoiceChannel(channel: Channel){
