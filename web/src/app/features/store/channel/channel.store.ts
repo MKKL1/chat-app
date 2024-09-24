@@ -2,6 +2,9 @@ import {Channel, ChannelType} from "../../models/channel";
 import {Store, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
 
+// current idea - make 2 stores for different type of channels
+// add data to proper store after fetching
+
 export interface ChannelState {
   channels: Channel[];
   selectedVoiceChannel: Channel;

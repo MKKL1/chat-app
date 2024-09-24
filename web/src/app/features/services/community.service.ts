@@ -28,6 +28,7 @@ export class CommunityService {
     private channelStore: ChannelStore
   ) { }
 
+  // AKITA CAN CACHE DATA BY ITSELF I JUST NEED TO FIND OUT HOW TO DO IT
   fetchCommunity(id: string){
     this.communityQuery.selectEntity(id).subscribe(community => {
       // community is already stored in app
@@ -110,12 +111,7 @@ export class CommunityService {
   createCommunity(form: {name: string}) {
     this.http.post<Community>(this.apiPath, {name: form.name})
       .subscribe(
-        community => this.communitiesSubject.next(
-          [
-            ...this.communitiesSubject.getValue(),
-            community
-          ]
-        )
+        community => this.communityStore.add(community)
       );
   }
 

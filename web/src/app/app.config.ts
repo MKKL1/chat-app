@@ -16,6 +16,7 @@ import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environment";
 import {GlobalErrorHandler} from "./core/global.error.handler";
 import {numbersDeserializationInterceptor} from "./core/interceptors/numbers.deserialization.interceptor";
+import {persistState} from "@datorama/akita";
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -52,6 +53,10 @@ export const appConfig: ApplicationConfig = {
         useFactory: initializeKeycloak,
         multi: true,
         deps: [KeycloakService]
+    },
+    {
+      provide: 'persistStorage',
+      useValue: persistState()
     }
 ]
 };
