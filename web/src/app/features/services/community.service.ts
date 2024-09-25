@@ -1,14 +1,19 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {BehaviorSubject, map, Observable} from "rxjs";
+import {BehaviorSubject, EMPTY, map, switchMap, tap} from "rxjs";
 import {Community} from "../models/community";
 import {UserService} from "../../core/services/user.service";
 import {CommunityStore} from "../store/community/community.store";
-import {ChannelType} from "../models/channel";
-import {ChannelStore} from "../store/channel/channel.store";
+import {Channel, ChannelType} from "../models/channel";
 import {CommunityQuery} from "../store/community/community.query";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {TextChannelStore} from "../store/textChannel/text.channel.store";
+import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
+import {MemberStore} from "../store/member/member.store";
+import {RoleStore} from "../store/role/role.store";
+import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
+import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 
 @Injectable({
   providedIn: 'root'
@@ -25,86 +30,90 @@ export class CommunityService {
     private userService: UserService,
     private communityStore: CommunityStore,
     private communityQuery: CommunityQuery,
-    private channelStore: ChannelStore
+    private voiceChannelStore: VoiceChannelStore,
+    private voiceChannelQuery: VoiceChannelQuery,
+    private textChannelStore: TextChannelStore,
+    private textChannelQuery: TextChannelQuery,
+    private memberStore: MemberStore,
+    private roleStore: RoleStore
   ) { }
 
   // AKITA CAN CACHE DATA BY ITSELF I JUST NEED TO FIND OUT HOW TO DO IT
   fetchCommunity(id: string){
-    this.communityQuery.selectEntity(id).subscribe(community => {
-      // community is already stored in app
-      // so instead calling api it is set from storage
-      if(community !== undefined){
-        this.communityStore.setActive(community.id);
-      }
+    const community = this.communityQuery.getEntity(id);
 
-      // call api to get community data
-      this.http.get(this.apiPath + "/" + id + "/info").pipe(
-        map((res: any) => {
-          // maybe map this on backend
-          return {
-            id: res.community.id,
-            name: res.community.name,
-            imageUrl: res.community.imageUrl,
-            ownerId: res.community.ownerId,
-            roles: res.roles,
-            members: res.members,
-            channels: res.channels.map((channel: any) => ({
-              ...channel,
-              type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
-            }))
-          }
-        })
-      ).subscribe({
-        // maybe it's too much data duplication?
-        next: (community) => {
-          // adding community to list of communities
-          // next time when this community will be selected
-          // there won't be need to fetch it from api
-          this.communityStore.add(community);
-          // making this community selected one
-          // after this community can be referenced by other parts of app
-          // as a currently chosen one
-          this.communityStore.setActive(community.id);
-          // TODO normalize data
-          // Selecting channels from current community
-          // this line is very dangerous because if I forget to call it
-          // channels from previous community will be showed instead of proper ones
-          this.channelStore.selectChannels(community.channels);
-        },
-        error: (err) => console.error(err)
-      });
-    });
-  }
+    console.log(community);
 
-  fetchCommunities() {
-    // communities already fetched
-    if(this.communityQuery.getCount() !== 0){
+    // Data about communities is stored in storage after initiating app
+    // however data about channels, members etc. may be lacking
+    // I introduce flag fullyFetched, so this method will now decide if data should be
+    // fetch data api (fullyFetched is false) or taken from storage (fullyFetched is true)
+    // This flag will be automatically set after updating community object
+    if(community?.fullyFetched !== undefined && community?.fullyFetched){
+      this.communityStore.setActive(community.id);
+      // After selecting new community as active, active channels have to be removed
+      // to prevent producing list of channels containing ones from both communities
+      this.textChannelStore.removeActive(this.textChannelQuery.getActiveId());
+      this.voiceChannelStore.removeActive(this.voiceChannelQuery.getActiveId());
       return;
     }
 
-     this.http.get<Community[]>(this.apiPath
-     ).subscribe({
-       next: (communities) => {
-         this.communityStore.set(communities);
-         //this.communitiesSubject.next(communities)
-       },
-       error: (err) => console.error(err)
-     });
+    // call api to get community data
+    this.http.get(this.apiPath + "/" + id + "/info").pipe(
+      map((res: any) => {
+        // maybe map this on backend
+        return {
+          community: res.community,
+          roles: res.roles,
+          members: res.members,
+          channels: res.channels.map((channel: any) => ({
+            ...channel,
+            type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
+          }))
+        }
+      })
+    ).subscribe({
+      next: (response) => {
+        // Updating existing entity triggers setting fullyFetched flag
+        // which prevents fetching this community again
+        this.communityStore.update(id, response.community);
+        // making this community selected one
+        // after this community can be referenced by other parts of app
+        // as a currently chosen one
+        this.communityStore.setActive(response.community.id);
+        // All relational data connected to community is normalized
+        // and saved to separated stores which will make state of app easier to maintain
+
+        const textChannels: Channel[] = [];
+        const voiceChannels: Channel[] = [];
+
+        // dividing channels into 2 array by channel type
+        response.channels.forEach((channel: Channel) => {
+          if(channel.type === ChannelType.Text){
+            textChannels.push(channel);
+          } else {
+            voiceChannels.push(channel);
+          }
+        });
+
+        this.textChannelStore.add(textChannels);
+        this.voiceChannelStore.add(voiceChannels);
+        this.memberStore.add(response.members);
+        this.roleStore.add(response.roles);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  getUserCommunities(): Observable<Community[]> {
-    return this.communityQuery.selectAll();
-    //return this.communitiesSubject.asObservable();
-  }
-
-  getOwnedCommunities(): Observable<Community[]> {
-    // I don't know how filtering works
-    return this.communityQuery.selectAll();
-    // return this.communitiesSubject.asObservable().pipe(
-    //   map((communities: Community[]) =>
-    //     communities.filter((community: Community) =>
-    //       community.ownerId == this.userService.getUser().id))
-    // );
+  getCommunities(){
+    this.communityQuery.selectHasCache().pipe(
+      switchMap(hasCache => {
+        const apiCall = this.http.get<Community[]>(this.apiPath).pipe(
+          tap(communities => this.communityStore.set(communities))
+        );
+        return hasCache ? EMPTY : apiCall
+      })
+    ).subscribe();
   }
 
   // change those types

@@ -7,6 +7,7 @@ export interface Community {
   name: string;
   imageUrl: string;
   ownerId: string;
+  fullyFetched: boolean;
   channels: Channel[];
   members: Member[];
   roles: Role[];

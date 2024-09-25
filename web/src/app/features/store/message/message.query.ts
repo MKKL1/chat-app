@@ -3,7 +3,6 @@ import {MessageState, MessageStore} from "./message.store";
 import {Observable} from "rxjs";
 import {Message} from "../../models/message";
 import {Injectable} from "@angular/core";
-import {ChannelStore} from "../channel/channel.store";
 
 @Injectable({providedIn: 'root'})
 export class MessageQuery extends Query<MessageState> {

@@ -1,15 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {CommunityCardComponent} from "../community-card/community-card.component";
 import {RouterLink} from "@angular/router";
-import {Community} from "../../../models/community";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
-import {catchError, finalize, Observable, of} from "rxjs";
 import {CommunityService} from "../../../services/community.service";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {FormsModule} from "@angular/forms";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-communities-list',
@@ -37,26 +36,23 @@ export class CommunitiesListComponent implements OnInit {
   errorMessage: string | null = null;
   isLoading: boolean = true;
 
-  constructor(private communityService: CommunityService) {
+  constructor(
+    private communityService: CommunityService,
+    private communityQuery: CommunityQuery) {
   }
 
   ngOnInit() {
-    this.communityService.fetchCommunities();
+    this.communityService.getCommunities();
   }
 
   get communities$(){
-    return this.communityService.getUserCommunities().pipe(
-      catchError(error => {
-        this.errorMessage = "Cannot load communities"
-        return of([]);
-      }),
-      finalize(() => this.isLoading = false)
-    );
+    return this.communityQuery.selectAll();
   }
 
-  get ownedCommunities$(){
-    return this.communityService.getOwnedCommunities();
-  }
+  // TODO implement again
+  // get ownedCommunities$(){
+  //   return this.communityService.getOwnedCommunities();
+  // }
 
   selectCommunity(id: string){
     console.log("Select community component");

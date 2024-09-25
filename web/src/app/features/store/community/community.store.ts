@@ -1,26 +1,12 @@
 import {Community} from "../../models/community";
-import {ActiveState, EntityState, EntityStore, Store, StoreConfig} from "@datorama/akita";
+import {ActiveState, EntityState, EntityStore, getEntityType, Store, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
 import {Channel} from "../../models/channel";
 import {Member} from "../../models/member";
 import {Role} from "../../models/role";
+import {CommunityQuery} from "./community.query";
 
 export interface CommunityState extends EntityState<Community, string>, ActiveState {}
-
-// function createInitState(): CommunityState {
-//   return {
-//     communities: [],
-//     selectedCommunity: {
-//       id: '',
-//       name: '',
-//       imageUrl: '',
-//       ownerId: '',
-//       channels: [],
-//       members: [],
-//       roles: []
-//     }
-//   };
-// }
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({name: 'community'})
@@ -30,26 +16,10 @@ export class CommunityStore extends EntityStore<CommunityState> {
     super();
   }
 
-  // selectCommunity(community: Community){
-  //   this.update(state => ({selectedCommunity: community}));
-  // }
-  //
-  // addCommunity(community: Community){
-  //   this.update(state => ({communities: [...state.communities, community]}))
-  // }
-  //
-  // updateCommunity(updatedCommunity: Community){
-  //   this.update(state => ({communities: state.communities.map(community =>
-  //       community.id === updatedCommunity.id ? { ...community, ...updatedCommunity } : community
-  //     )}));
-  // }
-  //
-  // deleteCommunity(id: string){
-  //   this.update(state => ({communities: state.communities.filter(community => community.id !== id)}));
-  // }
-  //
-  // clear(){
-  //   this.update(createInitState());
-  // }
+  // setting flag so nextEntity won't be fetched again
+  override akitaPreUpdateEntity(_: Readonly<getEntityType<CommunityState>>, nextEntity: any): getEntityType<CommunityState> {
+    nextEntity.fullyFetched = true;
+    return super.akitaPreUpdateEntity(_, nextEntity);
+  }
 
 }

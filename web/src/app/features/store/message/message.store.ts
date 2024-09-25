@@ -1,6 +1,9 @@
 import {Message} from "../../models/message";
-import {Store, StoreConfig} from "@datorama/akita";
+import {EntityState, Store, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
+
+//export interface MessageState extends EntityState<Message, string> {}
+
 
 export interface MessageState {
   messages: Message[]

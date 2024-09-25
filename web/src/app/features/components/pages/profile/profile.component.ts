@@ -13,6 +13,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {EditAvatarComponent} from "../../../../shared/ui/edit-avatar/edit-avatar.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {UserService} from "../../../../core/services/user.service";
+import {resetStores} from "@datorama/akita";
 
 @Component({
   selector: 'app-profile',
@@ -66,6 +67,7 @@ export class ProfileComponent implements OnInit{
   }
 
   logout(){
+    resetStores();
     this.keycloakService.logout();
   }
 

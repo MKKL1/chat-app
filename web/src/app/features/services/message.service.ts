@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import {Message} from "../models/message";
 import {MessageStore} from "../store/message/message.store";
 import {CreateMessageDto} from "../models/create.message.dto";
-import {Reaction} from "../models/reaction";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {ChannelQuery} from "../store/channel/channel.query";
-import {CommunityQuery} from "../store/community/community.query";
+import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +16,12 @@ export class MessageService {
 
   constructor(
     private http: HttpClient,
-    private channelQuery: ChannelQuery,
+    private channelQuery: TextChannelQuery,
     private messageStore: MessageStore) {
-    this.channelQuery.textChannel$.subscribe(channel => {
-      this.channelId = channel.id!;
-      this.communityId = channel.communityId!;
+      const channel = this.channelQuery.getActive();
+      this.channelId = channel?.id!;
+      this.communityId = channel?.communityId!;
       this.api = environment.api + "channels/" + this.channelId + '/messages';
-    })
-
   }
 
   // todo get only few first messages, load more later as user scroll to the top of text-chat component
