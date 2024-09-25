@@ -21,13 +21,15 @@ export class MessageService {
       const channel = this.channelQuery.getActive();
       this.channelId = channel?.id!;
       this.communityId = channel?.communityId!;
-      this.api = environment.api + "channels/" + this.channelId + '/messages';
+      this.api = environment.api + "channels/";
+      //this.api = environment.api + "channels/" + this.channelId + '/messages';
   }
 
   // todo get only few first messages, load more later as user scroll to the top of text-chat component
-  getMessages(){
-    this.http.get<Message[]>(this.api).subscribe(messages => {
-      this.messageStore.addMessages(messages);
+  // check if messages are cashed??
+  getMessages(channelId: string){
+    this.http.get<Message[]>(this.api + `${channelId}/messages`).subscribe(messages => {
+      this.messageStore.set(messages);
     });
   }
 
@@ -50,8 +52,10 @@ export class MessageService {
 
     message.communityId = this.communityId;
 
+    const channelId = this.channelQuery.getActiveId();
+
     // Message don't have to be added to store, because rsocket is already listening for new messages
-    this.http.post(this.api, message).subscribe(res => {
+    this.http.post(this.api + `${channelId}/messages`, message).subscribe(res => {
       //console.log(res);
     });
   }
@@ -60,13 +64,13 @@ export class MessageService {
     this.http.patch<Message>(this.api + `/${id}`, {
       text: text
     }).subscribe(message => {
-      this.messageStore.editMessage(message);
+      this.messageStore.update(message.id, message);
     });
   }
 
   deleteMessage(id: string){
-    this.http.delete(this.api + `/${id}`).subscribe(res => {
-      this.messageStore.deleteMessage(id);
+    this.http.delete(this.api + `${id}/messages`).subscribe(res => {
+      this.messageStore.remove(id);
     });
   }
 

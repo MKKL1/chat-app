@@ -16,10 +16,11 @@ import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {RsocketService} from "../../../../core/services/rsocket.service";
 import {MessageService} from "../../../services/message.service";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {MessageStore} from "../../../store/message/message.store";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-text-chat',
@@ -41,8 +42,15 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
 })
+
+// listen to channel changes if so -> change messages to messages from new channel -> first check if there are any messages -> if no load from api
+
+// for now i have issue with listening to rabbit -> connection should open and close automatically after changing community
+
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
+
+  private messageSubscription: Subscription | undefined;
 
   messages$!: Observable<Message[]>;
 
@@ -52,23 +60,28 @@ export class TextChatComponent implements OnInit{
     private rsocketService: RsocketService,
     protected userService: UserService,
     private messageService: MessageService,
-    private channelQuery: TextChannelQuery,
     private messageQuery: MessageQuery,
-    private messageStore: MessageStore
+    private messageStore: MessageStore,
+    private channelQuery: TextChannelQuery,
   ) {}
 
   ngOnInit() {
-    this.messageService.getMessages();
+    // listening to changes of channel
+    this.channelQuery.selectActive().subscribe(channel => {
+      this.channel = channel!;
+      this.messageService.getMessages(channel?.id!);
+    });
 
-    this.channel = this.channelQuery.getActive()!;
-
-    this.messages$ = this.messageQuery.messages$(this.channel.id ?? '');
+    this.messages$ = this.messageQuery.selectAll({
+      filterBy: entity => entity.channelId === this.channelQuery.getActiveId()
+    });
 
     // this method don't care on which channel user is
     // don't just add everything here
+    // I have to change communityid with time
     this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
-      this.messageStore.addMessage(message);
-    })
+      this.messageStore.add(message);
+    });
   }
 
   setResponse(event: { id: string, text: string }){

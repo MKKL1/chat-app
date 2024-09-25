@@ -20,6 +20,11 @@ export class TextChannelComponent{
   isChannelSelected: boolean = false;
 
   constructor(private channelQuery: TextChannelQuery) {
-    this.isChannelSelected = this.channelQuery.hasActive();
+    this.channelQuery.selectActiveId().subscribe(id => {
+      console.log(id);
+      if(id !== undefined && id !== null){
+        this.isChannelSelected = true;
+      }
+    });
   }
 }
