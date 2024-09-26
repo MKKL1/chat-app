@@ -52,7 +52,7 @@ public class InvitationService {
     // which will check for outdated invitations once every day
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteOutdatedInvitations(){
-        invitationRepository.deleteAllByExpiredAt().doOnSuccess(rows -> log.info("Deleted: " + rows + "rows"));
+        invitationRepository.deleteAllByExpiredAt().doOnSuccess(rows -> log.info("Deleted: " + rows + "rows"));//TODO not subscribed to published / won't work
     }
 
 }

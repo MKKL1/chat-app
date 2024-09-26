@@ -49,7 +49,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(1)
     public SecurityWebFilterChain securityFilterChainForUserCreation(ServerHttpSecurity http) {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/users"))
@@ -61,6 +61,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(2)
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
