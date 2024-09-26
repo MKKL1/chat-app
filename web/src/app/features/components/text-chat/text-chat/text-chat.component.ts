@@ -16,7 +16,7 @@ import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {RsocketService} from "../../../../core/services/rsocket.service";
 import {MessageService} from "../../../services/message.service";
-import {Observable, Subscription} from "rxjs";
+import {Observable, Subscription, tap} from "rxjs";
 import {MessageStore} from "../../../store/message/message.store";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
@@ -63,6 +63,7 @@ export class TextChatComponent implements OnInit{
     private messageQuery: MessageQuery,
     private messageStore: MessageStore,
     private channelQuery: TextChannelQuery,
+    private communityQuery: CommunityQuery
   ) {}
 
   ngOnInit() {
@@ -74,14 +75,15 @@ export class TextChatComponent implements OnInit{
 
     this.messages$ = this.messageQuery.selectAll({
       filterBy: entity => entity.channelId === this.channelQuery.getActiveId()
-    });
+    }).pipe(tap(data=> console.log("new message!")));
 
     // this method don't care on which channel user is
     // don't just add everything here
     // I have to change communityid with time
-    this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
-      this.messageStore.add(message);
-    });
+    //maybe move subscription to other place
+    // this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
+    //   this.messageStore.add(message);
+    // });
   }
 
   setResponse(event: { id: string, text: string }){

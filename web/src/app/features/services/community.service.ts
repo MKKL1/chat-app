@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {BehaviorSubject, EMPTY, map, switchMap, tap} from "rxjs";
+import {BehaviorSubject, EMPTY, map, Subscription, switchMap, tap} from "rxjs";
 import {Community} from "../models/community";
 import {UserService} from "../../core/services/user.service";
 import {CommunityStore} from "../store/community/community.store";
@@ -14,6 +14,10 @@ import {MemberStore} from "../store/member/member.store";
 import {RoleStore} from "../store/role/role.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
+import {RsocketService} from "../../core/services/rsocket.service";
+import {Message} from "../models/message";
+import {Event} from "../models/event";
+import {MessageStore} from "../store/message/message.store";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +25,7 @@ import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 export class CommunityService {
   private readonly apiPath: string = environment.api + "communities";
 
-  private communitiesSubject: BehaviorSubject<Community[]> = new BehaviorSubject<Community[]>([]);
+  private currentStreamSubscription: Subscription | null = null;
 
   private snackBar = inject(MatSnackBar);
 
@@ -35,14 +39,17 @@ export class CommunityService {
     private textChannelStore: TextChannelStore,
     private textChannelQuery: TextChannelQuery,
     private memberStore: MemberStore,
-    private roleStore: RoleStore
+    private roleStore: RoleStore,
+    private messageStore: MessageStore,
+    private rsocketService: RsocketService
   ) { }
 
-  // AKITA CAN CACHE DATA BY ITSELF I JUST NEED TO FIND OUT HOW TO DO IT
   fetchCommunity(id: string){
     const community = this.communityQuery.getEntity(id);
 
     console.log(community);
+
+    this.handleNewStreamRequest(community?.id!);
 
     // Data about communities is stored in storage after initiating app
     // however data about channels, members etc. may be lacking
@@ -105,6 +112,66 @@ export class CommunityService {
     });
   }
 
+  // broken as hell
+  // maybe throw all data connected to events to another service
+  // after changing community from first there is no more data coming to text-chat component
+  // subscription is destroyed and it is never subscribed again
+  private handleNewStreamRequest(communityId: string) {
+    console.log(this.currentStreamSubscription);
+
+    // Unsubscribing current stream before creating a new one
+    this.closeCurrentStream();
+
+    console.log(this.currentStreamSubscription);
+
+    console.log(`Subscribing to: /community/${communityId}/messages`);
+
+    // Create a new subscription, but don't use Event as a generic type
+    this.currentStreamSubscription = this.rsocketService
+      .requestStream<any>(`/community/${communityId}/messages`)
+      .subscribe({
+        next: (event: any) => {
+          this.handleEvent(event)
+        }, // Delegate event handling
+        error: (err) => console.error('Stream error:', err),
+        complete: () => console.log('Stream completed'),
+      });
+
+    console.log(this.currentStreamSubscription);
+  }
+
+// A method to handle different events dynamically
+  private handleEvent(event: any) {
+    console.log(`Event received: ${event.name}`);
+    console.log('Event data:', event.data);
+
+    // Use type-checking or event delegation
+    switch (event.name) {
+      case 'MESSAGE_CREATE_EVENT':
+        this.messageStore.add(event.data);
+        break;
+
+      // Handle more event types here
+      default:
+        console.warn(`Unhandled event type: ${event.name}`);
+        break;
+    }
+  }
+
+  private closeCurrentStream() {
+    if (this.currentStreamSubscription !== undefined && this.currentStreamSubscription !== null && !this.currentStreamSubscription.closed) {
+      try {
+        this.currentStreamSubscription.unsubscribe();
+        this.currentStreamSubscription = null;
+        console.log('Previous stream unsubscribed successfully.');
+      } catch (error) {
+        console.error("Error during unsubscription:", error);
+      }
+    } else {
+      console.log('Stream already unsubscribed or never initialized');
+    }
+  }
+
   getCommunities(){
     this.communityQuery.selectHasCache().pipe(
       switchMap(hasCache => {
@@ -124,17 +191,16 @@ export class CommunityService {
       );
   }
 
+  editCommunity(){
+    // TODO implement
+  }
+
   deleteCommunity(id: string) {
     this.http.delete(this.apiPath + "/" + id).pipe()
       .subscribe({
       next: _ => {
         // ???
         this.communityStore.remove(id);
-
-        // updating list state
-        const currentCommunities = this.communitiesSubject.getValue();
-        const updatedCommunities = currentCommunities.filter(community => community.id !== id);
-        this.communitiesSubject.next(updatedCommunities);
 
         // need to unselect community if deleted one was actually selected
         if(this.communityQuery.getActiveId() === id){

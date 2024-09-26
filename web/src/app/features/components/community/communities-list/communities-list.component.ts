@@ -55,7 +55,6 @@ export class CommunitiesListComponent implements OnInit {
   // }
 
   selectCommunity(id: string){
-    console.log("Select community component");
     this.communityService.fetchCommunity(id);
   }
 
