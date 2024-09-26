@@ -26,6 +26,7 @@ public class Invitation {
     @Column("expired_at")
     private LocalDateTime expiredAt;
 
+    //TODO I think that it should be moved to service, as this should be a data only object
     public String toLink(){
         return "community/" + communityId + "/join/" + id;
     }

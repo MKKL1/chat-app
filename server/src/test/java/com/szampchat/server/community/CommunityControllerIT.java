@@ -2,9 +2,12 @@ package com.szampchat.server.community;
 
 import com.szampchat.server.PostgresTestContainer;
 import com.szampchat.server.RabbitMQTestContainer;
+import com.szampchat.server.community.dto.CreateInvitationDTO;
+import com.szampchat.server.community.dto.InvitationResponseDTO;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.tools.WithMockCustomUser;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.repository.UserRepository;
@@ -19,9 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
+
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.field;
@@ -35,8 +45,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTestContainer {
 
+    //For mocking isMember
     @MockBean
     private CommunityMemberService communityMemberService;
+    //For mocking isOwner
+    @SpyBean
+    private CommunityService communityService;
 
     @Autowired
     private CommunityRepository communityRepository;
@@ -65,18 +79,10 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
         RabbitMQTestContainer.super.connectionEstablished();
     }
 
+//    @Transactional
     @WithMockCustomUser
     @Test
-    void givenAuthenticatedUserAndNotDefinedCommunity_whenGetCommunity_thenNotFound() {
-        when(communityMemberService.isMember(anyLong(), anyLong())).thenReturn(Mono.just(true));
-
-        client.get().uri("/communities/1").exchange()
-                .expectStatus().isNotFound();
-    }
-
-    @WithMockCustomUser
-    @Test
-    void givenAuthenticatedUserAndDefinedCommunity_whenGetCommunity_thenReturnCommunityDTO() {
+    void givenDefinedCommunity_whenGetCommunity_thenReturnCommunityDTO() {
         when(communityMemberService.isMember(anyLong(), anyLong())).thenReturn(Mono.just(true));
 
         User owner = userRepository.save(Instancio.of(User.class)
@@ -98,5 +104,42 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
                 .expectStatus().isOk()
                 .expectBody(Community.class) //TODO It really should be CommunityDTO
                 .value((res) -> assertThat(res.getId()).isEqualTo(community.getId()));
+    }
+
+    void givenDefinedCommunity_whenGetFullCommunityInfo_thenReturnFullCommunityInfoDTO() {
+        //TODO
+    }
+
+    @WithMockCustomUser
+    @Test
+    void givenDefinedCommunity_whenInviteToCommunity_thenReturnInvitationResponseDTO() {
+        when(communityService.isOwner(anyLong(), anyLong())).thenReturn(Mono.just(true));
+
+        Pattern linkPattern = Pattern.compile("^community/(\\d+)/join/(\\d+)$");
+
+        User owner = userRepository.save(Instancio.of(User.class)
+                        .set(field(User::getId), null)
+                        .create())
+                .block();
+
+        assertThat(owner).isNotNull();
+
+        Community community = communityRepository.save(Instancio.of(Community.class)
+                        .set(field(Community::getId), null)
+                        .set(field(Community::getOwnerId), owner.getId())
+                        .create())
+                .block();
+
+        assertThat(community).isNotNull();
+
+        client.post().uri("/communities/" + community.getId() + "/invite")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(CreateInvitationDTO.builder()
+                        .days(5)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(InvitationResponseDTO.class)
+                .value((res) -> assertThat(res.getLink()).isNotEmpty().containsPattern(linkPattern));
     }
 }

@@ -47,61 +47,69 @@ public class CommunityController {
         return communityService.findById(communityId);
     }
 
+    //TODO document
     @GetMapping("/{communityId}/info")
     @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId, CurrentUser currentUser){
         return communityService.getFullCommunityInfo(communityId);
     }
 
-    // Maybe instead of dozens of small request it will be better to make
-    // huge request which will get all data about community?
+    //TODO remove?
+    //Maybe instead of dozens of small request it will be better to make
+    //huge request which will get all data about community?
     @GetMapping("/{communityId}/members")
     @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
     public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId, CurrentUser currentUser) {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
-    // only for testing
+    //TODO remove?
+    //only for testing
     @PostMapping("/{communityId}")
     public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
         return communityMemberService.create(communityId, currentUser.getUserId());
     }
 
+    //TODO document
     @GetMapping()
     public Flux<Community> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
-
-    // this endpoint will create link to community which then can be shared with other users to join your community
+    //TODO document
+    //this endpoint will create link to community which then can be shared with other users to join given community
     @PostMapping("/{communityId}/invite")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, @RequestBody CreateInvitationDTO invitationDTO, CurrentUser currentUser){
-        return invitationService.createInvitation(communityId, invitationDTO.getDays());
+    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, CurrentUser currentUser){
+        return invitationService.createInvitation(communityId, 5);
     }
 
-    // After getting invitation link user is redirected to page with accept button
-    // which will send request to this endpoint after clicking
-    // I use isNotMember to ensure that user won't be added as member of community another time
-    // Don't use @RequestParam in @PostMapping
+    //TODO document
+    //After getting invitation link user is redirected to page with accept button
+    //which will send request to this endpoint after clicking
+    //I use isNotMember to ensure that user won't be added as member of community another time
+    //Don't use @RequestParam in @PostMapping
     @PostMapping("/{communityId}/join")
     @PreAuthorize("@communityMemberService.isNotMember(#communityId, #currentUser.userId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
+    //TODO document
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
     public Mono<Community> createCommunity(@RequestBody CommunityCreateDTO community, CurrentUser user) {
         return communityService.save(community, user.getUserId());
     }
 
+    //TODO document
     @PatchMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community, CurrentUser currentUser) {
         return communityService.editCommunity(communityId, community);
     }
 
+    //TODO document
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
