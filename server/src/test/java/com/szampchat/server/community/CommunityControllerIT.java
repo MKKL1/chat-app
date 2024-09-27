@@ -9,6 +9,9 @@ import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.tools.WithMockCustomUser;
+import com.szampchat.server.tools.populate.CommunityData;
+import com.szampchat.server.tools.populate.GenericCommunityGenData;
+import com.szampchat.server.tools.populate.TestDataGenerator;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +61,9 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     private UserRepository userRepository;
     @Autowired
     protected WebTestClient client;
+
+    @Autowired
+    private TestDataGenerator testDataGenerator;
 
 
     @BeforeAll
@@ -117,22 +123,11 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
 
         Pattern linkPattern = Pattern.compile("^community/(\\d+)/join/(\\d+)$");
 
-        User owner = userRepository.save(Instancio.of(User.class)
-                        .set(field(User::getId), null)
-                        .create())
-                .block();
 
-        assertThat(owner).isNotNull();
+        CommunityData communityData = testDataGenerator.saveComplexCommunity(GenericCommunityGenData.builder()
+                .build()); //Minimal setup
 
-        Community community = communityRepository.save(Instancio.of(Community.class)
-                        .set(field(Community::getId), null)
-                        .set(field(Community::getOwnerId), owner.getId())
-                        .create())
-                .block();
-
-        assertThat(community).isNotNull();
-
-        client.post().uri("/communities/" + community.getId() + "/invite")
+        client.post().uri("/communities/" + communityData.getCommunity().getId() + "/invite")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(CreateInvitationDTO.builder()
                         .days(5)
