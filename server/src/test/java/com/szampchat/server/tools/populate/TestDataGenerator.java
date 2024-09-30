@@ -73,11 +73,14 @@ public class TestDataGenerator {
 
         //1. generate owner user
         User owner = genData.getOwner() == null ? saveUser() : genData.getOwner();
+        assertThat(owner).isNotNull();
 
         //2. generate user
         List<User> users = genData.getMembers() == null ? new ArrayList<>() : genData.getMembers();
         for (int i = 0; i < genData.getRandomMembers(); i++) {
-            users.add(saveUser());
+            User savedUser = saveUser();
+            assertThat(savedUser).isNotNull();
+            users.add(savedUser);
         }
 
         //3. Add owner to user list
@@ -93,29 +96,39 @@ public class TestDataGenerator {
 
         //5. generate members for community
         users.forEach(user -> {
-            communityMemberRepository.save(CommunityMember.builder()
+            CommunityMember communityMember = communityMemberRepository.save(CommunityMember.builder()
                     .communityId(community.getId())
                     .userId(user.getId())
                     .build()).block();
+            assertThat(communityMember).isNotNull();
         });
 
         //6. generate roles
 
+
         //7. generate channels
         List<Channel> channels = genData.getChannels() == null ? new ArrayList<>() : genData.getChannels();
         for (int i = 0; i < genData.getRandomChannels(); i++) {
-            channels.add(saveChannel(community.getId(), ChannelType.TEXT_CHANNEL));
+            Channel savedChannel = saveChannel(community.getId(), ChannelType.TEXT_CHANNEL);
+            assertThat(savedChannel).isNotNull();
+            assertThat(savedChannel.getCommunityId()).isEqualTo(community.getId());
+            channels.add(savedChannel);
         }
 
         //8. generate messages
         Random rand = new Random();
         final int usersCount = users.size();
+
         Map<Channel, List<Message>> messages = genData.getMessages() == null ? new HashMap<>() : genData.getMessages();
+        //For each channel, generate messages
         channels.forEach(channel -> {
             List<Message> messagesForChannel = new ArrayList<>();
             for (int i = 0; i < genData.getRandomMessages(); i++) {
+                //Get random user to be an author of message
                 User messageUser = users.get(rand.nextInt(usersCount));
-                messagesForChannel.add(saveMessage(channel.getId(), messageUser.getId()));
+                Message message = saveMessage(channel.getId(), messageUser.getId());
+                assertThat(message).isNotNull();
+                messagesForChannel.add(message);
             }
             messages.put(channel, messagesForChannel);
         });
