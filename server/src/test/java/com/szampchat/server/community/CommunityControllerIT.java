@@ -125,6 +125,9 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
 
 
         CommunityData communityData = testDataGenerator.saveComplexCommunity(GenericCommunityGenData.builder()
+                        .randomMembers(10)
+                        .randomChannels(10)
+                        .randomMessages(10)
                 .build()); //Minimal setup
 
         client.post().uri("/communities/" + communityData.getCommunity().getId() + "/invite")
