@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class CommunityConfiguration {
     private final Snowflake snowflake;
+    //TODO separated snowflake generators for different entities
 
     @Bean
     BeforeConvertCallback<Community> beforeCommunityConvertCallback(){
