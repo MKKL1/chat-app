@@ -25,6 +25,8 @@ import java.util.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.instancio.Select.field;
 
+//TODO move this code somewhere else
+
 @AllArgsConstructor
 @Component
 public class TestDataGenerator {
@@ -87,30 +89,61 @@ public class TestDataGenerator {
         //Using a lot of blocking code, but it's not really that important now
         //Feel free to add more functionality
 
-        //1. generate owner user
+        User owner = generateOwner(genData);
+        List<User> users = generateUsers(genData);
+        users.add(owner);
+
+        Community community = generateCommunity(genData, owner);
+        joinCommunity(users, community);
+
+        List<Role> roles = generateRoles(genData, community);
+        addRolesToUsers(genData, users, roles);
+
+        List<Channel> channels = generateChannels(genData, community);
+
+        Map<Channel, List<Message>> messages = generateMessages(genData, users, channels);
+
+        //Message map to list
+        List<Message> messagesList = new ArrayList<>();
+        messages.values().forEach(messagesList::addAll);
+
+        return CommunityData.builder()
+                .owner(owner)
+                .members(users)
+                .community(community)
+                .roles(roles)
+                .channels(channels)
+                .messages(messagesList)
+                .build();
+    }
+
+    private User generateOwner(GenericCommunityGenData genData) {
         User owner = genData.getOwner() == null ? saveUser() : genData.getOwner();
         assertThat(owner).isNotNull();
+        return owner;
+    }
 
-        //2. generate user
+    private List<User> generateUsers(GenericCommunityGenData genData) {
         List<User> users = genData.getMembers() == null ? new ArrayList<>() : genData.getMembers();
         for (int i = 0; i < genData.getRandomMembers(); i++) {
             User savedUser = saveUser();
             assertThat(savedUser).isNotNull();
             users.add(savedUser);
         }
+        return users;
+    }
 
-        //3. Add owner to user list
-        users.add(owner);
-
-        //4. generate community
+    private Community generateCommunity(GenericCommunityGenData genData, User owner) {
         Community community = communityRepository.save(Instancio.of(Community.class)
                 .set(field(Community::getId), null)
                 .set(field(Community::getOwnerId), owner.getId())
                 .create()).block();
 
         assertThat(community).isNotNull();
+        return community;
+    }
 
-        //5. save members for community
+    private void joinCommunity(List<User> users, Community community) {
         for (User user : users) {
             CommunityMember communityMember = communityMemberRepository.save(CommunityMember.builder()
                     .communityId(community.getId())
@@ -118,9 +151,9 @@ public class TestDataGenerator {
                     .build()).block();
             assertThat(communityMember).isNotNull();
         }
+    }
 
-
-        //6. generate roles
+    private List<Role> generateRoles(GenericCommunityGenData genData, Community community) {
         List<Role> roles = genData.getRoles() == null ? new ArrayList<>() : genData.getRoles();
         for (int i = 0; i < genData.getRandomRoles(); i++) {
             Role savedRole = saveRole(community.getId());
@@ -128,8 +161,10 @@ public class TestDataGenerator {
             assertThat(savedRole.getCommunity()).isEqualTo(community.getId());
             roles.add(savedRole);
         }
+        return roles;
+    }
 
-        //7. select random roles for members
+    private void addRolesToUsers(GenericCommunityGenData genData, List<User> users, List<Role> roles) {
         for (User user : users) {
             //Select n random roles to give to user
             for (Role role : TestDataGenerator.pickNRandom(roles, genData.getRolesPerUser())) {
@@ -140,8 +175,9 @@ public class TestDataGenerator {
                 assertThat(savedUserRole).isNotNull();
             }
         }
+    }
 
-        //8. generate channels
+    private List<Channel> generateChannels(GenericCommunityGenData genData, Community community) {
         List<Channel> channels = genData.getChannels() == null ? new ArrayList<>() : genData.getChannels();
         for (int i = 0; i < genData.getRandomChannels(); i++) {
             Channel savedChannel = saveChannel(community.getId(), ChannelType.TEXT_CHANNEL);
@@ -149,8 +185,10 @@ public class TestDataGenerator {
             assertThat(savedChannel.getCommunityId()).isEqualTo(community.getId());
             channels.add(savedChannel);
         }
+        return channels;
+    }
 
-        //9. generate messages
+    private Map<Channel, List<Message>> generateMessages(GenericCommunityGenData genData, List<User> users, List<Channel> channels) {
         Random rand = new Random();
         final int usersCount = users.size();
 
@@ -167,22 +205,10 @@ public class TestDataGenerator {
             }
             messages.put(channel, messagesForChannel);
         }
-
-
-        //10. return response
-        List<Message> messagesList = new ArrayList<>();
-        messages.values().forEach(messagesList::addAll);
-        return CommunityData.builder()
-                .owner(owner)
-                .members(users)
-                .community(community)
-                .roles(roles)
-                .channels(channels)
-                .messages(messagesList)
-                .build();
+        return messages;
     }
 
-    public static <T> List<T> pickNRandom(List<T> lst, int n) {
+    private static <T> List<T> pickNRandom(List<T> lst, int n) {
         List<T> copy = new ArrayList<>(lst);
         Collections.shuffle(copy);
         return n > copy.size() ? copy.subList(0, copy.size()) : copy.subList(0, n);
