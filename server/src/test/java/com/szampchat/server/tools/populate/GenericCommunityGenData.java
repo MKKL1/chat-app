@@ -28,6 +28,10 @@ public class GenericCommunityGenData {
      * Provide saved only
      */
     private List<Role> roles;
+    /**
+     * How many roles each user should have
+     */
+    private int rolesPerUser = 1;
 
     private long randomChannels = 0;
     /**

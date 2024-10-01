@@ -1,7 +1,4 @@
-package com.szampchat.server.message;
-
-import com.szampchat.server.snowflake.Snowflake;
-import com.szampchat.server.snowflake.SnowflakeConfiguration;
+package com.szampchat.server.snowflake;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,8 +1,7 @@
 package com.szampchat.server.message;
 
-import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.message.entity.Message;
-import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.snowflake.SnowflakeCacheManager;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -124,11 +124,7 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
         Pattern linkPattern = Pattern.compile("^community/(\\d+)/join/(\\d+)$");
 
 
-        CommunityData communityData = testDataGenerator.saveComplexCommunity(GenericCommunityGenData.builder()
-                        .randomMembers(10)
-                        .randomChannels(10)
-                        .randomMessages(10)
-                .build()); //Minimal setup
+        CommunityData communityData = testDataGenerator.saveComplexCommunity(GenericCommunityGenData.builder().build()); //Minimal setup
 
         client.post().uri("/communities/" + communityData.getCommunity().getId() + "/invite")
                 .contentType(MediaType.APPLICATION_JSON)
