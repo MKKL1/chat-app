@@ -3,7 +3,7 @@ package com.szampchat.server.socket;
 import com.rabbitmq.client.Delivery;
 import com.szampchat.server.community.exception.NotCommunityMemberException;
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.socket.auth.RSocketPrincipalProvider;
+import com.szampchat.server.shared.CustomPrincipalProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 public class EventService {
 
-    private final RSocketPrincipalProvider principalProvider;
+    private final CustomPrincipalProvider principalProvider;
     private final CommunityMemberService communityMemberService;
     private final Receiver receiver;
     private final Sender sender;

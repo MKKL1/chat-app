@@ -1,4 +1,4 @@
-package com.szampchat.server.socket.auth;
+package com.szampchat.server.shared;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @AllArgsConstructor
-public class RSocketPrincipalProvider {
+public class CustomPrincipalProvider {
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
 
     public Mono<CurrentUser> getPrincipal() {
