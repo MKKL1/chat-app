@@ -1,4 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
+import {inject, Injectable, OnInit} from '@angular/core';
 
 // if there are troubles with finding those modules use commands:
 // npm install -D @types/rsocket-core
@@ -6,14 +6,14 @@ import {Injectable, OnInit} from '@angular/core';
 import {
   APPLICATION_JSON, BufferEncoders,
   encodeBearerAuthMetadata,
-  encodeCompositeMetadata, encodeRoute, JsonSerializer,
+  encodeCompositeMetadata, encodeRoute,
   MESSAGE_RSOCKET_AUTHENTICATION,
   MESSAGE_RSOCKET_COMPOSITE_METADATA, MESSAGE_RSOCKET_ROUTING,
-  RSocketClient, TEXT_PLAIN
+  RSocketClient,
 } from 'rsocket-core';
 import RSocketWebsocketClient from 'rsocket-websocket-client';
 import {KeycloakService} from "keycloak-angular";
-import {Observable, Subject} from "rxjs";
+import {Observable} from "rxjs";
 
 // this service is injected in MainComponent.ts
 // which will be created after user sign in/up
@@ -22,16 +22,13 @@ import {Observable, Subject} from "rxjs";
 // this service should be injected to other services / components
 // and allow them to send or subscribe to responds
 
-@Injectable({
-  providedIn: 'root'
-})
-export class RsocketService implements OnInit{
+export class RsocketConnection{
 
   // TODO get localhost:7000 from environment file instead of hard coding it
-  // constant storing websocket ur
+  // constant storing websocket url
   private readonly websocketUrl: string = 'ws://localhost:8083/events';
 
-  //Magical number representing maximal number of request client can make
+  // Magical number representing maximal number of request client can make
   // Probably should be lower to make use of backpressure
   private readonly requestCount: number = 2147483647;
 
@@ -41,26 +38,20 @@ export class RsocketService implements OnInit{
   // but I can't import it
   private rsocket: any;
 
-  constructor(private keycloakService: KeycloakService) { }
-
-  ngOnInit() {
-  }
-
-  // this method is used to call service for first time in MainComponent.ts
-  public init(){
+  constructor() {
     console.log("Initializing RSocket client");
     this.client = this.initRSocketClient();
-    this.connect();
   }
 
   // method which return configuration for RSocketClient
-  // (or something similar, they won't give it type
-  // because it was written for vanilla js)
-
   // later we can add json serializer here
   private initRSocketClient() {
     //TODO idToken doesn't refresh/expires when page is not reloaded for long time?
-    let idToken = this.keycloakService.getKeycloakInstance().idToken;
+
+    // Keycloak service is not injected it constructor,
+    // to make it easier creating this class as a standard one and not a service
+    const keycloakService = inject(KeycloakService);
+    let idToken = keycloakService.getKeycloakInstance().idToken;
     if(!idToken) {
       console.error("Not authenticated");
       return;
@@ -141,13 +132,12 @@ export class RsocketService implements OnInit{
     });
   }
 
-  // I write any as type everywhere because for now it's simpler than searching for types in this library
-  private connect(){
+  public connect(){
     if(!this.client){
       return;
     }
 
-    // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
+    // This function will be used only by this service to renew connection
     this.client.connect().subscribe({
       onComplete: (socket) => {
         // actual code executed after setting up connection starts here
@@ -157,6 +147,7 @@ export class RsocketService implements OnInit{
       // handling errors with connection
       onError: (error: any) => console.error("Error occured: ", error),
       onSubscribe: (cancel: any) => {
+        console.log(`Canceled ${cancel}`);
         // I'm not using this for now
       }
     });

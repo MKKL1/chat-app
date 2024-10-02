@@ -14,7 +14,6 @@ import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
 import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
-import {RsocketService} from "../../../../core/services/rsocket.service";
 import {MessageService} from "../../../services/message.service";
 import {Observable, Subscription, tap} from "rxjs";
 import {MessageStore} from "../../../store/message/message.store";
@@ -57,7 +56,6 @@ export class TextChatComponent implements OnInit{
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
-    private rsocketService: RsocketService,
     protected userService: UserService,
     private messageService: MessageService,
     private messageQuery: MessageQuery,

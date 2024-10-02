@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RsocketService } from './rsocket.service';
+import { EventService } from './event.service';
 
-describe('RsocketService', () => {
-  let service: RsocketService;
+describe('EventService', () => {
+  let service: EventService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(RsocketService);
+    service = TestBed.inject(EventService);
   });
 
   it('should be created', () => {

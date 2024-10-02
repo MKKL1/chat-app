@@ -1,12 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {RouterOutlet} from "@angular/router";
 import {AppbarComponent} from "../../../../core/components/appbar/appbar.component";
-import {KeycloakService} from "keycloak-angular";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../../../environment";
 import {UserService} from "../../../../core/services/user.service";
-import {User} from "../../../models/user";
-import {RsocketService} from "../../../../core/services/rsocket.service";
+import {EventService} from "../../../../core/events/event.service";
 
 @Component({
   selector: 'app-main',
@@ -20,7 +16,9 @@ import {RsocketService} from "../../../../core/services/rsocket.service";
 })
 export class MainComponent implements OnInit {
 
-  constructor(private userService: UserService, private keycloakService: KeycloakService, private rsocketService: RsocketService) {
+  constructor(
+    private userService: UserService,
+    private eventService: EventService) {
   }
 
   ngOnInit(): void {
@@ -33,7 +31,7 @@ export class MainComponent implements OnInit {
     //   console.log(token);
     // });
 
-    this.rsocketService.init();
+    this.eventService.init();
 
   }
 

@@ -54,6 +54,7 @@ export const appConfig: ApplicationConfig = {
         multi: true,
         deps: [KeycloakService]
     },
+
     // {
     //   provide: 'persistStorage',
     //   useValue: persistState()

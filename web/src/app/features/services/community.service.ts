@@ -14,10 +14,8 @@ import {MemberStore} from "../store/member/member.store";
 import {RoleStore} from "../store/role/role.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
-import {RsocketService} from "../../core/services/rsocket.service";
-import {Message} from "../models/message";
-import {Event} from "../models/event";
 import {MessageStore} from "../store/message/message.store";
+import {EventService} from "../../core/events/event.service";
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +23,10 @@ import {MessageStore} from "../store/message/message.store";
 export class CommunityService {
   private readonly apiPath: string = environment.api + "communities";
 
-  private currentStreamSubscription: Subscription | null = null;
-
   private snackBar = inject(MatSnackBar);
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
     private communityStore: CommunityStore,
     private communityQuery: CommunityQuery,
     private voiceChannelStore: VoiceChannelStore,
@@ -40,8 +35,7 @@ export class CommunityService {
     private textChannelQuery: TextChannelQuery,
     private memberStore: MemberStore,
     private roleStore: RoleStore,
-    private messageStore: MessageStore,
-    private rsocketService: RsocketService
+    private eventService: EventService
   ) { }
 
   fetchCommunity(id: string){
@@ -49,7 +43,7 @@ export class CommunityService {
 
     console.log(community);
 
-    this.handleNewStreamRequest(community?.id!);
+    this.eventService.handleNewStreamRequest(community?.id!);
 
     // Data about communities is stored in storage after initiating app
     // however data about channels, members etc. may be lacking
@@ -110,66 +104,6 @@ export class CommunityService {
       },
       error: (err) => console.error(err)
     });
-  }
-
-  // broken as hell
-  // maybe throw all data connected to events to another service
-  // after changing community from first there is no more data coming to text-chat component
-  // subscription is destroyed and it is never subscribed again
-  private handleNewStreamRequest(communityId: string) {
-    console.log(this.currentStreamSubscription);
-
-    // Unsubscribing current stream before creating a new one
-    this.closeCurrentStream();
-
-    console.log(this.currentStreamSubscription);
-
-    console.log(`Subscribing to: /community/${communityId}/messages`);
-
-    // Create a new subscription, but don't use Event as a generic type
-    this.currentStreamSubscription = this.rsocketService
-      .requestStream<any>(`/community/${communityId}/messages`)
-      .subscribe({
-        next: (event: any) => {
-          this.handleEvent(event)
-        }, // Delegate event handling
-        error: (err) => console.error('Stream error:', err),
-        complete: () => console.log('Stream completed'),
-      });
-
-    console.log(this.currentStreamSubscription);
-  }
-
-// A method to handle different events dynamically
-  private handleEvent(event: any) {
-    console.log(`Event received: ${event.name}`);
-    console.log('Event data:', event.data);
-
-    // Use type-checking or event delegation
-    switch (event.name) {
-      case 'MESSAGE_CREATE_EVENT':
-        this.messageStore.add(event.data);
-        break;
-
-      // Handle more event types here
-      default:
-        console.warn(`Unhandled event type: ${event.name}`);
-        break;
-    }
-  }
-
-  private closeCurrentStream() {
-    if (this.currentStreamSubscription !== undefined && this.currentStreamSubscription !== null && !this.currentStreamSubscription.closed) {
-      try {
-        this.currentStreamSubscription.unsubscribe();
-        this.currentStreamSubscription = null;
-        console.log('Previous stream unsubscribed successfully.');
-      } catch (error) {
-        console.error("Error during unsubscription:", error);
-      }
-    } else {
-      console.log('Stream already unsubscribed or never initialized');
-    }
   }
 
   getCommunities(){
