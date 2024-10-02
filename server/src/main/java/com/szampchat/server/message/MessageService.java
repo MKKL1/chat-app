@@ -50,8 +50,8 @@ public class MessageService {
     Mono<Message> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId){
         Message message = modelMapper.map(createMessage, Message.class);
         message.setId(snowflake.nextId());
-        message.setUserId(userId);
-        message.setChannelId(channelId);
+        message.setUser(userId);
+        message.setChannel(channelId);
         MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 
         // publishing event
@@ -71,7 +71,7 @@ public class MessageService {
         return messageRepository.findById(messageId)
             .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
             .flatMap(message -> {
-                if(!Objects.equals(message.getUserId(), userId)){
+                if(!Objects.equals(message.getUser(), userId)){
                     return Mono.error(new Exception("Message doesn't belong to user"));
                 }
 
@@ -85,7 +85,7 @@ public class MessageService {
             .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
             .flatMap(message -> {
 
-                if(!Objects.equals(message.getUserId(), userId)){
+                if(!Objects.equals(message.getUser(), userId)){
                     return Mono.error(new Exception("Message doesn't belong to user"));
                 }
 
@@ -94,7 +94,7 @@ public class MessageService {
     }
 
     Flux<Message> findLatestMessages(Long channelId, int limit) {
-        return messageRepository.findMessagesByChannelIdOrderByIdDesc(channelId, Limit.of(limit));
+        return messageRepository.findMessagesByChannelOrderByIdDesc(channelId, Limit.of(limit));
     }
 
     Flux<Message> findMessagesBefore(Long channel, Long before, int limit) {
@@ -102,7 +102,7 @@ public class MessageService {
     }
 
     Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
-        return reactionRepository.fetchGroupedReactions(message.getChannelId(), message.getId(), currentUserId)
+        return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
                 .collectList()
                 .map(reactionPreviews -> {
                             MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);

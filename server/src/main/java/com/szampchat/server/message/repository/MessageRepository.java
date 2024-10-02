@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface MessageRepository extends ReactiveCrudRepository<Message, MessageId> {
-    Flux<Message> findMessagesByChannelIdOrderByIdDesc(Long channelId, Limit limit);
+    Flux<Message> findMessagesByChannelOrderByIdDesc(Long channel, Limit limit);
 
     @Query("""
             SELECT * FROM messages
