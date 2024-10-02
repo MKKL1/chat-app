@@ -9,16 +9,17 @@ import {FormsModule} from "@angular/forms";
 import {MessageComponent} from "../message/message.component";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
 import {FadeInOutScrollDirective} from "../../../../shared/directives/fade-in-out-scroll.directive";
-import {ChannelQuery} from "../../../store/channel/channel.query";
 import {Channel, ChannelType} from "../../../models/channel";
-import {MessageService} from "../../../services/message.service";
 import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
-import {CreateMessageDto} from "../../../models/create.message.dto";
 import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
-
-// maybe split it into component with messages to read, and component with input to create new message
+import {MessageService} from "../../../services/message.service";
+import {Observable, Subscription, tap} from "rxjs";
+import {MessageStore} from "../../../store/message/message.store";
+import {AsyncPipe} from "@angular/common";
+import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-text-chat',
@@ -34,33 +35,53 @@ import {MessageInputComponent} from "../message-input/message-input.component";
     MessageComponent,
     GifSearchComponent,
     FadeInOutScrollDirective,
-    MessageInputComponent
+    MessageInputComponent,
+    AsyncPipe
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
 })
+
+// listen to channel changes if so -> change messages to messages from new channel -> first check if there are any messages -> if no load from api
+
+// for now i have issue with listening to rabbit -> connection should open and close automatically after changing community
+
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
-  messages: Message[] = [];
+
+  private messageSubscription: Subscription | undefined;
+
+  messages$!: Observable<Message[]>;
 
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
     protected userService: UserService,
-    private channelQuery: ChannelQuery,
-    private messageQuery: MessageQuery
+    private messageService: MessageService,
+    private messageQuery: MessageQuery,
+    private messageStore: MessageStore,
+    private channelQuery: TextChannelQuery,
+    private communityQuery: CommunityQuery
   ) {}
 
   ngOnInit() {
-    this.channelQuery.textChannel$.subscribe(channel => {
-      console.log("Text channel changed");
-      console.log(channel);
-      this.channel = channel;
-      this.messages = [];
+    // listening to changes of channel
+    this.channelQuery.selectActive().subscribe(channel => {
+      this.channel = channel!;
+      this.messageService.getMessages(channel?.id!);
     });
-    this.messageQuery.messages$(this.channel.id ?? '').subscribe(messages => {
-      this.messages = messages;
-    });
+
+    this.messages$ = this.messageQuery.selectAll({
+      filterBy: entity => entity.channelId === this.channelQuery.getActiveId()
+    }).pipe(tap(data=> console.log("new message!")));
+
+    // this method don't care on which channel user is
+    // don't just add everything here
+    // I have to change communityid with time
+    //maybe move subscription to other place
+    // this.rsocketService.requestStream<Message>(`/community/${this.channel.communityId}/messages`).subscribe((message: Message) => {
+    //   this.messageStore.add(message);
+    // });
   }
 
   setResponse(event: { id: string, text: string }){

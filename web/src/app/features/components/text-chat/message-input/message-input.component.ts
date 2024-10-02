@@ -9,6 +9,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ClickOutsideDirective} from "../../../../shared/directives/click-outside.directive";
 import {MessageService} from "../../../services/message.service";
 import {UserService} from "../../../../core/services/user.service";
+import {CreateMessageDto} from "../../../models/create.message.dto";
 
 @Component({
   selector: 'app-message-input',
@@ -28,7 +29,7 @@ import {UserService} from "../../../../core/services/user.service";
   styleUrl: './message-input.component.scss'
 })
 export class MessageInputComponent {
-  message: string = '';
+  text: string = '';
 
   selectedFile: File | null = null;
   fileName: string | null = null;
@@ -45,23 +46,39 @@ export class MessageInputComponent {
   ) {
   }
 
+  // wrapper for handling key input
+  sendMessageKeyboard(event: KeyboardEvent){
+    if(event.key === 'Enter'){
+      this.sendMessage();
+    }
+  }
+
   sendMessage(){
-    if(this.message.length === 0){
+    // message can't be empty
+    if(this.text.length === 0){
       return;
     }
 
-    // if created message responds to another message
-    // add id od this message
-    if(this.messageToRespond !== undefined){
+    const message: CreateMessageDto = {text: this.text};
 
+    // if created message responds to another message
+    // add id of this message
+    if(this.messageToRespond !== undefined){
+      message.respondsToMessage = this.messageToRespond.id;
     }
 
-    // this.messageService.sendMessage(this.message, this.selectedFile).subscribe({
-    //   next: value => console.log(value),
-    //   error: err => console.error(err)
-    // });
+    // add gif link to message
+    if(this.selectedGif !== ''){
+      message.gifLink = this.selectedGif;
+    }
 
-    this.message = '';
+    this.messageService.sendMessage(message);
+
+    this.text = '';
+    this.selectedGif = '';
+    this.messageToRespond = undefined;
+    // have to chose specific element
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   onFileSelected(event: Event){
@@ -83,7 +100,7 @@ export class MessageInputComponent {
   }
 
   appendEmojiToInputField(emoji: string){
-    this.message += emoji;
+    this.text += emoji;
   }
 
   toggleEmojiPicker(){

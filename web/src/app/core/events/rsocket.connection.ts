@@ -1,4 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
+import {inject, Injectable, OnInit} from '@angular/core';
 
 // if there are troubles with finding those modules use commands:
 // npm install -D @types/rsocket-core
@@ -6,13 +6,14 @@ import {Injectable, OnInit} from '@angular/core';
 import {
   APPLICATION_JSON, BufferEncoders,
   encodeBearerAuthMetadata,
-  encodeCompositeMetadata, encodeRoute, JsonSerializer,
+  encodeCompositeMetadata, encodeRoute,
   MESSAGE_RSOCKET_AUTHENTICATION,
   MESSAGE_RSOCKET_COMPOSITE_METADATA, MESSAGE_RSOCKET_ROUTING,
-  RSocketClient, TEXT_PLAIN
+  RSocketClient,
 } from 'rsocket-core';
 import RSocketWebsocketClient from 'rsocket-websocket-client';
 import {KeycloakService} from "keycloak-angular";
+import {Observable} from "rxjs";
 
 // this service is injected in MainComponent.ts
 // which will be created after user sign in/up
@@ -21,41 +22,36 @@ import {KeycloakService} from "keycloak-angular";
 // this service should be injected to other services / components
 // and allow them to send or subscribe to responds
 
-@Injectable({
-  providedIn: 'root'
-})
-export class RsocketService implements OnInit{
+export class RsocketConnection{
 
   // TODO get localhost:7000 from environment file instead of hard coding it
-  // constant storing websocket ur
+  // constant storing websocket url
   private readonly websocketUrl: string = 'ws://localhost:8083/events';
 
-  //Magical number representing maximal number of request client can make
+  // Magical number representing maximal number of request client can make
   // Probably should be lower to make use of backpressure
   private readonly requestCount: number = 2147483647;
 
   private client: RSocketClient<any, any> | undefined;
 
-  constructor(private keycloakService: KeycloakService) { }
+  // Intellij shows that returned socket is of type ReactiveSocket<any, any>
+  // but I can't import it
+  private rsocket: any;
 
-  ngOnInit() {
-  }
-
-  // this method is used to call service for first time in MainComponent.ts
-  public init(){
+  constructor() {
     console.log("Initializing RSocket client");
     this.client = this.initRSocketClient();
-    this.connect();
   }
 
   // method which return configuration for RSocketClient
-  // (or something similar, they won't give it type
-  // because it was written for vanilla js)
-
   // later we can add json serializer here
   private initRSocketClient() {
     //TODO idToken doesn't refresh/expires when page is not reloaded for long time?
-    let idToken = this.keycloakService.getKeycloakInstance().idToken;
+
+    // Keycloak service is not injected it constructor,
+    // to make it easier creating this class as a standard one and not a service
+    const keycloakService = inject(KeycloakService);
+    let idToken = keycloakService.getKeycloakInstance().idToken;
     if(!idToken) {
       console.error("Not authenticated");
       return;
@@ -86,54 +82,72 @@ export class RsocketService implements OnInit{
     });
   }
 
-  public requestStream(path: string) { // out event stream or somethign
+  public requestStream<T>(path: string): Observable<T> {
+    let decoder = new TextDecoder();
+
+    return new Observable<any>(subscriber => {
+      const subscription = this.rsocket.requestStream({
+        data: Buffer.from('{}'), //Placeholder for request data, if ever needed / May be removed
+        metadata: encodeCompositeMetadata([
+          //'/community/9895314911657984/messages'
+          [MESSAGE_RSOCKET_ROUTING, encodeRoute(path)]
+        ])
+      }).subscribe({
+        onComplete: () => {
+          console.log("Message send")
+        },
+        onError: (error: any) => {
+          console.error("RSocket error occured: ", error)
+        },
+        onNext: (payload: any) => {
+          const dataAsString = decoder.decode(payload.data);
+          //dataAsString is json string
+          console.log(dataAsString);
+
+          // Instead of returning plane string trying to map it to generic type
+          // Also it has to parse all numbers to string to not broke ids
+          // I guess I broke parsing
+          try{
+            const parsedData: {data: T} = JSON.parse(dataAsString, (key, value) => {
+              if(typeof value === 'number'){
+                value = BigInt(value).toString();
+              }
+
+              return value;
+            });
+            subscriber.next(parsedData);
+          } catch(error){
+            console.error("Error parsing JSON: ", error);
+            subscriber.error(error);
+          }
+        },
+
+        onSubscribe: (subscription: any) => {
+          //How many requests client can handle, when this count runs out, another request should be made
+          subscription.request(this.requestCount);
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    });
   }
 
-  // I write any as type everywhere because for now it's simpler than searching for types in this library
-  private connect(){
+  public connect(){
     if(!this.client){
       return;
     }
 
-
-    let decoder = new TextDecoder();
-
-
+    // This function will be used only by this service to renew connection
     this.client.connect().subscribe({
-      onComplete: (socket: any) => {
+      onComplete: (socket) => {
         // actual code executed after setting up connection starts here
+        this.rsocket = socket;
         console.log("Connected with Spring");
-
-        // This function will be used only by this service to renew connection, instead other parts of app should implement event listeners
-        // TODO handle events based on provided id
-        socket.requestStream({
-          data: Buffer.from('{}'), //Placeholder for request data, if ever needed / May be removed
-          metadata: encodeCompositeMetadata([
-            [MESSAGE_RSOCKET_ROUTING, encodeRoute('/community/9895314911657984/messages')]
-          ])
-        }).subscribe({
-          onComplete: () => {
-            console.log("Message send")
-          },
-          onError: (error: any) => {
-            console.error("RSocket error occured: ", error)
-          },
-          onNext: (payload: any) => {
-            const dataAsString = decoder.decode(payload.data);
-            //dataAsString is json string
-            console.log(dataAsString);
-          },
-
-          onSubscribe: (subscription: any) => {
-            //How many requests client can handle, when this count runs out, another request should be made
-            subscription.request(this.requestCount);
-          }
-        });
-
       },
       // handling errors with connection
       onError: (error: any) => console.error("Error occured: ", error),
       onSubscribe: (cancel: any) => {
+        console.log(`Canceled ${cancel}`);
         // I'm not using this for now
       }
     });

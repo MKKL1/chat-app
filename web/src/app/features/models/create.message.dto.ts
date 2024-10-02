@@ -1,5 +1,6 @@
 export interface CreateMessageDto {
-  channelId: string;
-  userId: string;
   text: string;
+  communityId?: string;
+  respondsToMessage?: string;
+  gifLink?: string;
 }

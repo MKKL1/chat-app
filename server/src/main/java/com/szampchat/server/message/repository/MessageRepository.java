@@ -8,10 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface MessageRepository extends ReactiveCrudRepository<Message, MessageId> {
-    Flux<Message> findMessagesByChannelOrderByIdDesc(Long channelId, Limit limit);
+    Flux<Message> findMessagesByChannelOrderByIdDesc(Long channel, Limit limit);
 
     @Query("""
             SELECT * FROM messages
@@ -21,4 +22,8 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, Messa
     Flux<Message> findMessagesByChannel(@Param("channel") Long channel,
                                         @Param("before") Long before,
                                         @Param("limit") int limit);
+
+    Mono<Message> findById(Long id);
+
+    Mono<? extends Void> deleteById(Long id);
 }

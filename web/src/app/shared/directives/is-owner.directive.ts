@@ -18,8 +18,12 @@ export class IsOwnerDirective {
     private userService: UserService,
     private communityQuery: CommunityQuery
   ) {
-    this.communityQuery.ownerId$.subscribe(id => {
-      this.ownerId = id;
+    this.communityQuery.selectActive().subscribe(community => {
+      if(!community){
+        return;
+      }
+
+      this.ownerId = community.ownerId;
       this.userId = this.userService.getUser().id;
       this.updateView();
     })

@@ -54,7 +54,7 @@ export class EditMessageComponent {
   submitMessage(){
     if(this.message && this.messageForm.value.text){
       this.message.text = this.messageForm.value.text;
-      this.messageService.editMessage(this.message);
+      this.messageService.editMessage(this.message.id, this.message.text);
       this.dialogRef.close();
     }
   }

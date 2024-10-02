@@ -1,145 +1,25 @@
 import {Community} from "../../models/community";
-import {Store, StoreConfig} from "@datorama/akita";
+import {ActiveState, EntityState, EntityStore, getEntityType, Store, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
 import {Channel} from "../../models/channel";
 import {Member} from "../../models/member";
 import {Role} from "../../models/role";
+import {CommunityQuery} from "./community.query";
 
-export interface CommunityState {
-  communities: Community[];
-  selectedCommunity: Community;
-}
-
-function createInitState(): CommunityState {
-  return {
-    communities: [],
-    selectedCommunity: {
-      id: '',
-      name: '',
-      imageUrl: '',
-      ownerId: '',
-      channels: [],
-      members: [],
-      roles: []
-    }
-  };
-}
+export interface CommunityState extends EntityState<Community, string>, ActiveState {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({name: 'community'})
-export class CommunityStore extends Store<CommunityState> {
+export class CommunityStore extends EntityStore<CommunityState> {
 
   constructor() {
-    super(createInitState());
+    super();
   }
 
-  // all those functions are shit
-  // beside simply updating community I cannot do anything else
-  // i must split it into separated stores and handle changes
-  selectCommunity(community: Community){
-    this.update(state => ({selectedCommunity: community}));
-  }
-
-  updateCommunity(updatedCommunity: Community){
-    this.update(state => ({communities: state.communities.map(community =>
-        community.id === updatedCommunity.id ? { ...community, ...updatedCommunity } : community
-      )}));
-  }
-
-  deleteCommunity(id: string){
-    this.update(state => ({communities: state.communities.filter(community => community.id !== id)}));
-  }
-
-  setMembers(id: string, members: Member[]){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id ? { ...community, members: [...community.members, ...members] } : community
-      )
-    }));
-  }
-
-  addMember(id: string, member: Member){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id ? { ...community, members: [...community.members, member] } : community
-      )
-    }));
-  }
-
-  updateMember(id: string, updatedMember: Member){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id
-          ? {
-            ...community,
-            members: community.members.map(member =>
-              member.id === updatedMember.id ? { ...member, ...updatedMember } : member
-            )
-          }
-          : community
-      )
-    }));
-  }
-
-  deleteMember(communityId: string, id: string){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === communityId
-          ? {
-            ...community,
-            channels: community.channels.filter(channel => channel.id !== id)
-          }
-          : community
-      )
-    }));
-  }
-
-  setRoles(id: string, roles: Role[]){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id ? { ...community, roles: [...community.roles, ...roles] } : community
-      )
-    }));
-  }
-
-  addRole(id: string, role: Role){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id ? { ...community, roles: [...community.roles, role] } : community
-      )
-    }));
-  }
-
-  updateRole(id: string, updatedRole: Role){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === id
-          ? {
-            ...community,
-            roles: community.roles.map(role =>
-              role.id === updatedRole.id ? { ...role, ...updatedRole } : role
-            )
-          }
-          : community
-      )
-    }));
-  }
-
-  deleteRole(communityId: string, id: string){
-    this.update(state => ({
-      communities: state.communities.map(community =>
-        community.id === communityId
-          ? {
-            ...community,
-            roles: community.roles.filter(role => role.id !== id)
-          }
-          : community
-      )
-    }));
-  }
-
-  clear(){
-    this.update(createInitState());
+  // setting flag so nextEntity won't be fetched again
+  override akitaPreUpdateEntity(_: Readonly<getEntityType<CommunityState>>, nextEntity: any): getEntityType<CommunityState> {
+    nextEntity.fullyFetched = true;
+    return super.akitaPreUpdateEntity(_, nextEntity);
   }
 
 }

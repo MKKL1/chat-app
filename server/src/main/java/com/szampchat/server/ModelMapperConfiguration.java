@@ -14,13 +14,4 @@ public class ModelMapperConfiguration {
         return new ModelMapper();
     }
 
-    @Bean
-    public ObjectMapper objectMapper(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Long.class, new ToStringSerializer());
-        module.addSerializer(Long.TYPE, new ToStringSerializer());
-        objectMapper.registerModule(module);
-        return objectMapper;
-    }
 }

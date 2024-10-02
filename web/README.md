@@ -15,7 +15,7 @@ environment-example.ts is created and copy it content to new environment file
 
 # RSocket
 
-All logic connected to websockets is placed in service in /app/src/core/services/rsocket.service.ts
+All logic connected to websockets is placed in service in /app/src/core/services/rsocket.connection.ts
 This service is called after creating MainComponent which can be found in /app/src/features/components/pages/main/main.component.ts
 MainComponent is created after signing in to app with keycloak
 To run websockets without singing in, copy and paste MainComponent body into AppComponent

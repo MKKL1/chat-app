@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, inject, Inject, OnInit} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -18,6 +18,8 @@ import {MatProgressBar} from "@angular/material/progress-bar";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {NgIf} from "@angular/common";
 import {Channel, ChannelType} from "../../../../models/channel";
+import {catchError, of} from "rxjs";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-create-channel',
@@ -52,6 +54,8 @@ export class CreateChannelComponent implements OnInit{
     type: new FormControl('', Validators.required)
   });
 
+  private snackBar = inject(MatSnackBar);
+
   constructor(
     public dialogRef: MatDialogRef<CreateChannelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {editing: boolean, channel: Channel},
@@ -82,7 +86,13 @@ export class CreateChannelComponent implements OnInit{
   }
 
   createChannel(){
-    this.channelService.createChannel(this.channelForm.value).subscribe(channel => {
+    this.channelService.createChannel(this.channelForm.value).pipe(
+      catchError(error => {
+        this.loading = false;
+        this.snackBar.open("Cannot create new channel", "Ok");
+
+        return of(null);
+      })).subscribe(channel => {
       this.loading = false;
       this.dialogRef.close();
     });

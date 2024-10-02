@@ -45,7 +45,7 @@ public class ChannelService {
 //    }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel){
-        return channelRepository.doesChannelExist(channel.getName())
+        return channelRepository.doesChannelExist(channel.getName(), channel.getCommunityId())
             .flatMap(existingChannel -> existingChannel ?
                 Mono.error(new ChannelAlreadyExistsException()) :
                 channelRepository.save(
