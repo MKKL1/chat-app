@@ -89,7 +89,7 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     @WithMockCustomUser
     @Test
     void givenDefinedCommunity_whenGetCommunity_thenReturnCommunityDTO() {
-        when(communityMemberService.isMember(anyLong(), anyLong())).thenReturn(Mono.just(true));
+        when(communityMemberService.isMember(anyLong())).thenReturn(Mono.just(true));
 
         User owner = userRepository.save(Instancio.of(User.class)
                         .set(field(User::getId), null)

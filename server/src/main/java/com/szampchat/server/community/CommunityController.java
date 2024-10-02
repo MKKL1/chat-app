@@ -42,15 +42,15 @@ public class CommunityController {
     })
     @Operation(summary = "Get detailed info about community")
     @GetMapping("/{communityId}")
-    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
-    public Mono<Community> getCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
+    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+    public Mono<Community> getCommunity(@PathVariable Long communityId) {
         return communityService.findById(communityId);
     }
 
     //TODO document
     @GetMapping("/{communityId}/info")
-    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
-    public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId, CurrentUser currentUser){
+    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+    public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){
         return communityService.getFullCommunityInfo(communityId);
     }
 
@@ -58,8 +58,8 @@ public class CommunityController {
     //Maybe instead of dozens of small request it will be better to make
     //huge request which will get all data about community?
     @GetMapping("/{communityId}/members")
-    @PreAuthorize("@communityMemberService.isMember(#communityId, #currentUser.userId)")
-    public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId, CurrentUser currentUser) {
+    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+    public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId) {
         return communityMemberService.getCommunityMembers(communityId);
     }
 
@@ -90,7 +90,7 @@ public class CommunityController {
     //I use isNotMember to ensure that user won't be added as member of community another time
     //Don't use @RequestParam in @PostMapping
     @PostMapping("/{communityId}/join")
-    @PreAuthorize("@communityMemberService.isNotMember(#communityId, #currentUser.userId)")
+    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }

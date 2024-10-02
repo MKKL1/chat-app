@@ -32,7 +32,8 @@ public class CommunityMemberService {
 
     public Mono<Boolean> isMember(Long communityId) {
         return customPrincipalProvider.getPrincipal()
-                .flatMap(user -> isMember(communityId, user.getUserId()));
+                .flatMap(user -> isMember(communityId, user.getUserId()))
+                .onErrorReturn(false);
     }
 
     // maybe just write query instead
@@ -43,7 +44,8 @@ public class CommunityMemberService {
 
     public Mono<Boolean> isNotMember(Long communityId) {
         return customPrincipalProvider.getPrincipal()
-                .flatMap(user -> isNotMember(communityId, user.getUserId()));
+                .flatMap(user -> isNotMember(communityId, user.getUserId()))
+                .onErrorReturn(false);
     }
 
     //Although it is named CommunityMemberDTO it is not meant to be converted directly to CommunityMember
