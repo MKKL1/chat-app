@@ -30,9 +30,4 @@ export class TextChannelInfoComponent {
   message: string = "Example messageExample messageExample messageExample messageExample messageExample message";
   date: Date = new Date();
   // Change colors
-
-  // TODO load chats for channel
-  changeTextChannel(){
-    // implement
-  }
 }

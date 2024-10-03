@@ -40,10 +40,7 @@ export class MessageInputComponent {
 
   @Input() messageToRespond?: { id: string, text: string };
 
-  constructor(
-    private userService: UserService,
-    private messageService: MessageService
-  ) {
+  constructor(private messageService: MessageService) {
   }
 
   // wrapper for handling key input
