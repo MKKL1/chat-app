@@ -51,30 +51,30 @@ describe('CommunityService', () => {
     const memberStore = TestBed.inject(MemberStore);
     const roleStore = TestBed.inject(RoleStore);
 
-    expect().nothing();
+
   });
 
   it('should get communities', () => {
-    expect().nothing();
+
   });
 
   it('should create community', () => {
-    expect().nothing();
+
   });
 
   it('should edit community', () => {
-    expect().nothing();
+
   });
 
   it('should delete community', () => {
-    expect().nothing();
+
   });
 
   it('should create invitation', () => {
-    expect().nothing();
+
   });
 
   it('should accept invitation', () => {
-    expect().nothing();
+
   });
 });

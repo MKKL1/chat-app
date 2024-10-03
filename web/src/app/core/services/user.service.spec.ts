@@ -38,30 +38,30 @@ describe('UserService', () => {
   });
 
   it('should set user',() => {
-    expect().nothing();
+
   });
 
   it('should get user',() => {
-    expect().nothing();
+
   });
 
   it('should fetch user data',() => {
-    expect().nothing();
+
   });
 
   it('should register user',() => {
-    expect().nothing();
+
   });
 
   it('should edit avatar',() => {
-    expect().nothing();
+
   });
 
   it('should edit description',() => {
-    expect().nothing();
+
   });
 
   it('should delete account',() => {
-    expect().nothing();
+
   });
 });

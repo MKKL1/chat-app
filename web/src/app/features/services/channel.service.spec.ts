@@ -45,22 +45,22 @@ describe('ChannelService', () => {
   });
 
   it('should select voice chat', () => {
-    expect().nothing();
+
   });
 
   it('should select text chat', () => {
-    expect().nothing();
+
   });
 
   it('should create channel', () => {
-    expect().nothing();
+
   });
 
   it('should edit channel', () => {
-    expect().nothing();
+
   });
 
   it('should delete channel', () => {
-    expect().nothing();
+
   });
 });

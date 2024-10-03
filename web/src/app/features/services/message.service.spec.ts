@@ -32,18 +32,18 @@ describe('MessageService', () => {
   });
 
   it('should get messages', () => {
-    expect().nothing();
+
   });
 
   it('should send message', () => {
-    expect().nothing();
+
   });
 
   it('should edit message', () => {
-    expect().nothing();
+
   });
 
   it('should delete message', () => {
-    expect().nothing();
+
   });
 });
