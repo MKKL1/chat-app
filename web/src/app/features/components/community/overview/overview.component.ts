@@ -29,14 +29,12 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 
 export class OverviewComponent implements OnInit{
   readonly dialog: MatDialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
 
   selectedCommunity: Community | undefined;
 
   constructor(
     protected communityQuery: CommunityQuery,
-    private communityService: CommunityService,
-    protected userService: UserService) {
+    private communityService: CommunityService) {
   }
 
   ngOnInit() {

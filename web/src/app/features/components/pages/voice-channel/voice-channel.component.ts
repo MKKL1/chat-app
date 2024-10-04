@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.component";
 import {UsersListVoiceComponent} from "../../voice-chat/users-list-voice/users-list-voice.component";

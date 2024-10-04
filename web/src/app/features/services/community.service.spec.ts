@@ -13,6 +13,10 @@ import {MemberStore} from "../store/member/member.store";
 import {RoleStore} from "../store/role/role.store";
 import {EventService} from "../../core/events/event.service";
 
+const eventServiceMock = {
+  handleNewRequestStream: jest.fn()
+};
+
 describe('CommunityService', () => {
   let service: CommunityService;
   let httpTesting: HttpTestingController;
@@ -24,7 +28,8 @@ describe('CommunityService', () => {
       providers: [
         CommunityService,
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        {provide: EventService, useValue: eventServiceMock}
       ]
     });
 

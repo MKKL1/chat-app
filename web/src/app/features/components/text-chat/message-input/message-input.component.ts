@@ -8,7 +8,6 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ClickOutsideDirective} from "../../../../shared/directives/click-outside.directive";
 import {MessageService} from "../../../services/message.service";
-import {UserService} from "../../../../core/services/user.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 
 @Component({

@@ -12,14 +12,11 @@ import {FadeInOutScrollDirective} from "../../../../shared/directives/fade-in-ou
 import {Channel, ChannelType} from "../../../models/channel";
 import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
-import {UserService} from "../../../../core/services/user.service";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {MessageService} from "../../../services/message.service";
-import {Observable, Subscription, tap} from "rxjs";
-import {MessageStore} from "../../../store/message/message.store";
+import {Observable, tap} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
-import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-text-chat',
@@ -48,15 +45,10 @@ import {CommunityQuery} from "../../../store/community/community.query";
 
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
-
-  private messageSubscription: Subscription | undefined;
-
   messages$!: Observable<Message[]>;
-
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
-    protected userService: UserService,
     private messageService: MessageService,
     private messageQuery: MessageQuery,
     private channelQuery: TextChannelQuery,

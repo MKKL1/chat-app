@@ -6,7 +6,6 @@ import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {CreateCommunityComponent} from "../../community/dialogs/create-community/create-community.component";
 import {CommunitiesListComponent} from "../../community/communities-list/communities-list.component";
-import {CommunityService} from "../../../services/community.service";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
 import {CommunityDetailsComponent} from "../../community/community-details/community-details.component";
 import {CommunityQuery} from "../../../store/community/community.query";

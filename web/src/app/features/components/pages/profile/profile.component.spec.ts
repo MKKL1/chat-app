@@ -6,6 +6,9 @@ import { MatDialog } from "@angular/material/dialog";
 import { of } from "rxjs";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
+// There is a lot of stuff to add here,
+// so I will also add test later :)
+
 const userServiceMock = {
   editDescription: jest.fn().mockReturnValue(of({
     id: '1',
@@ -41,14 +44,11 @@ describe('ProfileComponent', () => {
         MatDialog,
         { provide: UserService, useValue: userServiceMock }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
-
     dialog = TestBed.inject(MatDialog);
-
     fixture.detectChanges();
   });
 
