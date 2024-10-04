@@ -21,7 +21,6 @@ export class TextChannelComponent{
 
   constructor(private channelQuery: TextChannelQuery) {
     this.channelQuery.selectActiveId().subscribe(id => {
-      console.log(id);
       if(id !== undefined && id !== null){
         this.isChannelSelected = true;
       }
