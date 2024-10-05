@@ -37,6 +37,7 @@ public class InvitationService {
     public Mono<CommunityMember> addMemberToCommunity(Long communityId, Long invitationId, Long userId){
         // check if invitation is valid
         // for now link won't be deleted from db after accepting invitation
+        //TODO add one time invitation?
         return invitationRepository.isValid(invitationId, communityId).flatMap(isValid -> {
             if(!isValid) {
                 return Mono.error(new InvalidInvitationException());

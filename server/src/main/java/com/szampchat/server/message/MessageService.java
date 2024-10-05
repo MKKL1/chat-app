@@ -36,6 +36,9 @@ public class MessageService {
     private final Snowflake snowflake;
     private final EventSink eventSender;
 
+    //Can't cache as it requires current user id
+    //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
+    //TODO separate cacheable and non-cacheable parts of MessageFullDTO
     public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO, Long currentUserId) {
         return Mono.just(fetchMessagesDTO)
                 .flatMapMany(request -> {
@@ -101,6 +104,7 @@ public class MessageService {
         return messageRepository.findMessagesByChannel(channel, before, limit);
     }
 
+    //Make it public, and allow for multiple messages to be processed
     Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
         return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
                 .collectList()

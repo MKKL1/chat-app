@@ -17,6 +17,7 @@ import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.community.repository.InvitationRepository;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
+import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.snowflake.Snowflake;
 import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,7 @@ public class CommunityService {
     private final CommunityMemberService communityMemberService;
     private final ChannelService channelService;
     private final RoleService roleService;
+    private final CustomPrincipalProvider customPrincipalProvider;
 
     public Mono<Community> findById(Long id) {
         return communityRepository.findById(id)
@@ -45,9 +47,17 @@ public class CommunityService {
     }
 
     public Mono<Boolean> isOwner(Long communityId, Long userId) {
+        //It can be just findById(communityId) and then check from there
+        //TODO use findById
         return communityRepository.isOwnerOfCommunity(communityId, userId).flatMap(
-            owner -> owner ? Mono.just(true) : Mono.error(new NotOwnerException())
+            owner -> owner ? Mono.just(true) : Mono.error(new NotOwnerException())//false?
         );
+    }
+
+    public Mono<Boolean> isOwner(Long communityId) {
+        return customPrincipalProvider.getPrincipal()
+                .flatMap(user -> isOwner(communityId, user.getUserId()))
+                .onErrorReturn(false);
     }
 
     // for now, I just join together few entities
@@ -70,6 +80,7 @@ public class CommunityService {
             });
     }
 
+    //remove?
     public Flux<Community> getAllCommunities(){
         return communityRepository.findAll();
     }
@@ -87,13 +98,13 @@ public class CommunityService {
                 .build();
 
         return communityRepository.save(community)
-            .switchIfEmpty(Mono.error(new Exception()))
+            .switchIfEmpty(Mono.error(new Exception()))//What exception? TODO add failed to save exception
             .flatMap(savedCommunity -> {
                 Long communityId = savedCommunity.getId();
 
                 // After creating community its owner also need to be added as its member
                 return userService.findUser(ownerId)
-                    .switchIfEmpty(Mono.error(new Exception("User not found")))
+                    .switchIfEmpty(Mono.error(new Exception("User not found"))) //TODO Exception should be thrown in user service
                     .flatMap(savedUser -> communityMemberService.create(communityId, savedUser.getId())
                         .then(Mono.just(community)));
             });

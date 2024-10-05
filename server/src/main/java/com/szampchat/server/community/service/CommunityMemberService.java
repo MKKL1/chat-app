@@ -4,10 +4,12 @@ import com.szampchat.server.community.CommunityMemberRolesRow;
 import com.szampchat.server.community.dto.CommunityMemberDTO;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.repository.CommunityMemberRepository;
+import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,14 +23,29 @@ import java.util.Set;
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final ModelMapper modelMapper;
+    private final CustomPrincipalProvider customPrincipalProvider;
 
+    @Deprecated
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
     }
 
+    public Mono<Boolean> isMember(Long communityId) {
+        return customPrincipalProvider.getPrincipal()
+                .flatMap(user -> isMember(communityId, user.getUserId()))
+                .onErrorReturn(false);
+    }
+
     // maybe just write query instead
+    @Deprecated
     public Mono<Boolean> isNotMember(Long communityId, Long userId) {
         return isMember(communityId, userId).map(val -> !val);
+    }
+
+    public Mono<Boolean> isNotMember(Long communityId) {
+        return customPrincipalProvider.getPrincipal()
+                .flatMap(user -> isNotMember(communityId, user.getUserId()))
+                .onErrorReturn(false);
     }
 
     //Although it is named CommunityMemberDTO it is not meant to be converted directly to CommunityMember
@@ -56,6 +73,7 @@ public class CommunityMemberService {
         return communityMemberRepository.save(new CommunityMember(communityId, userId));
     }
 
+    //will be removed
     //Helper class to identify User object by id instead of it's fields
     private record UserCompositeKey(User user) {
         @Override
