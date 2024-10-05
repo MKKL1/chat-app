@@ -26,16 +26,19 @@ public class UserService {
 
 
     public Mono<User> findUser(Long userId) {
+        //TODO Throw exception on not found
         return userRepository.findById(userId);
     }
 
     //easy to cache, will practically never change
     public Mono<Long> findUserIdBySub(UUID sub) {
+        //TODO Throw 404
         return userSubjectRepository.findBySub(sub)
                 .map(UserSubject::getUserId);
     }
 
     public Mono<User> findUserBySub(UUID sub) {
+        //TODO Throw 404
         return findUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }

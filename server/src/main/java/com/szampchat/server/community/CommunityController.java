@@ -79,8 +79,8 @@ public class CommunityController {
     //TODO document
     //this endpoint will create link to community which then can be shared with other users to join given community
     @PostMapping("/{communityId}/invite")
-    @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId, CurrentUser currentUser){
+    @PreAuthorize("@communityService.isOwner(#communityId)")
+    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId){
         return invitationService.createInvitation(communityId, 5);
     }
 
@@ -103,16 +103,17 @@ public class CommunityController {
     }
 
     //TODO document
+    //Use community dto?
     @PatchMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community, CurrentUser currentUser) {
+    @PreAuthorize("@communityService.isOwner(#communityId)")
+    public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community) {
         return communityService.editCommunity(communityId, community);
     }
 
     //TODO document
     @DeleteMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId, #currentUser.userId)")
-    public Mono<Void> deleteCommunity(@PathVariable Long communityId, CurrentUser currentUser) {
-        return Mono.just(communityId).doFirst(() -> System.out.println("Siema")).flatMap(communityService::delete);
+    @PreAuthorize("@communityService.isOwner(#communityId)")
+    public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
+        return communityService.delete(communityId);
     }
 }

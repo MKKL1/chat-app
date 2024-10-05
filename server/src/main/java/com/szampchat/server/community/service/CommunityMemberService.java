@@ -73,6 +73,7 @@ public class CommunityMemberService {
         return communityMemberRepository.save(new CommunityMember(communityId, userId));
     }
 
+    //will be removed
     //Helper class to identify User object by id instead of it's fields
     private record UserCompositeKey(User user) {
         @Override

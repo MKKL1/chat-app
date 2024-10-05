@@ -13,7 +13,7 @@ import reactor.core.scheduler.Schedulers;
  * Publisher of events, which can be later consumed by required event streams
  */
 @Slf4j
-@Component //Not sure if it should be service
+@Component
 public class EventSink {
 
     //Those variables could be defined somewhere else for easier configuration, but I am not sure where
