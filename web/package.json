@@ -24,7 +24,6 @@
     "@datorama/akita": "^8.0.1",
     "@emoji-mart/data": "^1.2.1",
     "@material/web": "^1.5.0",
-    "cypress": "^13.15.0",
     "emoji-mart": "^5.6.0",
     "keycloak-angular": "^16.0.1",
     "keycloak-js": "^25.0.2",
@@ -45,6 +44,7 @@
     "@types/rsocket-core": "^0.0.11",
     "@types/rsocket-websocket-client": "^0.0.7",
     "babel-jest": "^29.7.0",
+    "cypress": "^13.15.0",
     "jest": "^29.7.0",
     "jest-preset-angular": "^14.2.4",
     "typescript": "~5.4.2"

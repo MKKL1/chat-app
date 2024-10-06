@@ -28,7 +28,7 @@ describe('GifSearchComponent', () => {
     httpTesting = TestBed.inject(HttpTestingController);
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 });
