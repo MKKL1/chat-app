@@ -1,4 +1,4 @@
-import {ActiveState, EntityState, EntityStore, StoreConfig} from "@datorama/akita";
+import {ActiveState, EntityState, EntityStore, getEntityType, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
 import {Channel} from "../../models/channel";
 
@@ -11,5 +11,7 @@ export class TextChannelStore extends EntityStore<ChannelState> {
   constructor() {
     super();
   }
+
+
 
 }

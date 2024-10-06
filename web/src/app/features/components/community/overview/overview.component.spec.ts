@@ -3,9 +3,14 @@ import { OverviewComponent } from './overview.component';
 import {MatDialog} from "@angular/material/dialog";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {CommunityService} from "../../../services/community.service";
+import {UserService} from "../../../../core/services/user.service";
 
 const communityServiceMock = {
   deleteCommunity: jest.fn()
+};
+
+const userServiceMock = {
+  getUser: jest.fn()
 };
 
 describe('OverviewComponent', () => {
@@ -19,7 +24,8 @@ describe('OverviewComponent', () => {
       imports: [OverviewComponent],
       providers: [
         MatDialog,
-        {provide: CommunityService, useValue: communityServiceMock}
+        {provide: CommunityService, useValue: communityServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     })
     .compileComponents();

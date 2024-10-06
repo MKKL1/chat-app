@@ -4,9 +4,14 @@ import {MessageService} from "../../../services/message.service";
 import {MessageQuery} from "../../../store/message/message.query";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {UserService} from "../../../../core/services/user.service";
 
 const messageServiceMock = {
   getMessages: jest.fn()
+};
+
+const userServiceMock = {
+  getUser: jest.fn()
 };
 
 describe('TextChatComponent', () => {
@@ -20,7 +25,8 @@ describe('TextChatComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TextChatComponent, NoopAnimationsModule],
       providers: [
-        {provide: MessageService, useValue: messageServiceMock}
+        {provide: MessageService, useValue: messageServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     })
     .compileComponents();

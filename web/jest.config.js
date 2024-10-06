@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'jest-preset-angular',
-  globalSetup: 'jest-preset-angular/global-setup',  // Można usunąć tę linię, aby uniknąć ostrzeżenia
+  globalSetup: 'jest-preset-angular/global-setup',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   transform: {
     '^.+\\.(ts|js|html)$': ['ts-jest', {
