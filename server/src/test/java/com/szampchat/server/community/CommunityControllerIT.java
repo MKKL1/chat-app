@@ -119,7 +119,7 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     @WithMockCustomUser
     @Test
     void givenDefinedCommunity_whenInviteToCommunity_thenReturnInvitationResponseDTO() {
-        when(communityService.isOwner(anyLong(), anyLong())).thenReturn(Mono.just(true));
+        when(communityService.isOwner(anyLong())).thenReturn(Mono.just(true));
 
         Pattern linkPattern = Pattern.compile("^community/(\\d+)/join/(\\d+)$");
 
