@@ -4,7 +4,6 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.community.dto.*;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
-import com.szampchat.server.community.entity.Invitation;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
@@ -12,9 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,8 +55,8 @@ public class CommunityController {
     //huge request which will get all data about community?
     @GetMapping("/{communityId}/members")
     @PreAuthorize("@communityMemberService.isMember(#communityId)")
-    public Flux<CommunityMemberDTO> getCommunityMembers(@PathVariable Long communityId) {
-        return communityMemberService.getCommunityMembers(communityId);
+    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
+        return communityMemberService.getCommunityMembersWithRoles(communityId);
     }
 
     //TODO remove?

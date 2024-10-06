@@ -15,7 +15,7 @@ public interface CommunityRepository extends R2dbcRepository<Community, Long> {
     @Query("SELECT EXISTS (SELECT 1 FROM communities WHERE id = :community AND owner_id = :owner)")
     Mono<Boolean> isOwnerOfCommunity(@Param("community") Long community, @Param("owner") Long owner);
 
-    // Not sure if I should return dto with owner info
+    // Not sure if I should return dto with owner info //No
     @Query("""
           SELECT c.* FROM communities AS c
           JOIN community_members AS cm \s

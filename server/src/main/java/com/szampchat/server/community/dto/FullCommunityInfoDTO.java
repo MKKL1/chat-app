@@ -13,6 +13,6 @@ import java.util.List;
 public class FullCommunityInfoDTO {
     Community community;
     List<Channel> channels;
-    List<CommunityMemberDTO> members;
+    List<CommunityMemberRolesDTO> members;
     List<Role> roles;
 }
