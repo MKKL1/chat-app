@@ -27,25 +27,11 @@ export class UsersListComponent implements OnInit{
 
   user = '';
 
-  constructor(private keycloackService: KeycloakService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.initUserOptions();
-  }
 
-  private initUserOptions(): void {
-    this.user = this.keycloackService.getUsername();
-  }
-
-  test(): void {
-    this.keycloackService.loadUserProfile().then(p => {
-      console.log(p);
-    });
-  }
-
-  logout(): void {
-    this.keycloackService.logout('http://localhost:4200');
   }
 
   users: any[] = [

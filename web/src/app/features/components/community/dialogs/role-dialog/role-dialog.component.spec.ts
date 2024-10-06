@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RoleDialogComponent } from './role-dialog.component';
+import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 describe('RoleDialogComponent', () => {
   let component: RoleDialogComponent;
@@ -8,10 +9,10 @@ describe('RoleDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoleDialogComponent]
+      imports: [RoleDialogComponent, NoopAnimationsModule]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(RoleDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

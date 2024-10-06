@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable} from "rxjs";
-import {LoginForm} from "../../features/components/pages/login/LoginForm";
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +12,8 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(request: LoginForm){
-    return this.http.post<any>(this.authUrl, { request })
-      .pipe(
-        map(response => {
-          if (response && response.token) {
-            this.setToken(response.token);
-            this.loggedIn.next(true);
-          }
-          return response;
-        })
-      );
+  login(){
+
   }
 
   register(){

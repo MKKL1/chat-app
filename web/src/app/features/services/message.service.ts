@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {Message} from "../models/message";
 import {MessageStore} from "../store/message/message.store";
 import {CreateMessageDto} from "../models/create.message.dto";
@@ -9,7 +9,7 @@ import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 @Injectable({
   providedIn: 'root'
 })
-export class MessageService {
+export class MessageService implements OnInit{
   api: string = '';
   channelId: string = '';
   communityId: string = '';
@@ -18,11 +18,14 @@ export class MessageService {
     private http: HttpClient,
     private channelQuery: TextChannelQuery,
     private messageStore: MessageStore) {
-      const channel = this.channelQuery.getActive();
-      this.channelId = channel?.id!;
-      this.communityId = channel?.communityId!;
-      this.api = environment.api + "channels/";
-      //this.api = environment.api + "channels/" + this.channelId + '/messages';
+  }
+
+  ngOnInit() {
+    const channel = this.channelQuery.getActive();
+    this.channelId = channel?.id!;
+    this.communityId = channel?.communityId!;
+    this.api = environment.api + "channels/";
+    //this.api = environment.api + "channels/" + this.channelId + '/messages';
   }
 
   // todo get only few first messages, load more later as user scroll to the top of text-chat component
@@ -77,5 +80,10 @@ export class MessageService {
   // todo implement
   addReaction(reaction: string, messageId: string, userId: string){
     console.log(reaction);
+  }
+
+  // todo implement
+  deleteReaction(){
+
   }
 }
