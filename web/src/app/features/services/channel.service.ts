@@ -21,10 +21,18 @@ export class ChannelService {
   }
 
   selectVoiceChannel(channel: Channel){
+    if(channel.type === ChannelType.Text){
+      return;
+    }
+
     this.voiceChannelStore.setActive(channel.id);
   }
 
   selectTextChannel(channel: Channel){
+    if(channel.type === ChannelType.Voice){
+      return;
+    }
+
     this.textChannelStore.setActive(channel.id);
   }
 

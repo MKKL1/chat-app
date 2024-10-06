@@ -3,7 +3,6 @@ import {MatButton, MatFabButton} from "@angular/material/button";
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from "keycloak-angular";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
-import {CommunityService} from "../../../services/community.service";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {ButtonDangerComponent} from "../../../../shared/ui/button-danger/button-danger.component";
 import {MatFormField, MatLabel} from "@angular/material/form-field";

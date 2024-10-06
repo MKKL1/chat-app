@@ -7,13 +7,13 @@
 
     <div class="message-content" [ngStyle]="fromClient ? {'background': '#0d5043'} : {'background': '#565656'}">
       <!-- Add some graphical clue and text -->
-      @if(message.respondsToMessage !== undefined && message.respondsToMessage !== ''){
-        <p>Responding to {{message.respondsToMessage}}</p>
+      @if(message?.respondsToMessage !== undefined && message?.respondsToMessage !== ''){
+        <p>Responding to {{message?.respondsToMessage}}</p>
       }
-      <p style="margin:0;">{{message.text}}</p>
-      @if(message.gifLink !== ''){
+      <p style="margin:0;">{{message?.text}}</p>
+      @if(message?.gifLink !== ''){
         <div>
-          <img src="{{message.gifLink}}">
+          <img src="{{message?.gifLink}}">
         </div>
       }
     </div>

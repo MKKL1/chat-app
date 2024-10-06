@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MessageComponent } from './message.component';
+import {MatDialog} from "@angular/material/dialog";
+import {MessageService} from "../../../services/message.service";
+
+const messageServiceMock = {
+  addReaction: jest.fn()
+};
+
+// todo add spy to output()
 
 describe('MessageComponent', () => {
   let component: MessageComponent;
@@ -8,10 +15,14 @@ describe('MessageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MessageComponent]
+      imports: [MessageComponent],
+      providers: [
+        MatDialog,
+        {provide: MessageService, useValue: messageServiceMock}
+      ]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(MessageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

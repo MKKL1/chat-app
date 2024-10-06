@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RolesComponent } from './roles.component';
+import {MatDialog} from "@angular/material/dialog";
 
 describe('RolesComponent', () => {
   let component: RolesComponent;
@@ -8,10 +9,13 @@ describe('RolesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RolesComponent]
+      imports: [RolesComponent],
+      providers: [
+        MatDialog
+      ]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(RolesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

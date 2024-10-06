@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import {LandingComponent} from "./features/components/pages/landing/landing.component";
-import {LoginComponent} from "./features/components/pages/login/login.component";
-import {RegisterComponent} from "./features/components/pages/register/register.component";
 import {MainComponent} from "./features/components/pages/main/main.component";
 import {AuthGuard} from "./core/guards/auth.guard";
 import {TextChannelComponent} from "./features/components/pages/text-channel/text-channel.component";
@@ -19,14 +17,6 @@ export const routes: Routes = [
   {
     path: '',
     component: LandingComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'register',
-    component: RegisterComponent
   },
   {
     path: 'community/:communityId/join/:invitationId',
