@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "rsocket-adapter-rxjs": "^1.0.0-alpha.4"
+  }
+}

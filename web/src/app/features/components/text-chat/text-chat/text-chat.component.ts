@@ -17,6 +17,7 @@ import {MessageService} from "../../../services/message.service";
 import {Observable, tap} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-text-chat',
@@ -52,6 +53,7 @@ export class TextChatComponent implements OnInit{
     private messageService: MessageService,
     private messageQuery: MessageQuery,
     private channelQuery: TextChannelQuery,
+    protected userService: UserService
   ) {}
 
   ngOnInit() {
