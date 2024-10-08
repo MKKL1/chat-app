@@ -1,0 +1,199 @@
+---
+id: get-channels-for-community
+title: "getChannelsForCommunity"
+description: "getChannelsForCommunity"
+sidebar_label: "getChannelsForCommunity"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNU8tu2zAQ/BVhTk3AVk5aFAFvQdoEQQ8B2vRk+EBLa4utRDLkyqgr6N+LtR5wnBaNLpSo2eXM7LADm22CXqKojHNUvy284+jrmiJWCj5QNGy9uy+hsSW+GWDp1scb3zSts7yHQjDRNMQUpVcHZxqCRjEh7ksoWAeNYLiCQqSn1kYqoTm2pJCKihoD3YH3QUqtY9pShMLGx8bwsPXxA/p+JeUpeJcoScXlYiFLSamINghZaDx8gYJoIcfy9zw/l+XFOSZGIwIsU5OO9v36BxUsyqJ4wHY4y5av4qhGB2Zo4mjdVn7Mnryy0QD5D/T9JXrBWq4FNA7p0+MD+sOjTtz59yAb4sqPsz7MlSto5BNrSynvjsba52NuEhQSxd2UgDbW0KiYg87z2hemrnxifbW4ushNsDhldEdOkkZlNnTJpIGM2rqNP+gftX37bZpQVIYn4NBNDh46Ld5diG/BJ26Mk9IxjVvibFKd3fqYHet+xmZ2m+kX56E21knLg6Zu9GSJI0+goJ+HfbZlpSDKpaDr1ibR91j3vWw/tRT30MuVws5Ea9aib9mhtEneS+iNqRO94DanGm++jtfoLIP6O+cp5k5E7kzdyhcUftL+5IL2q16hIlNSPNAYENdFQYGPauUiyVzmoNx9fkTf/wHcSXTK
+sidebar_class_name: "get api-method"
+info_path: docs/api/szampchat-server-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"getChannelsForCommunity"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/communities/{communityId}/channels"}
+>
+  
+</MethodEndpoint>
+
+
+
+getChannelsForCommunity
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"communityId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          OK
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"*/*"}
+              value={"*/*"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                        >
+                          Array [
+                        </div>
+                      </li><SchemaItem
+                        collapsible={false}
+                        name={"id"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"community"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"type"}
+                        required={false}
+                        schemaName={"int32"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int32"}}
+                      >
+                        
+                      </SchemaItem><li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                        >
+                          ]
+                        </div>
+                      </li>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"[\n  {\n    \"id\": 0,\n    \"name\": \"string\",\n    \"community\": 0,\n    \"type\": 0\n  }\n]"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

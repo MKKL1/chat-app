@@ -1,0 +1,167 @@
+---
+id: get-user-communities
+title: "getUserCommunities"
+description: "getUserCommunities"
+sidebar_label: "getUserCommunities"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNkk9r3DAQxb/K8o5BxJsSStCtlBJCDz2kOS0+zNoTW631p9J4U9f4u5dZJ+luyKG+yIxGb977STOEugK7w+fo/RicTKgNYuJM4mK4a2HRsTwUzi8djgsMMpcUQ+ECO+PDdqtLy6XJLulBWHz7CoMmBuEguntRXehSmp496Z9MiWFBOdMEAyfsy0k97n9wIzBIWf0c59oZrj3pcUG44wyDx5g9yVr6eI3FIJDnk9Yi2YVON+JT4Hz3vzLOU8cPeXhHajEQJ4OW/uFbjp95A+Ndhp6lj8+ENSdJD4uqOWsqnA+c9Y5mjGoDvUiyVTXEhoY+FrE325uripLD26m3HPQiud2sKhsVWGoDFx7jMdCz/fs/5FPTk7w0rmo6eFXaXl4pjBSLeAp6dMWr1jeabHMe7czHKzjh31KlgVxQsXGFusbe4TR2baDJtDzPeyp6Acui5V8j5wl2VxscKDvaq/9dvRj0TC3nI6efPMHiU9NwUrAHGkYdry9Q079yv/3yHcvyFw23BeA=
+sidebar_class_name: "get api-method"
+info_path: docs/api/szampchat-server-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"getUserCommunities"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/communities"}
+>
+  
+</MethodEndpoint>
+
+
+
+getUserCommunities
+
+<div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          OK
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"*/*"}
+              value={"*/*"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                        >
+                          Array [
+                        </div>
+                      </li><SchemaItem
+                        collapsible={false}
+                        name={"id"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"ownerId"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"imageUrl"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                        >
+                          ]
+                        </div>
+                      </li>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"[\n  {\n    \"id\": 0,\n    \"name\": \"string\",\n    \"ownerId\": 0,\n    \"imageUrl\": \"string\"\n  }\n]"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      
