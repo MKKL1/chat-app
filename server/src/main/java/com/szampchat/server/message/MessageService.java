@@ -43,14 +43,16 @@ public class MessageService {
         return Mono.just(fetchMessagesDTO)
                 .flatMapMany(request -> {
                     int limit = request.getLimit() != null ? request.getLimit() : 10;
+
                     if(request.getBefore() == null)
                         return findLatestMessages(channelId, limit);
+
                     return findMessagesBefore(channelId, request.getBefore(), limit);
                 })
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
-    Mono<Message> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId){
+    public Mono<Message> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId){
         Message message = modelMapper.map(createMessage, Message.class);
         message.setId(snowflake.nextId());
         message.setUser(userId);
@@ -70,7 +72,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    Mono<Message> editMessage(String text, Long messageId, Long userId){
+    public Mono<Message> editMessage(String text, Long messageId, Long userId){
         return messageRepository.findById(messageId)
             .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
             .flatMap(message -> {
@@ -83,7 +85,7 @@ public class MessageService {
             });
     }
 
-    Mono<Void> deleteMessage(Long id, Long userId){
+    public Mono<Void> deleteMessage(Long id, Long userId){
         return messageRepository.findById(id)
             .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
             .flatMap(message -> {

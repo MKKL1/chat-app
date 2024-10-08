@@ -25,9 +25,15 @@ public class UserService {
     private final ModelMapper modelMapper;
 
 
+    @Deprecated
     public Mono<User> findUser(Long userId) {
         //TODO Throw exception on not found
         return userRepository.findById(userId);
+    }
+
+    public Mono<UserDTO> findUserDTO(Long userId) {
+        return findUser(userId)
+                .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     //easy to cache, will practically never change

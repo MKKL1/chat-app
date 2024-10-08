@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Builder
 @Data
-public class CommunityMemberDTO {
+public class CommunityMemberRolesDTO {
     private final UserDTO user;
     private final Set<Long> roles;
 }

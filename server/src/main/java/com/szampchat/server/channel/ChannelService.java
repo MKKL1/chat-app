@@ -35,6 +35,7 @@ public class ChannelService {
     }
 
 
+    //TODO DTO!!!!
     public Flux<Channel> findChannelsForCommunity(Long communityId) {
         return channelRepository.findChannelsByCommunityId(communityId);
     }
