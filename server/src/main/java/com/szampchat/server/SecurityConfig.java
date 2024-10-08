@@ -41,11 +41,9 @@ public class SecurityConfig {
     private static final String[] WHITELIST = {
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/swagger-ui/**",
+            "/swagger-ui",
+            "/webjars/swagger-ui/**",
             "/error",
-            "/auth/register"
     };
 
     @Bean
