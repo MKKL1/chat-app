@@ -1,19 +1,28 @@
 <!-- TODO Fix css -->
 
-<div class="message-container" [ngStyle]="fromClient ? {'align-items': 'flex-end'} : {'align-items': 'flex-start'}">
+<div class="message-container" [ngStyle]="fromClient ?
+  {'align-items': 'flex-end'}
+  : {'align-items': 'flex-start'}">
 <!--  <p>user {{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>-->
-  <div class="message-wrapper" [ngStyle]="fromClient ? {'flex-direction': 'row-reverse'} : {'flex-direction': 'row'}">
-    <app-avatar></app-avatar>
-
-    <div class="message-content" [ngStyle]="fromClient ? {'background': '#0d5043'} : {'background': '#565656'}">
+  <div class="message-wrapper" [ngStyle]="fromClient ?
+    {'flex-direction': 'row-reverse'}
+    : {'flex-direction': 'row'}">
+    <div class="user-info-container">
+      <app-avatar></app-avatar>
+      <app-user-basic-info [ngStyle]="fromClient ? {'right': '20px'} : {'left': '20px'}">
+      </app-user-basic-info>
+    </div>
+    <div class="message-content" [ngStyle]="fromClient ?
+    {'background': '#0d5043', 'margin-right': '10px'} :
+    {'background': '#565656', 'margin-left': '10px'}">
       <!-- Add some graphical clue and text -->
       @if(message?.respondsToMessage !== undefined && message?.respondsToMessage !== ''){
         <p>Responding to {{message?.respondsToMessage}}</p>
       }
-      <p style="margin:0;">{{message?.text}}</p>
+      <p class="message-text">{{message?.text}}</p>
       @if(message?.gifLink !== ''){
-        <div>
-          <img src="{{message?.gifLink}}">
+        <div class="gif-wrapper">
+          <img src="{{message?.gifLink}}" alt="{{message?.gifLink}}">
         </div>
       }
     </div>

@@ -9,7 +9,7 @@ import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 @Injectable({
   providedIn: 'root'
 })
-export class MessageService implements OnInit{
+export class MessageService{
   api: string = '';
   channelId: string = '';
   communityId: string = '';
@@ -18,9 +18,6 @@ export class MessageService implements OnInit{
     private http: HttpClient,
     private channelQuery: TextChannelQuery,
     private messageStore: MessageStore) {
-  }
-
-  ngOnInit() {
     const channel = this.channelQuery.getActive();
     this.channelId = channel?.id!;
     this.communityId = channel?.communityId!;

@@ -5,6 +5,8 @@ import {MatListItem, MatNavList} from "@angular/material/list";
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
 import {MatToolbar} from "@angular/material/toolbar";
 import {BreakpointObserver} from "@angular/cdk/layout";
+import {CommunityService} from "../../../features/services/community.service";
+import {CommunityQuery} from "../../../features/store/community/community.query";
 
 @Component({
   selector: 'app-layout',
@@ -28,9 +30,11 @@ export class LayoutComponent implements OnInit {
   isMobile= true;
   isCollapsed = true;
 
-  title: string = 'Responsive Material Sidenavigation';
+  title: string = '';
 
-  constructor(private observer: BreakpointObserver) {}
+  constructor(
+    private observer: BreakpointObserver,
+    private communityQuery: CommunityQuery) {}
 
   ngOnInit() {
     this.observer.observe(['(max-width: 800px)']).subscribe((screenSize) => {
@@ -39,6 +43,14 @@ export class LayoutComponent implements OnInit {
       } else {
         this.isMobile = false;
       }
+    });
+
+    this.communityQuery.selectActive().subscribe(community => {
+      if(community === undefined){
+        return;
+      }
+
+      this.title = community.name;
     });
   }
 

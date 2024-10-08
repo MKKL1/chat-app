@@ -1,25 +1,8 @@
 .text-chat-container{
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   padding: 0 15px;
-  background: #191919;
-}
-
-.messages{
-  flex: 1;
-  overflow-y: auto;
-
-  // firefox
-  scrollbar-width: none;
-  // edge
-  -ms-overflow-style: none;
-}
-
-// chrome
-.messages::-webkit-scrollbar {
-  width: 0;
-  height: 0;
 }
 
 app-emoji-picker, app-gif-search{
@@ -29,7 +12,6 @@ app-emoji-picker, app-gif-search{
 }
 
 .resources-container{
-  background: #191c1c;
   height: 30vh;
   border-top-left-radius: 100px;
   border-top-right-radius: 100px;

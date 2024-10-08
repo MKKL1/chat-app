@@ -3,8 +3,10 @@
   <div class="messages">
     @if(messages$ | async; as messages){
       @for(message of messages; track message.id){
-        <app-message [message]="message" [userId]="userService.getUser().id" (respondsTo)="setResponse($event)"
-                     appFadeInOutScroll class="hideOnScroll"></app-message>
+        <app-message [message]="message"
+           [userId]="userService.getUser().id"
+           (respondsTo)="setResponse($event)">
+        </app-message>
       }
     }
   </div>

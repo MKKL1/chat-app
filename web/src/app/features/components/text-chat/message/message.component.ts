@@ -10,6 +10,7 @@ import {EditMessageComponent} from "../dialogs/edit-message/edit-message.compone
 import {DeleteMessageComponent} from "../dialogs/delete-message/delete-message.component";
 import {EmojiPickerComponent} from "../../../../shared/ui/emoji-picker/emoji-picker.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
+import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
 
 @Component({
   selector: 'app-message',
@@ -23,7 +24,8 @@ import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
     MatMenuItem,
     NgClass,
     NgStyle,
-    EmojiPickerComponent
+    EmojiPickerComponent,
+    UserBasicInfoComponent
   ],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'

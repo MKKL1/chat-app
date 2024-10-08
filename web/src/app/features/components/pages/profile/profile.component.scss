@@ -1,5 +1,31 @@
+.profile{
+  background: var(--background);
+  min-height: 100vh;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 mat-card{
-  margin: 20px;
-  background: grey;
+  margin: 15px;
+  background: var(--light-background);
+  color: var(--text);
+}
+
+.first-card{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-picture{
+  vertical-align: middle;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.description{
+  display: flex;
+  flex-direction: column;
 }

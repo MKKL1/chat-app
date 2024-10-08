@@ -62,6 +62,7 @@ export class CommunityService {
     // call api to get community data
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
+        console.log(community);
         // maybe map this on backend
         return {
           community: res.community,

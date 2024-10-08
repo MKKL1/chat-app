@@ -1,3 +1,7 @@
+:host{
+  background: var(--background);
+}
+
 app-emoji-picker, app-gif-search{
   position: absolute;
   right: 20px;
@@ -8,7 +12,7 @@ app-emoji-picker, app-gif-search{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 15px;
+  margin: 15px 15px 25px;
   overflow: hidden;
 }
 
@@ -50,11 +54,11 @@ mat-icon{
   font-size: 32px;
   height: 32px;
   width: 32px;
-  padding: 5px;
+  padding: 8px;
   border-radius: 10px;
 }
 
 mat-icon:hover{
-  background: #cccccc;
+  background: var(--light-background);
   cursor: pointer;
 }

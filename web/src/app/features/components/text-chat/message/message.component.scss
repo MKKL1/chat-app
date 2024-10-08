@@ -2,7 +2,6 @@
 
 .message-content{
   padding: 10px;
-  margin-right: 10px;
   color: white;
   border-radius: 20px;
 }
@@ -26,6 +25,31 @@
   display: block;
 }
 
-.gif-wrapper{
-  margin-top: 10px;
+.message-text{
+  margin: 0;
+}
+
+.gif-wrapper img{
+  max-width: 70vw;
+}
+
+.user-info-container{
+  position: relative;
+  display: inline-block;
+}
+
+app-user-basic-info{
+  display: none;
+  position: absolute;
+  top: 100%;
+  background-color: #333;
+  color: white;
+  padding: 10px 10px 0;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.user-info-container:hover app-user-basic-info,
+.user-info-container app-user-basic-info:hover {
+  display: block;
 }

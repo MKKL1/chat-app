@@ -5,13 +5,10 @@ import {AuthGuard} from "./core/guards/auth.guard";
 import {TextChannelComponent} from "./features/components/pages/text-channel/text-channel.component";
 import {VoiceChannelComponent} from "./features/components/pages/voice-channel/voice-channel.component";
 import {CommunityComponent} from "./features/components/pages/community/community.component";
-import {CommunityDetailsComponent} from "./features/components/community/community-details/community-details.component";
 import {ProfileComponent} from "./features/components/pages/profile/profile.component";
 import {InvitationComponent} from "./features/components/pages/invitation/invitation.component";
 import {communityGuard} from "./core/guards/community.guard";
 
-// TODO to select community I need to click it two times, but only when I see all (not only owned)
-// community guard is missing??
 
 export const routes: Routes = [
   {
