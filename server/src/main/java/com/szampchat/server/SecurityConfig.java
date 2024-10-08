@@ -41,7 +41,7 @@ public class SecurityConfig {
     private static final String[] WHITELIST = {
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "/swagger-ui",
+            "/", //swagger ui redirecting path
             "/webjars/swagger-ui/**",
             "/error",
     };
