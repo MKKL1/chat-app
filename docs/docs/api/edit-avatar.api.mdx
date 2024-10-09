@@ -1,0 +1,155 @@
+---
+id: edit-avatar
+title: "editAvatar"
+description: "editAvatar"
+sidebar_label: "editAvatar"
+hide_title: true
+hide_table_of_contents: true
+api: eJxtUstu2zAQ/BVjjgETu0WQg25GAqRBDynQ5GTosJY2FhuJZJcrI67Afy/WSoK8dKGwMxzODHaC0i6j2mDMLKdNDCqx71lQO8TEQupjuGlRgVuv6z0pCRyEc4ohc0Y14ftqZUfLuRGf7AIq3P6Eg+lxUENPlid25KbjgexPD4lRIW7/cKNwSGLvqZ81ffuG44Pyju3dhygD6Ty6OEdxCDTwG2pW8WFngB9ox/fSfwm+8/oJLw7qtbfRfWa5urtFse/DvfeVDKxdtKISadNZINIOFZbWbF7SCy+z7Fms8wmj2QM+6l5zsOa5XczkhfFK7eDDQzz6fXb3+x8NqelIX4iUPBxMf1ZanX2zuClmHegYde7raH3x6v3rOpSfdJl68sE0xrnKOdW8LxkOz7lqhy5mNWSatpSt+VJs/HdkOaDa1A57Ek9bc76pi0PH1LIci3jkAyqsm4aT7cKe+tEc2NJY7tduf63vLn+glP/W3en8
+sidebar_class_name: "patch api-method"
+info_path: docs/api/szampchat-server-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"editAvatar"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/users/avatar"}
+>
+  
+</MethodEndpoint>
+
+
+
+editAvatar
+
+<div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          OK
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"*/*"}
+              value={"*/*"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"id"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"imageUrl"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"description"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"id\": 0,\n  \"name\": \"string\",\n  \"imageUrl\": \"string\",\n  \"description\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

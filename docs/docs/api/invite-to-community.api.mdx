@@ -1,0 +1,160 @@
+---
+id: invite-to-community
+title: "inviteToCommunity"
+description: "inviteToCommunity"
+sidebar_label: "inviteToCommunity"
+hide_title: true
+hide_table_of_contents: true
+api: eJxtUsGO0zAQ/ZXqndiVRQtCHHxDIKGKQ9FuOUU5uMm08W5ie+1JRYn872iStJTu5uJo/Gbmvec3gM0hQRf46ruud5ZPKBV8oGjYereuoWHd0TJt/T+IQjDRdMQUpXmAMx1Bozoj1jUUrINGMNxAIdJLbyPV0Bx7UkhVQ52BHsCnQOMSpgNFKOx97AxPpc+fkHMp7Sl4lyhJx8fVSo6aUhVtEJrQ2PyAQuUdk2O5vV/ey/Fqj989UcWiIIpKttPM1rrnK1TiaN0BOSuw5VZKa3FhNOVhJvNtu0GWT91wecuwjrjx4mbwaVwvvmgsz5ZZSsvhyr+8nKZAIVE8no3uYwsN3G78Tk5ejOrFBF4IToyzbu9HXbOKxz+mC1Vj+Aw0wUJB5k+TVu8/IKuRZWectM5vO9FZbP3iWtZ/NC72Mf3mZWiNdTJr5DzMigtcKYaCvs3MKLpUaMQnXWAYdibRr9jmLOWXnuIJuigVjiZasxNZxYDaJvmvofemTfSK2SUaePcwZ/FuAfU247lonEg8mranyfRnOt2kPJdZoSFTUxxpTIgvVUWBr3oljfIclxT83DxukfNf76EycQ==
+sidebar_class_name: "post api-method"
+info_path: docs/api/szampchat-server-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"inviteToCommunity"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/communities/{communityId}/invite"}
+>
+  
+</MethodEndpoint>
+
+
+
+inviteToCommunity
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"communityId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          OK
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"*/*"}
+              value={"*/*"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"link"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"link\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

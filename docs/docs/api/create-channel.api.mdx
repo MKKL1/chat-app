@@ -1,0 +1,227 @@
+---
+id: create-channel
+title: "createChannel"
+description: "createChannel"
+sidebar_label: "createChannel"
+hide_title: true
+hide_table_of_contents: true
+api: eJyllF9v0zAUxb9KdR4njxaEeMjbKBVMoBWxgpCqCt0md41HYnu2s61E+e7TTdL0z+Bhoi9Nro99fX4+To1Im4BkiTQnY7g4T62J3hYFe6wUrGNPUVtzmSFB6pkiTzslFDzfVRzie5ttkdSQqWyiPJJzhU7bmePbYI3UQppzSfIUt46RwK5vOY1QcF76RM2hW6YsK6PjVnoOYm0ib9hD4cb6kmJXevcWjYKhkg+kIXptNjLQFU4HFNhUpZhezH4ufk0/XVxdzb5A4cf8cjob3leNrKBjIVN709OWwIfFHI2MCgDtOUMSfcVtIThrQmfkzWQifxmH1GsnLJBg/hnqkNTZ+OwlcPR/M3k53n9RHJTrbWT8hZZAkvIxgdMUlRxzK/FyNrSGKeZIMO4TGaAQ2N+zl5zWqHyBBDhd9SMbiSpno048El2zUpD4fdsHdfZIpSv4WdAmO2R7f73fo5A0Ctrc2BZHb/b6D5UuzSnuOpPTUJANd1ubvHot88ReSe1V6Dt1JEZ7FEeWBuCRH+PYFaSNLNP6r3tKw70NcltzAZgsUddrCvzdF00j5buK/RbJcqVwT17TWra9XDUKOVPGvsX6m7dycF0wzxfSWeRFJTt4dp0btZtxkabs4oFWAi3ch2P9Or9eQGHdfyVKm4nM04N8QeihO0zbmm4j3tZqFGQ2FW1E27WU3xPEqJQr
+sidebar_class_name: "post api-method"
+info_path: docs/api/szampchat-server-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"createChannel"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/channels"}
+>
+  
+</MethodEndpoint>
+
+
+
+createChannel
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/json"}
+    value={"application/json-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3><strong
+          className={"openapi-schema__required"}
+        >
+          required
+        </strong>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        <SchemaItem
+          collapsible={false}
+          name={"communityId"}
+          required={false}
+          schemaName={"int64"}
+          qualifierMessage={undefined}
+          schema={{"type":"integer","format":"int64"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"name"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"type"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={"**Possible values:** [`TEXT_CHANNEL`, `VOICE_CHANNEL`]"}
+          schema={{"type":"string","enum":["TEXT_CHANNEL","VOICE_CHANNEL"]}}
+        >
+          
+        </SchemaItem>
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          OK
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"*/*"}
+              value={"*/*"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"id"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"communityId"}
+                        required={false}
+                        schemaName={"int64"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int64"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"type"}
+                        required={false}
+                        schemaName={"byte"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"byte"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"id\": 0,\n  \"name\": \"string\",\n  \"communityId\": 0,\n  \"type\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      
