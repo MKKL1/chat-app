@@ -72,9 +72,6 @@ jobs:
     needs: integration-test
     runs-on: ubuntu-latest
     
-    defaults:
-      run:
-        working-directory: 'docs'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -93,18 +90,21 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
+        working-directory: 'docs'
         run: yarn
 
       - name: Generate API documentation
+        working-directory: 'docs'
         run: yarn gen-api-docs all
       
       - name: Build website
+        working-directory: 'docs'
         run: yarn build
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: docs/build
 
   deploy-docs:
     name: Deploy to GitHub Pages
