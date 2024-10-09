@@ -122,7 +122,7 @@ const config: Config = {
         docsPluginId: "classic",
         config: {
           petstore: {
-            specPath: 'http://localhost:8081/api/v3/api-docs',
+            specPath: 'static/openapi.yaml',
             outputDir: "docs/api",
             sidebarOptions: {
               groupPathsBy: "tag",

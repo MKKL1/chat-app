@@ -13,6 +13,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -50,11 +51,74 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up JDK 22
       uses: actions/setup-java@v4
       with:
         java-version: '22'
         distribution: 'temurin'
         cache: maven
+
     - name: Integrity test with Maven
-      run: mvn --batch-mode --update-snapshots verify -DskipUTs=true --file server/pom.xml 
+      run: mvn --batch-mode --update-snapshots verify -DskipUTs=true --file server/pom.xml
+
+    - name: Upload OpenAPI Spec
+      uses: actions/upload-artifact@v4
+      with:
+        name: openapi-spec
+        path: docs/static/openapi.yaml
+            
+  build-docs:
+    needs: integration-test
+    defaults:
+      run:
+        working-directory: 'docs'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download OpenAPI Spec Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-spec
+          path: static/openapi.yaml
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Generate API documentation
+        run: yarn gen-api-docs all
+      
+      - name: Build website
+        run: yarn build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy-docs:
+    name: Deploy to GitHub Pages
+    needs: build-docs
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
