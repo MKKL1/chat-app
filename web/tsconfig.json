@@ -18,6 +18,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
+    // I turned it off, because why i should add | undefined
+    // instead of just leaving it alone?
+    "strictPropertyInitialization":false,
     "lib": [
       "ES2022",
       "dom"

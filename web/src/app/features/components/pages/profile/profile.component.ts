@@ -36,9 +36,31 @@ import {resetStores} from "@datorama/akita";
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
+
+// TODO change state of ui after sending data to api
+
 export class ProfileComponent implements OnInit{
-  userDescription: string = '';
-  username: string = '';
+  userDescription: string;
+  username: string;
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // Why I can't just have value or null in variable of some type?
+  // Why I can't just have ? working everywhere like in c#?
+  // Why it produces both undefined and null?
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+  // I hate javascript
+
+  imageUrl: string;
 
   constructor(
     private keycloakService: KeycloakService,
@@ -48,11 +70,15 @@ export class ProfileComponent implements OnInit{
 
   ngOnInit() {
     this.username = this.keycloakService.getUsername();
+    // change !
     this.userDescription = this.userService.getUser().description!;
+    this.imageUrl = this.userService.getUser().imageUrl!;
   }
 
   editAvatar(){
-    this.dialog.open(EditAvatarComponent);
+    this.dialog.open(EditAvatarComponent, {
+      data: {imageUrl: this.imageUrl}
+    });
   }
 
   openUserSettings(){

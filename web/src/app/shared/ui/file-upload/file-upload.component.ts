@@ -1,14 +1,16 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {MatFabButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
+import {ShorteningPipe} from "../../pipes/ShorteningPipe";
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-    imports: [
-        MatFabButton,
-        MatIcon
-    ],
+  imports: [
+    MatFabButton,
+    MatIcon,
+    ShorteningPipe
+  ],
   templateUrl: './file-upload.component.html',
   styles: [
     '.file-input {display: none;}',

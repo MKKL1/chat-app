@@ -1,15 +1,18 @@
-<!-- And do something with avatar -->
 <div class="profile">
   <!-- User avatar and name -->
   <mat-card>
-    <mat-card-content>
-      <div class="first-card">
-        <h2>{{username}}</h2>
-        <div (click)="editAvatar()">
-          <img class="profile-picture" src="avatar.jpg">
+    <mat-card-content class="first-card-content">
+        <div class="first-card">
+          <h2>{{username}}</h2>
+          <div class="image-container">
+            <img (click)="editAvatar()" class="profile-picture" src="avatar.jpg">
+            <div class="flex-center profile-hint">
+              <mat-icon fontIcon="photo_camera"></mat-icon>
+              Change picture
+            </div>
+          </div>
+          <button mat-flat-button (click)="openUserSettings()">Open user settings</button>
         </div>
-        <button mat-flat-button (click)="openUserSettings()">Open user settings</button>
-      </div>
     </mat-card-content>
   </mat-card>
 
@@ -23,7 +26,7 @@
         <mat-label>Description</mat-label>
         <textarea matInput [(ngModel)]="userDescription"></textarea>
       </mat-form-field>
-      <button mat-button>Save</button>
+      <button class="description-button" mat-flat-button>Save</button>
     </mat-card-content>
   </mat-card>
 
