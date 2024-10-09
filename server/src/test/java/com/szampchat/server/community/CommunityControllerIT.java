@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureWebTestClient(timeout = "3600000")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(MockitoExtension.class)
-public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTestContainer {
+public class CommunityControllerIT implements PostgresTestContainer {
 
     //For mocking isMember
     @MockBean
@@ -69,20 +70,17 @@ public class CommunityControllerIT implements PostgresTestContainer, RabbitMQTes
     @BeforeAll
     static void beforeAll() {
         postgres.start();
-        rabbitmq.start();
     }
 
     @AfterAll
     static void afterAll() {
         postgres.stop();
-        rabbitmq.stop();
     }
 
     @Test
     @Override
     public void connectionEstablished() {
         PostgresTestContainer.super.connectionEstablished();
-        RabbitMQTestContainer.super.connectionEstablished();
     }
 
 //    @Transactional
