@@ -3,8 +3,8 @@ info:
   title: Szampchat server api
   version: "0.1"
 servers:
-- url: ""
-  description: Generated server url
+- url: http://localhost:8081/api
+  description: Local server
 paths:
   /channels/{channelId}:
     put:

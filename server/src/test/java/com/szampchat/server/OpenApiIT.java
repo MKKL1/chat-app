@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.File;
@@ -15,6 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureWebTestClient(timeout = "3600000")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//Had to add dirties context, as rsocket port is not randomized
+//TODO find a way to reuse context
+@DirtiesContext
 public class OpenApiIT {
     @Autowired
     protected WebTestClient client;
