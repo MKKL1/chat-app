@@ -9,16 +9,16 @@ import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 const config: Config = {
   title: "Szampchat Docs",
   tagline: "Szampchat Documentation",
-  url: "https://your-docusaurus-test-site.com",
-  baseUrl: "/",
+  url: "https://mkkl1.github.io",
+  baseUrl: "/chat-app/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "?", // Usually your GitHub org/user name.
-  projectName: "szampchat", // Usually your repo name.
+  organizationName: "MKKL1", // Usually your GitHub org/user name.
+  projectName: "chat-app", // Usually your repo name.
 
   presets: [
     [
