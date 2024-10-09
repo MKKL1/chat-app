@@ -85,8 +85,8 @@ jobs:
           path: docs/static/openapi.yaml
       
       - name: Setup Node.js
-        working-directory: 'docs'
         uses: actions/setup-node@v4
+        working-directory: 'docs'
         with:
           # cache-dependency-path: docs/yarn.lock
           node-version: 22
