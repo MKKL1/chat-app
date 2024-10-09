@@ -82,9 +82,10 @@ jobs:
         with:
           name: openapi-spec
           run-id: ${{ github.event.workflow_run.id }}
-          path: static/openapi.yaml
+          path: docs/static/openapi.yaml
       
       - name: Setup Node.js
+        working-directory: 'docs'
         uses: actions/setup-node@v4
         with:
           # cache-dependency-path: docs/yarn.lock
