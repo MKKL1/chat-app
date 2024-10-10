@@ -1,14 +1,24 @@
-<h2 mat-dialog-title>Create new community</h2>
-<form [formGroup]="communityForm" (ngSubmit)="closeDialog()">
+<h2 mat-dialog-title>
+  {{ editing() ? 'Edit community' : 'Create new community' }}
+</h2>
+<form [formGroup]="communityForm" (ngSubmit)="submitForm()">
 <mat-dialog-content>
-    <mat-form-field appearance="outline" style="margin-top: 5px">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name">
-    </mat-form-field>
+  <mat-form-field appearance="outline" style="margin-top: 5px">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name">
+  </mat-form-field>
+  <div class="flex" style="align-items: center;">
     <app-file-upload (fileSelected)="setFile($event)"></app-file-upload>
+    <button mat-raised-button (click)="resetImage()">Reset image</button>
+  </div>
+  @if(imagePreview() !== undefined && imagePreview() !== ''){
+    <img src="{{imagePreview()}}">
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button type="submit" [disabled]="communityForm.invalid">Create</button>
+  <button mat-button type="submit" [disabled]="communityForm.invalid">
+    {{editing() ? 'Edit' : 'Create'}}
+  </button>
 </mat-dialog-actions>
 </form>

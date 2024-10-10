@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, signal} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIconButton} from "@angular/material/button";
@@ -11,6 +11,8 @@ import {DeleteMessageComponent} from "../dialogs/delete-message/delete-message.c
 import {EmojiPickerComponent} from "../../../../shared/ui/emoji-picker/emoji-picker.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
+import {BottomSheetComponent} from "../../../../shared/ui/bottom-sheet/bottom-sheet.component";
+import {MatListModule} from "@angular/material/list";
 
 @Component({
   selector: 'app-message',
@@ -25,7 +27,9 @@ import {UserBasicInfoComponent} from "../../../../core/components/user-basic-inf
     NgClass,
     NgStyle,
     EmojiPickerComponent,
-    UserBasicInfoComponent
+    UserBasicInfoComponent,
+    BottomSheetComponent,
+    MatListModule
   ],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
@@ -40,6 +44,8 @@ export class MessageComponent implements OnInit{
     text: string, id: string
   }>();
 
+  openedOptions = signal<boolean>(false);
+
   fromClient: boolean = false;
   showReactionPicker: boolean = false;
 
@@ -52,7 +58,12 @@ export class MessageComponent implements OnInit{
     }
   }
 
+  openOptions(){
+    this.openedOptions.update(value => !value);
+  }
+
   respondToMessage(){
+    this.openedOptions.set(false);
     this.respondsTo.emit({
       id: this.message.id,
       text: this.message.text
@@ -65,7 +76,13 @@ export class MessageComponent implements OnInit{
     this.messageService.addReaction(emoji, this.message.id, this.userId ?? '');
   }
 
+  updateReactionPicker(){
+    this.openedOptions.set(false);
+    this.showReactionPicker = true;
+  }
+
   edit(){
+    this.openedOptions.set(false);
     this.dialog.open(EditMessageComponent, {
       width: '60vw',
       data: {message: this.message}
@@ -73,6 +90,7 @@ export class MessageComponent implements OnInit{
   }
 
   delete(){
+    this.openedOptions.set(false);
     this.dialog.open(DeleteMessageComponent, {
       width: '60vw',
       data: {

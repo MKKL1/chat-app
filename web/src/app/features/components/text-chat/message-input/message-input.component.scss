@@ -1,18 +1,21 @@
 :host{
   background: var(--background);
+  padding-top: 20px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 app-emoji-picker, app-gif-search{
   position: absolute;
   right: 20px;
-  bottom: 10%;
+  bottom: 15%;
 }
 
 .message-input{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 15px 15px 25px;
+  margin: 15px 15px 15px;
   overflow: hidden;
 }
 
@@ -61,4 +64,29 @@ mat-icon{
 mat-icon:hover{
   background: var(--light-background);
   cursor: pointer;
+}
+
+.gif-container, .image-container{
+  display: inline-block;
+  position: relative;
+  margin-left: 10px;
+}
+
+.gif-container img, .image-container img{
+  vertical-align: middle;
+  width: auto;
+  height: 150px;
+}
+
+.deleteIcon{
+  color: darkred;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  transition: ease-in 0.2s;
+}
+
+.deleteIcon:hover{
+  background: transparent;
+  transform: scale(1.2);
 }

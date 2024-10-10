@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, signal} from '@angular/core';
 import {EmojiPickerComponent} from "../../../../shared/ui/emoji-picker/emoji-picker.component";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
 import {MatFormField} from "@angular/material/form-field";
@@ -9,6 +9,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ClickOutsideDirective} from "../../../../shared/directives/click-outside.directive";
 import {MessageService} from "../../../services/message.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
+import {previewImage} from "../../../../shared/utils/image-preview";
 
 @Component({
   selector: 'app-message-input',
@@ -32,6 +33,7 @@ export class MessageInputComponent {
 
   selectedFile: File | null = null;
   fileName: string | null = null;
+  imagePreview = signal<string>('');
   selectedGif: string = '';
 
   showEmojiPicker: boolean = false;
@@ -73,8 +75,6 @@ export class MessageInputComponent {
     this.text = '';
     this.selectedGif = '';
     this.messageToRespond = undefined;
-    // have to chose specific element
-    window.scrollTo(0, document.body.scrollHeight);
   }
 
   onFileSelected(event: Event){
@@ -83,12 +83,23 @@ export class MessageInputComponent {
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.fileName = this.selectedFile.name;
+      console.log("Changing preview");
+      previewImage(input.files[0]).then(image => {
+        this.imagePreview.set(image);
+      });
+      console.log(this.imagePreview());
     }
   }
 
   triggerFileInput(): void{
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
     fileInput.click();
+  }
+
+  resetFile(){
+    this.imagePreview.set('');
+    this.selectedFile = null;
+    this.fileName = null;
   }
 
   setResponse(event: { id: string, text: string }){
@@ -110,6 +121,11 @@ export class MessageInputComponent {
   selectGif(gifUrl: string){
     console.log(gifUrl);
     this.selectedGif = gifUrl;
+    this.showGifSearch = false;
+  }
+
+  resetGif(){
+    this.selectedGif = '';
   }
 
   toggleGifSearch(){

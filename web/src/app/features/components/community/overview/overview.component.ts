@@ -9,6 +9,7 @@ import {GenerateInvitationComponent} from "../dialogs/generate-invitation/genera
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {UserService} from "../../../../core/services/user.service";
+import {CreateCommunityComponent} from "../dialogs/create-community/create-community.component";
 
 @Component({
   selector: 'app-overview',
@@ -47,7 +48,11 @@ export class OverviewComponent implements OnInit{
     }
   }
 
-  openDialog(){
+  editCommunity(){
+    this.dialog.open(CreateCommunityComponent, {data: {editing: true, community: this.selectedCommunity}});
+  }
+
+  createInvitation(){
     this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity?.id}});
   }
 

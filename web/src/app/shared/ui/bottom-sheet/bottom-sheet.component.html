@@ -1,0 +1,13 @@
+@if(addOverlay){
+  <div
+    class="overlay"
+    [ngClass]="{'opened': opened, 'closed': !opened}">
+  </div>
+}
+<div
+  class="bottom-sheet"
+  [ngClass]="{'opened': opened, 'closed': !opened}"
+  [ngStyle]="{'background-color': backgroundColor, 'color': color}"
+  >
+  <ng-content select="[content]"></ng-content>
+</div>

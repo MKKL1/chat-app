@@ -27,17 +27,11 @@
       }
     </div>
 
-    <!--  Menu with additional actions  -->
+    <!--  Button which opens bottom sheet  -->
     <div class="message-menu">
-      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+      <button mat-icon-button (click)="openOptions()">
         <mat-icon>more_vert</mat-icon>
       </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="respondToMessage()">Respond</button>
-        <button mat-menu-item (click)="showReactionPicker = true">React</button>
-        <button mat-menu-item (click)="edit()">Edit</button>
-        <button mat-menu-item (click)="delete()">Delete</button>
-      </mat-menu>
     </div>
   </div>
 
@@ -47,3 +41,31 @@
   <app-emoji-picker (clickOutside)="showReactionPicker = false" (emojiSelect)="appendReaction($event)">
   </app-emoji-picker>
 }
+
+<!-- bottom sheet with additional actions -->
+<app-bottom-sheet [opened]="openedOptions()" [color]="'white'" [backgroundColor]="'#191c1c'">
+  <div content>
+    <mat-list>
+      <mat-list-item (click)="respondToMessage()">
+        <mat-icon matListItemIcon>reply</mat-icon>
+        <div matListItemTitle>Respond</div>
+        <div matListItemLine>Answer to this message</div>
+      </mat-list-item>
+      <mat-list-item (click)="updateReactionPicker()">
+        <mat-icon matListItemIcon>favorite</mat-icon>
+        <div matListItemTitle>React</div>
+        <div matListItemLine>Add reaction to message</div>
+      </mat-list-item>
+      <mat-list-item (click)="edit()">
+        <mat-icon matListItemIcon>edit_note</mat-icon>
+        <div matListItemTitle>Edit</div>
+        <div matListItemLine>Edit this message content</div>
+      </mat-list-item>
+      <mat-list-item (click)="delete()">
+        <mat-icon matListItemIcon>delete</mat-icon>
+        <div matListItemTitle>Delete</div>
+        <div matListItemLine>Delete this message</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</app-bottom-sheet>

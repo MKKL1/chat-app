@@ -3,6 +3,7 @@
 <p>overview works! {{ community?.id }} | {{ community?.name }}</p>
 @if(userService.getUser().id === community?.ownerId){
   <button mat-flat-button (click)="deleteCommunity(community?.id)">Delete community</button>
-  <button mat-flat-button (click)="openDialog()">Create link</button>
+  <button mat-flat-button (click)="editCommunity()">Edit community</button>
+  <button mat-flat-button (click)="createInvitation()">Create link</button>
 }
 </div>

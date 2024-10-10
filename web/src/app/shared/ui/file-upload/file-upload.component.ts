@@ -14,7 +14,6 @@ import {ShorteningPipe} from "../../pipes/ShorteningPipe";
   templateUrl: './file-upload.component.html',
   styles: [
     '.file-input {display: none;}',
-    '.upload-btn {margin-bottom: 1rem;}'
   ]
 })
 export class FileUploadComponent {

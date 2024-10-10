@@ -10,6 +10,7 @@ import {MatButton} from "@angular/material/button";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {UserService} from "../../../core/services/user.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {previewImage} from "../../utils/image-preview";
 
 @Component({
   selector: 'app-edit-avatar',
@@ -39,15 +40,9 @@ export class EditAvatarComponent {
 
   updatePicture(file: File){
     this.fileToUpload = file;
-    this.previewImage(file);
-  }
-
-  previewImage(file: File) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.newImagePreview = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+    previewImage(file).then(image => {
+      this.newImagePreview = image;
+    });
   }
 
   uploadNewPicture(){
