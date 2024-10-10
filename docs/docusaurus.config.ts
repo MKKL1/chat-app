@@ -28,9 +28,9 @@ const config: Config = {
             "https://github.com/MKKL1/chat-app/tree/main/docs/",
           docItemComponent: "@theme/ApiItem",
         },
-        // theme: {
-        //   customCss: require.resolve("./src/css/custom.css"),
-        // },
+        theme: {
+          customCss: require.resolve("./src/css/custom.css"),
+        },
       } satisfies Preset.Options,
     ],
   ],
@@ -79,35 +79,36 @@ const config: Config = {
           "json",
           "bash",
         ],
-        languageTabs: [
-          {
-            highlight: "python",
-            language: "python",
-            logoClass: "python",
-          },
-          {
-            highlight: "bash",
-            language: "curl",
-            logoClass: "bash",
-          },
-          {
-            highlight: "javascript",
-            language: "nodejs",
-            logoClass: "nodejs",
-          },
-          {
-            highlight: "java",
-            language: "java",
-            logoClass: "java",
-            variant: "unirest",
-          },
-          {
-            highlight: "powershell",
-            language: "powershell",
-            logoClass: "powershell",
-          },
-        ],
       },
+      languageTabs: [
+        {
+          highlight: "python",
+          language: "python",
+          logoClass: "python",
+        },
+        {
+          highlight: "bash",
+          language: "curl",
+          logoClass: "bash",
+        },
+        {
+          highlight: "javascript",
+          language: "nodejs",
+          logoClass: "nodejs",
+        },
+        {
+          highlight: "java",
+          language: "java",
+          logoClass: "java",
+          variant: "unirest",
+        },
+        {
+          highlight: "powershell",
+          language: "powershell",
+          logoClass: "powershell",
+        },
+      ],
+
     } satisfies Preset.ThemeConfig,
 
   plugins: [

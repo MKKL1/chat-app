@@ -38,7 +38,23 @@ const sidebars: SidebarsConfig = {
   openApiSidebar: [
     {
       type: "category",
-      label: "API Documentation",
+      label: "Basics",
+      items: [
+        {
+          type: "doc",
+          id: "api-additional/authentication",
+          label: "Authentication",
+        },
+        {
+          type: "doc",
+          id: "api-additional/websocket",
+          label: "WebSocket",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Endpoints",
       link: {
         type: "generated-index",
         title: "API",
@@ -46,14 +62,7 @@ const sidebars: SidebarsConfig = {
           ".",
         slug: "/category/api"
       },
-      items: [
-        {
-          type: "doc",
-          id: "api-additional/websocket",
-          label: "WebSocket",
-        },
-        require("./docs/api/sidebar.js")
-      ]
+      items: require("./docs/api/sidebar.js")
     }
   ]
 };
