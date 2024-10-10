@@ -19,6 +19,10 @@ import {LayoutComponent} from "../../../../core/components/layout/layout.compone
   templateUrl: './voice-channel.component.html',
   styleUrl: './voice-channel.component.scss'
 })
+
+// I am not rewriting anything in voice channel because it will probably
+// change in future anyway
+
 export class VoiceChannelComponent{
   channelName: string = "Community 1";
   channelUsers: any[] = [

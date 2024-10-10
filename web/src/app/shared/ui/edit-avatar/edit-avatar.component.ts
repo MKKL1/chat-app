@@ -1,4 +1,4 @@
-import {Component, inject, Inject} from '@angular/core';
+import {Component, inject, Inject, signal} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -26,9 +26,9 @@ import {previewImage} from "../../utils/image-preview";
   styleUrl: './edit-avatar.component.scss'
 })
 export class EditAvatarComponent {
-  fileToUpload?: File;
-  imageUrl?: string;
-  newImagePreview?: string;
+  fileToUpload = signal<File | null>(null);
+  imageUrl = signal<string>('');
+  newImagePreview = signal<string>('');
 
   snackbar = inject(MatSnackBar);
 
@@ -36,17 +36,18 @@ export class EditAvatarComponent {
     private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: {imageUrl: string},
     public dialogRef: MatDialogRef<EditAvatarComponent>) {
+    this.imageUrl.set(data.imageUrl);
   }
 
   updatePicture(file: File){
-    this.fileToUpload = file;
+    this.fileToUpload.set(file);
     previewImage(file).then(image => {
-      this.newImagePreview = image;
+      this.newImagePreview.set(image);
     });
   }
 
   uploadNewPicture(){
-    if(this.fileToUpload !== undefined){
+    if(this.fileToUpload() !== undefined){
       // todo upload picture
     } else {
       this.snackbar.open("Before uploading you must choose your picture!",'Ok', {duration: 3000})

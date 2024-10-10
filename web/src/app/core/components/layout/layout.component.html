@@ -1,13 +1,13 @@
 <mat-toolbar color="primary">
-  @if(isMobile){
+  @if(isMobile()){
     <button mat-icon-button aria-label="Menu icon" (click)="toggleMenu()">
       <mat-icon>menu</mat-icon>
     </button>
   }
-  <h1>{{title}}</h1>
+  <h1>{{title()}}</h1>
 </mat-toolbar>
 <mat-sidenav-container>
-  <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
+  <mat-sidenav [mode]="isMobile() ? 'over' : 'side'" [opened]="isMobile() ? 'false' : 'true'">
     <mat-nav-list>
       <ng-content select="[sidebar]"></ng-content>
     </mat-nav-list>

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Output, signal} from '@angular/core';
 import {MatCard, MatCardContent} from "@angular/material/card";
 import {FormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
@@ -27,17 +27,17 @@ export class GifSearchComponent {
   private limit = '15'
 
   tag: string = '';
-  public gifs: any[] = [];
+  public gifs = signal<any[]>([]);
   @Output() chosenGif = new EventEmitter<string>();
 
-  loading: boolean = false;
+  loading = signal<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
   // Currently chosen gifs should only live while this component exists,
   // so I don't use service
   async search(){
-    this.loading = true;
+    this.loading.set(true);
 
     const params = new HttpParams()
       .set('api_key', this.apiKey)
@@ -47,8 +47,8 @@ export class GifSearchComponent {
     this.http
       .get<any>(`${this.serviceUrl}/search`, { params })
       .subscribe((res) => {
-        this.gifs = res.data;
-        this.loading = false;
+        this.gifs.set(res.data);
+        this.loading.set(false);
       });
   }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, signal, ViewChild} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -25,12 +25,11 @@ import {CommunityQuery} from "../../../features/store/community/community.query"
   styleUrl: './layout.component.scss'
 })
 export class LayoutComponent implements OnInit {
-  @ViewChild(MatSidenav)
-  sidenav!: MatSidenav;
-  isMobile= true;
-  isCollapsed = true;
+  @ViewChild(MatSidenav) sidenav!: MatSidenav;
+  isMobile= signal<boolean>(true);
+  isCollapsed = signal<boolean>(true);
 
-  title: string = '';
+  title = signal<string>('');
 
   constructor(
     private observer: BreakpointObserver,
@@ -39,9 +38,9 @@ export class LayoutComponent implements OnInit {
   ngOnInit() {
     this.observer.observe(['(max-width: 800px)']).subscribe((screenSize) => {
       if(screenSize.matches){
-        this.isMobile = true;
+        this.isMobile.set(true);
       } else {
-        this.isMobile = false;
+        this.isMobile.set(false);
       }
     });
 
@@ -50,17 +49,17 @@ export class LayoutComponent implements OnInit {
         return;
       }
 
-      this.title = community.name;
+      this.title.set(community.name);
     });
   }
 
   toggleMenu() {
-    if(this.isMobile){
+    if(this.isMobile()){
       this.sidenav.toggle();
-      this.isCollapsed = false;
+      this.isCollapsed.set(false);
     } else {
       this.sidenav.open();
-      this.isCollapsed = !this.isCollapsed;
+      this.isCollapsed.update(value => !value);
     }
   }
 }

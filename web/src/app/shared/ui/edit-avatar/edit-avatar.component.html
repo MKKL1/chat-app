@@ -1,8 +1,8 @@
 <h2 mat-dialog-title>Change your profile picture</h2>
 <mat-dialog-content>
   <img class="profile-picture" src="{{
-  newImagePreview !== undefined ? newImagePreview :
-  imageUrl !== undefined ? imageUrl : 'avatar.jpg' }}">
+  newImagePreview() !== '' ? newImagePreview() :
+  imageUrl() !== '' ? imageUrl() : 'avatar.jpg' }}">
   <app-file-upload (fileSelected)="updatePicture($event)"></app-file-upload>
 </mat-dialog-content>
 <mat-dialog-actions>

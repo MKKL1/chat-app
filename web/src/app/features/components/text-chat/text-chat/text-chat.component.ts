@@ -40,6 +40,8 @@ import {UserService} from "../../../../core/services/user.service";
   styleUrl: './text-chat.component.scss'
 })
 
+// I don't add signals here because i'm not sure how this component will change in future
+
 // listen to channel changes if so -> change messages to messages from new channel -> first check if there are any messages -> if no load from api
 
 // for now i have issue with listening to rabbit -> connection should open and close automatically after changing community

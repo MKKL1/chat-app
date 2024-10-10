@@ -1,6 +1,6 @@
 import {MatIcon} from "@angular/material/icon";
 import {MatButton, MatFabButton} from "@angular/material/button";
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {KeycloakService} from "keycloak-angular";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
@@ -40,27 +40,9 @@ import {resetStores} from "@datorama/akita";
 // TODO change state of ui after sending data to api
 
 export class ProfileComponent implements OnInit{
-  userDescription: string;
-  username: string;
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // Why I can't just have value or null in variable of some type?
-  // Why I can't just have ? working everywhere like in c#?
-  // Why it produces both undefined and null?
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-  // I hate javascript
-
-  imageUrl: string;
+  userDescription = signal<string>('');
+  username = signal<string>('');
+  imageUrl = signal<string>('');
 
   constructor(
     private keycloakService: KeycloakService,
@@ -69,15 +51,14 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.username = this.keycloakService.getUsername();
-    // change !
-    this.userDescription = this.userService.getUser().description!;
-    this.imageUrl = this.userService.getUser().imageUrl!;
+    this.username.set(this.keycloakService.getUsername());
+    this.userDescription.set(this.userService.getUser().description ?? '');
+    this.imageUrl.set(this.userService.getUser().imageUrl ?? '');
   }
 
   editAvatar(){
     this.dialog.open(EditAvatarComponent, {
-      data: {imageUrl: this.imageUrl}
+      data: {imageUrl: this.imageUrl()}
     });
   }
 
@@ -86,7 +67,7 @@ export class ProfileComponent implements OnInit{
   }
 
   editDescription(){
-    this.userService.editDescription(this.userDescription).subscribe(user => {
+    this.userService.editDescription(this.userDescription()).subscribe(user => {
       console.log(user);
     });
   }

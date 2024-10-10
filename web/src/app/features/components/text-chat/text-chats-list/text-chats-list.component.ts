@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatListModule} from "@angular/material/list";
 import {TextChannelInfoComponent} from "../text-channel-info/text-channel-info.component";
 import {MatButton, MatIconButton} from "@angular/material/button";
@@ -11,6 +11,7 @@ import {IsOwnerDirective} from "../../../../shared/directives/is-owner.directive
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe} from "@angular/common";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -27,24 +28,19 @@ import {AsyncPipe} from "@angular/common";
   templateUrl: './text-chats-list.component.html',
   styleUrl: './text-chats-list.component.scss'
 })
-export class TextChatsListComponent implements OnInit{
+export class TextChatsListComponent{
     readonly dialog = inject(MatDialog);
+
+    readonly textChannels = toSignal(this.channelQuery.selectAll({
+       filterBy: [
+         (entity, index) => entity.communityId === this.communityQuery.getActiveId()
+       ]
+    }));
 
     constructor(
       private channelQuery: TextChannelQuery,
       private channelService: ChannelService,
       private communityQuery: CommunityQuery) {
-    }
-
-    ngOnInit() {
-    }
-
-    get textChannels$(){
-      return this.channelQuery.selectAll({
-        filterBy: [
-          (entity, index) => entity.communityId === this.communityQuery.getActiveId()
-        ]
-      });
     }
 
     addChannel(){

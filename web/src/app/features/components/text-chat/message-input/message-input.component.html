@@ -1,7 +1,7 @@
 <!-- display gif if it was added to message -->
-@if(selectedGif.length !== 0){
+@if(selectedGif().length !== 0){
   <div class="gif-container">
-    <img src='{{selectedGif}}'>
+    <img src='{{selectedGif()}}'>
     <mat-icon (click)="resetGif()" fontIcon="delete" class="deleteIcon"></mat-icon>
   </div>
 }
@@ -36,10 +36,10 @@
   </div>
 </div>
 
-@if(showEmojiPicker){
+@if(showEmojiPicker()){
   <app-emoji-picker (clickOutside)="closeEmojiPicker()" (emojiSelect)="appendEmojiToInputField($event)"></app-emoji-picker>
 }
 
-@if(showGifSearch){
+@if(showGifSearch()){
   <app-gif-search (clickOutside)="closeGifSearch()" (chosenGif)="selectGif($event)"></app-gif-search>
 }

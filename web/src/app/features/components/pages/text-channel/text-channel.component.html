@@ -1,7 +1,7 @@
 <div>
   <app-layout>
     <app-text-chats-list sidebar></app-text-chats-list>
-    @if(isChannelSelected){
+    @if(isChannelSelected()){
       <app-text-chat content style="flex: 1;"></app-text-chat>
     } @else{
       <div content><h1 class="flex-center w-100">No chat selected</h1></div>

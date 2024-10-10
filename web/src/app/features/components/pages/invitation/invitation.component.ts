@@ -10,6 +10,8 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 // catch more info than just community (owner, number of members)
 // first discover how to do it in db (mapping)
 
+// wait with adding signal for change in api
+
 @Component({
   selector: 'app-invitation',
   standalone: true,
