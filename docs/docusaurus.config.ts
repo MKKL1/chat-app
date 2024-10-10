@@ -5,6 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import type * as Plugin from "@docusaurus/types/src/plugin";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
+import {themes as prismThemes} from 'prism-react-renderer';
 
 const config: Config = {
   title: "Szampchat Docs",
@@ -14,11 +15,8 @@ const config: Config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "MKKL1", // Usually your GitHub org/user name.
-  projectName: "chat-app", // Usually your repo name.
+  organizationName: "MKKL1",
+  projectName: "chat-app",
 
   presets: [
     [
@@ -26,15 +24,13 @@ const config: Config = {
       {
         docs: {
           sidebarPath: require.resolve("./sidebars.ts"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-          docItemComponent: "@theme/ApiItem", // Derived from docusaurus-theme-openapi
+            "https://github.com/MKKL1/chat-app/tree/main/docs/",
+          docItemComponent: "@theme/ApiItem",
         },
-        theme: {
-          customCss: require.resolve("./src/css/custom.css"),
-        },
+        // theme: {
+        //   customCss: require.resolve("./src/css/custom.css"),
+        // },
       } satisfies Preset.Options,
     ],
   ],
@@ -75,14 +71,14 @@ const config: Config = {
         style: "dark",
       },
       prism: {
-        prism: {
-          additionalLanguages: [
-            "java",
-            "powershell",
-            "json",
-            "bash",
-          ],
-        },
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
+        additionalLanguages: [
+          "java",
+          "powershell",
+          "json",
+          "bash",
+        ],
         languageTabs: [
           {
             highlight: "python",
