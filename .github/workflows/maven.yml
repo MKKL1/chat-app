@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Build maven project
 
 on:
   push:
@@ -66,67 +66,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: openapi-spec
-        run-id: ${{ github.event.workflow_run.id }}
         path: docs/static/openapi.yaml
-            
-  build-docs:
-    needs: integration-test
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Remove old OpenAPI Spec Artifact
-        run: rm -rf docs/static/openapi.yaml
-
-      - name: Download OpenAPI Spec Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: openapi-spec
-          run-id: ${{ github.event.workflow_run.id }}
-          path: docs/static/openapi.yaml
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          cache-dependency-path: docs/yarn.lock
-          node-version: 22
-          cache: yarn
-
-      - name: Install dependencies
-        working-directory: 'docs'
-        run: yarn
-
-      - name: Generate API documentation
-        working-directory: 'docs'
-        run: yarn gen-api-docs all
-      
-      - name: Build website
-        working-directory: 'docs'
-        run: yarn build
-
-      - name: Upload Build Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/build
-
-  deploy-docs:
-    name: Deploy to GitHub Pages
-    needs: build-docs
-
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write # to deploy to Pages
-      id-token: write # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
