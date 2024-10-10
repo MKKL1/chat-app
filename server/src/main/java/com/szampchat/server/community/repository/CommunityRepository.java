@@ -1,6 +1,5 @@
 package com.szampchat.server.community.repository;
 
-import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.entity.Community;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;

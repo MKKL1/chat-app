@@ -7,8 +7,15 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
+import com.szampchat.server.shared.docs.ApiResponseOK;
+import com.szampchat.server.shared.docs.DocsProperties;
+import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +26,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static com.szampchat.server.shared.docs.DocsProperties.*;
 
 
 @Tag(name = "Community")
@@ -34,20 +43,20 @@ public class CommunityController {
     private final InvitationService invitationService;
 
 
-    // We need another endpoint with community info for user who want to join it
-    //TODO It really should be CommunityDTO
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Community by given ID was not found", content = @Content),
-    })
-    @Operation(summary = "Get detailed info about community")
+    @ApiResponseOK
+    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Get community")
+
     @GetMapping("/{communityId}")
     @PreAuthorize("@communityMemberService.isMember(#communityId)")
-    public Mono<Community> getCommunity(@PathVariable Long communityId) {
+    public Mono<CommunityDTO> getCommunity(@PathVariable Long communityId) {
         return communityService.findById(communityId);
     }
 
-    //TODO document
+    @ApiResponseOK
+    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Get full community")
+
     @GetMapping("/{communityId}/info")
     @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){

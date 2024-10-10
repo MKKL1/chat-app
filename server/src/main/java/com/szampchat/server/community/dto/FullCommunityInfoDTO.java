@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class FullCommunityInfoDTO {
-    Community community;
+    CommunityDTO community;
     List<Channel> channels;
     List<CommunityMemberRolesDTO> members;
     List<Role> roles;
