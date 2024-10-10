@@ -7,17 +7,23 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
+import com.szampchat.server.shared.docs.ApiResponseCreated;
 import com.szampchat.server.shared.docs.ApiResponseOK;
 import com.szampchat.server.shared.docs.DocsProperties;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.OAuthFlow;
+import io.swagger.v3.oas.annotations.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +37,7 @@ import static com.szampchat.server.shared.docs.DocsProperties.*;
 
 
 @Tag(name = "Community")
+@SecurityRequirement(name = "OAuthSecurity")
 
 @AllArgsConstructor
 @Slf4j
@@ -44,7 +51,7 @@ public class CommunityController {
 
 
     @ApiResponseOK
-    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Get community")
 
     @GetMapping("/{communityId}")
@@ -54,8 +61,12 @@ public class CommunityController {
     }
 
     @ApiResponseOK
-    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
-    @Operation(summary = "Get full community")
+    @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+    @Operation(summary = "Get full community",
+            description = """
+                    Retrieve all required information about community.
+                    Ideally it should be used once when opening community
+                    and then updated using websocket events""")
 
     @GetMapping("/{communityId}/info")
     @PreAuthorize("@communityMemberService.isMember(#communityId)")
@@ -66,52 +77,75 @@ public class CommunityController {
     //TODO remove?
     //Maybe instead of dozens of small request it will be better to make
     //huge request which will get all data about community?
-    @GetMapping("/{communityId}/members")
-    @PreAuthorize("@communityMemberService.isMember(#communityId)")
-    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
-        return communityMemberService.getCommunityMembersWithRoles(communityId);
-    }
+//    @GetMapping("/{communityId}/members")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
+//        return communityMemberService.getCommunityMembersWithRoles(communityId);
+//    }
 
     //TODO remove?
     //only for testing
-    @PostMapping("/{communityId}")
-    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
-        return communityMemberService.create(communityId, currentUser.getUserId());
-    }
+//    @PostMapping("/{communityId}")
+//    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
+//        return communityMemberService.create(communityId, currentUser.getUserId());
+//    }
 
-    //TODO document
+    //TODO DTO
+    //TODO can be protected by oauth scope
+    @ApiResponseOK
+    @OperationDocs({RESPONSE_419, RESPONSE_401})
+    @Operation(summary = "Get user's communities",
+            description = "Retrieves communities of logged in user")
+
     @GetMapping()
     public Flux<Community> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
-    //TODO document
-    //this endpoint will create link to community which then can be shared with other users to join given community
+    @ApiResponseCreated
+    @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Create invite link",
+            description = """
+                    Creates temporary or permanent(?) invitation link to community.
+                    This invitation can then be shared with any user, who can then join given community""")
+
     @PostMapping("/{communityId}/invite")
     @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId){
         return invitationService.createInvitation(communityId, 5);
     }
 
-    //TODO document
-    //After getting invitation link user is redirected to page with accept button
-    //which will send request to this endpoint after clicking
-    //I use isNotMember to ensure that user won't be added as member of community another time
-    //Don't use @RequestParam in @PostMapping
+    @ApiResponseCreated
+    @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_NOT_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Join community",
+            description = """
+                    Uses invitation link (it's id) to join community as current user.
+                    This action result in expiration of invitation. (?)""")
+
     @PostMapping("/{communityId}/join")
     @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
-    //TODO document
+    @ApiResponseCreated
+    @OperationDocs({RESPONSE_419, RESPONSE_401})
+    @Operation(summary = "Create community",
+            description = """
+                    Creates new community with current user as a owner.
+                    New members can be invited using (link to other endpoints)""")
+
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
     public Mono<Community> createCommunity(@RequestBody CommunityCreateDTO community, CurrentUser user) {
         return communityService.save(community, user.getUserId());
     }
 
-    //TODO document
+    @ApiResponse(responseCode = "204")
+    @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Edit community",
+            description = """
+                    Edits community""")
     //Use community dto?
     @PatchMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId)")
@@ -119,7 +153,12 @@ public class CommunityController {
         return communityService.editCommunity(communityId, community);
     }
 
-    //TODO document
+    @ApiResponse(responseCode = "204")
+    @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES})
+    @Operation(summary = "Delete community",
+            description = """
+                    Removes community""")
+
     @DeleteMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId) {

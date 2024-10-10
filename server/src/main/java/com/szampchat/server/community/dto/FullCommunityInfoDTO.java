@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FullCommunityInfoDTO {
     CommunityDTO community;
-    List<Channel> channels;
+    List<Channel> channels; //TODO DTO
     List<CommunityMemberRolesDTO> members;
-    List<Role> roles;
+    List<Role> roles; //TODO DTO
 }

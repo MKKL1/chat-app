@@ -26,9 +26,15 @@ public class OperationDocsCustomizer implements OperationCustomizer {
         for (DocsProperties property : operationDocs.value()) {
             switch (property) {
                 case DocsProperties.RESPONSE_419 -> apiResponses.addApiResponse("419", new ApiResponse().description("User not created"));
+                case DocsProperties.RESPONSE_401 -> apiResponses.addApiResponse("401", new ApiResponse()
+                        .description("Incorrect token scope (token not provided?)"));
                 case DocsProperties.REQUIRES_MEMBER_PERMISSION ->
                         apiResponses.addApiResponse("403",
                                 new ApiResponse().description("User is not a member of community or resource is not available")
+                        );
+                case DocsProperties.REQUIRES_NOT_MEMBER_PERMISSION ->
+                        apiResponses.addApiResponse("403",
+                                new ApiResponse().description("User is already a member of community or resource is not available")
                         );
                 case DocsProperties.REQUIRES_OWNER_PERMISSION ->
                         apiResponses.addApiResponse("403",
