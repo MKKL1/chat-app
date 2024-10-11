@@ -7,6 +7,7 @@ import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
 import com.szampchat.server.user.exception.UserAlreadyExistsException;
+import com.szampchat.server.user.exception.UserNotFoundException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
 import lombok.AllArgsConstructor;
@@ -27,8 +28,8 @@ public class UserService {
 
     @Deprecated
     public Mono<User> findUser(Long userId) {
-        //TODO Throw exception on not found
-        return userRepository.findById(userId);
+        return userRepository.findById(userId)
+            .switchIfEmpty(Mono.error(new UserNotFoundException()));
     }
 
     public Mono<UserDTO> findUserDTO(Long userId) {

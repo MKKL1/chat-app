@@ -1,6 +1,8 @@
-# Websocket streaming module
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-## Interacting with real-time data (from client perspective)
+# Websocket
+## Interacting with real-time data
 To simplify process of establishing connection with server, subscribing to streams, 
 authentication and keeping main advantage of reactive streams, backpressure, 
 both client and server use RSocket protocol.
@@ -9,15 +11,18 @@ both client and server use RSocket protocol.
 To connect with RSocket server, client has to configure **web socket client** (not tcp) to use url: `ws://localhost:8083/events`
 and then provide jwt token in composite metadata.
 
-Java example:
-```java
-MimeType authenticationMimeType =
-	MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
-BearerTokenMetadata token = ...;
-Mono<RSocketRequester> requester = RSocketRequester.builder()
-	.setupMetadata(token, authenticationMimeType)
-...
-```
+<Tabs>
+  <TabItem value="java" label="Java">
+    ```java
+    MimeType authenticationMimeType =
+      MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
+    BearerTokenMetadata token = ...;
+    Mono<RSocketRequester> requester = RSocketRequester.builder()
+      .setupMetadata(token, authenticationMimeType)
+    ...
+    ```
+  </TabItem>
+</Tabs>
 
 ### RSocket interaction model
 - request/response (stream of 1)
@@ -59,10 +64,3 @@ Example event message:
 ```
 As visible in example above, there are no null fields as sending empty fields is unnecessary in most cases.
 Clients should implement optional fields in their receiving objects.
-
-## How server handles event streams
-For each stream request server requests rabbitmq to create temporary queue and corresponding to it binding.
-After requester disconnects for any reason, queue and binding are deleted.
-
-Note: reactor's implementation of AMQP don't reuse channels after consumer disconnects. Which means that each request
-always opens new channel. If it becomes a problem in the future, custom channel pool can be implemented to mitigate this issue.

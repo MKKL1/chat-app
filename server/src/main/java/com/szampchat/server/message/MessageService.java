@@ -6,7 +6,9 @@ import com.szampchat.server.message.dto.EditMessageDTO;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
+import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
+import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
@@ -72,9 +74,13 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public Mono<Message> editMessage(String text, Long messageId, Long userId){
-        return messageRepository.findById(messageId)
-            .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
+    public Mono<Message> getMessage(Long messageId, Long channelId) {
+        return messageRepository.findById(new MessageId(messageId, channelId))
+                .switchIfEmpty(Mono.error(new MessageNotFoundException()));
+    }
+
+    public Mono<Message> editMessage(Long messageId, Long channelId, String text, Long userId) {
+        return getMessage(messageId, channelId)
             .flatMap(message -> {
                 if(!Objects.equals(message.getUser(), userId)){
                     return Mono.error(new Exception("Message doesn't belong to user"));
@@ -85,16 +91,16 @@ public class MessageService {
             });
     }
 
-    public Mono<Void> deleteMessage(Long id, Long userId){
-        return messageRepository.findById(id)
-            .switchIfEmpty(Mono.error(new Exception("Message doesn't exist")))
+    public Mono<Void> deleteMessage(Long messageId, Long channelId, Long userId){
+        return getMessage(messageId, channelId)
             .flatMap(message -> {
 
+                //TODO check in pre authorize
                 if(!Objects.equals(message.getUser(), userId)){
                     return Mono.error(new Exception("Message doesn't belong to user"));
                 }
 
-                return messageRepository.deleteById(message.getId());
+                return messageRepository.deleteById(new MessageId(messageId, channelId));
             });
     }
 

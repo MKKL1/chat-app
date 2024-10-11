@@ -1,5 +1,6 @@
 package com.szampchat.server.community.service;
 
+import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.repository.CommunityRepository;
@@ -8,10 +9,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +24,8 @@ class CommunityServiceTests {
 
     @Mock
     private CommunityRepository communityRepository;
+    @Mock
+    private ModelMapper modelMapper;
 
     @InjectMocks
     private CommunityService communityService;
@@ -31,13 +36,18 @@ class CommunityServiceTests {
         Community community = new Community();
         community.setId(communityId);
 
+        CommunityDTO communityDTO = new CommunityDTO();
+        communityDTO.setId(communityId);
+
         when(communityRepository.findById(eq(communityId)))
                 .thenReturn(Mono.just(community));
+        when(modelMapper.map(community, CommunityDTO.class))
+                .thenReturn(communityDTO);
 
-        Mono<Community> result = communityService.findById(communityId);
+        Mono<CommunityDTO> result = communityService.findById(communityId);
 
         StepVerifier.create(result)
-                .expectNext(community)
+                .expectNext(communityDTO)
                 .verifyComplete();
     }
 
@@ -48,7 +58,7 @@ class CommunityServiceTests {
         when(communityRepository.findById(eq(communityId)))
                 .thenReturn(Mono.empty());
 
-        Mono<Community> result = communityService.findById(communityId);
+        Mono<CommunityDTO> result = communityService.findById(communityId);
 
         StepVerifier.create(result)
                 .expectError(CommunityNotFoundException.class)

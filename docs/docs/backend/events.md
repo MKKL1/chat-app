@@ -1,9 +1,7 @@
-# Events core
-This module serves purpose of emitting events for end user from all services.
-
+# Events
 ## 1. How to create new event
 Each event has to implement `InternalEvent` interface. For example:
-```
+```java
 @Getter
 @Builder
 public class MessageCreateEvent implements InternalEvent<MessageDTO> {
@@ -19,16 +17,18 @@ When doing so, it's important to keep variable name identical to interface's met
 e.g. `getName()` means that we have to define variable `name`.
 
 Check `InternalEvent` documentation for information about what those methods are.
-In short:
-- `name` - unique id of event, preferably with uppercase letters and underscore instead of space
-- `type` - which exchange (RabbitMQ) this event will be published to. In socket module, end user can subscribe to only those events, which they choose.
-- `recipient` - Could be either user or community, that means that messages can be pushed to one user or entire community.
-- `data` - payload of event - data that will be sent to end user
+<details>
+    <summary>Quick explanation</summary>
+        - `name` - unique id of event, preferably with uppercase letters and underscore instead of space
+        - `type` - which exchange (RabbitMQ) this event will be published to. In socket module, end user can subscribe to only those events, which they choose.
+        - `recipient` - Could be either user or community, that means that messages can be pushed to one user or entire community.
+        - `data` - payload of event - data that will be sent to end user
 
 Later, when sending events to end user, `type` and `recipient` is stripped from InternalEvent.
+</details>
 
 Thanks to `@Builder`, event can be defined like this:
-```
+```java
 MessageCreateEvent.builder()
     .data(message)
     .recipient(Recipient.builder()
@@ -41,12 +41,12 @@ MessageCreateEvent.builder()
 
 ## 2. How event publishing works
 Events can be published to internal event sink by:
-```
+```java
 eventSinkService.publish(event);
 ```
 From there user (programmer) can listen to events using `asFlux` method.
 Example where only events of class `MessageCreateEvent`, are acquired:
-```
+```java
 eventSinkService.asFlux()
 .ofType(MessageCreateEvent.class)
 .flatMap(event -> ...)
@@ -69,7 +69,7 @@ RabbitMq uses exchanges and queues to deliver messages to clients.
 **Queue** is a FIFO collection, where each message can be consumed only by one of many consumers.
 
 
-![](docs/rabbitmq-diagram.png)
+![](/img/rabbitmq-diagram.png)
 
 In this diagram, **client** is a rsocket requester (android application or user of website)
 

@@ -3,6 +3,7 @@ package com.szampchat.server.community.service;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
+import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.dto.FullCommunityInfoDTO;
 import com.szampchat.server.community.entity.Community;
@@ -15,6 +16,7 @@ import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,10 +33,12 @@ public class CommunityService {
     private final ChannelService channelService;
     private final RoleService roleService;
     private final CustomPrincipalProvider customPrincipalProvider;
+    private final ModelMapper modelMapper;
 
-    public Mono<Community> findById(Long id) {
+    public Mono<CommunityDTO> findById(Long id) {
         return communityRepository.findById(id)
-                .switchIfEmpty(Mono.error(new CommunityNotFoundException()));
+                .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
+                .map(community -> modelMapper.map(community, CommunityDTO.class));
     }
 
     public Mono<Boolean> isOwner(Long communityId, Long userId) {

@@ -1,7 +1,11 @@
 package com.szampchat.server;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.OAuthFlow;
+import io.swagger.v3.oas.annotations.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +28,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 				)
 		}
 )
+@SecurityScheme(name = "OAuthSecurity",
+		type = SecuritySchemeType.OAUTH2,
+		flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "http://url.com/auth")))
 @SpringBootApplication
 public class SzampchatServerApplication {
 
