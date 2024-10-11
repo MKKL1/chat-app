@@ -1,5 +1,5 @@
 export interface Channel{
-  id?: string;
+  id: string;
   name: string;
   communityId: string;
   type: ChannelType;

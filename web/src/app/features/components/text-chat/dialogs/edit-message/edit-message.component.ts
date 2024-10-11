@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, signal, WritableSignal} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
@@ -41,20 +41,27 @@ export class EditMessageComponent {
   messageForm = new FormGroup({
     text: new FormControl('', Validators.required)
   });
-  message?: Message;
+
+  message: WritableSignal<Message>;
 
   constructor(private messageService: MessageService,
       @Inject(MAT_DIALOG_DATA) public data: {message: Message},
       public dialogRef: MatDialogRef<EditMessageComponent>) {
     console.log(data.message);
     this.messageForm.setValue({text: data.message.text});
-    this.message = data.message;
+    this.message = signal<Message>(data.message);
+    console.log(this.message())
   }
 
   submitMessage(){
-    if(this.message && this.messageForm.value.text){
-      this.message.text = this.messageForm.value.text;
-      this.messageService.editMessage(this.message.id, this.message.text);
+    if(this.messageForm.value.text){
+      this.message.update(currentMessage => {
+        return {
+          ...currentMessage,
+          text: this.messageForm.value.text!
+        };
+      });
+      this.messageService.editMessage(this.message().id, this.message().text);
       this.dialogRef.close();
     }
   }

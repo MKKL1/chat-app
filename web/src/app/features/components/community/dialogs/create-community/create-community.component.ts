@@ -12,7 +12,6 @@ import {MatIcon} from "@angular/material/icon";
 import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommunityService} from "../../../../services/community.service";
-import {Channel} from "../../../../models/channel";
 import {Community} from "../../../../models/community";
 import {previewImage} from "../../../../../shared/utils/image-preview";
 

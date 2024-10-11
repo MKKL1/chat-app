@@ -35,7 +35,7 @@ import {MatListModule} from "@angular/material/list";
   styleUrl: './message.component.scss'
 })
 export class MessageComponent implements OnInit{
-  @Input() message!: Message;
+  @Input() message: Message;
   @Input() userId?: string;
   // if user decides to respond to this message by clicking respond
   // it emits event to component with text input, so it will know that
@@ -46,15 +46,15 @@ export class MessageComponent implements OnInit{
 
   openedOptions = signal<boolean>(false);
 
-  fromClient: boolean = false;
-  showReactionPicker: boolean = false;
+  fromClient = signal<boolean>(false);
+  showReactionPicker = signal<boolean>(false);
 
   constructor(private messageService: MessageService, private dialog: MatDialog) {
   }
 
   ngOnInit() {
-    if(this.message?.userId === this.userId){
-      this.fromClient = true;
+    if(this.message.userId === this.userId){
+      this.fromClient.set(true);
     }
   }
 
@@ -72,13 +72,13 @@ export class MessageComponent implements OnInit{
 
   appendReaction(emoji: string){
     console.log(emoji);
-    this.showReactionPicker = false;
+    this.showReactionPicker.set(false);
     this.messageService.addReaction(emoji, this.message.id, this.userId ?? '');
   }
 
   updateReactionPicker(){
     this.openedOptions.set(false);
-    this.showReactionPicker = true;
+    this.showReactionPicker.set(true);
   }
 
   edit(){

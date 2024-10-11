@@ -1,9 +1,7 @@
 <!-- Add css later -->
-<div *ngIf="communityQuery.selectActive() | async as community">
-<p>overview works! {{ community?.id }} | {{ community?.name }}</p>
-@if(userService.getUser().id === community?.ownerId){
-  <button mat-flat-button (click)="deleteCommunity(community?.id)">Delete community</button>
+<p>overview works! {{ selectedCommunity().id }} | {{ selectedCommunity().name }}</p>
+@if(userService.getUser().id === selectedCommunity().ownerId){
+  <button mat-flat-button (click)="deleteCommunity(selectedCommunity().id)">Delete community</button>
   <button mat-flat-button (click)="editCommunity()">Edit community</button>
   <button mat-flat-button (click)="createInvitation()">Create link</button>
 }
-</div>

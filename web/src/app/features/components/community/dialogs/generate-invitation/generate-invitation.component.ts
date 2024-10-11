@@ -1,4 +1,4 @@
-import {Component, inject, Inject} from '@angular/core';
+import {Component, inject, Inject, signal} from '@angular/core';
 import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
 import {MatButton} from "@angular/material/button";
 import {
@@ -47,13 +47,12 @@ export class GenerateInvitationComponent {
     ])
   });
 
-  linkCreated: boolean = false;
-  link: string | undefined;
+  linkCreated = signal<boolean>(false);
+  link = signal<string>('');
 
   private snackBar = inject(MatSnackBar);
 
   constructor(private communityService: CommunityService,
-              public dialogRef: MatDialogRef<GenerateInvitationComponent>,
               @Inject(MAT_DIALOG_DATA) public data: {id: string}) {
   }
 
@@ -71,9 +70,8 @@ export class GenerateInvitationComponent {
       this.communityService.createInvitation(this.data.id, days).subscribe({
         next: res => {
           console.log(res.link);
-          this.link = environment.domain + res.link;
-          this.linkCreated = true;
-          console.log(this.linkCreated);
+          this.link.set(environment.domain + res.link);
+          this.linkCreated.set(true);
         },
         error: err => {console.log(err)}
       });
@@ -81,10 +79,8 @@ export class GenerateInvitationComponent {
   }
 
   copyToClipboard(){
-    if (typeof this.link === "string") {
-      navigator.clipboard.writeText(this.link);
-      this.snackBar.open('Copied to clipboard', 'Ok');
-    }
+    navigator.clipboard.writeText(this.link());
+    this.snackBar.open('Copied to clipboard', 'Ok');
   }
 
 }
