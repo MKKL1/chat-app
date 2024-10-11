@@ -10,8 +10,10 @@ import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
+import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,19 +21,29 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.szampchat.server.shared.docs.DocsProperties.*;
+
 @AllArgsConstructor
 @RestController
 public class MessageController {
     private final MessageService messageService;
 
-    @Operation(summary = "Get messages for given channel")
+
+    @ApiResponse(responseCode = "200")
+    @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+
+    @Operation(summary = "Get channel's messages")
     @GetMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Flux<MessageDTO> getMessages(@Parameter(description = "Snowflake ID of text channel", example = "20276884193411072") @PathVariable Long channelId,
+    public Flux<MessageDTO> getMessages(@PathVariable Long channelId,
                                         @ParameterObject FetchMessagesDTO fetchMessagesDTO,
                                         CurrentUser currentUser) {
         return messageService.getMessages(channelId, fetchMessagesDTO, currentUser.getUserId());
     }
+
+
+    @ApiResponse(responseCode = "201")
+    @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
 
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
@@ -39,21 +51,29 @@ public class MessageController {
         return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId);
     }
 
+
     // maybe just check if user created this message
     // Only think which makes sense to change is text
     // We don't want to do changing images, responds etc.
     // TODO message is inserted instead of update
+    @ApiResponse(responseCode = "204")
+    @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageDTO editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.editMessage(editMessage.text(), messageId, currentUser.getUserId());
+        return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
     }
+
 
     // maybe just check if user created this message
     // TODO Delete file if attached
+    @ApiResponse(responseCode = "204")
+    @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<Void> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.deleteMessage(messageId, currentUser.getUserId());
+        return messageService.deleteMessage(messageId, channelId, currentUser.getUserId());
     }
 }

@@ -22,8 +22,4 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, Messa
     Flux<Message> findMessagesByChannel(@Param("channel") Long channel,
                                         @Param("before") Long before,
                                         @Param("limit") int limit);
-
-    Mono<Message> findById(Long id);
-
-    Mono<? extends Void> deleteById(Long id);
 }

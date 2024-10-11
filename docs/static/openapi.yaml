@@ -28,7 +28,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Channel"
     delete:
@@ -60,7 +60,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
     delete:
@@ -85,26 +85,38 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Role"
   /communities:
     get:
       tags:
       - Community
+      summary: Get user's communities
+      description: Retrieves communities of logged in user
       operationId: getUserCommunities
       responses:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Community"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     post:
       tags:
       - Community
+      summary: Create community
+      description: |-
+        Creates new community with current user as a owner.
+        New members can be invited using (link to other endpoints)
       operationId: createCommunity
       requestBody:
         content:
@@ -113,102 +125,36 @@ paths:
               $ref: "#/components/schemas/CommunityCreateDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Community"
-  /communities/{communityId}:
-    get:
-      tags:
-      - Community
-      summary: Get detailed info about community
-      operationId: getCommunity
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Community"
-        "404":
-          description: Community by given ID was not found
-    post:
-      tags:
-      - Community
-      operationId: addMember
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/CommunityMember"
-    delete:
-      tags:
-      - Community
-      operationId: deleteCommunity
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-    patch:
-      tags:
-      - Community
-      operationId: editCommunity
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Community"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Community"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}/join:
     post:
       tags:
       - Community
+      summary: Join community
+      description: |-
+        Uses invitation link (it's id) to join community as current user.
+        This action result in expiration of invitation. (?)
       operationId: joinCommunity
       parameters:
       - name: communityId
         in: path
+        description: ID of community
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       requestBody:
         content:
           application/json:
@@ -216,31 +162,53 @@ paths:
               $ref: "#/components/schemas/JoinRequestDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/CommunityMember"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+        "403":
+          description: User is already a member of community or resource is not available
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}/invite:
     post:
       tags:
       - Community
+      summary: Create invite link
+      description: |-
+        Creates temporary or permanent(?) invitation link to community.
+        This invitation can then be shared with any user, who can then join given community
       operationId: inviteToCommunity
       parameters:
       - name: communityId
         in: path
+        description: ID of community
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/InvitationResponseDTO"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+        "403":
+          description: User is not an owner of community or resource is not available
+      security:
+      - OAuthSecurity: []
   /channels:
     post:
       tags:
@@ -256,7 +224,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Channel"
   /channels/{channelId}/messages:
@@ -294,7 +262,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
@@ -320,7 +288,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Message"
   /users/description:
@@ -338,7 +306,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
   /users/avatar:
@@ -350,7 +318,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
   /roles/{roleId}:
@@ -366,14 +334,14 @@ paths:
           type: integer
           format: int64
       responses:
+        "404":
+          description: Role by given ID was not found
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Role"
-        "404":
-          description: Role by given ID was not found
     delete:
       tags:
       - role-controller
@@ -409,9 +377,101 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+  /communities/{communityId}:
+    get:
+      tags:
+      - Community
+      summary: Get community
+      operationId: getCommunity
+      parameters:
+      - name: communityId
+        in: path
+        description: ID of community
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityDTO"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
+    delete:
+      tags:
+      - Community
+      summary: Delete community
+      description: Removes community
+      operationId: deleteCommunity
+      parameters:
+      - name: communityId
+        in: path
+        description: ID of community
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
+      responses:
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+        "403":
+          description: User is not an owner of community or resource is not available
+      security:
+      - OAuthSecurity: []
+    patch:
+      tags:
+      - Community
+      summary: Edit community
+      description: Edits community
+      operationId: editCommunity
+      parameters:
+      - name: communityId
+        in: path
+        description: ID of community
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Community"
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Community"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+        "403":
+          description: User is not an owner of community or resource is not available
+      security:
+      - OAuthSecurity: []
   /channels/{channelId}/messages/{messageId}:
     delete:
       tags:
@@ -460,7 +520,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Message"
   /users/{userId}:
@@ -479,7 +539,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
   /users/me:
@@ -491,7 +551,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
   /communities/{communityId}/roles:
@@ -510,51 +570,45 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Role"
-  /communities/{communityId}/members:
-    get:
-      tags:
-      - Community
-      operationId: getCommunityMembers
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CommunityMemberRolesDTO"
   /communities/{communityId}/info:
     get:
       tags:
       - Community
+      summary: Get full community
+      description: |-
+        Retrieve all required information about community.
+        Ideally it should be used once when opening community
+        and then updated using websocket events
       operationId: getFullCommunityInfo
       parameters:
       - name: communityId
         in: path
+        description: ID of community
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       responses:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/FullCommunityInfoDTO"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}/channels:
     get:
       tags:
@@ -571,7 +625,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
@@ -643,6 +697,14 @@ components:
           format: int64
         imageUrl:
           type: string
+    JoinRequestDTO:
+      type: object
+      properties:
+        invitationId:
+          type: integer
+          description: Valid ID of invitation
+          format: int64
+          example: 29754971884879870
     CommunityMember:
       type: object
       properties:
@@ -652,17 +714,13 @@ components:
         userId:
           type: integer
           format: int64
-    JoinRequestDTO:
-      type: object
-      properties:
-        invitationId:
-          type: integer
-          format: int64
     InvitationResponseDTO:
       type: object
       properties:
         link:
           type: string
+          description: Invitation link to community
+          example: community/4501678724218880/join/29754971884879870
     ChannelCreateDTO:
       type: object
       properties:
@@ -721,6 +779,25 @@ components:
       properties:
         text:
           type: string
+    CommunityDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of community
+          format: int64
+          example: 4501678724218880
+        name:
+          type: string
+          example: My community
+        ownerId:
+          type: integer
+          description: ID of community's owner
+          format: int64
+          example: 29754971884879872
+        imageUrl:
+          type: string
+          example: img/myimage.png
     CommunityMemberRolesDTO:
       type: object
       properties:
@@ -729,14 +806,17 @@ components:
         roles:
           uniqueItems: true
           type: array
+          description: Roles of user in given community
           items:
             type: integer
+            description: ID of role
             format: int64
+            example: 8518649245597696
     FullCommunityInfoDTO:
       type: object
       properties:
         community:
-          $ref: "#/components/schemas/Community"
+          $ref: "#/components/schemas/CommunityDTO"
         channels:
           type: array
           items:
@@ -814,3 +894,10 @@ components:
           format: int32
         me:
           type: boolean
+  securitySchemes:
+    OAuthSecurity:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://url.com/auth
+          scopes: {}

@@ -7,23 +7,10 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
-import com.szampchat.server.shared.docs.ApiResponseCreated;
-import com.szampchat.server.shared.docs.ApiResponseOK;
-import com.szampchat.server.shared.docs.DocsProperties;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +37,7 @@ public class CommunityController {
     private final InvitationService invitationService;
 
 
-    @ApiResponseOK
+    @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Get community")
 
@@ -60,7 +47,7 @@ public class CommunityController {
         return communityService.findById(communityId);
     }
 
-    @ApiResponseOK
+    @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Get full community",
             description = """
@@ -92,7 +79,7 @@ public class CommunityController {
 
     //TODO DTO
     //TODO can be protected by oauth scope
-    @ApiResponseOK
+    @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, RESPONSE_401})
     @Operation(summary = "Get user's communities",
             description = "Retrieves communities of logged in user")
@@ -102,7 +89,8 @@ public class CommunityController {
         return communityService.getUserCommunities(user.getUserId());
     }
 
-    @ApiResponseCreated
+
+    @ApiResponse(responseCode = "201")
     @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES})
     @Operation(summary = "Create invite link",
             description = """
@@ -115,7 +103,7 @@ public class CommunityController {
         return invitationService.createInvitation(communityId, 5);
     }
 
-    @ApiResponseCreated
+    @ApiResponse(responseCode = "201")
     @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_NOT_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
     @Operation(summary = "Join community",
             description = """
@@ -128,7 +116,7 @@ public class CommunityController {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
 
-    @ApiResponseCreated
+    @ApiResponse(responseCode = "201")
     @OperationDocs({RESPONSE_419, RESPONSE_401})
     @Operation(summary = "Create community",
             description = """
