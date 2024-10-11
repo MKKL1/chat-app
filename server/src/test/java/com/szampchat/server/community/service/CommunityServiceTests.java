@@ -9,10 +9,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +24,8 @@ class CommunityServiceTests {
 
     @Mock
     private CommunityRepository communityRepository;
+    @Mock
+    private ModelMapper modelMapper;
 
     @InjectMocks
     private CommunityService communityService;
@@ -37,6 +41,8 @@ class CommunityServiceTests {
 
         when(communityRepository.findById(eq(communityId)))
                 .thenReturn(Mono.just(community));
+        when(modelMapper.map(community, CommunityDTO.class))
+                .thenReturn(communityDTO);
 
         Mono<CommunityDTO> result = communityService.findById(communityId);
 

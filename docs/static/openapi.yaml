@@ -772,13 +772,21 @@ components:
       properties:
         id:
           type: integer
+          description: ID of user
           format: int64
+          example: 4501678724218880
         name:
           type: string
+          description: User name
+          example: User123
         imageUrl:
           type: string
+          description: Relative path to image (or uuid)
+          example: img/userimage.jpg
         description:
           type: string
+          description: Short message which describes user
+          example: My description
     RoleCreateDTO:
       type: object
     Role:
@@ -800,6 +808,8 @@ components:
       properties:
         name:
           type: string
+          description: Name of community
+          example: My community
     Community:
       type: object
       properties:
@@ -905,6 +915,7 @@ components:
           example: 4501678724218880
         name:
           type: string
+          description: Name of community
           example: My community
         ownerId:
           type: integer
@@ -950,26 +961,39 @@ components:
       properties:
         id:
           type: integer
+          description: ID of attachment
           format: int64
+          example: 4501678724218880
         size:
           type: integer
+          description: Size of file in bytes
           format: int32
+          example: 2048
         name:
           type: string
+          description: ID of attachment
+          example: myfile.txt
     MessageDTO:
       type: object
       properties:
         id:
           type: integer
+          description: ID of message
           format: int64
+          example: 4501678724218880
         text:
           type: string
+          description: Content of message
+          example: My message content
         updated_at:
           type: string
+          description: When message was updated
           format: date-time
         respondsToMessage:
           type: integer
+          description: ID of message which this message responds to
           format: int64
+          example: 4501678724218880
         gifLink:
           type: string
         attachments:
@@ -982,20 +1006,30 @@ components:
             $ref: "#/components/schemas/ReactionPreviewDTO"
         channelId:
           type: integer
+          description: ID of message's text channel
           format: int64
+          example: 4501678724218880
         userId:
           type: integer
+          description: ID of user that sent message
           format: int64
+          example: 4501678724218880
     ReactionPreviewDTO:
       type: object
       properties:
         emoji:
           type: string
+          description: Emoji in unicode
+          example: 👍
         count:
           type: integer
+          description: How many users used this reaction
           format: int32
+          example: 10
         me:
           type: boolean
+          description: If current user reacted to the message
+          example: true
   securitySchemes:
     OAuthSecurity:
       type: oauth2
