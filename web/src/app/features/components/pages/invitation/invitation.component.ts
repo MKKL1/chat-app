@@ -10,6 +10,8 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 // catch more info than just community (owner, number of members)
 // first discover how to do it in db (mapping)
 
+// wait with adding signal for change in api
+
 @Component({
   selector: 'app-invitation',
   standalone: true,
@@ -45,6 +47,7 @@ export class InvitationComponent  implements OnInit{
         this.communityService.fetchCommunity(this.communityId);
       }
 
+      // shouldn't be loaded from store, but there isn't any endpoint for this yet
       this.community = this.communityQuery.getActive();
       this.loadedInvitation = true;
     });

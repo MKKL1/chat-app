@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {CommunityQuery} from "../../../store/community/community.query";
 import {Community} from "../../../models/community";
 import {AsyncPipe, NgIf} from "@angular/common";
@@ -9,6 +9,7 @@ import {GenerateInvitationComponent} from "../dialogs/generate-invitation/genera
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {UserService} from "../../../../core/services/user.service";
+import {CreateCommunityComponent} from "../dialogs/create-community/create-community.component";
 
 @Component({
   selector: 'app-overview',
@@ -27,7 +28,7 @@ import {UserService} from "../../../../core/services/user.service";
 export class OverviewComponent implements OnInit{
   readonly dialog: MatDialog = inject(MatDialog);
 
-  selectedCommunity: Community | undefined;
+  selectedCommunity: WritableSignal<Community>;
 
   constructor(
     protected communityQuery: CommunityQuery,
@@ -37,18 +38,21 @@ export class OverviewComponent implements OnInit{
 
   ngOnInit() {
     this.communityQuery.selectActive().subscribe(community => {
-      this.selectedCommunity = community;
+      // when rendering this component active community must be defined
+      this.selectedCommunity = signal(community!);
     });
   }
 
-  deleteCommunity(id: string | undefined){
-    if(id){
-      this.communityService.deleteCommunity(id);
-    }
+  deleteCommunity(id: string){
+    this.communityService.deleteCommunity(id);
   }
 
-  openDialog(){
-    this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity?.id}});
+  editCommunity(){
+    this.dialog.open(CreateCommunityComponent, {data: {editing: true, community: this.selectedCommunity()}});
+  }
+
+  createInvitation(){
+    this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity().id}});
   }
 
 }

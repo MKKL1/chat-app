@@ -1,4 +1,4 @@
-import {Component, inject, Inject, OnInit} from '@angular/core';
+import {Component, inject, Inject, OnInit, signal} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -44,10 +44,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
   templateUrl: './create-channel.component.html'
 })
 export class CreateChannelComponent implements OnInit{
-  loading: boolean = false;
-  editing: boolean = false;
-  id: string | undefined;
-  communityId: string | undefined;
+  loading = signal<boolean>(false);
+  editing = signal<boolean>(false);
+  id: string;
+  communityId: string;
 
   channelForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -64,10 +64,10 @@ export class CreateChannelComponent implements OnInit{
 
   ngOnInit() {
     if(this.data !== null){
-      this.editing = this.data.editing;
-      this.id = this.data.channel.id ?? '';
-      console.log(this.data.channel.id);
+      this.editing.set(this.data.editing);
+      this.id = this.data.channel.id;
       this.communityId = this.data.channel.communityId;
+
       this.channelForm.setValue({
         name: this.data.channel.name,
         type: this.data.channel.type.toString()
@@ -76,9 +76,9 @@ export class CreateChannelComponent implements OnInit{
   }
 
   submitChannelForm(){
-    this.loading = true;
+    this.loading.set(true);
 
-    if(this.editing){
+    if(this.editing()){
       this.editChannel();
     } else {
       this.createChannel();
@@ -88,37 +88,35 @@ export class CreateChannelComponent implements OnInit{
   createChannel(){
     this.channelService.createChannel(this.channelForm.value).pipe(
       catchError(error => {
-        this.loading = false;
+        this.loading.set(false);
         this.snackBar.open("Cannot create new channel", "Ok");
 
         return of(null);
       })).subscribe(channel => {
-      this.loading = false;
+      this.loading.set(false);
       this.dialogRef.close();
     });
   }
 
   editChannel() {
-    console.log(this.editing + " " + this.id);
-    if(this.editing && this.id){
-      console.log('jazda');
+    if(this.editing() && this.id){
       const channel = {
         id: this.id,
-        communityId: this.communityId ?? '',
+        communityId: this.communityId,
         name: this.channelForm.value.name ?? '',
         // ☠☠☠
         type: this.channelForm.value.type == '0' ? ChannelType.Text : ChannelType.Voice ?? ChannelType.Text
       }
 
       this.channelService.updateChannel(channel).subscribe(channel => {
-        this.loading = false;
+        this.loading.set(false);
         this.dialogRef.close();
       });
     }
   }
 
   deleteChannel() {
-    if(this.editing && this.id){
+    if(this.editing() && this.id){
       this.channelService.deleteChannel(this.id).subscribe(channel => {
         this.dialogRef.close();
       });

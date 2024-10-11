@@ -30,6 +30,9 @@ import {Observable} from "rxjs";
   styleUrl: './community.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+
+// I don't if I should really convert this, because it will be so much more complicated
+
 export class CommunityComponent implements OnInit{
     readonly dialog: MatDialog = inject(MatDialog);
     isCommunitySelected$!: Observable<boolean>;

@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, signal} from '@angular/core';
 import {
+  MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent, MatDialogRef,
@@ -11,6 +12,8 @@ import {MatIcon} from "@angular/material/icon";
 import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommunityService} from "../../../../services/community.service";
+import {Community} from "../../../../models/community";
+import {previewImage} from "../../../../../shared/utils/image-preview";
 
 
 @Component({
@@ -33,25 +36,66 @@ import {CommunityService} from "../../../../services/community.service";
   styleUrl: './create-community.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateCommunityComponent {
+export class CreateCommunityComponent implements OnInit{
+  editing = signal<boolean>(false);
+  communityId: string;
+
   communityForm = new FormGroup({
     name: new FormControl('', Validators.required)
   });
 
-  file: File | undefined;
+  file?: File;
+  imagePreview = signal<string>('');
 
   constructor(private communityService: CommunityService,
-    public dialogRef: MatDialogRef<CreateCommunityComponent>) {
+    public dialogRef: MatDialogRef<CreateCommunityComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: {editing: boolean, community: Community}) {
+  }
+
+  ngOnInit() {
+    if(this.data === null){
+      return;
+    }
+
+    this.editing.set(this.data.editing);
+    this.communityId = this.data.community.id;
+    this.communityForm.setValue({
+      name: this.data.community.name
+    });
+
+    // todo set image after it is retrieved
+  }
+
+  resetImage(){
+    this.imagePreview.set('');
+    this.file = undefined;
   }
 
   setFile(file: File){
+    previewImage(file).then(image => {
+      this.imagePreview.set(image);
+    });
     this.file = file;
   }
 
-  closeDialog(): void {
+  submitForm(): void {
+    if(this.editing()){
+      this.editCommunity();
+    } else {
+      this.createCommunity()
+    }
+  }
+
+  private createCommunity(){
+    // todo send also image
     if(typeof this.communityForm.value.name === 'string'){
       this.communityService.createCommunity({name: this.communityForm.value.name});
     }
     this.dialogRef.close();
+  }
+
+  private editCommunity(){
+    // todo send also image
+    this.communityService.editCommunity();
   }
 }

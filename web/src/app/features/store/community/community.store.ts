@@ -1,10 +1,6 @@
 import {Community} from "../../models/community";
-import {ActiveState, EntityState, EntityStore, getEntityType, Store, StoreConfig} from "@datorama/akita";
+import {ActiveState, EntityState, EntityStore, getEntityType, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
-import {Channel} from "../../models/channel";
-import {Member} from "../../models/member";
-import {Role} from "../../models/role";
-import {CommunityQuery} from "./community.query";
 
 export interface CommunityState extends EntityState<Community, string>, ActiveState {}
 

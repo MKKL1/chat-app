@@ -1,4 +1,5 @@
 :root,:host{
+  // angular material theme system variables
   --sys-background:#0f1513;
   --sys-on-background:#dee4e0;
   --sys-surface:#0f1513;
@@ -57,4 +58,9 @@
   --sys-error-fixed-dim:#ffb4ab;
   --sys-on-error-fixed:#3b0907;
   --sys-on-error-fixed-variant:#73342d;
+
+  // other variables
+  --background: #0f1513;
+  --light-background: #191c1c;
+  --text: white;
 }

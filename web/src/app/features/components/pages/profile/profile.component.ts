@@ -1,6 +1,6 @@
 import {MatIcon} from "@angular/material/icon";
 import {MatButton, MatFabButton} from "@angular/material/button";
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {KeycloakService} from "keycloak-angular";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
@@ -36,9 +36,13 @@ import {resetStores} from "@datorama/akita";
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
+
+// TODO change state of ui after sending data to api
+
 export class ProfileComponent implements OnInit{
-  userDescription: string = '';
-  username: string = '';
+  userDescription = signal<string>('');
+  username = signal<string>('');
+  imageUrl = signal<string>('');
 
   constructor(
     private keycloakService: KeycloakService,
@@ -47,12 +51,15 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.username = this.keycloakService.getUsername();
-    this.userDescription = this.userService.getUser().description!;
+    this.username.set(this.keycloakService.getUsername());
+    this.userDescription.set(this.userService.getUser().description ?? '');
+    this.imageUrl.set(this.userService.getUser().imageUrl ?? '');
   }
 
   editAvatar(){
-    this.dialog.open(EditAvatarComponent);
+    this.dialog.open(EditAvatarComponent, {
+      data: {imageUrl: this.imageUrl()}
+    });
   }
 
   openUserSettings(){
@@ -60,7 +67,7 @@ export class ProfileComponent implements OnInit{
   }
 
   editDescription(){
-    this.userService.editDescription(this.userDescription).subscribe(user => {
+    this.userService.editDescription(this.userDescription()).subscribe(user => {
       console.log(user);
     });
   }

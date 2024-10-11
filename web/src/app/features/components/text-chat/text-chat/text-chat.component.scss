@@ -2,24 +2,13 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 0 15px;
   background: #191919;
 }
 
 .messages{
   flex: 1;
   overflow-y: auto;
-
-  // firefox
-  scrollbar-width: none;
-  // edge
-  -ms-overflow-style: none;
-}
-
-// chrome
-.messages::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  padding: 0 15px;
 }
 
 app-emoji-picker, app-gif-search{

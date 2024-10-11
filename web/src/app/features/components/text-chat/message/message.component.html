@@ -1,40 +1,71 @@
 <!-- TODO Fix css -->
 
-<div class="message-container" [ngStyle]="fromClient ? {'align-items': 'flex-end'} : {'align-items': 'flex-start'}">
+<div class="message-container" [ngStyle]="fromClient() ?
+  {'align-items': 'flex-end'}
+  : {'align-items': 'flex-start'}">
 <!--  <p>user {{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>-->
-  <div class="message-wrapper" [ngStyle]="fromClient ? {'flex-direction': 'row-reverse'} : {'flex-direction': 'row'}">
-    <app-avatar></app-avatar>
-
-    <div class="message-content" [ngStyle]="fromClient ? {'background': '#0d5043'} : {'background': '#565656'}">
+  <div class="message-wrapper" [ngStyle]="fromClient() ?
+    {'flex-direction': 'row-reverse'}
+    : {'flex-direction': 'row'}">
+    <div class="user-info-container">
+      <app-avatar></app-avatar>
+      <app-user-basic-info [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
+      </app-user-basic-info>
+    </div>
+    <div class="message-content" [ngStyle]="fromClient() ?
+    {'background': '#0d5043', 'margin-right': '10px'} :
+    {'background': '#565656', 'margin-left': '10px'}">
       <!-- Add some graphical clue and text -->
-      @if(message?.respondsToMessage !== undefined && message?.respondsToMessage !== ''){
-        <p>Responding to {{message?.respondsToMessage}}</p>
+      @if(message.respondsToMessage !== undefined && message.respondsToMessage !== ''){
+        <p>Responding to {{message.respondsToMessage}}</p>
       }
-      <p style="margin:0;">{{message?.text}}</p>
-      @if(message?.gifLink !== ''){
-        <div>
-          <img src="{{message?.gifLink}}">
+      <p class="message-text">{{message.text}}</p>
+      @if(message.gifLink !== ''){
+        <div class="gif-wrapper">
+          <img src="{{message.gifLink}}" alt="{{message.gifLink}}">
         </div>
       }
     </div>
 
-    <!--  Menu with additional actions  -->
+    <!--  Button which opens bottom sheet  -->
     <div class="message-menu">
-      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+      <button mat-icon-button (click)="openOptions()">
         <mat-icon>more_vert</mat-icon>
       </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="respondToMessage()">Respond</button>
-        <button mat-menu-item (click)="showReactionPicker = true">React</button>
-        <button mat-menu-item (click)="edit()">Edit</button>
-        <button mat-menu-item (click)="delete()">Delete</button>
-      </mat-menu>
     </div>
   </div>
 
 </div>
 
-@if(showReactionPicker){
-  <app-emoji-picker (clickOutside)="showReactionPicker = false" (emojiSelect)="appendReaction($event)">
+@if(showReactionPicker()){
+  <app-emoji-picker (clickOutside)="showReactionPicker.set(false)" (emojiSelect)="appendReaction($event)">
   </app-emoji-picker>
 }
+
+<!-- bottom sheet with additional actions -->
+<app-bottom-sheet [opened]="openedOptions()" [color]="'white'" [backgroundColor]="'#191c1c'">
+  <div content>
+    <mat-list>
+      <mat-list-item (click)="respondToMessage()">
+        <mat-icon matListItemIcon>reply</mat-icon>
+        <div matListItemTitle>Respond</div>
+        <div matListItemLine>Answer to this message</div>
+      </mat-list-item>
+      <mat-list-item (click)="updateReactionPicker()">
+        <mat-icon matListItemIcon>favorite</mat-icon>
+        <div matListItemTitle>React</div>
+        <div matListItemLine>Add reaction to message</div>
+      </mat-list-item>
+      <mat-list-item (click)="edit()">
+        <mat-icon matListItemIcon>edit_note</mat-icon>
+        <div matListItemTitle>Edit</div>
+        <div matListItemLine>Edit this message content</div>
+      </mat-list-item>
+      <mat-list-item (click)="delete()">
+        <mat-icon matListItemIcon>delete</mat-icon>
+        <div matListItemTitle>Delete</div>
+        <div matListItemLine>Delete this message</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</app-bottom-sheet>

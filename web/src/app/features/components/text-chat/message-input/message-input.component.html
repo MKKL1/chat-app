@@ -1,15 +1,25 @@
-<!-- And css for attaching additional content to message -->
+<!-- display gif if it was added to message -->
+@if(selectedGif().length !== 0){
+  <div class="gif-container">
+    <img src='{{selectedGif()}}'>
+    <mat-icon (click)="resetGif()" fontIcon="delete" class="deleteIcon"></mat-icon>
+  </div>
+}
 
-<!-- input for sending message -->
-@if(selectedGif.length !== 0){
-  <div class="resources-container">
-    <img src='{{selectedGif}}'>
+<!-- display image if it was added to message -->
+@if(imagePreview() !== ''){
+  <div class="image-container">
+    <img src='{{imagePreview()}}'>
+    <mat-icon (click)="resetFile()" fontIcon="delete" class="deleteIcon"></mat-icon>
   </div>
 }
 
 <!-- display message to which user is responding -->
 @if(messageToRespond && messageToRespond.id !== ''){
-  <p>Responding to: {{messageToRespond.text}}</p>
+  <div class="flex" style="margin-left: 15px">
+    <p>Responding to: {{messageToRespond.text}}</p>
+    <mat-icon (click)="messageToRespond = undefined" fontIcon="close"></mat-icon>
+  </div>
 }
 
 <div class="message-input">
@@ -17,7 +27,6 @@
   <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
     <input [(ngModel)]="text" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
   </mat-form-field>
-  <!-- make icons prettier -->
   <div class="icons">
     <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
     <mat-icon (click)="triggerFileInput()" fontIcon="attach_file" matTooltip="Choose file to attach"></mat-icon>
@@ -26,9 +35,11 @@
     <mat-icon (click)="sendMessage()" fontIcon="send" matTooltip="Send message"></mat-icon>
   </div>
 </div>
-@if(showEmojiPicker){
+
+@if(showEmojiPicker()){
   <app-emoji-picker (clickOutside)="closeEmojiPicker()" (emojiSelect)="appendEmojiToInputField($event)"></app-emoji-picker>
 }
-@if(showGifSearch){
+
+@if(showGifSearch()){
   <app-gif-search (clickOutside)="closeGifSearch()" (chosenGif)="selectGif($event)"></app-gif-search>
 }

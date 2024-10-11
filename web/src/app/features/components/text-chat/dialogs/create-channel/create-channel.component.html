@@ -15,14 +15,14 @@
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>
-    @if (editing){
+    @if (editing()){
       <button mat-button (click)="deleteChannel(); $event.preventDefault()">Delete</button>
     }
     <button mat-button type="submit" [disabled]="channelForm.invalid">
-      @if (loading) {
+      @if (loading()) {
         <mat-spinner [diameter]="20"></mat-spinner>
       } @else {
-        <span>{{ editing ? 'Edit' : 'Create' }}</span>
+        <span>{{ editing() ? 'Edit' : 'Create' }}</span>
       }
     </button>
   </mat-dialog-actions>

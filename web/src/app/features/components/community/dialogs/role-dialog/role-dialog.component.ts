@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 
 import {MatButton} from "@angular/material/button";
 import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput, MatInputModule} from "@angular/material/input";
+import {MatFormField} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upload.component";
