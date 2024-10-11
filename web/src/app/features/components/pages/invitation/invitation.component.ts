@@ -47,6 +47,7 @@ export class InvitationComponent  implements OnInit{
         this.communityService.fetchCommunity(this.communityId);
       }
 
+      // shouldn't be loaded from store, but there isn't any endpoint for this yet
       this.community = this.communityQuery.getActive();
       this.loadedInvitation = true;
     });

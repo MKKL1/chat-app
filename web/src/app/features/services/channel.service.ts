@@ -25,11 +25,19 @@ export class ChannelService {
       return;
     }
 
+    if(!channel.id){
+      return;
+    }
+
     this.voiceChannelStore.setActive(channel.id);
   }
 
   selectTextChannel(channel: Channel){
     if(channel.type === ChannelType.Voice){
+      return;
+    }
+
+    if(!channel.id){
       return;
     }
 
@@ -58,11 +66,15 @@ export class ChannelService {
 
   updateChannel(channel: Channel){
     return this.http.put<Channel>(this.apiPath + "/" + channel.id, {channel}).pipe(
-      tap(updatedChannel =>
-          updatedChannel.type === ChannelType.Text ?
+      tap(updatedChannel => {
+        if(!updatedChannel.id){
+          return;
+        }
+
+        updatedChannel.type === ChannelType.Text ?
           this.textChannelStore.update(updatedChannel.id, updatedChannel) :
-          this.voiceChannelStore.update(updatedChannel.id, updatedChannel)
-        )
+          this.voiceChannelStore.update(updatedChannel.id, updatedChannel);
+      })
     );
   }
 

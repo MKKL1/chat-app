@@ -17,7 +17,7 @@ export class BottomSheetComponent implements AfterViewInit, OnDestroy{
   @Input() color: string;
   @Input() addOverlay: boolean = false;
 
-  constructor(private renderer: Renderer2, private el: ElementRef) {
+  constructor(private el: ElementRef) {
   }
 
   ngAfterViewInit(): void {
