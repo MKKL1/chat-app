@@ -13,7 +13,7 @@ import lombok.Setter;
 public class CommunityDTO {
     @Schema(example = "4501678724218880", description = "ID of community")
     private Long id;
-    @Schema(example = "My community")
+    @Schema(example = "My community", description = "Name of community")
     private String name;
     @Schema(example = "29754971884879872", description = "ID of community's owner")
     private Long ownerId;
