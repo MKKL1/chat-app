@@ -36,6 +36,10 @@ public class OperationDocsCustomizer implements OperationCustomizer {
                         apiResponses.addApiResponse("403",
                                 new ApiResponse().description("User is not a member of channel's community or resource is not available")
                         );
+                case DocsProperties.REQUIRES_ROLE_ACCESS_PERMISSION ->
+                        apiResponses.addApiResponse("403",
+                                new ApiResponse().description("User is not a member of role's community or resource is not available")
+                        );
                 case DocsProperties.REQUIRES_NOT_MEMBER_PERMISSION ->
                         apiResponses.addApiResponse("403",
                                 new ApiResponse().description("User is already a member of community or resource is not available")

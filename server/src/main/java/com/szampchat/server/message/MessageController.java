@@ -14,6 +14,8 @@ import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,9 @@ import reactor.core.publisher.Mono;
 
 import static com.szampchat.server.shared.docs.DocsProperties.*;
 
+@Tag(name = "Message")
+@SecurityRequirement(name = "OAuthSecurity")
+
 @AllArgsConstructor
 @RestController
 public class MessageController {
@@ -31,8 +36,8 @@ public class MessageController {
 
     @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
-
     @Operation(summary = "Get channel's messages")
+
     @GetMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Flux<MessageDTO> getMessages(@PathVariable Long channelId,
@@ -44,6 +49,7 @@ public class MessageController {
 
     @ApiResponse(responseCode = "201")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+    @Operation(summary = "Create message")
 
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
@@ -58,6 +64,7 @@ public class MessageController {
     // TODO message is inserted instead of update
     @ApiResponse(responseCode = "204")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+    @Operation(summary = "Edit message")
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
@@ -70,6 +77,7 @@ public class MessageController {
     // TODO Delete file if attached
     @ApiResponse(responseCode = "204")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+    @Operation(summary = "Delete message")
 
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")

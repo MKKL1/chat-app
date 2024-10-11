@@ -9,15 +9,18 @@ paths:
   /channels/{channelId}:
     put:
       tags:
-      - channel-controller
+      - Channel
+      summary: Edit channel
       operationId: editChannel
       parameters:
       - name: channelId
         in: path
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       requestBody:
         content:
           application/json:
@@ -25,30 +28,56 @@ paths:
               $ref: "#/components/schemas/Channel"
         required: true
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Channel"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     delete:
       tags:
-      - channel-controller
+      - Channel
+      summary: Delete channel
       operationId: deleteChannel
       parameters:
       - name: channelId
         in: path
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /users:
     post:
       tags:
-      - user-controller
+      - User
+      summary: Register user
+      description: |
+        Used to create user object in backend server on first login.
+        Only route that doesn't throw 419 error.
+        To obtain bearer token, check Basics/Authentication page or KeyCloak documentation.
       operationId: createUser
       requestBody:
         content:
@@ -63,17 +92,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     delete:
       tags:
-      - user-controller
+      - User
+      summary: Delete user
       operationId: deleteUser
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /roles:
     post:
       tags:
-      - role-controller
+      - Role
+      summary: Create role TODO
       operationId: createRole
       requestBody:
         content:
@@ -82,12 +123,20 @@ paths:
               $ref: "#/components/schemas/RoleCreateDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not an owner of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities:
     get:
       tags:
@@ -212,7 +261,8 @@ paths:
   /channels:
     post:
       tags:
-      - channel-controller
+      - Channel
+      summary: Create channel
       operationId: createChannel
       requestBody:
         content:
@@ -221,27 +271,35 @@ paths:
               $ref: "#/components/schemas/ChannelCreateDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Channel"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /channels/{channelId}/messages:
     get:
       tags:
-      - message-controller
-      summary: Get messages for given channel
+      - Message
+      summary: Get channel's messages
       operationId: getMessages
       parameters:
       - name: channelId
         in: path
-        description: Snowflake ID of text channel
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
-        example: 20276884193411072
+        example: "4501678724218880"
       - name: before
         in: query
         description: Get messages before this message Snowflake ID
@@ -267,17 +325,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MessageDTO"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     post:
       tags:
-      - message-controller
+      - Message
+      summary: Create message
       operationId: createMessage
       parameters:
       - name: channelId
         in: path
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       requestBody:
         content:
           application/json:
@@ -285,16 +355,26 @@ paths:
               $ref: "#/components/schemas/MessageCreateDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Message"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /users/description:
     patch:
       tags:
-      - user-controller
+      - User
+      summary: Edit description?
       operationId: editDescription
       parameters:
       - name: descriptionDTO
@@ -303,16 +383,23 @@ paths:
         schema:
           $ref: "#/components/schemas/UserDescriptionDTO"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /users/avatar:
     patch:
       tags:
-      - user-controller
+      - User
+      summary: Edit avatar? TODO
       operationId: editAvatar
       responses:
         "200":
@@ -321,10 +408,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
+      security:
+      - OAuthSecurity: []
   /roles/{roleId}:
     get:
       tags:
-      - role-controller
+      - Role
+      summary: Get role
       operationId: getRole
       parameters:
       - name: roleId
@@ -334,17 +424,25 @@ paths:
           type: integer
           format: int64
       responses:
-        "404":
-          description: Role by given ID was not found
         "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of role's community or resource is not
+            available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     delete:
       tags:
-      - role-controller
+      - Role
+      summary: Delete role TODO
       operationId: deleteRole
       parameters:
       - name: roleId
@@ -354,11 +452,20 @@ paths:
           type: integer
           format: int64
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "403":
+          description: User is not an owner of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     patch:
       tags:
-      - role-controller
+      - Role
+      summary: Edit role TODO
       operationId: editRole
       parameters:
       - name: roleId
@@ -374,12 +481,21 @@ paths:
               $ref: "#/components/schemas/RoleCreateDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}:
     get:
       tags:
@@ -475,15 +591,18 @@ paths:
   /channels/{channelId}/messages/{messageId}:
     delete:
       tags:
-      - message-controller
+      - Message
+      summary: Delete message
       operationId: deleteMessage
       parameters:
       - name: channelId
         in: path
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       - name: messageId
         in: path
         required: true
@@ -491,19 +610,31 @@ paths:
           type: integer
           format: int64
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     patch:
       tags:
-      - message-controller
+      - Message
+      summary: Edit message
       operationId: editMessage
       parameters:
       - name: channelId
         in: path
+        description: ID of channel
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       - name: messageId
         in: path
         required: true
@@ -517,24 +648,36 @@ paths:
               $ref: "#/components/schemas/EditMessageDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Message"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /users/{userId}:
     get:
       tags:
-      - user-controller
+      - User
+      summary: Get user
       operationId: getUser
       parameters:
       - name: userId
         in: path
+        description: ID of user
         required: true
         schema:
           type: integer
           format: int64
+        example: "4501678724218880"
       responses:
         "200":
           description: OK
@@ -542,10 +685,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /users/me:
     get:
       tags:
-      - user-controller
+      - User
+      summary: Get current user
+      description: |
+        Retrieves current user's data
       operationId: getMe
       responses:
         "200":
@@ -554,27 +706,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDTO"
-  /communities/{communityId}/roles:
-    get:
-      tags:
-      - role-controller
-      operationId: getRolesForCommunity
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}/info:
     get:
       tags:
@@ -609,27 +746,6 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
-  /communities/{communityId}/channels:
-    get:
-      tags:
-      - channel-controller
-      operationId: getChannelsForCommunity
-      parameters:
-      - name: communityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ChannelDTO"
 components:
   schemas:
     Channel:
@@ -829,20 +945,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Role"
-    ChannelDTO:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        community:
-          type: integer
-          format: int64
-        type:
-          type: integer
-          format: int32
     MessageAttachmentDTO:
       type: object
       properties:

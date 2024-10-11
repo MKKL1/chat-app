@@ -7,6 +7,8 @@ import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +19,9 @@ import reactor.core.publisher.Mono;
 
 import static com.szampchat.server.shared.docs.DocsProperties.*;
 import static com.szampchat.server.shared.docs.DocsProperties.RESPONSE_401;
+
+@Tag(name = "Channel")
+@SecurityRequirement(name = "OAuthSecurity")
 
 @AllArgsConstructor
 @RestController
