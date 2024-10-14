@@ -1,5 +1,6 @@
 package com.szampchat.server.community.entity;
 
+import com.szampchat.server.shared.permission.Permissions;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +27,7 @@ public class Community {
 
     @Column("image_url")
     private String imageUrl;
+
+    @Column("base_permissions")
+    private Permissions basePermissions;
 }

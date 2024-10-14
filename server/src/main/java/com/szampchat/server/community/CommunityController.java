@@ -33,7 +33,6 @@ import static com.szampchat.server.shared.docs.DocsProperties.*;
 @Validated //?
 public class CommunityController {
     private final CommunityService communityService;
-    private final CommunityMemberService communityMemberService;
     private final InvitationService invitationService;
 
 
