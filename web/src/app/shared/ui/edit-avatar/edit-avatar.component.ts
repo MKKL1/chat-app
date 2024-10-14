@@ -33,7 +33,6 @@ export class EditAvatarComponent {
   snackbar = inject(MatSnackBar);
 
   constructor(
-    private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: {imageUrl: string},
     public dialogRef: MatDialogRef<EditAvatarComponent>) {
     this.imageUrl.set(data.imageUrl);
