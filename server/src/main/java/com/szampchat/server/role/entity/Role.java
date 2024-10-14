@@ -1,5 +1,6 @@
 package com.szampchat.server.role.entity;
 
+import com.szampchat.server.shared.permission.Permissions;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class Role {
     private String name;
 
     @Column("permission")
-    private Long permission;
+    private Permissions permission;
 
     @Column("community_id")
     private Long community;

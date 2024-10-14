@@ -1,5 +1,6 @@
 package com.szampchat.server.channel.entity;
 
+import com.szampchat.server.channel.ChannelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,10 +25,6 @@ public class Channel {
     @Column("community_id")
     private Long communityId;
 
-    // 0 - text
-    // 1 - voice
     @Column("type")
-    private Byte type;
-
-    //TODO add channel type (requires custom converter)
+    private ChannelType type;
 }

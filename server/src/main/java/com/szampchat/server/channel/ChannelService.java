@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
-    private final Snowflake snowflake;
 
     //TODO cache it (this method will be called on most api operations)
     // broken
@@ -53,7 +52,7 @@ public class ChannelService {
                     Channel.builder()
                         .name(channel.getName())
                         .communityId(channel.getCommunityId())
-                        .type(channel.getType().getValue())
+                        .type(channel.getType())
                         .build()
                     )
                 );
