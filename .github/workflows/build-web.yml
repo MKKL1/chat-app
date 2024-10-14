@@ -20,9 +20,11 @@ jobs:
           cache-dependency-path: web/package-lock.json
           node-version: 22
           cache: npm
+          
       - name: Install dependencies
         working-directory: 'web'
         run: npm install
+        
       - name: Run unit tests
         working-directory: 'web'
-        run: ng test
+        run: npm run test:headless
