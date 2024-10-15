@@ -1,6 +1,6 @@
 package com.szampchat.server.permission.repository;
 
-import com.szampchat.server.shared.permission.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverrides;
 import lombok.AllArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;

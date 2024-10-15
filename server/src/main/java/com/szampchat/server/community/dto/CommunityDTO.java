@@ -1,6 +1,6 @@
 package com.szampchat.server.community.dto;
 
-import com.szampchat.server.shared.permission.Permissions;
+import com.szampchat.server.permission.data.Permissions;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.szampchat.server.shared.permission;
+package com.szampchat.server.permission.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

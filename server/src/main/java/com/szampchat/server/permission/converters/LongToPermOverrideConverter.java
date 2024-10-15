@@ -1,6 +1,6 @@
-package com.szampchat.server.shared.permission.converters;
+package com.szampchat.server.permission.converters;
 
-import com.szampchat.server.shared.permission.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverrides;
 import org.springframework.core.convert.converter.Converter;
 
 public class LongToPermOverrideConverter implements Converter<Long, PermissionOverrides> {

@@ -1,6 +1,6 @@
 package com.szampchat.server.role.entity;
 
-import com.szampchat.server.shared.permission.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverrides;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

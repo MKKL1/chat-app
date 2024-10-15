@@ -1,16 +1,17 @@
-package com.szampchat.server.shared.permission;
+package com.szampchat.server.permission.data;
 
 import lombok.Getter;
 
 @Getter
 public enum PermissionFlag {
-    ROLE_MODIFY(0),
-    INVITE_CREATE(1),
-    CHANNEL_CREATE(2),
-    CHANNEL_MODIFY(3),
-    MESSAGE_CREATE(4),
-    MESSAGE_DELETE(5),
-    REACTION_CREATE(6);
+    ADMINISTRATOR(0),
+    ROLE_MODIFY(1),
+    INVITE_CREATE(2),
+    CHANNEL_CREATE(3),
+    CHANNEL_MODIFY(4),
+    MESSAGE_CREATE(5),
+    MESSAGE_DELETE(6),
+    REACTION_CREATE(7);
 
     final byte offset;
     PermissionFlag(byte offset) {

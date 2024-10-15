@@ -2,10 +2,10 @@ package com.szampchat.server;
 
 import com.szampchat.server.channel.converters.ShortToChannelTypeConverter;
 import com.szampchat.server.channel.converters.ChannelTypeToShortConverter;
-import com.szampchat.server.shared.permission.converters.IntToPermissionConverter;
-import com.szampchat.server.shared.permission.converters.LongToPermOverrideConverter;
-import com.szampchat.server.shared.permission.converters.PermOverrideToLongConverter;
-import com.szampchat.server.shared.permission.converters.PermissionToIntConverter;
+import com.szampchat.server.permission.converters.IntToPermissionConverter;
+import com.szampchat.server.permission.converters.LongToPermOverrideConverter;
+import com.szampchat.server.permission.converters.PermOverrideToLongConverter;
+import com.szampchat.server.permission.converters.PermissionToIntConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

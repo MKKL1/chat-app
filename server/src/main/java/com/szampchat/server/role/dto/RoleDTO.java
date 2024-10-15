@@ -1,6 +1,6 @@
 package com.szampchat.server.role.dto;
 
-import com.szampchat.server.shared.permission.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverrides;
 
 public class RoleDTO {
     private Long id;

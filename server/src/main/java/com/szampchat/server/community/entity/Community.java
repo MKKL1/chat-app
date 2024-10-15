@@ -1,6 +1,6 @@
 package com.szampchat.server.community.entity;
 
-import com.szampchat.server.shared.permission.Permissions;
+import com.szampchat.server.permission.data.Permissions;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

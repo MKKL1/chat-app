@@ -1,14 +1,9 @@
 package com.szampchat.server.role;
 
-import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.exception.RoleNotFoundException;
-import com.szampchat.server.role.repository.ChannelRoleRepository;
 import com.szampchat.server.role.repository.RoleRepository;
-import com.szampchat.server.shared.permission.Permissions;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
