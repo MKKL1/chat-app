@@ -1,7 +1,7 @@
 package com.szampchat.server;
 
-import com.szampchat.server.channel.converters.ByteToChannelTypeConverter;
-import com.szampchat.server.channel.converters.ChannelTypeToByteConverter;
+import com.szampchat.server.channel.converters.ShortToChannelTypeConverter;
+import com.szampchat.server.channel.converters.ChannelTypeToShortConverter;
 import com.szampchat.server.shared.permission.converters.IntToPermissionConverter;
 import com.szampchat.server.shared.permission.converters.LongToPermOverrideConverter;
 import com.szampchat.server.shared.permission.converters.PermOverrideToLongConverter;
@@ -30,8 +30,8 @@ public class ModelMapperConfiguration {
         converters.add(new PermissionToIntConverter());
         converters.add(new LongToPermOverrideConverter());
         converters.add(new PermOverrideToLongConverter());
-        converters.add(new ByteToChannelTypeConverter());
-        converters.add(new ChannelTypeToByteConverter());
+        converters.add(new ShortToChannelTypeConverter());
+        converters.add(new ChannelTypeToShortConverter());
         return R2dbcCustomConversions.of(PostgresDialect.INSTANCE, converters);
     }
 }

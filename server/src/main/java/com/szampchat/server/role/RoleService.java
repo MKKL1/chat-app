@@ -6,6 +6,7 @@ import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.exception.RoleNotFoundException;
+import com.szampchat.server.role.repository.ChannelRoleRepository;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.shared.permission.Permissions;
 import lombok.AllArgsConstructor;
@@ -18,8 +19,6 @@ import reactor.core.publisher.Mono;
 public class RoleService {
     private final RoleRepository roleRepository;
     private final CommunityMemberService communityMemberService;
-    private final CommunityService communityService;
-    private final ChannelService channelService;
 
     public Mono<Boolean> hasAccessToRoleInfo(Long roleId, Long userId) {
         return findRole(roleId)
@@ -27,31 +26,8 @@ public class RoleService {
                 .flatMap(community -> communityMemberService.isMember(community, userId));
     }
 
-    public Mono<Permissions> getUserPermissionsForCommunity(Long communityId, Long userId) {
-        return communityService.findById(communityId)
-                .map(CommunityDTO::getBasePermissions)//Get base permission
-                .flatMap(basePermissions ->
-                        roleRepository.findRolesByCommunityAndUser(communityId, userId)
-                        .map(Role::getPermission)//Get all permission overrides
-                        .map(permissionOverride -> permissionOverride.apply(basePermissions)) //Apply them one by one
-                        .doOnNext(basePermissions::setPermissionData) //Set new permissions to for next iteration
-                        .then(Mono.just(basePermissions)) //Return permission on finish
-                );
-    }
-
-    public Mono<Permissions> getUserPermissionsForChannel(Long channelId, Long userId) {
-        return channelService.getChannel(channelId)
-                .flatMap(channel -> {
-                   return getUserPermissionsForCommunity(channel.getCommunityId(), userId)
-                           .flatMap(permissions ->
-                                   roleRepository.findRolesByCommunityAndUser(channel.getCommunityId(), userId)
-
-                           )
-                });
-    }
-
-    public Flux<Role> getUserRolesForCommunity() {
-
+    public Flux<Role> getMemberRoles(Long communityId, Long userId) {
+        return roleRepository.findRolesByCommunityAndUser(communityId, userId);
     }
 
     public Mono<Role> findRole(Long roleId) {

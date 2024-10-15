@@ -3,10 +3,10 @@ package com.szampchat.server.channel.converters;
 import com.szampchat.server.channel.ChannelType;
 import org.springframework.core.convert.converter.Converter;
 
-public class ChannelTypeToByteConverter implements Converter<ChannelType, Byte> {
+public class ChannelTypeToShortConverter implements Converter<ChannelType, Short> {
 
     @Override
-    public Byte convert(ChannelType source) {
+    public Short convert(ChannelType source) {
         return source.getValue();
     }
 }

@@ -1,6 +1,7 @@
 package com.szampchat.server.role;
 
 import com.szampchat.server.auth.CurrentUser;
+import com.szampchat.server.permission.PermissionService;
 import com.szampchat.server.role.dto.RoleCreateDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.shared.docs.OperationDocs;
