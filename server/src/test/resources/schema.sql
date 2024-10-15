@@ -50,6 +50,19 @@ create table roles
             references communities on delete cascade
 );
 
+create table channel_roles
+(
+    channel_id bigint not null
+        constraint fk_channrole_on_channel
+            references channels on delete cascade ,
+    role_id bigint not null
+        constraint fk_channrole_on_role
+            references roles on delete  cascade ,
+    permission bigint not null,
+    constraint pk_channel_roles
+        primary key (channel_id, role_id)
+);
+
 create table community_members
 (
     community_id bigint not null
