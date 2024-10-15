@@ -17,5 +17,5 @@ public interface RoleRepository extends R2dbcRepository<Role, Long> {
                              WHERE roles.community_id = :community_id) as "r"
                           JOIN user_roles as ur on r.id = ur.role_id
         WHERE ur.user_id = :user_id""")
-    Flux<Role> findRolesByUser(@Param("community_id") Long community_id, @Param("user_id") Long userId);
+    Flux<Role> findRolesByCommunityAndUser(@Param("community_id") Long community_id, @Param("user_id") Long userId);
 }
