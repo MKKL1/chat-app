@@ -33,6 +33,7 @@ export class EditAvatarComponent {
   snackbar = inject(MatSnackBar);
 
   constructor(
+    private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: {imageUrl: string},
     public dialogRef: MatDialogRef<EditAvatarComponent>) {
     this.imageUrl.set(data.imageUrl);
@@ -46,8 +47,9 @@ export class EditAvatarComponent {
   }
 
   uploadNewPicture(){
-    if(this.fileToUpload() !== undefined){
-      // todo upload picture
+    if(this.fileToUpload()){
+      this.userService.editAvatar(this.fileToUpload()!);
+
     } else {
       this.snackbar.open("Before uploading you must choose your picture!",'Ok', {duration: 3000})
     }

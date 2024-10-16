@@ -62,8 +62,18 @@ export class UserService {
   }
 
   // todo implement when handling files on backend will be ready
-  editAvatar(){
+  editAvatar(file: File){
+    const formData = new FormData();
+    formData.append('file', file, file.name);
 
+    this.http.post('http://localhost:8081/api/files', formData).subscribe({
+      next: (response) => {
+        console.log('Plik przesłany pomyślnie!', response);
+      },
+      error: (error) => {
+        console.error('Wystąpił błąd przy przesyłaniu pliku:', error);
+      },
+    });
   }
 
   deleteAccount(){

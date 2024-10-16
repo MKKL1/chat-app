@@ -36,6 +36,11 @@ spring:
     port: 5672
     username: root
     password: root
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
 server:
   error:
     include-message: always
