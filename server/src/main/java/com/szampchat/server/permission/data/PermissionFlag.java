@@ -21,6 +21,10 @@ public enum PermissionFlag {
         this.channelOverwrite = channel;
     }
 
+    public int asMask() {
+        return 1 << offset;
+    }
+
     /**
      * @return 1 - channel can overwrite this permission
      */

@@ -25,6 +25,10 @@ public class PermissionOverwrites {
     private static final int channelOverwriteMask = PermissionFlag.getChannelOverwriteMask();
     private long permissionOverwriteData;
 
+    public PermissionOverwrites() {
+        this.permissionOverwriteData = 0;
+    }
+
     //TODO define context in which overwrite should be applied,
     //For example, invite_create should be community only flag, and it shouldn't be overridden by channel permissions
     public void allow(PermissionContext permissionContext, PermissionFlag permissionFlag) {
@@ -60,7 +64,7 @@ public class PermissionOverwrites {
 
     public void deny(PermissionContext permissionContext, int permissionMask) {
         int mask = permissionContext == PermissionContext.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
-        permissionOverwriteData |= (((long)permissionMask << 32) & mask);
+        permissionOverwriteData |= (long) (permissionMask & mask) << 32;
     }
 
     public int apply(Permissions basePermissions) {
