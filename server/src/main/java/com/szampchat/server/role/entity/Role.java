@@ -1,6 +1,6 @@
 package com.szampchat.server.role.entity;
 
-import com.szampchat.server.permission.data.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverwrites;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class Role {
     private String name;
 
     @Column("permission")
-    private PermissionOverrides permission;
+    private PermissionOverwrites permission;
 
     @Column("community_id")
     private Long community;

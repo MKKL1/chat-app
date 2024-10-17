@@ -1,6 +1,6 @@
 package com.szampchat.server.role.entity;
 
-import com.szampchat.server.permission.data.PermissionOverrides;
+import com.szampchat.server.permission.data.PermissionOverwrites;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +21,5 @@ public class ChannelRole {
     private Long channelId;
 
     @Column("permission")
-    private PermissionOverrides permissionOverrides;
+    private PermissionOverwrites permissionOverwrites;
 }

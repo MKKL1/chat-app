@@ -4,21 +4,32 @@ import lombok.Getter;
 
 @Getter
 public enum PermissionFlag {
-    ADMINISTRATOR(0),
-    ROLE_MODIFY(1),
-    INVITE_CREATE(2),
-    CHANNEL_CREATE(3),
-    CHANNEL_MODIFY(4),
-    MESSAGE_CREATE(5),
-    MESSAGE_DELETE(6),
-    REACTION_CREATE(7);
+    ADMINISTRATOR(0, false),
+    ROLE_MODIFY(1, false),
+    INVITE_CREATE(2, false),
+    CHANNEL_CREATE(3, true),
+    CHANNEL_MODIFY(4, true),
+    MESSAGE_CREATE(5, true),
+    MESSAGE_DELETE(6, true),
+    REACTION_CREATE(7, true);
 
     final byte offset;
-    PermissionFlag(byte offset) {
-        this.offset = offset;
+    final boolean channelOverwrite;
+
+    PermissionFlag(int offset, boolean channel) {
+        this.offset = (byte) offset;
+        this.channelOverwrite = channel;
     }
 
-    PermissionFlag(int offset) {
-        this.offset = (byte) offset;
+    /**
+     * @return 1 - channel can overwrite this permission
+     */
+    public static int getChannelOverwriteMask() {
+        int mask = 0;
+        for (PermissionFlag permissionFlag : PermissionFlag.values()) {
+            if(permissionFlag.channelOverwrite)
+                mask |= 1 << permissionFlag.offset;
+        }
+        return mask;
     }
 }
