@@ -1,25 +1,21 @@
 package com.szampchat.server.upload;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-
-@RestController()
+@RestController
 @AllArgsConstructor
-@Slf4j
 public class FileController {
 
     private final FileStorageService fileStorageService;
 
-    @PostMapping("/files")
-    public Mono<String> uploadFile(@RequestPart("file") FilePart file){
-        return fileStorageService.save(file, FilePath.AVATAR);
+    @GetMapping("/file/{filepath}")
+    public ResponseEntity<Resource> getFile(@PathVariable String filepath){
+        return fileStorageService.getFile(filepath);
     }
 
 }

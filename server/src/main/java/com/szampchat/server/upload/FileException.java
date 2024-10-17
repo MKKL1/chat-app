@@ -5,4 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "File not found")
 public class FileException extends Exception{
+    public FileException(String message){
+        super(message);
+    }
 }

@@ -89,7 +89,7 @@ export class CreateCommunityComponent implements OnInit{
   private createCommunity(){
     // todo send also image
     if(typeof this.communityForm.value.name === 'string'){
-      this.communityService.createCommunity({name: this.communityForm.value.name});
+      this.communityService.createCommunity({name: this.communityForm.value.name}, this.file);
     }
     this.dialogRef.close();
   }

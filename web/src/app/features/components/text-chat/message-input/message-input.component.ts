@@ -71,7 +71,7 @@ export class MessageInputComponent {
       message.gifLink = this.selectedGif();
     }
 
-    this.messageService.sendMessage(message);
+    this.messageService.sendMessage(message, this.selectedFile());
 
     this.text.set('');
     this.selectedGif.set('');

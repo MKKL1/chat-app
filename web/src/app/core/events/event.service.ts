@@ -4,6 +4,7 @@ import {MessageStore} from "../../features/store/message/message.store";
 import {EventHandler} from "./event.handler";
 import {Message} from "../../features/models/message";
 import {RsocketConnection} from "./rsocket.connection";
+import {environment} from "../../../environment";
 
 @Injectable({
   providedIn: 'root'
@@ -77,6 +78,12 @@ export class EventService {
     const handler = new EventHandler();
 
     handler.add('MESSAGE_CREATE_EVENT', (data: Message) => {
+      console.log(data);
+      // modifying path so it can be sent to api
+      data.attachments = data.attachments.map(attachment => {
+        attachment.path = environment.api + "/" + attachment.path;
+        return attachment;
+      });
       this.messageStore.add(data);
     });
 

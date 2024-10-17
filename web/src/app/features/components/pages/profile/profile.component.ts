@@ -54,6 +54,7 @@ export class ProfileComponent implements OnInit{
     this.username.set(this.keycloakService.getUsername());
     this.userDescription.set(this.userService.getUser().description ?? '');
     this.imageUrl.set(this.userService.getUser().imageUrl ?? '');
+    console.log(this.imageUrl());
   }
 
   editAvatar(){

@@ -2,10 +2,11 @@ package com.szampchat.server.message;
 
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.message.dto.EditMessageDTO;
 import com.szampchat.server.message.dto.FetchMessagesDTO;
+import com.szampchat.server.message.dto.MessageAttachmentDTO;
 import com.szampchat.server.message.dto.MessageCreateDTO;
 import com.szampchat.server.message.dto.MessageDTO;
+import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.message.exception.MessageNotFoundException;
@@ -14,17 +15,20 @@ import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
 import com.szampchat.server.message.repository.ReactionRepository;
 import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FileStorageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Limit;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 @Service
 @Slf4j
@@ -37,6 +41,7 @@ public class MessageService {
     private final ModelMapper modelMapper;
     private final Snowflake snowflake;
     private final EventSink eventSender;
+    private final FileStorageService fileStorageService;
 
     //Can't cache as it requires current user id
     //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
@@ -54,24 +59,56 @@ public class MessageService {
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
-    public Mono<Message> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId){
-        Message message = modelMapper.map(createMessage, Message.class);
-        message.setId(snowflake.nextId());
-        message.setUser(userId);
-        message.setChannel(channelId);
-        MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+    public Mono<MessageDTO> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId, FilePart file) {
+        // generating snowflake for message
+        Long messageId = snowflake.nextId();
 
-        // publishing event
-        eventSender.publish(MessageCreateEvent.builder()
-                .data(messageDTO)
-                .recipient(Recipient.builder()
+        // creating message object
+        Mono<Message> createMessageMono = Mono.fromSupplier(() -> {
+            Message message = modelMapper.map(createMessage, Message.class);
+            message.setId(messageId);
+            message.setUser(userId);
+            message.setChannel(channelId);
+            return message;
+        });
+
+        // saving message
+        return createMessageMono.flatMap(messageRepository::save)
+            .flatMap(savedMessage -> {
+                MessageDTO messageDTO = modelMapper.map(savedMessage, MessageDTO.class);
+
+                // checking if file is attached and saving it
+                if (file != null) {
+                    return fileStorageService.save(file, FilePath.MESSAGE)
+                        .flatMap(filePath -> {
+                            MessageAttachment attachment = MessageAttachment.builder()
+                                .message(savedMessage.getId())
+                                .name(file.filename())
+                                .channel(channelId)
+                                .path(filePath)
+                                .size(0)
+                                .build();
+                            return messageAttachmentRepository.save(attachment)
+                                .flatMap(messageAttachment -> {
+                                    messageDTO.setAttachments(List.of(modelMapper.map(messageAttachment, MessageAttachmentDTO.class)));
+                                    return Mono.just(messageDTO);
+                                });
+                        });
+                } else {
+                    return Mono.just(messageDTO);
+                }
+            })
+            // sending message to listening users
+            // TODO send path to saved file
+            .doOnSuccess(savedMessageDTO -> {
+                eventSender.publish(MessageCreateEvent.builder()
+                    .data(savedMessageDTO)
+                    .recipient(Recipient.builder()
                         .context(Recipient.Context.COMMUNITY)
                         .id(createMessage.getCommunityId())
                         .build())
-                .build());
-
-        // saving in db
-        return messageRepository.save(message);
+                    .build());
+            });
     }
 
     public Mono<Message> getMessage(Long messageId, Long channelId) {
@@ -94,11 +131,15 @@ public class MessageService {
     public Mono<Void> deleteMessage(Long messageId, Long channelId, Long userId){
         return getMessage(messageId, channelId)
             .flatMap(message -> {
+                // TODO find attachment and delete it
+                // deleting attached file
+
 
                 //TODO check in pre authorize
                 if(!Objects.equals(message.getUser(), userId)){
                     return Mono.error(new Exception("Message doesn't belong to user"));
                 }
+
 
                 return messageRepository.deleteById(new MessageId(messageId, channelId));
             });

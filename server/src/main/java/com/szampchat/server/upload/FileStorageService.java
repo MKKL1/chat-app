@@ -1,5 +1,11 @@
 package com.szampchat.server.upload;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -23,6 +29,26 @@ public class FileStorageService {
             throw new RuntimeException(e);
         }
     }
+
+    public ResponseEntity<Resource> getFile(String path){
+        try {
+            Path filePath = Paths.get(path);
+            File file = filePath.toFile();
+
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            Resource resource = new FileSystemResource(file);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     public Mono<String> save(FilePart file, FilePath path){
         return Mono.fromCallable(() -> {
             String filePath = switch(path) {

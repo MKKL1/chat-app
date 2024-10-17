@@ -46,6 +46,7 @@ export class CommunitiesListComponent implements OnInit {
   }
 
   get communities$(){
+    console.log(this.communityQuery.getAll());
     return this.communityQuery.selectAll();
   }
 

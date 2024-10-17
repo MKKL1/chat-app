@@ -66,7 +66,7 @@ export class UserService {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.http.post('http://localhost:8081/api/files', formData).subscribe({
+    this.http.patch('http://localhost:8081/api/users/avatar', formData).subscribe({
       next: (response) => {
         console.log('Plik przesłany pomyślnie!', response);
       },

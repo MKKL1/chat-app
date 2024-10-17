@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -74,8 +75,8 @@ public class UserController {
     @Operation(summary = "Edit avatar? TODO")
 
     @PatchMapping("/users/avatar")
-    public Mono<UserDTO> editAvatar(){
-        return Mono.empty();
+    public Mono<UserDTO> editAvatar(@RequestPart("file") FilePart file, CurrentUser user){
+        return userService.editAvatar(file, user.getUserId());
     }
 
 

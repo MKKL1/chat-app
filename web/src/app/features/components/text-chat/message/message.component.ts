@@ -53,6 +53,8 @@ export class MessageComponent implements OnInit{
   }
 
   ngOnInit() {
+    console.log(this.message);
+
     if(this.message.userId === this.userId){
       this.fromClient.set(true);
     }

@@ -2,7 +2,7 @@ import {Injectable, OnInit} from '@angular/core';
 import {Message} from "../models/message";
 import {MessageStore} from "../store/message/message.store";
 import {CreateMessageDto} from "../models/create.message.dto";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 
@@ -35,27 +35,22 @@ export class MessageService{
 
   // we only want to send communityId, channelId and message text
   sendMessage(message: CreateMessageDto, file?: File | null){
-    // todo send file and save it on backend
-    // faking creating message
-    // const message: Message = {
-    //   channelId: messageDTO.channelId,
-    //   edited: false,
-    //   gifPath: "",
-    //   id: this.idCounter.toString(),
-    //   messageAttachment: undefined,
-    //   reactions: [],
-    //   respondsTo: "",
-    //   text: messageDTO.text,
-    //   updatedAt: new Date(),
-    //   userId: messageDTO.userId
-    // };
-
+    const formData = new FormData();
     message.communityId = this.communityId;
+    formData.append('message', new Blob([JSON.stringify(message)], { type: 'application/json' }));
+
+    if(file){
+      formData.append('file', file, file.name);
+    }
 
     const channelId = this.channelQuery.getActiveId();
 
     // Message don't have to be added to store, because rsocket is already listening for new messages
-    this.http.post(this.api + `${channelId}/messages`, message).subscribe(res => {
+    this.http.post(this.api + `${channelId}/messages`, formData, {
+      headers: new HttpHeaders({
+        'enctype': 'multipart/form-data'
+      })
+    }).subscribe(res => {
       //console.log(res);
     });
   }
@@ -69,7 +64,8 @@ export class MessageService{
   }
 
   deleteMessage(id: string){
-    this.http.delete(this.api + `${id}/messages`).subscribe(res => {
+    const channelId = this.channelQuery.getActiveId();
+    this.http.delete(this.api + `${channelId}/messages/${id}`).subscribe(res => {
       this.messageStore.remove(id);
     });
   }
