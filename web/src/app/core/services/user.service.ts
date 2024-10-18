@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {User} from "../../features/models/user";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, tap} from "rxjs";
 import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
@@ -12,24 +12,25 @@ export class UserService {
   private readonly api: string = environment.api + "users";
   private readonly errorStatus: number = 419;
 
-  //private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>({description: "", id: 0, imageUrl: "", username: ""});
-  private user: User = {
+  private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>({
     id: '',
     username: "",
     description: "",
     imageUrl: "",
-  };
+  });
+
+  public user$: Observable<User> = this.userSubject.asObservable();
 
   constructor(private http: HttpClient, private keycloakService: KeycloakService) {
   }
 
   public getUser(): User {
-    return this.user;
+    return this.userSubject.value;
   }
 
   public setUser(user: User): void {
-    console.log(user);
-    this.user = user;
+    user.imageUrl = environment.api + "file/" + user.imageUrl;
+    this.userSubject.next(user);
   }
 
   // why it's fetching sub id instead of name??
@@ -61,19 +62,15 @@ export class UserService {
     return this.http.patch<User>(this.api, {description: description});
   }
 
-  // todo implement when handling files on backend will be ready
-  editAvatar(file: File){
+  editAvatar(file: File) {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.http.patch('http://localhost:8081/api/users/avatar', formData).subscribe({
-      next: (response) => {
-        console.log('Plik przesłany pomyślnie!', response);
-      },
-      error: (error) => {
-        console.error('Wystąpił błąd przy przesyłaniu pliku:', error);
-      },
-    });
+    return this.http.patch(this.api + "/avatar", formData).pipe(
+      tap((response) => {
+        this.setUser(<User>response);
+      })
+    );
   }
 
   deleteAccount(){

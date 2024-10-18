@@ -76,7 +76,6 @@ public class UserService {
     Mono<UserDTO> editAvatar(FilePart file, Long userId){
         return userRepository.findById(userId)
             .flatMap(user -> {
-                log.info(user.getImageUrl());
                 if(user.getImageUrl() != null){
                     try {
                         fileStorageService.delete(user.getImageUrl());

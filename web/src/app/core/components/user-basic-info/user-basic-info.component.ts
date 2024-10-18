@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {AvatarComponent} from "../../../shared/ui/avatar/avatar.component";
+import {User} from "../../../features/models/user";
 
 @Component({
   selector: 'app-user-basic-info',
@@ -11,6 +12,5 @@ import {AvatarComponent} from "../../../shared/ui/avatar/avatar.component";
   styleUrl: './user-basic-info.component.scss'
 })
 export class UserBasicInfoComponent {
-  @Input() username: string = "Username";
-  image: string | null = null;
+  @Input() user: User;
 }

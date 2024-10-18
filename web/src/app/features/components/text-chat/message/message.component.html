@@ -8,8 +8,8 @@
     {'flex-direction': 'row-reverse'}
     : {'flex-direction': 'row'}">
     <div class="user-info-container">
-      <app-avatar></app-avatar>
-      <app-user-basic-info [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
+      <app-avatar [imagePath]="imagePath"></app-avatar>
+      <app-user-basic-info [user]="user" [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
       </app-user-basic-info>
     </div>
     <div class="message-content" [ngStyle]="fromClient() ?

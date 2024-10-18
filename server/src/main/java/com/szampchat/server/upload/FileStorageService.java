@@ -15,13 +15,10 @@ import reactor.core.scheduler.Schedulers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Random;
 
 @Service
 @Slf4j
 public class FileStorageService {
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int length = 64;
     private static Snowflake snowflake;
 
     FileStorageService(Snowflake snowflake){
@@ -74,7 +71,7 @@ public class FileStorageService {
             return Paths.get(
                 "uploads",
                 filePath,
-                generateRandomName() + filename.substring(dotIndex).toLowerCase());
+                snowflake.nextId() + filename.substring(dotIndex).toLowerCase());
             })
             .doOnNext(uploadPath -> {
                 try {
@@ -90,7 +87,7 @@ public class FileStorageService {
     }
 
     public void delete(String filePath) throws FileSystemException {
-        File file = new File(filePath);
+        File file = new File("uploads", filePath);
 
         if(!file.exists()){
             throw new FileSystemException("File doesn't exist");
@@ -104,17 +101,6 @@ public class FileStorageService {
 
     public void deleteAll(){
         FileSystemUtils.deleteRecursively(Paths.get("uploads").toFile());
-    }
-
-    // TODO use snowflake or uuid
-    private String generateRandomName(){
-        var random = new Random();
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            int randomIndex = random.nextInt(CHARACTERS.length());
-            sb.append(CHARACTERS.charAt(randomIndex));
-        }
-        return sb.toString();
     }
 
 }

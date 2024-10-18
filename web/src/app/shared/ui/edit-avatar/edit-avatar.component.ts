@@ -48,7 +48,9 @@ export class EditAvatarComponent {
 
   uploadNewPicture(){
     if(this.fileToUpload()){
-      this.userService.editAvatar(this.fileToUpload()!);
+      this.userService.editAvatar(this.fileToUpload()!).subscribe(response => {
+        this.dialogRef.close();
+      });
 
     } else {
       this.snackbar.open("Before uploading you must choose your picture!",'Ok', {duration: 3000})

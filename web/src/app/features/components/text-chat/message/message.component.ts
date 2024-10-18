@@ -13,6 +13,9 @@ import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
 import {BottomSheetComponent} from "../../../../shared/ui/bottom-sheet/bottom-sheet.component";
 import {MatListModule} from "@angular/material/list";
+import {UserService} from "../../../../core/services/user.service";
+import {Subscription} from "rxjs";
+import {User} from "../../../models/user";
 
 @Component({
   selector: 'app-message',
@@ -45,11 +48,20 @@ export class MessageComponent implements OnInit{
   }>();
 
   openedOptions = signal<boolean>(false);
-
   fromClient = signal<boolean>(false);
   showReactionPicker = signal<boolean>(false);
 
-  constructor(private messageService: MessageService, private dialog: MatDialog) {
+  imagePath: string = '';
+  // TODO get user info from members store
+  user: User = {
+    id: "", username: ""
+
+  };
+
+  constructor(
+    private messageService: MessageService,
+    private dialog: MatDialog,
+    private userService: UserService) {
   }
 
   ngOnInit() {
@@ -57,6 +69,7 @@ export class MessageComponent implements OnInit{
 
     if(this.message.userId === this.userId){
       this.fromClient.set(true);
+      this.imagePath = this.userService.getUser().imageUrl!;
     }
   }
 

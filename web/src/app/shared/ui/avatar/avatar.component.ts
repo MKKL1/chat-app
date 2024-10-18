@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {MatBadge} from "@angular/material/badge";
 
 @Component({
@@ -11,7 +11,7 @@ import {MatBadge} from "@angular/material/badge";
   styleUrl: './avatar.component.scss'
 })
 export class AvatarComponent {
-  image: string | null = null;
+  @Input() imagePath: string = '';
   // TODO add status for badge color
   status: string = "";
 }
