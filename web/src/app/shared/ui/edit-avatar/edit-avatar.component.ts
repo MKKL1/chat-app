@@ -10,7 +10,7 @@ import {MatButton} from "@angular/material/button";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {UserService} from "../../../core/services/user.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {previewImage} from "../../utils/image-preview";
+import {previewImage} from "../../utils/utils";
 
 @Component({
   selector: 'app-edit-avatar',

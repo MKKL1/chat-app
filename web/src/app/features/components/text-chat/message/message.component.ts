@@ -65,8 +65,7 @@ export class MessageComponent implements OnInit{
   }
 
   ngOnInit() {
-    console.log(this.message);
-
+    // add another case when message comes from other user
     if(this.message.userId === this.userId){
       this.fromClient.set(true);
       this.imagePath = this.userService.getUser().imageUrl!;

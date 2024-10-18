@@ -1,5 +1,4 @@
 <div class="community-container">
-  <!-- Add full path of image -->
-  <img src="{{community?.imageUrl}}">
-  <h3>{{community?.name}}</h3>
+  <img src="{{community.imageUrl ? community.imageUrl : 'avatar.jpg'}}" alt="{{community.name}}">
+  <h3>{{community.name}}</h3>
 </div>

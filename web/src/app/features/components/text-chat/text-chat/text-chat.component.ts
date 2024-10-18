@@ -67,9 +67,7 @@ export class TextChatComponent implements OnInit{
 
     this.messages$ = this.messageQuery.selectAll({
       filterBy: entity => entity.channelId === this.channelQuery.getActiveId()
-    }).pipe(tap(data=> {
-      console.log(data);
-    }));
+    });
   }
 
   setResponse(event: { id: string, text: string }){

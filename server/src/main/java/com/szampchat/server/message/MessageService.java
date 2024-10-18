@@ -2,10 +2,7 @@ package com.szampchat.server.message;
 
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.message.dto.FetchMessagesDTO;
-import com.szampchat.server.message.dto.MessageAttachmentDTO;
-import com.szampchat.server.message.dto.MessageCreateDTO;
-import com.szampchat.server.message.dto.MessageDTO;
+import com.szampchat.server.message.dto.*;
 import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
@@ -37,6 +34,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final MessageAttachmentRepository messageAttachmentRepository;
+    private final MessageAttachmentService messageAttachmentService;
     private final ReactionRepository reactionRepository;
     private final ModelMapper modelMapper;
     private final Snowflake snowflake;
@@ -154,15 +152,27 @@ public class MessageService {
     }
 
     //Make it public, and allow for multiple messages to be processed
+    // I'm not sure if it should stay like this, but works for now
     Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
-        return reactionRepository.fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
-                .collectList()
-                .map(reactionPreviews -> {
-                            MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
-                            messageDTO.setAttachments(List.of());//TODO there are no attachments in test data, so skipping this for now
-                            messageDTO.setReactions(reactionPreviews);
+        Mono<List<ReactionPreviewDTO>> reactionsMono = reactionRepository
+                .fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
+                .collectList();
 
-                            return messageDTO;
-                        });
+        Mono<List<MessageAttachmentDTO>> attachmentsMono = messageAttachmentService
+                .findMessageAttachments(message.getId(), message.getChannel())
+                .collectList();
+
+        return Mono.zip(reactionsMono, attachmentsMono)
+                .map(tuple -> {
+                    List<ReactionPreviewDTO> reactionPreviews = tuple.getT1();
+                    List<MessageAttachmentDTO> attachments = tuple.getT2();
+
+
+                    MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+                    messageDTO.setAttachments(attachments);
+                    messageDTO.setReactions(reactionPreviews);
+
+                    return messageDTO;
+                });
     }
 }

@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable, tap} from "rxjs";
 import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
+import {filePathMapping} from "../../shared/utils/utils";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class UserService {
   }
 
   public setUser(user: User): void {
-    user.imageUrl = environment.api + "file/" + user.imageUrl;
+    user.imageUrl = filePathMapping(user.imageUrl!);
     this.userSubject.next(user);
   }
 

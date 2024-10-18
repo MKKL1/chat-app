@@ -3,7 +3,7 @@
 <div class="message-container" [ngStyle]="fromClient() ?
   {'align-items': 'flex-end'}
   : {'align-items': 'flex-start'}">
-<!--  <p>user {{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>-->
+  <p>{{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>
   <div class="message-wrapper" [ngStyle]="fromClient() ?
     {'flex-direction': 'row-reverse'}
     : {'flex-direction': 'row'}">
@@ -20,7 +20,9 @@
         <p>Responding to {{message.respondsToMessage}}</p>
       }
       @for(attachment of message.attachments; track attachment.id){
-        <img src="{{attachment.path}}">
+        <div>
+          <img src="{{attachment.path}}">
+        </div>
       }
       <p class="message-text">{{message.text}}</p>
       @if(message.gifLink !== ''){
