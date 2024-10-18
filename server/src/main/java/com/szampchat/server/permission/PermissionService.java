@@ -4,6 +4,7 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.service.CommunityService;
+import com.szampchat.server.permission.data.PermissionContext;
 import com.szampchat.server.permission.repository.PermissionRepository;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
-@Service
+@Service("permissionService")
 public class PermissionService {
     private final PermissionRepository permissionRepository;
     private final ChannelService channelService;

@@ -22,7 +22,6 @@ public class CommunityMemberService {
     private final CustomPrincipalProvider customPrincipalProvider;
     private final UserService userService;
 
-    @Deprecated
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
     }
@@ -33,7 +32,6 @@ public class CommunityMemberService {
                 .onErrorReturn(false);
     }
 
-    @Deprecated
     public Mono<Boolean> isNotMember(Long communityId, Long userId) {
         return isMember(communityId, userId).map(val -> !val);
     }

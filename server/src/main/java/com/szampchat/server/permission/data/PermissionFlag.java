@@ -2,6 +2,7 @@ package com.szampchat.server.permission.data;
 
 import lombok.Getter;
 
+//TODO It doesn't have to be enum
 @Getter
 public enum PermissionFlag {
     ADMINISTRATOR(0, false),

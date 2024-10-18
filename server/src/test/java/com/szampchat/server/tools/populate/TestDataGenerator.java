@@ -190,13 +190,13 @@ public class TestDataGenerator {
             assertThat(savedChannel.getCommunityId()).isEqualTo(community.getId());
 
             for (Role role : pickNRandom(roles, 2)) {
-                PermissionOverwrites permissionOverwrites = new PermissionOverwrites(0);
+                PermissionOverwrites permissionOverwrites = new PermissionOverwrites();
                 permissionOverwrites.allow(PermissionContext.CHANNEL, PermissionFlag.CHANNEL_CREATE, PermissionFlag.REACTION_CREATE);
 
                 channelRoleRepository.save(ChannelRole.builder()
                         .channelId(savedChannel.getId())
                         .roleId(role.getId())
-                        .permissionOverwrites(new PermissionOverwrites(5))
+                        .permissionOverwrites(permissionOverwrites)
                         .build()
                 ).block();
             }

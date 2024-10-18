@@ -1,13 +1,12 @@
 package com.szampchat.server;
 
+import com.szampchat.server.auth.AuthorizationManagerFactory;
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -35,8 +34,10 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig {
 
-    @Autowired
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
+    private final AuthorizationManagerFactory authorizationManagerFactory;
+
+
 
     private static final String[] WHITELIST = {
             "/v3/api-docs",
@@ -64,10 +65,10 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-//                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
-                        .anyExchange().authenticated())
+                        .anyExchange().access(authorizationManagerFactory)
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(customJwtAuthenticationConverter)
