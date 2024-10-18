@@ -63,22 +63,6 @@ public class CommunityController {
         return communityService.getFullCommunityInfo(communityId);
     }
 
-    //TODO remove?
-    //Maybe instead of dozens of small request it will be better to make
-    //huge request which will get all data about community?
-//    @GetMapping("/{communityId}/members")
-//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
-//    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
-//        return communityMemberService.getCommunityMembersWithRoles(communityId);
-//    }
-
-    //TODO remove?
-    //only for testing
-//    @PostMapping("/{communityId}")
-//    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
-//        return communityMemberService.create(communityId, currentUser.getUserId());
-//    }
-
     //TODO DTO
     //TODO can be protected by oauth scope
     @ApiResponse(responseCode = "200")
@@ -131,7 +115,7 @@ public class CommunityController {
     @PostMapping()
     public Mono<Community> createCommunity(
             @RequestPart("community") CommunityCreateDTO community,
-            @RequestPart("file") FilePart file,
+            @RequestPart(value = "file", required = false) FilePart file,
             CurrentUser user) {
         return communityService.save(community, file, user.getUserId());
     }

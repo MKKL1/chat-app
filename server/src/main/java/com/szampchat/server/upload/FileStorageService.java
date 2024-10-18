@@ -1,10 +1,10 @@
 package com.szampchat.server.upload;
 
+import com.szampchat.server.snowflake.Snowflake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -18,34 +18,45 @@ import java.nio.file.*;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class FileStorageService {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int length = 64;
+    private static Snowflake snowflake;
+
+    FileStorageService(Snowflake snowflake){
+        this.snowflake = snowflake;
+    }
 
     public void init(){
         try{
-            Files.createDirectories(Paths.get("uploads"));
+            Files.createDirectories(Paths.get("uploads/"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ResponseEntity<Resource> getFile(String path){
+    public ResponseEntity<?> getFile(String filename){
         try {
-            Path filePath = Paths.get(path);
+            String currentDirectory = System.getProperty("user.dir");
+            Path filePath = Paths.get(currentDirectory, "uploads", filename);
             File file = filePath.toFile();
 
-            if (!file.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+            // checking if file exists
+            if (file.exists() && file.isFile()) {
+                // getting file
+                FileSystemResource resource = new FileSystemResource(file);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
 
-            Resource resource = new FileSystemResource(file);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(resource);
+                // returning file
+                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+            } else {
+                // Status if file doesn't exist
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,7 +85,7 @@ public class FileStorageService {
             })
             .subscribeOn(Schedulers.boundedElastic())
             .flatMap(uploadPath -> file.transferTo(uploadPath)
-                .then(Mono.just(uploadPath.toString())))
+                .then(Mono.just(uploadPath.subpath(1, uploadPath.getNameCount()).toString())))
             .onErrorMap(e -> new RuntimeException("File saving failed: " + e.getMessage()));
     }
 
@@ -95,6 +106,7 @@ public class FileStorageService {
         FileSystemUtils.deleteRecursively(Paths.get("uploads").toFile());
     }
 
+    // TODO use snowflake or uuid
     private String generateRandomName(){
         var random = new Random();
         StringBuilder sb = new StringBuilder(length);

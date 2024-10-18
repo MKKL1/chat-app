@@ -38,7 +38,7 @@ public class UserService {
 
     public Mono<UserDTO> findUserDTO(Long userId) {
         return findUser(userId)
-                .map(user -> modelMapper.map(user, UserDTO.class));
+            .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     //easy to cache, will practically never change

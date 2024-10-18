@@ -29,7 +29,6 @@ import static com.szampchat.server.shared.docs.DocsProperties.RESPONSE_401;
 @RestController
 public class UserController {
     private final UserService userService;
-    private final ModelMapper modelMapper;
 
     @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
@@ -39,8 +38,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public Mono<UserDTO> getMe(CurrentUser currentUser) {
-        //TODO fix this, currentUser doesn't hold info
-        return Mono.fromCallable(() -> modelMapper.map(currentUser, UserDTO.class));
+        return userService.findUserDTO(currentUser.getUserId());
     }
 
 

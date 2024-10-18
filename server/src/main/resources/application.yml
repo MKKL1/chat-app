@@ -1,6 +1,10 @@
 spring:
   application:
     name: szampchat-server
+  mvc:
+    static-path-pattern=/static/**:
+    pathmatch:
+      matching-strategy=ant-path-matcher:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/chat
     username: root

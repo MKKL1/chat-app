@@ -23,6 +23,7 @@ public class InvitationService {
 
     // Link is create without domain name
     // I'm not sure if it should be added here or at the frontend
+    // TODO UUID instead of
     public Mono<InvitationResponseDTO> createInvitation(Long id, Integer days){
         Invitation invitation = Invitation
                 .builder()

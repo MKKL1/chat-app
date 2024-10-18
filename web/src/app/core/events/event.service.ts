@@ -80,10 +80,12 @@ export class EventService {
     handler.add('MESSAGE_CREATE_EVENT', (data: Message) => {
       console.log(data);
       // modifying path so it can be sent to api
-      data.attachments = data.attachments.map(attachment => {
-        attachment.path = environment.api + "/" + attachment.path;
-        return attachment;
-      });
+      if(data.attachments){
+        data.attachments = data.attachments.map(attachment => {
+          attachment.path = environment.api + "/" + attachment.path;
+          return attachment;
+        });
+      }
       this.messageStore.add(data);
     });
 
