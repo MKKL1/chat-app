@@ -1,8 +1,11 @@
 package com.szampchat.server;
 
+import com.szampchat.server.auth.AuthorizationFunctionFactory;
 import com.szampchat.server.auth.AuthorizationManagerFactory;
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
+import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.permission.data.PermissionFlag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +38,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
-    private final AuthorizationManagerFactory authorizationManagerFactory;
+    private final AuthorizationManagerFactory authMan;
+    private final AuthorizationFunctionFactory authFunc;
 
 
 
@@ -67,7 +71,11 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
-                        .anyExchange().access(authorizationManagerFactory)
+                        .pathMatchers(HttpMethod.POST, "/api/channels/{communityId}")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
+                        .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.MESSAGE_CREATE))
+                        .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

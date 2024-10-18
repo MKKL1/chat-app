@@ -20,27 +20,14 @@ public class AuthorizationFunctionFactory {
     public final AuthorizationMethod isParticipant = new AuthorizationMethod() {
         @Override
         public Mono<Boolean> apply(Mono<CurrentUser> currentUserMono, AuthorizationContext context) {
-            return currentUserMono.flatMap(user -> {
-                Object channelIdObject = context.getVariables().get("channelId");
-                if(!(channelIdObject instanceof Long)) {
-                    return Mono.error(new IllegalArgumentException());
-                }
-                return channelService.isParticipant((Long) channelIdObject, user.getUserId());
-            });
-
+            return currentUserMono.flatMap(user -> channelService.isParticipant(AuthorizationContextExtractor.getChannelId(context), user.getUserId()));
         }
     };
 
     public final AuthorizationMethod isMember = new AuthorizationMethod() {
         @Override
         public Mono<Boolean> apply(Mono<CurrentUser> currentUserMono, AuthorizationContext context) {
-            return currentUserMono.flatMap(user -> {
-                Object communityIdObject = context.getVariables().get("communityId");
-                if(!(communityIdObject instanceof Long)) {
-                    return Mono.error(new IllegalArgumentException());
-                }
-                return communityMemberService.isMember((Long) communityIdObject, user.getUserId());
-            });
+            return currentUserMono.flatMap(user -> communityMemberService.isMember(AuthorizationContextExtractor.getCommunityId(context), user.getUserId()));
         }
     };
 
@@ -49,26 +36,14 @@ public class AuthorizationFunctionFactory {
     public final AuthorizationMethod isOwner = new AuthorizationMethod() {
         @Override
         public Mono<Boolean> apply(Mono<CurrentUser> currentUserMono, AuthorizationContext context) {
-            return currentUserMono.flatMap(user -> {
-                Object communityIdObject = context.getVariables().get("communityId");
-                if(!(communityIdObject instanceof Long)) {
-                    return Mono.error(new IllegalArgumentException());
-                }
-                return communityService.isOwner((Long) communityIdObject, user.getUserId());
-            });
+            return currentUserMono.flatMap(user -> communityService.isOwner(AuthorizationContextExtractor.getCommunityId(context), user.getUserId()));
         }
     };
 
     public final AuthorizationMethod hasAccessToRoleInfo = new AuthorizationMethod() {
         @Override
         public Mono<Boolean> apply(Mono<CurrentUser> currentUserMono, AuthorizationContext context) {
-            return currentUserMono.flatMap(user -> {
-                Object roleIdObject = context.getVariables().get("roleId");
-                if(!(roleIdObject instanceof Long)) {
-                    return Mono.error(new IllegalArgumentException());
-                }
-                return roleService.hasAccessToRoleInfo((Long) roleIdObject, user.getUserId());
-            });
+            return currentUserMono.flatMap(user -> roleService.hasAccessToRoleInfo(AuthorizationContextExtractor.getRoleId(context), user.getUserId()));
         }
     };
 }

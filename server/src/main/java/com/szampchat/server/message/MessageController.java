@@ -52,7 +52,7 @@ public class MessageController {
     @Operation(summary = "Create message")
 
     @PostMapping("/channels/{channelId}/messages")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId) && @permissionService.hasPermissionInChannel(#channelId, PermissionFlag.MESSAGE_CREATE)")
+//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId) && @permissionService.hasPermissionInChannel(#channelId, PermissionFlag.MESSAGE_CREATE)")
     public Mono<Message> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
         return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId);
     }
