@@ -1,30 +1,38 @@
 package com.szampchat.server.auth;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
+import org.springframework.web.server.ResponseStatusException;
 
 public class AuthorizationContextExtractor {
 
-    public static Long getChannelId(AuthorizationContext context) {
+    public static long getChannelId(AuthorizationContext context) {
         return get(context, "channelId");
     }
 
-    public static Long getCommunityId(AuthorizationContext context) {
+    public static long getCommunityId(AuthorizationContext context) {
         return get(context, "communityId");
     }
 
-    public static Long getRoleId(AuthorizationContext context) {
+    public static long getRoleId(AuthorizationContext context) {
         return get(context, "roleId");
     }
 
-    private static Long get(AuthorizationContext context, String variable) {
+    private static long get(AuthorizationContext context, String variable) {
         Object varObject = context.getVariables().get(variable);
 
         if(varObject == null)
-            throw new NullPointerException("Path variable '" + variable + "' not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing " + variable);
 
         if(!(varObject instanceof String varStr))
-            throw new IllegalArgumentException(variable + " not instance of String");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid " + variable);
 
-        return Long.parseLong(varStr.trim());
+        long longId;
+        try {
+            longId = Long.parseLong(varStr.trim());
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid " + variable);
+        }
+        return longId;
     }
 }

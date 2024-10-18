@@ -6,4 +6,7 @@ import reactor.core.publisher.Mono;
 @FunctionalInterface
 public interface AuthorizationMethod {
     Mono<Boolean> apply(Mono<CurrentUser> currentUserMono, AuthorizationContext context);
+    default String logMessage() {
+        return "";
+    }
 }

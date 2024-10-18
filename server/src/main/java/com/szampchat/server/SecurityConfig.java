@@ -75,7 +75,7 @@ public class SecurityConfig {
                             .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
                         .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.MESSAGE_CREATE))
-                        .anyExchange().denyAll()
+                        .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

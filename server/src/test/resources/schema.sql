@@ -23,7 +23,8 @@ create table communities
     owner_id bigint not null
         constraint fk_communities_on_user
             references users on delete cascade ,
-    image_url varchar(255)
+    image_url varchar(255),
+    base_permissions int not null
 );
 
 create table channels
