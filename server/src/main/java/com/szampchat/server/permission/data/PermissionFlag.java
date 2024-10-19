@@ -37,4 +37,12 @@ public enum PermissionFlag {
         }
         return mask;
     }
+
+    public static int combineFlags(PermissionFlag... permissionFlags) {
+        int mask = 0;
+        for (PermissionFlag permissionFlag : permissionFlags) {
+            mask |= 1 << permissionFlag.offset;
+        }
+        return mask;
+    }
 }

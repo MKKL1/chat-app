@@ -15,6 +15,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 @AllArgsConstructor
 @Service("permissionService")
 public class PermissionService {
@@ -24,33 +27,27 @@ public class PermissionService {
     private final RoleService roleService;
     private final CustomPrincipalProvider customPrincipalProvider;
 
-    //TODO can be simplified
     public Mono<Boolean> hasPermissionInCommunity(Long communityId, int permissionMask) {
-        return customPrincipalProvider.getPrincipal()
-                .map(CurrentUser::getUserId)
-                .flatMap(userId -> getUserPermissionsForCommunity(communityId, userId))
-                .map(permissions -> permissions.has(permissionMask));
+        return hasPermissionIn(userId -> getUserPermissionsForCommunity(communityId, userId), permissionMask);
     }
 
     public Mono<Boolean> hasPermissionInCommunity(Long communityId, PermissionFlag... permissionFlags) {
-        return customPrincipalProvider.getPrincipal()
-                .map(CurrentUser::getUserId)
-                .flatMap(userId -> getUserPermissionsForCommunity(communityId, userId))
-                .map(permissions -> permissions.has(permissionFlags));
+        return hasPermissionInCommunity(communityId, PermissionFlag.combineFlags(permissionFlags));
     }
 
     public Mono<Boolean> hasPermissionInChannel(Long channelId, int permissionMask) {
-        return customPrincipalProvider.getPrincipal()
-                .map(CurrentUser::getUserId)
-                .flatMap(userId -> getUserPermissionsForChannel(channelId, userId))
-                .map(permissions -> permissions.has(permissionMask));
+        return hasPermissionIn(userId -> getUserPermissionsForChannel(channelId, userId), permissionMask);
     }
 
     public Mono<Boolean> hasPermissionInChannel(Long channelId, PermissionFlag... permissionFlags) {
+        return hasPermissionInChannel(channelId, PermissionFlag.combineFlags(permissionFlags));
+    }
+
+    private Mono<Boolean> hasPermissionIn(Function<Long, Mono<Permissions>> func, int permissionMask) {
         return customPrincipalProvider.getPrincipal()
                 .map(CurrentUser::getUserId)
-                .flatMap(userId -> getUserPermissionsForChannel(channelId, userId))
-                .map(permissions -> permissions.has(permissionFlags));
+                .flatMap(func)
+                .map(permissions -> permissions.has(permissionMask));
     }
 
 
