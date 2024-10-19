@@ -13,17 +13,21 @@ import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.shared.CustomPrincipalProvider;
+import com.szampchat.server.upload.FileException;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.UserService;
+import com.szampchat.server.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.FileSystemException;
 import java.util.List;
 
 @Slf4j
@@ -112,18 +116,53 @@ public class CommunityService {
 
     }
 
-    // TODO edit image
-    public Mono<Community> editCommunity(Long id, Community community){
+    // from chat
+    public Mono<CommunityDTO> editCommunity(Long id, Community communityToUpdate, FilePart file){
         return communityRepository.findById(id)
             .flatMap(existingCommunity -> {
-                existingCommunity = community;
-               return communityRepository.save(existingCommunity);
+                if (existingCommunity.getImageUrl() != null) {
+                    try {
+                        return fileStorageService.delete(existingCommunity.getImageUrl())
+                            .onErrorMap(e -> new FileException("Error during deleting file: " + e.getMessage()))
+                            .then(Mono.just(existingCommunity));
+                    } catch (FileSystemException e) {
+                        return Mono.error(new FileSystemException("Cannot delete file"));
+                    }
+                } else {
+                    return Mono.just(existingCommunity);
+                }
+            })
+            .flatMap(existingCommunity -> {
+                BeanUtils.copyProperties(communityToUpdate, existingCommunity, "id", "imageUrl");
+
+                if (file != null) {
+                    return fileStorageService.save(file, FilePath.COMMUNITY)
+                        .flatMap(filepath -> {
+                            existingCommunity.setImageUrl(filepath);
+                            return communityRepository.save(existingCommunity)
+                                    .map(updatedCommunity -> modelMapper.map(updatedCommunity, CommunityDTO.class));
+                        });
+                } else {
+                    return communityRepository.save(existingCommunity)
+                            .map(updatedCommunity -> modelMapper.map(updatedCommunity, CommunityDTO.class));
+                }
             });
     }
 
-    // TODO delete image from storage
-    public Mono<Void> delete(Long id){
-        return communityRepository.deleteById(id)
-                .doOnSuccess(_ -> log.info("Deleted community by id: {}", id));
+    public Mono<Void> delete(Long id) {
+        return communityRepository.findById(id)
+            .flatMap(existingCommunity -> {
+                if (existingCommunity.getImageUrl() != null) {
+                    try {
+                        return fileStorageService.delete(existingCommunity.getImageUrl())
+                            .then(communityRepository.deleteById(id));
+                    } catch (FileSystemException e) {
+                        return Mono.error(e.getCause());
+                    }
+                } else {
+                    return communityRepository.deleteById(id)
+                        .doOnSuccess(_ -> log.info("Deleted community by id: {}", id));
+                }
+            });
     }
 }

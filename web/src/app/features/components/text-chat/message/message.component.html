@@ -19,12 +19,18 @@
       @if(message.respondsToMessage !== undefined && message.respondsToMessage !== ''){
         <p>Responding to {{message.respondsToMessage}}</p>
       }
+
+      <!--   message text   -->
+      <p class="message-text">{{message.text}}</p>
+
+      <!--   Attached files   -->
       @for(attachment of message.attachments; track attachment.id){
         <div>
           <img src="{{attachment.path}}">
         </div>
       }
-      <p class="message-text">{{message.text}}</p>
+
+      <!--   Attached gif   -->
       @if(message.gifLink !== ''){
         <div class="gif-wrapper">
           <img src="{{message.gifLink}}" alt="{{message.gifLink}}">

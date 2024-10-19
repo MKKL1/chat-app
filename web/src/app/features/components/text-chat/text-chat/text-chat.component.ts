@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
@@ -18,6 +18,9 @@ import {Observable, tap} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {UserService} from "../../../../core/services/user.service";
+import {MatButton} from "@angular/material/button";
+import {Order} from "@datorama/akita";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-text-chat',
@@ -34,7 +37,8 @@ import {UserService} from "../../../../core/services/user.service";
     GifSearchComponent,
     FadeInOutScrollDirective,
     MessageInputComponent,
-    AsyncPipe
+    AsyncPipe,
+    MatButton
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'
@@ -48,7 +52,16 @@ import {UserService} from "../../../../core/services/user.service";
 
 export class TextChatComponent implements OnInit{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
-  messages$!: Observable<Message[]>;
+
+  // rerenders template if new data arrives
+  readonly messages = toSignal(this.messageQuery.selectAll({
+    filterBy: entity => entity.channelId === this.channelQuery.getActiveId(),
+    sortBy: 'updatedAt',
+    sortByOrder: Order.ASC
+  }));
+
+  loadedAllData = signal<boolean>(false);
+
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
 
   constructor(
@@ -58,15 +71,21 @@ export class TextChatComponent implements OnInit{
     protected userService: UserService
   ) {}
 
+  // to show and hide button in proper way i need to observe all channel latest message 😔
   ngOnInit() {
     // listening to changes of channel
     this.channelQuery.selectActive().subscribe(channel => {
       this.channel = channel!;
       this.messageService.getMessages(channel?.id!);
+      this.loadedAllData.set(false);
     });
 
-    this.messages$ = this.messageQuery.selectAll({
-      filterBy: entity => entity.channelId === this.channelQuery.getActiveId()
+  }
+
+  loadMoreMessage(){
+    const lastMessageId = this.messages()?.at(0)?.id;
+    this.messageService.loadMoreMessages(this.channelQuery.getActiveId()!, lastMessageId).subscribe(isLast => {
+      this.loadedAllData.set(isLast);
     });
   }
 

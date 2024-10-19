@@ -14,14 +14,15 @@ export class MessageStore extends EntityStore<MessageState>{
 
   override akitaPreAddEntity(newEntity: Message): getEntityType<MessageState> {
     // mapping paths of files, so they can be fetched from api
-    newEntity.attachments = newEntity.attachments.map(attachment => {
-      return {
-        ...attachment,
-        path: filePathMapping(attachment.path)
-      };
-    });
-
-    console.log(snowflakeDate(newEntity.id));
+    if(newEntity.attachments){
+      newEntity.attachments = newEntity.attachments.map(attachment => {
+        return {
+          ...attachment,
+          path: filePathMapping(attachment.path)
+        };
+      });
+    }
+    
     // getting date from snowflake
     newEntity.updatedAt = snowflakeDate(newEntity.id);
 

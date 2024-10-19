@@ -20,6 +20,7 @@ export class CommunityStore extends EntityStore<CommunityState> {
 
   // setting flag so nextEntity won't be fetched again
   override akitaPreUpdateEntity(_: Readonly<getEntityType<CommunityState>>, nextEntity: any): getEntityType<CommunityState> {
+    nextEntity.imageUrl = filePathMapping(nextEntity.imageUrl);
     nextEntity.fullyFetched = true;
     return super.akitaPreUpdateEntity(_, nextEntity);
   }

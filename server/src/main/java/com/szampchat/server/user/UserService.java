@@ -97,8 +97,19 @@ public class UserService {
         return Mono.empty();
     }
 
-    // TODO delete file from storage
     Mono<Void> deleteUser(Long id){
-        return userRepository.deleteById(id);
+        return userRepository.findById(id)
+            .flatMap(existingCommunity -> {
+                if (existingCommunity.getImageUrl() != null) {
+                    try {
+                        return fileStorageService.delete(existingCommunity.getImageUrl())
+                                .then(userRepository.deleteById(id));
+                    } catch (FileSystemException e) {
+                        return Mono.error(e.getCause());
+                    }
+                } else {
+                    return userRepository.deleteById(id);
+                }
+            });
     }
 }

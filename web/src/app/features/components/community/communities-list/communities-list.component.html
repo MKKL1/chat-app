@@ -3,10 +3,18 @@
   <mat-button-toggle value="owned">Only owned</mat-button-toggle>
 </mat-button-toggle-group>
 
-
-@if(communities$ | async; as communities){
-      @for(community of communities; track community.id){
-        <app-community-card (click)="selectCommunity(community.id)" [community]="community">
-        </app-community-card>
-      }
+@if(showOnlyOwned){
+  @if(ownedCommunities$ | async; as communities){
+    @for(community of communities; track community.id){
+      <app-community-card (click)="selectCommunity(community.id)" [community]="community">
+      </app-community-card>
+    }
+  }
+} @else {
+  @if(communities$ | async; as communities){
+    @for(community of communities; track community.id){
+      <app-community-card (click)="selectCommunity(community.id)" [community]="community">
+      </app-community-card>
+    }
+  }
 }

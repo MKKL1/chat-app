@@ -5,38 +5,65 @@ import {CreateMessageDto} from "../models/create.message.dto";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
+import {Params} from "@angular/router";
+import {ID} from "@datorama/akita";
+import {MessageQuery} from "../store/message/message.query";
+import {map, Observable, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService{
-  api: string = '';
-  channelId: string = '';
-  communityId: string = '';
+  api: string = environment.api + "channels/";
+
+  limit: number = 10;
 
   constructor(
     private http: HttpClient,
     private channelQuery: TextChannelQuery,
     private messageStore: MessageStore) {
-    const channel = this.channelQuery.getActive();
-    this.channelId = channel?.id!;
-    this.communityId = channel?.communityId!;
-    this.api = environment.api + "channels/";
-    //this.api = environment.api + "channels/" + this.channelId + '/messages';
   }
 
-  // todo get only few first messages, load more later as user scroll to the top of text-chat component
-  // check if messages are cashed??
-  getMessages(channelId: string){
-    this.http.get<Message[]>(this.api + `${channelId}/messages`).subscribe(messages => {
-      this.messageStore.set(messages);
+  // for now after switching channel all message data is lost
+  getMessages(channelId: ID){
+    const params: any = {
+      limit: this.limit
+    }
+
+    this.http.get<Message[]>(this.api + `${channelId}/messages`, {
+      params
+    }).subscribe(messages => {
+        this.messageStore.set(messages);
     });
+  }
+
+  loadMoreMessages(channelId: ID, lastMessageId?: ID): Observable<boolean>{
+    const params: any = {
+      limit: this.limit
+    }
+
+    if(lastMessageId){
+      params.before = lastMessageId;
+    }
+
+    return this.http.get<Message[]>(this.api + `${channelId}/messages`, {
+      params
+    }).pipe(
+      map(messages => {
+        this.messageStore.add(messages);
+        const isLastMessage = messages.length % (this.limit - 1) === 0;
+        if(isLastMessage){
+          console.log("Koniec danych");
+        }
+        return isLastMessage;
+      })
+    );
   }
 
   // we only want to send communityId, channelId and message text
   sendMessage(message: CreateMessageDto, file?: File | null){
     const formData = new FormData();
-    message.communityId = this.communityId;
+    message.communityId = this.channelQuery.getActive()?.communityId;
     formData.append('message', new Blob([JSON.stringify(message)], { type: 'application/json' }));
 
     if(file){

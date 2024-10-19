@@ -5,6 +5,12 @@
   background: #191919;
 }
 
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .messages{
   flex: 1;
   overflow-y: auto;

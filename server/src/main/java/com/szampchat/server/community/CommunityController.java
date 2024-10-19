@@ -110,8 +110,6 @@ public class CommunityController {
                     New members can be invited using (link to other endpoints)""")
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
-    //add in form data:
-    //Key: community, Value: { "name": "My community" }
     @PostMapping()
     public Mono<Community> createCommunity(
             @RequestPart("community") CommunityCreateDTO community,
@@ -128,8 +126,11 @@ public class CommunityController {
     //Use community dto?
     @PatchMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId)")
-    public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community) {
-        return communityService.editCommunity(communityId, community);
+    public Mono<CommunityDTO> editCommunity(
+            @PathVariable Long communityId,
+            @RequestPart("community") Community community,
+            @RequestPart("file") FilePart file) {
+        return communityService.editCommunity(communityId, community, file);
     }
 
     @ApiResponse(responseCode = "204")

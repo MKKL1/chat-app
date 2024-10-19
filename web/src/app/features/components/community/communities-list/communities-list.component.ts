@@ -9,6 +9,7 @@ import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-to
 import {FormsModule} from "@angular/forms";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CommunityQuery} from "../../../store/community/community.query";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-communities-list',
@@ -38,7 +39,8 @@ export class CommunitiesListComponent implements OnInit {
 
   constructor(
     private communityService: CommunityService,
-    private communityQuery: CommunityQuery) {
+    private communityQuery: CommunityQuery,
+    private userService: UserService) {
   }
 
   ngOnInit() {
@@ -46,14 +48,14 @@ export class CommunitiesListComponent implements OnInit {
   }
 
   get communities$(){
-    console.log(this.communityQuery.getAll());
     return this.communityQuery.selectAll();
   }
 
-  // TODO implement again
-  // get ownedCommunities$(){
-  //   return this.communityService.getOwnedCommunities();
-  // }
+  get ownedCommunities$(){
+    return this.communityQuery.selectAll({
+      filterBy: entity => entity.ownerId === this.userService.getUser().id
+    });
+  }
 
   selectCommunity(id: string){
     this.communityService.fetchCommunity(id);

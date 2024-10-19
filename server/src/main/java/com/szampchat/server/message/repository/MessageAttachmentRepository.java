@@ -12,4 +12,6 @@ public interface MessageAttachmentRepository extends R2dbcRepository<MessageAtta
     //TODO
 //    Flux<MessageAttachment> fetchBulkMessageAttachmentsByMessage();
     Flux<MessageAttachmentDTO> findAllByMessageAndChannel(Long message, Long channel);
+
+    Mono<Void> deleteAllByMessage(Long message);
 }

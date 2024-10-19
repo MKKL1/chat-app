@@ -86,16 +86,20 @@ public class FileStorageService {
             .onErrorMap(e -> new RuntimeException("File saving failed: " + e.getMessage()));
     }
 
-    public void delete(String filePath) throws FileSystemException {
-        File file = new File("uploads", filePath);
+    public Mono<Void> delete(String filePath) throws FileSystemException {
+        return Mono.defer(() -> {
+            File file = new File("uploads", filePath);
 
-        if(!file.exists()){
-            throw new FileSystemException("File doesn't exist");
-        }
+            if(!file.exists()){
+                return Mono.error(new FileSystemException("File doesn't exist"));
+            }
 
-        if(!file.delete()){
-            throw new FileSystemException("Cannot delete file");
-        }
+            if(!file.delete()){
+                return Mono.error(new FileSystemException("Cannot delete file"));
+            }
+
+            return Mono.empty();
+        });
 
     }
 
