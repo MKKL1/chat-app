@@ -14,7 +14,6 @@ import {UserBasicInfoComponent} from "../../../../core/components/user-basic-inf
 import {BottomSheetComponent} from "../../../../shared/ui/bottom-sheet/bottom-sheet.component";
 import {MatListModule} from "@angular/material/list";
 import {UserService} from "../../../../core/services/user.service";
-import {Subscription} from "rxjs";
 import {User} from "../../../models/user";
 
 @Component({

@@ -67,11 +67,11 @@ export class ProfileComponent implements OnInit, OnDestroy{
     this.keycloakService.getKeycloakInstance().accountManagement();
   }
 
-  // editDescription(){
-  //   this.userService.editDescription(this.user()?.description ?? '').subscribe(user => {
-  //     console.log(user);
-  //   });
-  // }
+  editDescription(){
+    // this.userService.editDescription(this.user()?.description ?? '').subscribe(user => {
+    //   console.log(user);
+    // });
+  }
 
   logout(){
     resetStores();

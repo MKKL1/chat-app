@@ -3,13 +3,21 @@ import { ProfileComponent } from './profile.component';
 import { KeycloakService } from "keycloak-angular";
 import { UserService } from "../../../../core/services/user.service";
 import { MatDialog } from "@angular/material/dialog";
-import { of } from "rxjs";
+import {BehaviorSubject, of} from "rxjs";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 // There is a lot of stuff to add here,
 // so I will also add test later :)
 
+const mockUser = {
+  id: '1',
+  username: 'testuser',
+  imageUrl: 'testimageurl',
+  description: 'Test description'
+};
+
 const userServiceMock = {
+  user$: new BehaviorSubject(mockUser),
   editDescription: jest.fn().mockReturnValue(of({
     id: '1',
     username: 'testuser',

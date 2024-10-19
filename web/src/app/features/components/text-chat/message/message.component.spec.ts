@@ -2,11 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageComponent } from './message.component';
 import {MatDialog} from "@angular/material/dialog";
 import {MessageService} from "../../../services/message.service";
-import {Reaction} from "../../../models/reaction";
-import {MessageAttachment} from "../../../models/message.attachment";
+import {UserService} from "../../../../core/services/user.service";
 
 const messageServiceMock = {
   addReaction: jest.fn()
+};
+
+const userServiceMock = {
+  getUser: jest.fn(() =>  ({
+    id: '123',
+    username: 'test-username',
+    imageUrl: 'test-location.jpg',
+  }))
 };
 
 const messageMock = {
@@ -16,7 +23,8 @@ const messageMock = {
   userId: '420',
   edited: false,
   updatedAt: new Date(),
-  reactions: []
+  reactions: [],
+  attachments: []
 };
 
 describe('MessageComponent', () => {
@@ -28,7 +36,8 @@ describe('MessageComponent', () => {
       imports: [MessageComponent],
       providers: [
         MatDialog,
-        {provide: MessageService, useValue: messageServiceMock}
+        {provide: MessageService, useValue: messageServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     })
     .compileComponents();
