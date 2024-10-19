@@ -12,7 +12,7 @@ public interface RoleRepository extends R2dbcRepository<Role, Long> {
     Flux<Role> findRolesByCommunity(Long community);
 
     @Query("""
-        SELECT r FROM (SELECT *
+        SELECT r.* FROM (SELECT *
                              FROM roles
                              WHERE roles.community_id = :community_id) as "r"
                           JOIN user_roles as ur on r.id = ur.role_id

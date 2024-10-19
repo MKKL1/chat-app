@@ -39,13 +39,6 @@ public class AuthorizationManagerFactory {
         return (authenticationMono, context) ->
                 authenticationMono
                 .filter(Authentication::isAuthenticated)
-                        .doOnNext(auth -> {
-                            try {
-                                log.info("Auth {}", mapper.writeValueAsString(auth));
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
                 .flatMap(authentication -> preauthorize.apply(getCurrentUser(authentication), context)
                         .flatMap(authorized -> {
                             if (!authorized) {

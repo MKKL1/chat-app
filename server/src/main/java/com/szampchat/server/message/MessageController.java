@@ -39,7 +39,7 @@ public class MessageController {
     @Operation(summary = "Get channel's messages")
 
     @GetMapping("/channels/{channelId}/messages")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Flux<MessageDTO> getMessages(@PathVariable Long channelId,
                                         @ParameterObject FetchMessagesDTO fetchMessagesDTO,
                                         CurrentUser currentUser) {
@@ -67,7 +67,7 @@ public class MessageController {
     @Operation(summary = "Edit message")
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageDTO editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
         return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
     }

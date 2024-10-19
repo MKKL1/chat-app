@@ -72,7 +72,7 @@ public class ChannelController {
     @Operation(summary = "Delete channel")
 
     @DeleteMapping("/channels/{channelId}")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to delete this channel
     public Mono<Void> deleteChannel(@PathVariable Long channelId, CurrentUser currentUser) {
         return channelService.deleteChannel(channelId);

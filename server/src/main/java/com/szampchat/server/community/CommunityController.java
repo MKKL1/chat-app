@@ -41,7 +41,7 @@ public class CommunityController {
     @Operation(summary = "Get community")
 
     @GetMapping("/{communityId}")
-    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<CommunityDTO> getCommunity(@PathVariable Long communityId) {
         return communityService.findById(communityId);
     }
@@ -55,7 +55,7 @@ public class CommunityController {
                     and then updated using websocket events""")
 
     @GetMapping("/{communityId}/info")
-    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){
         return communityService.getFullCommunityInfo(communityId);
     }
@@ -97,7 +97,7 @@ public class CommunityController {
                     This invitation can then be shared with any user, who can then join given community""")
 
     @PostMapping("/{communityId}/invite")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId){
         return invitationService.createInvitation(communityId, 5);
     }
@@ -110,7 +110,7 @@ public class CommunityController {
                     This action result in expiration of invitation. (?)""")
 
     @PostMapping("/{communityId}/join")
-    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
@@ -135,7 +135,7 @@ public class CommunityController {
                     Edits community""")
     //Use community dto?
     @PatchMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community) {
         return communityService.editCommunity(communityId, community);
     }
@@ -147,7 +147,7 @@ public class CommunityController {
                     Removes community""")
 
     @DeleteMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
         return communityService.delete(communityId);
     }
