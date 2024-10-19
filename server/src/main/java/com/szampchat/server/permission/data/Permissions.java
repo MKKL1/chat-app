@@ -10,6 +10,18 @@ import lombok.Setter;
 public class Permissions {
     private int permissionData;
 
+    public Permissions() {
+        permissionData = 0;
+    }
+
+    public static Permissions allDenied() {
+        return new Permissions(0);
+    }
+
+    public static Permissions allAllowed() {
+        return new Permissions(Integer.MAX_VALUE);
+    }
+
     public boolean has(PermissionFlag permissionFlag) {
         return (permissionData | (1 << permissionFlag.getOffset())) != 0;
     }
@@ -27,19 +39,35 @@ public class Permissions {
         return has(combinedMask);
     }
 
-    public void set(PermissionFlag permissionFlag) {
+    public void allow(PermissionFlag permissionFlag) {
         permissionData |= (1 << permissionFlag.getOffset());
     }
 
-    public void set(int permissionMask) {
+    public void allow(PermissionFlag... permissionFlags) {
+        allow(PermissionFlag.combineFlags(permissionFlags));
+    }
+
+    public void allow(int permissionMask) {
         permissionData |= permissionMask;
     }
 
-    public void set(PermissionFlag... permissionFlags) {
-        int combinedMask = 0;
-        for (PermissionFlag flag : permissionFlags) {
-            combinedMask |= (1 << flag.getOffset());
-        }
-        set(combinedMask);
+    public void deny(PermissionFlag permissionFlag) {
+        permissionData &= ~(1 << permissionFlag.getOffset());
+    }
+
+    public void deny(PermissionFlag... permissionFlags) {
+        deny(PermissionFlag.combineFlags(permissionFlags));
+    }
+
+    public void deny(int permissionMask) {
+        permissionData &= ~permissionMask;
+    }
+
+    public void allowAll() {
+        permissionData = Integer.MAX_VALUE;
+    }
+
+    public void denyAll() {
+        permissionData = 0;
     }
 }

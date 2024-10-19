@@ -2,9 +2,7 @@ package com.szampchat.server.permission;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.service.CommunityService;
-import com.szampchat.server.permission.data.PermissionContext;
 import com.szampchat.server.permission.repository.PermissionRepository;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @AllArgsConstructor
 @Service("permissionService")
@@ -43,10 +40,10 @@ public class PermissionService {
         return hasPermissionInChannel(channelId, PermissionFlag.combineFlags(permissionFlags));
     }
 
-    private Mono<Boolean> hasPermissionIn(Function<Long, Mono<Permissions>> func, int permissionMask) {
+    private Mono<Boolean> hasPermissionIn(Function<Long, Mono<Permissions>> permissionCheckFunc, int permissionMask) {
         return customPrincipalProvider.getPrincipal()
                 .map(CurrentUser::getUserId)
-                .flatMap(func)
+                .flatMap(permissionCheckFunc)
                 .map(permissions -> permissions.has(permissionMask));
     }
 
@@ -54,14 +51,21 @@ public class PermissionService {
 
     public Mono<Permissions> getUserPermissionsForCommunity(Long communityId, Long userId) {
         return communityService.findById(communityId)
-                .map(CommunityDTO::getBasePermissions)//Get base permission
-                .flatMap(basePermissions ->
-                        roleService.getMemberRoles(communityId, userId)
-                                .map(Role::getPermission)//Get all permission overrides
-                                .map(permissionOverride -> permissionOverride.apply(basePermissions)) //Apply them one by one
-                                .doOnNext(basePermissions::setPermissionData) //Set new permissions to for next iteration
-                                .then(Mono.just(basePermissions)) //Return permission on finish
-                );
+                .flatMap(community -> {
+                    //If user is owner, grant all permissions
+                    if (community.getOwnerId().equals(userId)) return Mono.just(Permissions.allAllowed());
+
+                    return Mono.just(community.getBasePermissions())
+                            .flatMap(basePermissions ->
+                                    roleService.getMemberRoles(communityId, userId)
+                                            .map(Role::getPermission) // Get all permission overrides
+                                            .map(permissionOverride -> permissionOverride.apply(basePermissions)) // Apply them one by one
+                                            .doOnNext(basePermissions::setPermissionData) // Set new permissions for next iteration
+                                            .then(Mono.just(basePermissions)) // Return permission on finish
+                            );
+                })
+                //If role granted ADMIN flag, grant all permissions
+                .map(permissions -> permissions.has(PermissionFlag.ADMINISTRATOR) ? Permissions.allAllowed() : permissions);
     }
 
     public Mono<Permissions> getUserPermissionsForChannel(Long channelId, Long userId) {
@@ -76,4 +80,5 @@ public class PermissionService {
 
                                 ));
     }
+
 }
