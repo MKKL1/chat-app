@@ -12,6 +12,7 @@ import com.szampchat.server.message.repository.MessageRepository;
 import com.szampchat.server.permission.data.PermissionContext;
 import com.szampchat.server.permission.data.PermissionFlag;
 import com.szampchat.server.permission.data.PermissionOverwrites;
+import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.entity.ChannelRole;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
@@ -57,7 +58,7 @@ public class TestDataGenerator {
         return Instancio.of(Channel.class)
                 .set(field(Channel::getId), null)
                 .set(field(Channel::getCommunityId), communityId)
-                .set(field(Channel::getType), channelType.getValue())
+                .set(field(Channel::getType), channelType)
                 .create();
     }
 
@@ -83,6 +84,7 @@ public class TestDataGenerator {
         return Instancio.of(Role.class)
                 .set(field(Role::getId), null)
                 .set(field(Role::getCommunity), communityId)
+                .set(field(Role::getPermission), new PermissionOverwrites())
                 .create();
     }
 
@@ -142,6 +144,7 @@ public class TestDataGenerator {
         Community community = communityRepository.save(Instancio.of(Community.class)
                 .set(field(Community::getId), null)
                 .set(field(Community::getOwnerId), owner.getId())
+                .set(field(Community::getBasePermissions), new Permissions())
                 .create()).block();
 
         assertThat(community).isNotNull();

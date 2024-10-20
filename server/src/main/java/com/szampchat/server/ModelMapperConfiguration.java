@@ -6,12 +6,15 @@ import com.szampchat.server.permission.converters.IntToPermissionConverter;
 import com.szampchat.server.permission.converters.LongToPermOverrideConverter;
 import com.szampchat.server.permission.converters.PermOverrideToLongConverter;
 import com.szampchat.server.permission.converters.PermissionToIntConverter;
+import io.r2dbc.spi.ConnectionFactory;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
+import org.springframework.data.r2dbc.dialect.DialectResolver;
 import org.springframework.data.r2dbc.dialect.PostgresDialect;
+import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +27,9 @@ public class ModelMapperConfiguration {
     }
 
     @Bean
-    public R2dbcCustomConversions customConversions() {
+    public R2dbcCustomConversions customConversions(ConnectionFactory connectionFactory) {
+        R2dbcDialect dialect = DialectResolver.getDialect(connectionFactory);
+
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new IntToPermissionConverter());
         converters.add(new PermissionToIntConverter());
@@ -32,6 +37,7 @@ public class ModelMapperConfiguration {
         converters.add(new PermOverrideToLongConverter());
         converters.add(new ShortToChannelTypeConverter());
         converters.add(new ChannelTypeToShortConverter());
-        return R2dbcCustomConversions.of(PostgresDialect.INSTANCE, converters);
+
+        return R2dbcCustomConversions.of(dialect, converters);
     }
 }

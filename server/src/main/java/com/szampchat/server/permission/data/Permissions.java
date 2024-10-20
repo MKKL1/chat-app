@@ -11,7 +11,7 @@ public class Permissions {
     private int permissionData;
 
     public Permissions() {
-        permissionData = 0;
+        permissionData = PermissionFlag.getDefaultPermissionMask();
     }
 
     public static Permissions allDenied() {
