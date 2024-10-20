@@ -69,6 +69,7 @@ public class UserController {
         return userService.findUserDTO(userId);
     }
 
+    //TODO use one endpoint to edit all?
 
     @Operation(summary = "Edit avatar? TODO")
 

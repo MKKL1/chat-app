@@ -4,9 +4,11 @@ import com.szampchat.server.channel.dto.ChannelCreateDTO;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
+import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.role.RoleService;
 import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,11 +21,8 @@ import reactor.core.publisher.Mono;
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
-    private final Snowflake snowflake;
 
     //TODO cache it (this method will be called on most api operations)
-    // broken
-    // channelId is null, even though in controller it has proper value
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
 //                .doFirst(() -> System.out.println(channelId + " " + userId))
@@ -31,7 +30,8 @@ public class ChannelService {
     }
 
     public Mono<Channel> getChannel(Long channelId) {
-        return channelRepository.findById(channelId);
+        return channelRepository.findById(channelId)
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException()));
     }
 
 
@@ -53,7 +53,7 @@ public class ChannelService {
                     Channel.builder()
                         .name(channel.getName())
                         .communityId(channel.getCommunityId())
-                        .type(channel.getType().getValue())
+                        .type(channel.getType())
                         .build()
                     )
                 );

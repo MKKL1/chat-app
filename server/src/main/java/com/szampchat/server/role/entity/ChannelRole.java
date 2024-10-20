@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -13,18 +12,14 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("roles")
-public class Role {
-    @Id
-    @Column("id")
-    private Long id;
+@Table("channel_roles")
+public class ChannelRole {
+    @Column("role_id")
+    private Long roleId;
 
-    @Column("name")
-    private String name;
+    @Column("channel_id")
+    private Long channelId;
 
     @Column("permission")
-    private PermissionOverwrites permission;
-
-    @Column("community_id")
-    private Long community;
+    private PermissionOverwrites permissionOverwrites;
 }

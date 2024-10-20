@@ -1,6 +1,5 @@
 package com.szampchat.server.role;
 
-import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.exception.RoleNotFoundException;
@@ -22,6 +21,10 @@ public class RoleService {
                 .flatMap(community -> communityMemberService.isMember(community, userId));
     }
 
+    public Flux<Role> getMemberRoles(Long communityId, Long userId) {
+        return roleRepository.findRolesByCommunityAndUser(communityId, userId);
+    }
+
     public Mono<Role> findRole(Long roleId) {
         return roleRepository.findById(roleId)
                 .switchIfEmpty(Mono.error(new RoleNotFoundException()));
@@ -30,6 +33,10 @@ public class RoleService {
     public Flux<Role> findRolesForCommunity(Long communityId) {
         return roleRepository.findRolesByCommunity(communityId);
     }
+
+//    public Mono<Role> save() {
+//
+//    }
 
 //    public Flux<Role> groupUserRolesForCommunity(Long communityId) {
 //        return

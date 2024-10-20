@@ -1,16 +1,16 @@
 package com.szampchat.server.channel;
 
+import lombok.Getter;
+
+@Getter
 public enum ChannelType {
     TEXT_CHANNEL(0),
     VOICE_CHANNEL(1);
 
-    private final int value;
+    private final short value;
 
-    private ChannelType(int value) {
-        this.value = value;
+    ChannelType(int value) {
+        this.value = (short)value;
     }
 
-    public byte getValue(){
-        return (byte) value;
-    }
 }

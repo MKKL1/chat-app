@@ -9,8 +9,14 @@ import com.szampchat.server.community.repository.CommunityMemberRepository;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
+import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.permission.data.PermissionFlag;
+import com.szampchat.server.permission.data.PermissionOverwrites;
+import com.szampchat.server.permission.data.Permissions;
+import com.szampchat.server.role.entity.ChannelRole;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
+import com.szampchat.server.role.repository.ChannelRoleRepository;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.user.entity.User;
@@ -18,7 +24,6 @@ import com.szampchat.server.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.instancio.Instancio;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -37,6 +42,7 @@ public class TestDataGenerator {
     private final MessageRepository messageRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final ChannelRoleRepository channelRoleRepository;
 
     public User generateUser() {
         return Instancio.of(User.class)
@@ -52,7 +58,7 @@ public class TestDataGenerator {
         return Instancio.of(Channel.class)
                 .set(field(Channel::getId), null)
                 .set(field(Channel::getCommunityId), communityId)
-                .set(field(Channel::getType), channelType.getValue())
+                .set(field(Channel::getType), channelType)
                 .create();
     }
 
@@ -78,6 +84,7 @@ public class TestDataGenerator {
         return Instancio.of(Role.class)
                 .set(field(Role::getId), null)
                 .set(field(Role::getCommunity), communityId)
+                .set(field(Role::getPermission), new PermissionOverwrites())
                 .create();
     }
 
@@ -99,7 +106,7 @@ public class TestDataGenerator {
         List<Role> roles = generateRoles(genData, community);
         addRolesToUsers(genData, users, roles);
 
-        List<Channel> channels = generateChannels(genData, community);
+        List<Channel> channels = generateChannels(genData, community, roles);
 
         Map<Channel, List<Message>> messages = generateMessages(genData, users, channels);
 
@@ -137,6 +144,7 @@ public class TestDataGenerator {
         Community community = communityRepository.save(Instancio.of(Community.class)
                 .set(field(Community::getId), null)
                 .set(field(Community::getOwnerId), owner.getId())
+                .set(field(Community::getBasePermissions), new Permissions())
                 .create()).block();
 
         assertThat(community).isNotNull();
@@ -177,12 +185,25 @@ public class TestDataGenerator {
         }
     }
 
-    private List<Channel> generateChannels(GenericCommunityGenData genData, Community community) {
+    private List<Channel> generateChannels(GenericCommunityGenData genData, Community community, List<Role> roles) {
         List<Channel> channels = genData.getChannels() == null ? new ArrayList<>() : genData.getChannels();
         for (int i = 0; i < genData.getRandomChannels(); i++) {
             Channel savedChannel = saveChannel(community.getId(), ChannelType.TEXT_CHANNEL);
             assertThat(savedChannel).isNotNull();
             assertThat(savedChannel.getCommunityId()).isEqualTo(community.getId());
+
+            for (Role role : pickNRandom(roles, 2)) {
+                PermissionOverwrites permissionOverwrites = new PermissionOverwrites();
+                permissionOverwrites.allow(PermissionContext.CHANNEL, PermissionFlag.CHANNEL_CREATE, PermissionFlag.REACTION_CREATE);
+
+                channelRoleRepository.save(ChannelRole.builder()
+                        .channelId(savedChannel.getId())
+                        .roleId(role.getId())
+                        .permissionOverwrites(permissionOverwrites)
+                        .build()
+                ).block();
+            }
+
             channels.add(savedChannel);
         }
         return channels;

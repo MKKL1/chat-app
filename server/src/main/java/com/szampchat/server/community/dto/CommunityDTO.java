@@ -1,5 +1,6 @@
 package com.szampchat.server.community.dto;
 
+import com.szampchat.server.permission.data.Permissions;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,5 @@ public class CommunityDTO {
     private Long ownerId;
     @Schema(example = "img/myimage.png")
     private String imageUrl;
+    private Permissions basePermissions;
 }

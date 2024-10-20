@@ -1,7 +1,11 @@
 package com.szampchat.server;
 
+import com.szampchat.server.auth.AuthorizationFunctionFactory;
+import com.szampchat.server.auth.AuthorizationManagerFactory;
 import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
+import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.permission.data.PermissionFlag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +39,11 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig {
 
-    @Autowired
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
+    private final AuthorizationManagerFactory authMan;
+    private final AuthorizationFunctionFactory authFunc;
+
+
 
     private static final String[] WHITELIST = {
             "/v3/api-docs",
@@ -69,8 +76,64 @@ public class SecurityConfig {
 //                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
-                        .pathMatchers("/api/file/**").permitAll()
-                        .anyExchange().authenticated())
+                        //ChannelController
+                        .pathMatchers(HttpMethod.POST, "/channels/{communityId}")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
+                        .pathMatchers(HttpMethod.PUT, "/channels/{channelId}")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
+                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
+                        //CommunityController
+                        .pathMatchers(HttpMethod.GET, "/communities/{communityId}")
+                            .access(authMan.create(authFunc.isMember))
+                        .pathMatchers(HttpMethod.GET, "/communities/{communityId}/info")
+                            .access(authMan.create(authFunc.isMember))
+                        .pathMatchers(HttpMethod.GET, "/communities")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/invite")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.INVITE_CREATE))
+                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/join")
+                            .access(authMan.create(authFunc.isNotMember))
+                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/join")
+                            .access(authMan.create(authFunc.isNotMember))
+                        .pathMatchers(HttpMethod.POST, "/communities")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.PATCH, "/communities/{communityId}")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
+                        .pathMatchers(HttpMethod.DELETE, "/communities/{communityId}")
+                            .access(authMan.create(authFunc.isOwner))
+                        //MessageController
+                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/messages")
+                            .access(authMan.create(authFunc.isParticipant))
+                        .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.MESSAGE_CREATE))
+                        .pathMatchers(HttpMethod.PATCH, "/channels/{channelId}/messages/{messageId}")
+                            .access(authMan.create(authFunc.isParticipant)) //TODO user should be able to edit ONLY their message, requires new auth function
+                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}")
+                            .access(authMan.create(authFunc.isParticipant))//TODO delete only their own message
+                        //RoleController
+                        .pathMatchers(HttpMethod.GET, "/roles/{roleId}")
+                            .access(authMan.create(authFunc.hasAccessToRoleInfo))
+                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/roles")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
+                        .pathMatchers(HttpMethod.PATCH, "/communities/{communityId}/roles")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
+                        .pathMatchers(HttpMethod.DELETE, "/communities/{communityId}/roles")
+                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
+                        //UserController
+                        .pathMatchers(HttpMethod.GET, "/users/me")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.GET, "/users/{userId}")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.PATCH, "/users/avatar")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.PATCH, "users/description")
+                            .authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/users")
+                            .authenticated()
+//                        .pathMatchers("/api/file/**").permitAll()
+                        .anyExchange().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(customJwtAuthenticationConverter)

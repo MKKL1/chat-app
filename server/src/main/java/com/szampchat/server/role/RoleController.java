@@ -1,6 +1,7 @@
 package com.szampchat.server.role;
 
 import com.szampchat.server.auth.CurrentUser;
+import com.szampchat.server.permission.PermissionService;
 import com.szampchat.server.role.dto.RoleCreateDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.shared.docs.OperationDocs;
@@ -55,7 +56,7 @@ public class RoleController {
     @OperationDocs({RESPONSE_419, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Create role TODO")
 
-    @PostMapping("/roles")
+    @PostMapping("/communities/{communityId}/roles")
     public Mono<Role> createRole(@RequestBody RoleCreateDTO roleCreateDTO) {
         return Mono.empty();
     }
@@ -66,7 +67,7 @@ public class RoleController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Edit role TODO")
 
-    @PatchMapping("/roles/{roleId}")
+    @PatchMapping("/communities/{communityId}/roles/{roleId}")
     public Mono<Role> editRole(@PathVariable Long roleId, @RequestBody RoleCreateDTO roleCreateDTO) {
         return Mono.empty();
     }

@@ -44,7 +44,7 @@ public class CommunityController {
     @Operation(summary = "Get community")
 
     @GetMapping("/{communityId}")
-    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<CommunityDTO> getCommunity(@PathVariable Long communityId) {
         return communityService.findById(communityId);
     }
@@ -58,10 +58,26 @@ public class CommunityController {
                     and then updated using websocket events""")
 
     @GetMapping("/{communityId}/info")
-    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){
         return communityService.getFullCommunityInfo(communityId);
     }
+
+    //TODO remove?
+    //Maybe instead of dozens of small request it will be better to make
+    //huge request which will get all data about community?
+//    @GetMapping("/{communityId}/members")
+//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
+//    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
+//        return communityMemberService.getCommunityMembersWithRoles(communityId);
+//    }
+
+    //TODO remove?
+    //only for testing
+//    @PostMapping("/{communityId}")
+//    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
+//        return communityMemberService.create(communityId, currentUser.getUserId());
+//    }
 
     //TODO DTO
     //TODO can be protected by oauth scope
@@ -84,7 +100,7 @@ public class CommunityController {
                     This invitation can then be shared with any user, who can then join given community""")
 
     @PostMapping("/{communityId}/invite")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId){
         return invitationService.createInvitation(communityId, 5);
     }
@@ -97,7 +113,7 @@ public class CommunityController {
                     This action result in expiration of invitation. (?)""")
 
     @PostMapping("/{communityId}/join")
-    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
+//    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
     }
@@ -125,7 +141,7 @@ public class CommunityController {
                     Edits community""")
     //Use community dto?
     @PatchMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+    //@PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<CommunityDTO> editCommunity(
             @PathVariable Long communityId,
             @RequestPart("community") Community community,
@@ -140,7 +156,7 @@ public class CommunityController {
                     Removes community""")
 
     @DeleteMapping("/{communityId}")
-    @PreAuthorize("@communityService.isOwner(#communityId)")
+//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
         return communityService.delete(communityId);
     }

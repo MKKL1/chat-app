@@ -1,6 +1,7 @@
 package com.szampchat.server.channel;
 
 import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
 import org.junit.jupiter.api.Test;
@@ -99,8 +100,8 @@ class ChannelServiceTests {
         Mono<Channel> result = channelService.getChannel(channelId);
 
         StepVerifier.create(result)
-                .expectNextCount(0)
-                .verifyComplete();
+                .expectError(ChannelNotFoundException.class)
+                .verify();
     }
 
     @Test

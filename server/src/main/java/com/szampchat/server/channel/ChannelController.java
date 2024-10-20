@@ -48,7 +48,7 @@ public class ChannelController {
     @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Create channel")
 
-    @PostMapping("/channels")
+    @PostMapping("/channels/{communityId}")
     //@PreAuthorize("@communityMemberService.isMember(#channelCreateDTO.communityId, #currentUser.userId)") //TODO why is this commented?
     public Mono<Channel> createChannel(@RequestBody ChannelCreateDTO channelCreateDTO) {
         return channelService.createChannel(channelCreateDTO);
@@ -72,7 +72,7 @@ public class ChannelController {
     @Operation(summary = "Delete channel")
 
     @DeleteMapping("/channels/{channelId}")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to delete this channel
     public Mono<Void> deleteChannel(@PathVariable Long channelId, CurrentUser currentUser) {
         return channelService.deleteChannel(channelId);

@@ -110,33 +110,6 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
-  /roles:
-    post:
-      tags:
-      - Role
-      summary: Create role TODO
-      operationId: createRole
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RoleCreateDTO"
-        required: true
-      responses:
-        "204":
-          description: No Content
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Role"
-        "419":
-          description: User not created
-        "403":
-          description: User is not an owner of community or resource is not available
-        "401":
-          description: Incorrect token scope (token not provided?)
-      security:
-      - OAuthSecurity: []
   /communities:
     get:
       tags:
@@ -182,6 +155,33 @@ paths:
                 $ref: "#/components/schemas/Community"
         "419":
           description: User not created
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
+  /communities/{communityId}/roles:
+    post:
+      tags:
+      - Role
+      summary: Create role TODO
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleCreateDTO"
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not an owner of community or resource is not available
         "401":
           description: Incorrect token scope (token not provided?)
       security:
@@ -258,7 +258,7 @@ paths:
           description: User is not an owner of community or resource is not available
       security:
       - OAuthSecurity: []
-  /channels:
+  /channels/{communityId}:
     post:
       tags:
       - Channel
@@ -410,92 +410,6 @@ paths:
                 $ref: "#/components/schemas/UserDTO"
       security:
       - OAuthSecurity: []
-  /roles/{roleId}:
-    get:
-      tags:
-      - Role
-      summary: Get role
-      operationId: getRole
-      parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Role"
-        "419":
-          description: User not created
-        "403":
-          description: User is not a member of role's community or resource is not
-            available
-        "401":
-          description: Incorrect token scope (token not provided?)
-      security:
-      - OAuthSecurity: []
-    delete:
-      tags:
-      - Role
-      summary: Delete role TODO
-      operationId: deleteRole
-      parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "204":
-          description: No Content
-        "419":
-          description: User not created
-        "403":
-          description: User is not an owner of community or resource is not available
-        "401":
-          description: Incorrect token scope (token not provided?)
-      security:
-      - OAuthSecurity: []
-    patch:
-      tags:
-      - Role
-      summary: Edit role TODO
-      operationId: editRole
-      parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RoleCreateDTO"
-        required: true
-      responses:
-        "204":
-          description: No Content
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Role"
-        "419":
-          description: User not created
-        "403":
-          description: User is not a member of channel's community or resource is
-            not available
-        "401":
-          description: Incorrect token scope (token not provided?)
-      security:
-      - OAuthSecurity: []
   /communities/{communityId}:
     get:
       tags:
@@ -586,6 +500,41 @@ paths:
           description: Incorrect token scope (token not provided?)
         "403":
           description: User is not an owner of community or resource is not available
+      security:
+      - OAuthSecurity: []
+  /communities/{communityId}/roles/{roleId}:
+    patch:
+      tags:
+      - Role
+      summary: Edit role TODO
+      operationId: editRole
+      parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleCreateDTO"
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of channel's community or resource is
+            not available
+        "401":
+          description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
   /channels/{channelId}/messages/{messageId}:
@@ -712,6 +661,58 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+  /roles/{roleId}:
+    get:
+      tags:
+      - Role
+      summary: Get role
+      operationId: getRole
+      parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of role's community or resource is not
+            available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
+    delete:
+      tags:
+      - Role
+      summary: Delete role TODO
+      operationId: deleteRole
+      parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "403":
+          description: User is not an owner of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
   /communities/{communityId}/info:
     get:
       tags:
@@ -761,7 +762,9 @@ components:
           format: int64
         type:
           type: string
-          format: byte
+          enum:
+          - TEXT_CHANNEL
+          - VOICE_CHANNEL
     UserCreateDTO:
       type: object
       properties:
@@ -787,22 +790,6 @@ components:
           type: string
           description: Short message which describes user
           example: My description
-    RoleCreateDTO:
-      type: object
-    Role:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        permission:
-          type: integer
-          format: int64
-        community:
-          type: integer
-          format: int64
     CommunityCreateDTO:
       type: object
       properties:
@@ -823,6 +810,35 @@ components:
           format: int64
         imageUrl:
           type: string
+        basePermissions:
+          $ref: "#/components/schemas/Permissions"
+    Permissions:
+      type: object
+      properties:
+        permissionData:
+          type: integer
+          format: int32
+    RoleCreateDTO:
+      type: object
+    PermissionOverwrites:
+      type: object
+      properties:
+        permissionOverwriteData:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        permission:
+          $ref: "#/components/schemas/PermissionOverwrites"
+        community:
+          type: integer
+          format: int64
     JoinRequestDTO:
       type: object
       properties:
@@ -925,6 +941,8 @@ components:
         imageUrl:
           type: string
           example: img/myimage.png
+        basePermissions:
+          $ref: "#/components/schemas/Permissions"
     CommunityMemberRolesDTO:
       type: object
       properties:
