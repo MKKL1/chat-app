@@ -10,7 +10,7 @@ import {MatButton} from "@angular/material/button";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {UserService} from "../../../core/services/user.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {previewImage} from "../../utils/image-preview";
+import {previewImage} from "../../utils/utils";
 
 @Component({
   selector: 'app-edit-avatar',
@@ -33,6 +33,7 @@ export class EditAvatarComponent {
   snackbar = inject(MatSnackBar);
 
   constructor(
+    private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: {imageUrl: string},
     public dialogRef: MatDialogRef<EditAvatarComponent>) {
     this.imageUrl.set(data.imageUrl);
@@ -46,8 +47,11 @@ export class EditAvatarComponent {
   }
 
   uploadNewPicture(){
-    if(this.fileToUpload() !== undefined){
-      // todo upload picture
+    if(this.fileToUpload()){
+      this.userService.editAvatar(this.fileToUpload()!).subscribe(response => {
+        this.dialogRef.close();
+      });
+
     } else {
       this.snackbar.open("Before uploading you must choose your picture!",'Ok', {duration: 3000})
     }

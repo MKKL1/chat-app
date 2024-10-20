@@ -25,6 +25,7 @@ public class CommunityConfiguration {
             }));
     }
 
+    // TODO UUID instead of snowflake
     @Bean
     BeforeConvertCallback<Invitation> beforeInvitationConvertCallback(){
         return ((entity, table) -> Mono.just(entity)

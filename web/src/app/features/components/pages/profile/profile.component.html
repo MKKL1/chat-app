@@ -3,9 +3,9 @@
   <mat-card>
     <mat-card-content class="first-card-content">
         <div class="first-card">
-          <h2>{{username()}}</h2>
+          <h2>{{user()?.username}}</h2>
           <div class="image-container">
-            <img (click)="editAvatar()" class="profile-picture" src="avatar.jpg">
+            <img (click)="editAvatar()" class="profile-picture" src="{{user() ? user()?.imageUrl : 'avatar.jpg'}}">
             <div class="flex-center profile-hint">
               <mat-icon fontIcon="photo_camera"></mat-icon>
               Change picture
@@ -24,7 +24,7 @@
     <mat-card-content class="description">
       <mat-form-field appearance="outline" style="margin-top: 5px">
         <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="userDescription"></textarea>
+        <textarea matInput [(ngModel)]="description"></textarea>
       </mat-form-field>
       <button class="description-button" mat-flat-button>Save</button>
     </mat-card-content>

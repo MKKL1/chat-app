@@ -3,6 +3,7 @@ export interface Channel{
   name: string;
   communityId: string;
   type: ChannelType;
+  lastMessageId?: string;
 }
 
 export enum ChannelType {

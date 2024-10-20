@@ -8,12 +8,14 @@ import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
 import com.szampchat.server.shared.docs.OperationDocs;
+import com.szampchat.server.upload.FilePath;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -60,22 +62,6 @@ public class CommunityController {
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){
         return communityService.getFullCommunityInfo(communityId);
     }
-
-    //TODO remove?
-    //Maybe instead of dozens of small request it will be better to make
-    //huge request which will get all data about community?
-//    @GetMapping("/{communityId}/members")
-//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
-//    public Flux<CommunityMemberRolesDTO> getCommunityMembers(@PathVariable Long communityId) {
-//        return communityMemberService.getCommunityMembersWithRoles(communityId);
-//    }
-
-    //TODO remove?
-    //only for testing
-//    @PostMapping("/{communityId}")
-//    public Mono<CommunityMember> addMember(@PathVariable Long communityId, CurrentUser currentUser){
-//        return communityMemberService.create(communityId, currentUser.getUserId());
-//    }
 
     //TODO DTO
     //TODO can be protected by oauth scope
@@ -125,8 +111,11 @@ public class CommunityController {
 
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
-    public Mono<Community> createCommunity(@RequestBody CommunityCreateDTO community, CurrentUser user) {
-        return communityService.save(community, user.getUserId());
+    public Mono<Community> createCommunity(
+            @RequestPart("community") CommunityCreateDTO community,
+            @RequestPart(value = "file", required = false) FilePart file,
+            CurrentUser user) {
+        return communityService.save(community, file, user.getUserId());
     }
 
     @ApiResponse(responseCode = "204")
@@ -137,8 +126,11 @@ public class CommunityController {
     //Use community dto?
     @PatchMapping("/{communityId}")
     @PreAuthorize("@communityService.isOwner(#communityId)")
-    public Mono<Community> editCommunity(@PathVariable Long communityId, @RequestBody Community community) {
-        return communityService.editCommunity(communityId, community);
+    public Mono<CommunityDTO> editCommunity(
+            @PathVariable Long communityId,
+            @RequestPart("community") Community community,
+            @RequestPart("file") FilePart file) {
+        return communityService.editCommunity(communityId, community, file);
     }
 
     @ApiResponse(responseCode = "204")

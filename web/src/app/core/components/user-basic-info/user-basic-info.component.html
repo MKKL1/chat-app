@@ -1,6 +1,6 @@
 <div style="display: flex; align-items: center;">
-  <app-avatar></app-avatar>
-  <span>{{username}}</span>
+  <app-avatar [imagePath]="user.imageUrl!"></app-avatar>
+  <span>{{user.username}}</span>
 </div>
 <p>description</p>
 <!-- Add roles, or some more info -->

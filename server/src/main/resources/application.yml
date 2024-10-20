@@ -1,6 +1,10 @@
 spring:
   application:
     name: szampchat-server
+  mvc:
+    static-path-pattern=/static/**:
+    pathmatch:
+      matching-strategy=ant-path-matcher:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/chat
     username: root
@@ -36,6 +40,11 @@ spring:
     port: 5672
     username: root
     password: root
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
 server:
   error:
     include-message: always

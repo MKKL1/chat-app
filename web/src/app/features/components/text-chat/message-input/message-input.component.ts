@@ -9,7 +9,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ClickOutsideDirective} from "../../../../shared/directives/click-outside.directive";
 import {MessageService} from "../../../services/message.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
-import {previewImage} from "../../../../shared/utils/image-preview";
+import {previewImage} from "../../../../shared/utils/utils";
 
 @Component({
   selector: 'app-message-input',
@@ -71,10 +71,11 @@ export class MessageInputComponent {
       message.gifLink = this.selectedGif();
     }
 
-    this.messageService.sendMessage(message);
+    this.messageService.sendMessage(message, this.selectedFile());
 
     this.text.set('');
     this.selectedGif.set('');
+    this.resetFile();
     this.messageToRespond = undefined;
   }
 

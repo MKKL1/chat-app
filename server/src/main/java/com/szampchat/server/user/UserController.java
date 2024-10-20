@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -28,7 +29,6 @@ import static com.szampchat.server.shared.docs.DocsProperties.RESPONSE_401;
 @RestController
 public class UserController {
     private final UserService userService;
-    private final ModelMapper modelMapper;
 
     @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
@@ -38,8 +38,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public Mono<UserDTO> getMe(CurrentUser currentUser) {
-        //TODO fix this, currentUser doesn't hold info
-        return Mono.fromCallable(() -> modelMapper.map(currentUser, UserDTO.class));
+        return userService.findUserDTO(currentUser.getUserId());
     }
 
 
@@ -74,8 +73,8 @@ public class UserController {
     @Operation(summary = "Edit avatar? TODO")
 
     @PatchMapping("/users/avatar")
-    public Mono<UserDTO> editAvatar(){
-        return Mono.empty();
+    public Mono<UserDTO> editAvatar(@RequestPart("file") FilePart file, CurrentUser user){
+        return userService.editAvatar(file, user.getUserId());
     }
 
 

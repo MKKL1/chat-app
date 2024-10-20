@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -53,8 +54,11 @@ public class MessageController {
 
     @PostMapping("/channels/{channelId}/messages")
     @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<Message> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
-        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId);
+    public Mono<MessageDTO> createMessage(@PathVariable Long channelId,
+                                       @RequestPart("message") MessageCreateDTO messageCreateDTO,
+                                       @RequestPart(value = "file", required = false) FilePart file,
+                                       CurrentUser currentUser) {
+        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId, file);
     }
 
 

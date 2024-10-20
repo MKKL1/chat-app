@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {BehaviorSubject, EMPTY, map, Subscription, switchMap, tap} from "rxjs";
 import {Community} from "../models/community";
@@ -119,8 +119,19 @@ export class CommunityService {
   }
 
   // change those types
-  createCommunity(form: {name: string}) {
-    this.http.post<Community>(this.apiPath, {name: form.name})
+  createCommunity(form: {name: string}, file: File | undefined) {
+    const formData = new FormData();
+    formData.append('community', new Blob([JSON.stringify(form)], { type: 'application/json' }));
+
+    if(file){
+      formData.append('file', file, file.name);
+    }
+
+    this.http.post<Community>(this.apiPath, formData, {
+      headers: new HttpHeaders({
+        'enctype': 'multipart/form-data'
+      })
+    })
       .subscribe(
         community => this.communityStore.add(community)
       );

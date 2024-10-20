@@ -45,6 +45,8 @@ public class SecurityConfig {
             "/", //swagger ui redirecting path
             "/webjars/swagger-ui/**",
             "/error",
+            "/api/file/**",
+            "/file/**"
     };
 
     @Bean
@@ -67,6 +69,7 @@ public class SecurityConfig {
 //                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
+                        .pathMatchers("/api/file/**").permitAll()
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

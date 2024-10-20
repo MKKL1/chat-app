@@ -13,8 +13,7 @@ import {FileUploadComponent} from "../../../../../shared/ui/file-upload/file-upl
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommunityService} from "../../../../services/community.service";
 import {Community} from "../../../../models/community";
-import {previewImage} from "../../../../../shared/utils/image-preview";
-
+import {previewImage} from "../../../../../shared/utils/utils";
 
 @Component({
   selector: 'app-create-community',
@@ -89,7 +88,7 @@ export class CreateCommunityComponent implements OnInit{
   private createCommunity(){
     // todo send also image
     if(typeof this.communityForm.value.name === 'string'){
-      this.communityService.createCommunity({name: this.communityForm.value.name});
+      this.communityService.createCommunity({name: this.communityForm.value.name}, this.file);
     }
     this.dialogRef.close();
   }
