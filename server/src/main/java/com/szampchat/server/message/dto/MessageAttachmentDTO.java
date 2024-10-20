@@ -11,4 +11,8 @@ public class MessageAttachmentDTO {
     private Integer size;
     @Schema(example = "myfile.txt", description = "ID of attachment")
     private String name;
+    // I added this because it should be attached to message while publishing it to event sender
+    // so user can instantly load attached file
+    @Schema(example= "uploads/messages/random_file_name.png", description = "Path to file")
+    private String path;
 }

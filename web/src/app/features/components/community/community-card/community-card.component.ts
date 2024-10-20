@@ -9,5 +9,5 @@ import {Community} from "../../../models/community";
   styleUrl: './community-card.component.scss'
 })
 export class CommunityCardComponent {
-  @Input() community: Community | undefined;
+  @Input() community: Community;
 }

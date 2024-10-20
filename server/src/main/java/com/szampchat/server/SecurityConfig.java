@@ -8,8 +8,10 @@ import com.szampchat.server.permission.data.PermissionContext;
 import com.szampchat.server.permission.data.PermissionFlag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -45,11 +47,13 @@ public class SecurityConfig {
 
     private static final String[] WHITELIST = {
             "/v3/api-docs",
-                "/v3/api-docs.yaml",
+            "/v3/api-docs.yaml",
             "/v3/api-docs/**",
             "/", //swagger ui redirecting path
             "/webjars/swagger-ui/**",
             "/error",
+            "/api/file/**",
+            "/file/**"
     };
 
     @Bean
@@ -69,6 +73,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+//                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
                         //ChannelController
@@ -126,6 +131,7 @@ public class SecurityConfig {
                             .authenticated()
                         .pathMatchers(HttpMethod.DELETE, "/users")
                             .authenticated()
+//                        .pathMatchers("/api/file/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

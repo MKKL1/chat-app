@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -52,9 +53,12 @@ public class MessageController {
     @Operation(summary = "Create message")
 
     @PostMapping("/channels/{channelId}/messages")
-//    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId) && @permissionService.hasPermissionInChannel(#channelId, PermissionFlag.MESSAGE_CREATE)")
-    public Mono<Message> createMessage(@PathVariable Long channelId, @RequestBody MessageCreateDTO messageCreateDTO, CurrentUser currentUser) {
-        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId);
+    //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+    public Mono<MessageDTO> createMessage(@PathVariable Long channelId,
+                                       @RequestPart("message") MessageCreateDTO messageCreateDTO,
+                                       @RequestPart(value = "file", required = false) FilePart file,
+                                       CurrentUser currentUser) {
+        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId, file);
     }
 
 
@@ -80,7 +84,7 @@ public class MessageController {
     @Operation(summary = "Delete message")
 
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
-    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
+    //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<Void> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
         return messageService.deleteMessage(messageId, channelId, currentUser.getUserId());
     }

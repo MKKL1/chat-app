@@ -9,7 +9,7 @@ Messages, however, cannot be cached efficiently.
 
 ## 1. App data flow
 
-![](docs/dataflow.png)
+![](/img/dataflow.png)
 
 The base Angular app is built using components and services.
 Components are responsible for the UI and local state,

@@ -1,6 +1,6 @@
 import {MatIcon} from "@angular/material/icon";
 import {MatButton, MatFabButton} from "@angular/material/button";
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {KeycloakService} from "keycloak-angular";
 import {GifSearchComponent} from "../../../../shared/ui/gif-search/gif-search.component";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
@@ -13,6 +13,8 @@ import {EditAvatarComponent} from "../../../../shared/ui/edit-avatar/edit-avatar
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {UserService} from "../../../../core/services/user.service";
 import {resetStores} from "@datorama/akita";
+import {User} from "../../../models/user";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-profile',
@@ -37,12 +39,10 @@ import {resetStores} from "@datorama/akita";
   styleUrl: './profile.component.scss'
 })
 
-// TODO change state of ui after sending data to api
-
-export class ProfileComponent implements OnInit{
-  userDescription = signal<string>('');
-  username = signal<string>('');
-  imageUrl = signal<string>('');
+export class ProfileComponent implements OnInit, OnDestroy{
+  user = signal<User | null>(null);
+  private userSubscription: Subscription;
+  description: string = '';
 
   constructor(
     private keycloakService: KeycloakService,
@@ -51,14 +51,15 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.username.set(this.keycloakService.getUsername());
-    this.userDescription.set(this.userService.getUser().description ?? '');
-    this.imageUrl.set(this.userService.getUser().imageUrl ?? '');
+    this.userSubscription = this.userService.user$.subscribe(updatedUser => {
+      this.user.set(updatedUser);
+      this.description = updatedUser?.description || '';
+    });
   }
 
   editAvatar(){
     this.dialog.open(EditAvatarComponent, {
-      data: {imageUrl: this.imageUrl()}
+      data: {imageUrl: this.user()?.imageUrl}
     });
   }
 
@@ -67,9 +68,9 @@ export class ProfileComponent implements OnInit{
   }
 
   editDescription(){
-    this.userService.editDescription(this.userDescription()).subscribe(user => {
-      console.log(user);
-    });
+    // this.userService.editDescription(this.user()?.description ?? '').subscribe(user => {
+    //   console.log(user);
+    // });
   }
 
   logout(){
@@ -79,5 +80,9 @@ export class ProfileComponent implements OnInit{
 
   deleteAccount(){
     this.userService.deleteAccount();
+  }
+
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
   }
 }

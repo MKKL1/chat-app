@@ -1,7 +1,8 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.auth.CurrentUser;
-import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.upload.FileException;
+import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
@@ -11,20 +12,23 @@ import com.szampchat.server.user.exception.UserNotFoundException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.FileSystemException;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UserSubjectRepository userSubjectRepository;
     private final ModelMapper modelMapper;
-
+    private final FileStorageService fileStorageService;
 
     @Deprecated
     public Mono<User> findUser(Long userId) {
@@ -34,7 +38,7 @@ public class UserService {
 
     public Mono<UserDTO> findUserDTO(Long userId) {
         return findUser(userId)
-                .map(user -> modelMapper.map(user, UserDTO.class));
+            .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     //easy to cache, will practically never change
@@ -69,8 +73,24 @@ public class UserService {
 
     }
 
-    Mono<UserDTO> editAvatar(){
-        return Mono.empty();
+    Mono<UserDTO> editAvatar(FilePart file, Long userId){
+        return userRepository.findById(userId)
+            .flatMap(user -> {
+                if(user.getImageUrl() != null){
+                    try {
+                        fileStorageService.delete(user.getImageUrl());
+                    } catch (Exception e) {
+                        return Mono.error(new FileException("Error during deleting file: " + e.getMessage()));
+                    }
+                }
+
+                return fileStorageService.save(file, FilePath.AVATAR)
+                    .flatMap(filepath -> {
+                        user.setImageUrl(filepath);
+                        return userRepository.save(user)
+                            .map(updatedUser -> modelMapper.map(updatedUser, UserDTO.class));
+                    });
+            });
     }
 
     Mono<UserDTO> editDescription(String description, Long id){
@@ -78,6 +98,18 @@ public class UserService {
     }
 
     Mono<Void> deleteUser(Long id){
-        return userRepository.deleteById(id);
+        return userRepository.findById(id)
+            .flatMap(existingCommunity -> {
+                if (existingCommunity.getImageUrl() != null) {
+                    try {
+                        return fileStorageService.delete(existingCommunity.getImageUrl())
+                                .then(userRepository.deleteById(id));
+                    } catch (FileSystemException e) {
+                        return Mono.error(e.getCause());
+                    }
+                } else {
+                    return userRepository.deleteById(id);
+                }
+            });
     }
 }

@@ -36,6 +36,13 @@
   max-width: 70vw;
 }
 
+.message-wrapper img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
 .user-info-container{
   position: relative;
   display: inline-block;

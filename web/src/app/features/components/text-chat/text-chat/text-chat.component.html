@@ -1,14 +1,19 @@
 <div class="text-chat-container">
   <!-- messages -->
   <div class="messages">
-    @if(messages$ | async; as messages){
-      @if(messages.length === 0){
+    @if(!loadedAllData()){
+      <div class="load-more-container">
+        <button mat-button (click)="loadMoreMessage()">Load more</button>
+      </div>
+    }
+    @if(messages()){
+      @if(messages()?.length === 0){
         <h1 class="flex-center" style="text-align: center; padding: 0 15%;">
           It seems that no one sent message at this channel yet. Be first!
         </h1>
       }
       @else{
-        @for(message of messages; track message.id){
+        @for(message of messages(); track message.id){
           <app-message [message]="message"
                        [userId]="userService.getUser().id"
                        (respondsTo)="setResponse($event)">

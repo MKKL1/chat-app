@@ -4,7 +4,7 @@
     <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <app-user-basic-info [username]="user.name"></app-user-basic-info>
+          <app-user-basic-info [user]="user"></app-user-basic-info>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <p>User description</p>
