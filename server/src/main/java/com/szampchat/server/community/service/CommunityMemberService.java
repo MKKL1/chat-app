@@ -44,8 +44,6 @@ public class CommunityMemberService {
                 .onErrorReturn(false);
     }
 
-    //Although it is named CommunityMemberDTO it is not meant to be converted directly to CommunityMember
-    //TODO get user info from UserService, not from spaghetti database query
     public Flux<CommunityMemberRolesDTO> getCommunityMembersWithRoles(Long communityId) {
         return communityMemberRepository.findMemberWithRolesFromCommunity(communityId)
                 .collectMultimap(

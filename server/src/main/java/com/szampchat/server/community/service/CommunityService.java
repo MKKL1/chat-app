@@ -18,7 +18,7 @@ import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.shared.CustomPrincipalProvider;
-import com.szampchat.server.upload.FileException;
+import com.szampchat.server.upload.FileNotFoundException;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.UserService;
@@ -114,6 +114,7 @@ public class CommunityService {
                             communityMemberService.create(communityId, savedUser.getId())
                                 .doOnSuccess(row -> log.info(row.toString()))
                                 // todo maybe move creating role somewhere else
+                                    //TODO or remove default role
                                 // also add default role which make sense
                                 .then(roleRepository.save(Role.builder()
                                     .name("baseRole")
@@ -141,7 +142,7 @@ public class CommunityService {
                 if (existingCommunity.getImageUrl() != null) {
                     try {
                         return fileStorageService.delete(existingCommunity.getImageUrl())
-                            .onErrorMap(e -> new FileException("Error during deleting file: " + e.getMessage()))
+                            .onErrorMap(e -> new FileNotFoundException("Error during deleting file: " + e.getMessage()))
                             .then(Mono.just(existingCommunity));
                     } catch (FileSystemException e) {
                         return Mono.error(new FileSystemException("Cannot delete file"));
