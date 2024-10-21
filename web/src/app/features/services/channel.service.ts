@@ -47,11 +47,12 @@ export class ChannelService {
   createChannel(channel: any): Observable<Channel>{
     channel.communityId = this.communityQuery.getActiveId();
 
-    return this.http.post<Channel>(this.apiPath, channel).pipe(
+    return this.http.post<Channel>(this.apiPath + "/" + this.communityQuery.getActiveId(), channel).pipe(
       tap(newChannel => {
         // it wouldn't be necessary if I could just pass numbers in json,
         // but I can't because ids are too big and I have to map them to string
         // and I can't tell if number is other value than id, so it also is mapped to string
+
         // @ts-ignore
         newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
 

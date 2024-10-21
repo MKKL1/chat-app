@@ -1,5 +1,8 @@
 package com.szampchat.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.szampchat.server.channel.ChannelType;
 import com.szampchat.server.channel.converters.ShortToChannelTypeConverter;
 import com.szampchat.server.channel.converters.ChannelTypeToShortConverter;
 import com.szampchat.server.permission.converters.IntToPermissionConverter;
@@ -24,6 +27,15 @@ public class ModelMapperConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(ChannelType.class, new ChannelTypeSerializer());
+        objectMapper.registerModule(module);
+        return objectMapper;
     }
 
     @Bean

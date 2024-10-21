@@ -10,6 +10,7 @@ import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
+import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.shared.CustomPrincipalProvider;
@@ -77,11 +78,6 @@ public class CommunityService {
             );
     }
 
-    //remove?
-    public Flux<Community> getAllCommunities(){
-        return communityRepository.findAll();
-    }
-
     public Flux<Community> getUserCommunities(Long id){
         return communityRepository.userCommunities(id);
     }
@@ -98,20 +94,21 @@ public class CommunityService {
                     .name(communityDTO.name())
                     .ownerId(ownerId)
                     .imageUrl(imageUrl)
+                    .basePermissions(new Permissions())
                     .build();
 
-        return communityRepository.save(community)
-            .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
-            .flatMap(savedCommunity -> {
-                Long communityId = savedCommunity.getId();
+            return communityRepository.save(community)
+                .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
+                .flatMap(savedCommunity -> {
+                    Long communityId = savedCommunity.getId();
 
-                // After creating community its owner also need to be added as its member
-                return userService.findUser(ownerId)
-                    .flatMap(savedUser ->
-                        communityMemberService.create(communityId, savedUser.getId())
-                            .then(Mono.just(savedCommunity))
-                    );
-            });
+                    // After creating community its owner also need to be added as its member
+                    return userService.findUser(ownerId)
+                        .flatMap(savedUser ->
+                            communityMemberService.create(communityId, savedUser.getId())
+                                .then(Mono.just(savedCommunity))
+                        );
+                });
         });
 
     }

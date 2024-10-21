@@ -7,6 +7,7 @@ import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.user.UserService;
 import com.szampchat.server.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -17,6 +18,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @Service("communityMemberService")
+@Slf4j
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final CustomPrincipalProvider customPrincipalProvider;

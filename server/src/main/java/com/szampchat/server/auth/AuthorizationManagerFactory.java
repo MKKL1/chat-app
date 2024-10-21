@@ -51,7 +51,8 @@ public class AuthorizationManagerFactory {
                                 case CHANNEL ->
                                         permissionService.hasPermissionInChannel(AuthorizationContextExtractor.getChannelId(context), permissionFlags);
                                 case COMMUNITY ->
-                                        permissionService.hasPermissionInChannel(AuthorizationContextExtractor.getCommunityId(context), permissionFlags);
+                                        permissionService.hasPermissionInCommunity(AuthorizationContextExtractor.getCommunityId(context), permissionFlags);
+                                //TODO add default case
                             };
 
                             return permissionAuthorizedMono
