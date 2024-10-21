@@ -1,11 +1,11 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {BehaviorSubject, EMPTY, map, Subscription, switchMap, tap} from "rxjs";
+import {EMPTY, map, switchMap, tap} from "rxjs";
 import {Community} from "../models/community";
-import {UserService} from "../../core/services/user.service";
 import {CommunityStore} from "../store/community/community.store";
 import {Channel, ChannelType} from "../models/channel";
+import {Role} from "../models/role";
 import {CommunityQuery} from "../store/community/community.query";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
@@ -14,7 +14,6 @@ import {MemberStore} from "../store/member/member.store";
 import {RoleStore} from "../store/role/role.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
-import {MessageStore} from "../store/message/message.store";
 import {EventService} from "../../core/events/event.service";
 
 @Injectable({
@@ -22,7 +21,7 @@ import {EventService} from "../../core/events/event.service";
 })
 export class CommunityService {
   private readonly apiPath: string = environment.api + "communities";
-
+  chuj: Role;
   private snackBar = inject(MatSnackBar);
 
   constructor(
@@ -62,7 +61,7 @@ export class CommunityService {
     // call api to get community data
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
-        console.log(community);
+        console.log(res);
         // maybe map this on backend
         return {
           community: res.community,
@@ -72,10 +71,12 @@ export class CommunityService {
             ...channel,
             type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
           }))
-        }
+        };
       })
     ).subscribe({
       next: (response) => {
+        console.log(response);
+
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again
         this.communityStore.update(id, response.community);
@@ -100,8 +101,8 @@ export class CommunityService {
 
         this.textChannelStore.add(textChannels);
         this.voiceChannelStore.add(voiceChannels);
-        this.memberStore.add(response.members);
         this.roleStore.add(response.roles);
+        this.memberStore.add(response.members);
       },
       error: (err) => console.error(err)
     });

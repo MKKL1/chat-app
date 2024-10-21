@@ -20,13 +20,15 @@ public interface CommunityMemberRepository extends ReactiveCrudRepository<Commun
     @Query("""
     SELECT cm.user_id as "user", ur.role_id as role
     FROM community_members as cm
-    join user_roles ur on cm.user_id = ur.user_id
-    join roles r on ur.role_id = r.id
+    inner join user_roles ur on cm.user_id = ur.user_id
+    inner join roles r on ur.role_id = r.id
     WHERE cm.community_id = :community AND r.community_id = cm.community_id""")
     Flux<CommunityMemberRolesRow> findMemberWithRolesFromCommunity(@Param("community") Long community);
 
     @Query("SELECT EXISTS (SELECT 1 FROM community_members WHERE community_id = :community AND user_id = :user)")
     Mono<Boolean> isMemberOfCommunity(@Param("community") Long community, @Param("user") Long user);
+
+    //61096191995150336
 
     @Data
     @AllArgsConstructor

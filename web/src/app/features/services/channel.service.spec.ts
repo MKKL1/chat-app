@@ -9,11 +9,17 @@ import {Channel, ChannelType} from "../models/channel";
 import {environment} from "../../../environment";
 
 let voiceChannel: Channel = {
-  communityId: "123", id: '123', name: "Test voice channel", type: ChannelType.Voice
+  communityId: '123',
+  id: '123',
+  name: 'Test voice channel',
+  type: ChannelType.Voice,
 };
 
 let textChannel: Channel = {
-  communityId: "123", id: '123', name: "Test text channel", type: ChannelType.Text
+  communityId: '123',
+  id: '124',
+  name: 'Test text channel',
+  type: ChannelType.Text,
 };
 
 describe('ChannelService', () => {
@@ -27,8 +33,10 @@ describe('ChannelService', () => {
       providers: [
         ChannelService,
         provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+        provideHttpClientTesting(),
+        VoiceChannelStore,
+        TextChannelStore,
+      ],
     });
 
     httpTesting = TestBed.inject(HttpTestingController);
@@ -37,7 +45,7 @@ describe('ChannelService', () => {
     textChannelStore = TestBed.inject(TextChannelStore);
   });
 
-  afterEach(()=> {
+  afterEach(() => {
     httpTesting.verify();
     textChannelStore.reset();
     voiceChannelStore.reset();
@@ -47,7 +55,6 @@ describe('ChannelService', () => {
     expect(service).toBeTruthy();
   });
 
-  // ideas ids should be unique
   test('should select voice chat', () => {
     service.selectVoiceChannel(voiceChannel);
     const state = voiceChannelStore.getValue();
@@ -67,54 +74,53 @@ describe('ChannelService', () => {
   });
 
   test('should not select text channel', () => {
-    service.selectVoiceChannel(voiceChannel);
+    service.selectTextChannel(voiceChannel);
     const state = textChannelStore.getValue();
     expect(state.active).not.toBe(voiceChannel.id);
   });
 
-
-  test('should new create channel', () => {
+  test('should create new channel', () => {
     const mockNewChannel: Channel = {
-      communityId: "123", id: "123", name: "Created channel", type: ChannelType.Text
+      communityId: '123',
+      id: '125',
+      name: 'Created channel',
+      type: ChannelType.Text,
     };
 
-    service.createChannel(textChannel).subscribe(newChannel => {
+    service.createChannel(mockNewChannel).subscribe((newChannel) => {
       expect(newChannel).toEqual(mockNewChannel);
 
       const textChannelState = textChannelStore.getValue();
       const voiceChannelState = voiceChannelStore.getValue();
-      // new channel should be added to textChannelStore because it is of type textChannel
-      expect(textChannelState.entities).toEqual([textChannel]);
+      expect(textChannelState.entities).toContain(mockNewChannel);
       expect(voiceChannelState.entities).toEqual([]);
     });
 
-    const req = httpTesting.expectOne(environment.api + "channels");
+    const req = httpTesting.expectOne(`${environment.api}channels/${mockNewChannel.communityId}`);
     expect(req.request.method).toBe('POST');
     req.flush(mockNewChannel);
   });
 
   test('should edit channel', () => {
-    let mockUpdatedChannel = {
-      communityId: "123", id: '123', name: "New name", type: ChannelType.Voice
+    const mockUpdatedChannel: Channel = {
+      communityId: '123',
+      id: '123',
+      name: 'New name',
+      type: ChannelType.Voice,
     };
 
     voiceChannelStore.add(voiceChannel);
 
-    let voiceChannelToUpdate: Channel = {
-      ...voiceChannel,
-      name: "New name"
-    };
-
-    service.updateChannel(voiceChannelToUpdate).subscribe(updatedChannel => {
-      expect(updatedChannel.name).toBe("New name");
+    service.updateChannel(mockUpdatedChannel).subscribe((updatedChannel) => {
+      expect(updatedChannel.name).toBe('New name');
 
       const voiceStore = voiceChannelStore.getValue();
-      expect(voiceStore.entities).toBe([updatedChannel]);
+      expect(voiceStore.entities).toContain(updatedChannel);
       const textStore = textChannelStore.getValue();
-      expect(textStore.entities).toBe([]);
+      expect(textStore.entities).toEqual([]);
     });
 
-    const req = httpTesting.expectOne(environment.api + "channels/" + voiceChannel.id);
+    const req = httpTesting.expectOne(`${environment.api}channels/${voiceChannel.id}`);
     expect(req.request.method).toBe('PUT');
     req.flush(mockUpdatedChannel);
   });
@@ -124,10 +130,10 @@ describe('ChannelService', () => {
 
     service.deleteChannel(textChannel.id!).subscribe(() => {
       const textStore = textChannelStore.getValue();
-      expect(textStore.entities).toBe([]);
+      expect(textStore.entities).not.toContain(textChannel);
     });
 
-    const req = httpTesting.expectOne(environment.api + "channels/" + textChannel.id);
+    const req = httpTesting.expectOne(`${environment.api}channels/${textChannel.id}`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });

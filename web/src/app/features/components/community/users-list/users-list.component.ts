@@ -4,6 +4,7 @@ import {MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
+import {MemberQuery} from "../../../store/member/member.query";
 
 
 @Component({
@@ -26,11 +27,13 @@ export class UsersListComponent implements OnInit{
 
   user = '';
 
-  constructor() {
+  constructor(private memberQuery: MemberQuery) {
   }
 
   ngOnInit() {
-
+    this.memberQuery.selectAll().subscribe(member => {
+      console.log(member);
+    });
   }
 
   users: any[] = [

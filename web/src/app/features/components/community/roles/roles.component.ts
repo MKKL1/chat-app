@@ -4,6 +4,7 @@ import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
+import {RoleQuery} from "../../../store/role/role.query";
 
 
 export interface Role{
@@ -34,6 +35,12 @@ export class RolesComponent {
   ];
 
   readonly dialog: MatDialog = inject(MatDialog);
+
+  constructor(private roleQuery: RoleQuery) {
+    this.roleQuery.selectAll().subscribe(role => {
+      console.log(role);
+    });
+  }
 
   openDialog(){
     const dialogRef = this.dialog.open(RoleDialogComponent, {width: '60vw'});

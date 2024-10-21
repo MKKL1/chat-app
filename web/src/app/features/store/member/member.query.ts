@@ -1,10 +1,9 @@
 import {Injectable} from "@angular/core";
-import {Query} from "@datorama/akita";
-import {CommunityState, CommunityStore} from "../community/community.store";
+import {QueryEntity} from "@datorama/akita";
 import {MemberState, MemberStore} from "./member.store";
 
 @Injectable({providedIn: 'root'})
-export class MemberQuery extends Query<MemberState> {
+export class MemberQuery extends QueryEntity<MemberState> {
 
   constructor(protected override store: MemberStore) {
     super(store);

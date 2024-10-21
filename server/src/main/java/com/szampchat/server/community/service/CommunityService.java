@@ -10,15 +10,18 @@ import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
+import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.entity.Role;
+import com.szampchat.server.role.entity.UserRole;
+import com.szampchat.server.role.repository.RoleRepository;
+import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.upload.FileException;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.UserService;
-import com.szampchat.server.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -43,6 +46,9 @@ public class CommunityService {
     private final CustomPrincipalProvider customPrincipalProvider;
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
+
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
 
     public Mono<CommunityDTO> findById(Long id) {
         return communityRepository.findById(id)
@@ -74,7 +80,7 @@ public class CommunityService {
 
         return findById(communityId)
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)
-                    .map(data -> new FullCommunityInfoDTO(community, data.getT1(), data.getT2(), data.getT3()))
+                .map(data ->  new FullCommunityInfoDTO(community, data.getT1(), data.getT2(), data.getT3()))
             );
     }
 
@@ -106,8 +112,23 @@ public class CommunityService {
                     return userService.findUser(ownerId)
                         .flatMap(savedUser ->
                             communityMemberService.create(communityId, savedUser.getId())
-                                .then(Mono.just(savedCommunity))
-                        );
+                                .doOnSuccess(row -> log.info(row.toString()))
+                                // todo maybe move creating role somewhere else
+                                // also add default role which make sense
+                                .then(roleRepository.save(Role.builder()
+                                    .name("baseRole")
+                                    .permission(new PermissionOverwrites())
+                                    .community(communityId).build())
+                                ))
+                                .flatMap(savedRole -> userRoleRepository.save(
+                                    UserRole.builder()
+                                        .roleId(savedRole.getId())
+                                        .userId(ownerId)
+                                        .build()
+                                ))
+                                .then(Mono.just(savedCommunity)
+                    );
+
                 });
         });
 

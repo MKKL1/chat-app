@@ -1,3 +1,6 @@
+import {User} from "./user";
+
 export interface Member{
-  id: string;
+  roles: String[];
+  user: User;
 }
