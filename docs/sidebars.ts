@@ -61,6 +61,11 @@ const sidebars: SidebarsConfig = {
           id: "api-additional/websocket",
           label: "WebSocket",
         },
+        {
+          type: "doc",
+          id: "api-additional/permissions",
+          label: "Permissions",
+        }
       ],
     },
     {
