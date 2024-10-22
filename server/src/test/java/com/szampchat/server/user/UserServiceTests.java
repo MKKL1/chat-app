@@ -1,7 +1,5 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.auth.CurrentUser;
-import com.szampchat.server.snowflake.Snowflake;
 import com.szampchat.server.user.dto.UserCreateDTO;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
@@ -9,12 +7,10 @@ import com.szampchat.server.user.entity.UserSubject;
 import com.szampchat.server.user.exception.UserAlreadyExistsException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;

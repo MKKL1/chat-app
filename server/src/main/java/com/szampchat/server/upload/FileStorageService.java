@@ -1,6 +1,6 @@
 package com.szampchat.server.upload;
 
-import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.snowflake.SnowflakeGen;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -21,7 +21,7 @@ import java.nio.file.*;
 @AllArgsConstructor
 @Service
 public class FileStorageService {
-    private final Snowflake snowflake;
+    private final SnowflakeGen snowflakeGen;
 
     public void init(){
         try{
@@ -69,7 +69,7 @@ public class FileStorageService {
             return Paths.get(
                 "uploads",
                 filePath,
-                snowflake.nextId() + filename.substring(dotIndex).toLowerCase());
+                snowflakeGen.nextId() + filename.substring(dotIndex).toLowerCase());
             })
             .doOnNext(uploadPath -> {
                 try {

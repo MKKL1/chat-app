@@ -1,17 +1,12 @@
 package com.szampchat.server.channel;
 
 import com.szampchat.server.channel.dto.ChannelCreateDTO;
-import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
-import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.role.RoleService;
-import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

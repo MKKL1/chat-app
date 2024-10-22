@@ -14,7 +14,7 @@ import java.util.Enumeration;
  * This class should be used as a Singleton.
  * Make sure that you create and reuse a Single instance of Snowflake per node in your distributed system cluster.
  */
-public class Snowflake {
+public class SnowflakeGen {
     private static final int UNUSED_BITS = 1; // Sign bit, Unused (always set to 0)
     private static final int EPOCH_BITS = 41;
     private static final int NODE_ID_BITS = 10;
@@ -33,7 +33,7 @@ public class Snowflake {
     private volatile long sequence = 0L;
 
     // Create Snowflake with a nodeId and custom epoch
-    public Snowflake(long nodeId, long customEpoch) {
+    public SnowflakeGen(long nodeId, long customEpoch) {
         if(nodeId < 0 || nodeId > maxNodeId) {
             throw new IllegalArgumentException(String.format("NodeId must be between %d and %d", 0, maxNodeId));
         }
@@ -42,12 +42,12 @@ public class Snowflake {
     }
 
     // Create Snowflake with a nodeId
-    public Snowflake(long nodeId) {
+    public SnowflakeGen(long nodeId) {
         this(nodeId, DEFAULT_CUSTOM_EPOCH);
     }
 
     // Let Snowflake generate a nodeId
-    public Snowflake() {
+    public SnowflakeGen() {
         this.nodeId = createNodeId();
         this.customEpoch = DEFAULT_CUSTOM_EPOCH;
     }

@@ -1,23 +1,6 @@
 package com.szampchat.server.upload;
 
-import com.szampchat.server.snowflake.Snowflake;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.codec.multipart.FilePart;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 // don't work 😔
 //@ExtendWith(MockitoExtension.class)
