@@ -1,6 +1,6 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.upload.FileException;
+import com.szampchat.server.upload.FileNotFoundException;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.dto.UserCreateDTO;
@@ -80,7 +80,7 @@ public class UserService {
                     try {
                         fileStorageService.delete(user.getImageUrl());
                     } catch (Exception e) {
-                        return Mono.error(new FileException("Error during deleting file: " + e.getMessage()));
+                        return Mono.error(new FileNotFoundException("Error during deleting file: " + e.getMessage()));
                     }
                 }
 

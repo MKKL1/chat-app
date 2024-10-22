@@ -34,7 +34,7 @@ public class RoleController {
     @Operation(summary = "Get role")
 
     @GetMapping("/roles/{roleId}")
-    @PreAuthorize("@roleService.hasAccessToRoleInfo(#roleId, #currentUser.userId)")
+//    @PreAuthorize("@roleService.hasAccessToRoleInfo(#roleId, #currentUser.userId)")
     public Mono<Role> getRole(@PathVariable Long roleId, CurrentUser currentUser) {
         return roleService.findRole(roleId);
     }

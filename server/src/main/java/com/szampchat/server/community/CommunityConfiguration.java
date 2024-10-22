@@ -2,7 +2,7 @@ package com.szampchat.server.community;
 
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.Invitation;
-import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.snowflake.SnowflakeGen;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 @AllArgsConstructor
 public class CommunityConfiguration {
-    private final Snowflake snowflake;
+    private final SnowflakeGen snowflakeGen;
     //TODO separated snowflake generators for different entities
 
     @Bean
@@ -20,7 +20,7 @@ public class CommunityConfiguration {
         return ((entity, table) -> Mono.just(entity)
             .doOnNext(community -> {
                 if (community.getId() == null){
-                    community.setId(snowflake.nextId());
+                    community.setId(snowflakeGen.nextId());
                 }
             }));
     }
@@ -31,7 +31,7 @@ public class CommunityConfiguration {
         return ((entity, table) -> Mono.just(entity)
                 .doOnNext(community -> {
                     if (community.getId() == null){
-                        community.setId(snowflake.nextId());
+                        community.setId(snowflakeGen.nextId());
                     }
                 }));
     }
