@@ -1,6 +1,7 @@
 package com.szampchat.server.community.service;
 
 import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.dto.ChannelRolesDTO;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
 import com.szampchat.server.community.dto.CommunityDTO;
@@ -13,6 +14,7 @@ import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.RoleService;
+import com.szampchat.server.role.dto.RoleDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
@@ -71,12 +73,12 @@ public class CommunityService {
     }
 
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(Long communityId) {
-        //Collect all channels of community
-        Mono<List<Channel>> channelFlux = channelService.findChannelsForCommunity(communityId).collectList();
+        //Collect all channels of community with role based permission overwrites
+        Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
         //Collect members with corresponding roles
         Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
         //Collect roles
-        Mono<List<Role>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
+        Mono<List<RoleDTO>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
 
         return findById(communityId)
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)

@@ -1,5 +1,6 @@
 package com.szampchat.server.channel.dto;
 
+import com.szampchat.server.channel.ChannelType;
 import lombok.Data;
 
 @Data
@@ -7,5 +8,5 @@ public class ChannelDTO {
     private Long id;
     private String name;
     private Long community;
-    private Integer type;
+    private ChannelType type;
 }
