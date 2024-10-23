@@ -1,0 +1,22 @@
+:host{
+  color: white;
+  display: grid;
+  height: 100vh;
+  background: linear-gradient(135deg,
+    #1f6d5a 10%,
+    #19463f 30%,
+    #153933 50%,
+    #102d28 70%,
+    #0b211d 85%,
+    #050f0f 95% );
+}
+
+mat-card{
+  place-self: center;
+  padding: 100px;
+}
+
+button{
+  width: 100%;
+  margin: 0 20px;
+}

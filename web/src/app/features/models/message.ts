@@ -8,6 +8,7 @@ export interface Message{
   userId: string;
   edited: boolean;
   updatedAt: Date;
+  dateFormatted: string;
   respondsToMessage?: string;
   reactions: Reaction[];
   attachments: MessageAttachment[];

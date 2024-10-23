@@ -29,6 +29,16 @@ mat-sidenav-container {
   }
 }
 
+mat-sidenav{
+  background-image: linear-gradient(
+      to bottom,
+      #0f1513,
+      var(--light-background),
+      var(--main),
+      #17aa8d
+  );
+}
+
 // Move the content down so that it won't be hidden by the toolbar
 mat-sidenav-content {
   display: flex;

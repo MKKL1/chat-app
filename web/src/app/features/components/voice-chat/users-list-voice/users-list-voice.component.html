@@ -1,19 +1,17 @@
-<mat-accordion>
+<mat-list>
   <div>
     <button (click)="addChannel()" mat-button>Add new channel <mat-icon fontIcon="add"></mat-icon></button>
   </div>
+  @for (channel of voiceChannels(); track channel) {
+    <div style="display: flex; flex-direction: row; align-items: center">
+      <app-text-channel-info
+        (click)="selectChannel(channel)"
+        [channel]="channel">
+      </app-text-channel-info>
 
-  @if(voiceChannels$ | async; as voiceChannels){
-    @for(channel of voiceChannels; track channel){
-      <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-        <mat-expansion-panel-header>
-          <mat-panel-title>{{channel.name}}</mat-panel-title>
-        </mat-expansion-panel-header>
-        <!--      @for(user of channel.users; track user){-->
-        <!--         <app-user-basic-info [username]="user.username"></app-user-basic-info>-->
-        <!--      }-->
-        <!--      and 97 more users-->
-      </mat-expansion-panel>
-    }
+      <button (click)="editChannel(channel)" mat-icon-button>
+        <mat-icon fontIcon="edit"></mat-icon>
+      </button>
+    </div>
   }
-</mat-accordion>
+</mat-list>

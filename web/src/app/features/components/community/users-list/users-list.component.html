@@ -1,22 +1,17 @@
-<!-- Fix width -->
-<mat-accordion>
-  @for(user of users; track user.id){
-    <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <app-user-basic-info [user]="user"></app-user-basic-info>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <p>User description</p>
-      <!--   add condition based on roles array length   -->
-      @if(true){
-        <p>Roles:</p>
-        <mat-chip-set>
-          @for(role of user.roles; track role){
-            <mat-chip>{{role}}</mat-chip>
-          }
-        </mat-chip-set>
-      }
-    </mat-expansion-panel>
+<mat-list>
+  @for(member of members(); track member.user.id){
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <img mat-card-avatar src="{{member.user.imageUrl}}" class="example-header-image">
+        <mat-card-title>{{member.user.username}}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip-set>
+            @for(role of member.roles; track role){
+              <mat-chip>{{getRoleName(role)}}</mat-chip>
+            }
+          </mat-chip-set>
+        </mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
   }
-</mat-accordion>
+</mat-list>

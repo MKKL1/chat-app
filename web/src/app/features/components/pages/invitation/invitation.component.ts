@@ -4,6 +4,8 @@ import {CommunityService} from "../../../services/community.service";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {Community} from "../../../models/community";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatCard, MatCardActions, MatCardContent, MatCardHeader} from "@angular/material/card";
+import {MatButton} from "@angular/material/button";
 
 // TODO
 // add styling to invitation, center spinner
@@ -16,7 +18,12 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   selector: 'app-invitation',
   standalone: true,
   imports: [
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatCard,
+    MatCardHeader,
+    MatCardContent,
+    MatCardActions,
+    MatButton
   ],
   templateUrl: './invitation.component.html',
   styleUrl: './invitation.component.scss'

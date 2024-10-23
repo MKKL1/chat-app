@@ -1,6 +1,13 @@
 // add bigger font for icons
 :host{
-  background: #181818;
+  //background: #181818;
+  background-image: linear-gradient(
+      to bottom,
+      #0f1513,
+      var(--light-background),
+      var(--main),
+      #17aa8d
+  );
   width: 4%;
   display: flex;
   flex-direction: column;
