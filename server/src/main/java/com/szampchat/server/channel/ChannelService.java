@@ -54,12 +54,7 @@ public class ChannelService {
                         //TODO get in bulk
                         channelRoleService.getChannelOverwrites(channelDTO.getId())
                         .collectList()
-                        .map(list -> {
-                            Map<Long, PermissionOverwrites> overwritesMap = new HashMap<>();
-                            list.forEach(x -> overwritesMap.put(x.getRoleId(), x.getOverwrites()));
-                            return overwritesMap;
-                        })
-                        .map(map -> new ChannelRolesDTO(channelDTO, map))
+                        .map(list -> new ChannelRolesDTO(channelDTO, list))
                 );
     }
 
