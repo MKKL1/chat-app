@@ -112,7 +112,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}")
                             .access(authMan.create(authFunc.isParticipant))//TODO delete only their own message
                         //RoleController
-                        .pathMatchers(HttpMethod.GET, "/roles/{roleId}")
+                        .pathMatchers(HttpMethod.GET, "/communities/{communityId}/roles/{roleId}")
                             .access(authMan.create(authFunc.hasAccessToRoleInfo))
                         .pathMatchers(HttpMethod.POST, "/communities/{communityId}/roles")
                             .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))

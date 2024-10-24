@@ -2,6 +2,7 @@ package com.szampchat.server.role;
 
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.exception.RoleNotFoundException;
 import com.szampchat.server.role.repository.RoleRepository;
@@ -115,7 +116,7 @@ class RoleServiceTests {
         when(roleRepository.findRolesByCommunity(eq(communityId)))
                 .thenReturn(Flux.just(role1, role2));
 
-        Flux<RoleDTO> result = roleService.findRolesForCommunity(communityId);
+        Flux<RoleNoCommunityDTO> result = roleService.findRolesForCommunity(communityId);
 
         StepVerifier.create(result)
                 .expectNext(role1)

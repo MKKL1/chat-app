@@ -15,6 +15,7 @@ import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
@@ -78,7 +79,7 @@ public class CommunityService {
         //Collect members with corresponding roles
         Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
         //Collect roles
-        Mono<List<RoleDTO>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
+        Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
 
         return findById(communityId)
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)
