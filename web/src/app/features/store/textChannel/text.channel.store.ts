@@ -12,6 +12,9 @@ export class TextChannelStore extends EntityStore<ChannelState> {
     super();
   }
 
+  override akitaPreAddEntity(newEntity: any): getEntityType<ChannelState> {
+    return super.akitaPreAddEntity(newEntity);
+  }
 
 
 }

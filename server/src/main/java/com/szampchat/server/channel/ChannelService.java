@@ -3,14 +3,20 @@ package com.szampchat.server.channel;
 import com.szampchat.server.channel.dto.ChannelCreateDTO;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.channel.event.ChannelCreateEvent;
+import com.szampchat.server.channel.event.ChannelDeleteEvent;
 import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.Recipient;
+import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.role.RoleService;
 import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -21,6 +27,10 @@ import reactor.core.publisher.Mono;
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
+
+    private final ModelMapper modelMapper;
+
+    private final EventSink eventSender;
 
     //TODO cache it (this method will be called on most api operations)
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
@@ -56,7 +66,22 @@ public class ChannelService {
                         .communityId(channel.getCommunityId())
                         .type(channel.getType())
                         .build()
-                    )
+                    ).doOnSuccess(savedChannel -> {
+                        eventSender.publish(ChannelCreateEvent.builder()
+                            // I don't use mapper because I don't want to make custom rules for enum
+                            .data(new ChannelDTO(
+                                    savedChannel.getId(),
+                                    savedChannel.getName(),
+                                    savedChannel.getCommunityId(),
+                                    savedChannel.getType().ordinal()
+                                )
+                            )
+                            .recipient(Recipient.builder()
+                                    .context(Recipient.Context.COMMUNITY)
+                                    .id(savedChannel.getCommunityId())
+                                    .build())
+                            .build());
+                    })
                 );
     }
 
@@ -70,7 +95,22 @@ public class ChannelService {
 
     // issue with constraints
     public Mono<Void> deleteChannel(Long id){
-        return channelRepository.deleteById(id);
+        return channelRepository.findById(id)
+            .flatMap(channel -> {
+                // this id will be used in eventPublisher
+                Long communityId = channel.getCommunityId();
+                return channelRepository.deleteById(id)
+                    .then(Mono.fromRunnable(() -> {
+                        eventSender.publish(
+                            ChannelDeleteEvent.builder()
+                                .data(id)
+                                .recipient(Recipient.builder()
+                                    .context(Recipient.Context.COMMUNITY)
+                                    .id(communityId)
+                                    .build())
+                                .build());
+                    }));
+            });
     }
 
 }
