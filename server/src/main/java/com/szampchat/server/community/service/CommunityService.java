@@ -2,7 +2,6 @@ package com.szampchat.server.community.service;
 
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.channel.dto.ChannelRolesDTO;
-import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
 import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
@@ -13,8 +12,7 @@ import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
-import com.szampchat.server.role.RoleService;
-import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.role.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;

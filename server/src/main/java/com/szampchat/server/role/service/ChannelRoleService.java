@@ -1,4 +1,4 @@
-package com.szampchat.server.role;
+package com.szampchat.server.role.service;
 
 import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
 import com.szampchat.server.role.repository.ChannelRoleRepository;

@@ -1,11 +1,11 @@
 package com.szampchat.server.role;
 
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.role.dto.RoleDTO;
 import com.szampchat.server.role.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.exception.RoleNotFoundException;
 import com.szampchat.server.role.repository.RoleRepository;
+import com.szampchat.server.role.service.RoleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -85,7 +85,7 @@ class RoleServiceTests {
         when(roleRepository.findById(eq(roleId)))
                 .thenReturn(Mono.just(role));
 
-        Mono<Role> result = roleService.findRole(roleId);
+        Mono<Role> result = roleService.getRole(roleId);
 
         StepVerifier.create(result)
                 .expectNext(role)
@@ -99,7 +99,7 @@ class RoleServiceTests {
         when(roleRepository.findById(eq(roleId)))
                 .thenReturn(Mono.empty());
 
-        Mono<Role> result = roleService.findRole(roleId);
+        Mono<Role> result = roleService.getRole(roleId);
 
         StepVerifier.create(result)
                 .expectError(RoleNotFoundException.class)

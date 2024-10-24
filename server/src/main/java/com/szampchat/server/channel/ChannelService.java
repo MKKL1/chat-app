@@ -8,18 +8,12 @@ import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.permission.data.PermissionOverwrites;
-import com.szampchat.server.role.ChannelRoleService;
-import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
+import com.szampchat.server.role.service.ChannelRoleService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 @Service("channelService")
 @AllArgsConstructor
