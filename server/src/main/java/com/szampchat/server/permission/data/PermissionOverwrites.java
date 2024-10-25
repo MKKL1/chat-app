@@ -1,5 +1,6 @@
 package com.szampchat.server.permission.data;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ Result: 1 1  0 0  0 1
  */
 @Getter
 @AllArgsConstructor
+@Schema(implementation = Long.class)
 public class PermissionOverwrites {
     private static final int channelOverwriteMask = PermissionFlag.getChannelOverwriteMask();
     private long permissionOverwriteData;

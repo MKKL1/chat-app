@@ -1,7 +1,9 @@
 package com.szampchat.server.role;
 
-import com.szampchat.server.role.dto.RoleCreateDTO;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.szampchat.server.role.dto.RoleCreateRequest;
 import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.shared.docs.OperationDocs;
@@ -29,9 +31,9 @@ public class RoleController {
     @OperationDocs({RESPONSE_419, REQUIRES_ROLE_ACCESS_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Get role")
 
-    @GetMapping("/communities/{communityId}/roles/{roleId}")
-    public Mono<RoleDTO> getRole(@PathVariable Long roleId) {
-        return roleService.getRole(roleId);
+    @GetMapping("/roles/{roleId}")
+    public Mono<RoleWithMembersDTO> getRole(@PathVariable Long roleId) {
+        return roleService.getRoleWithMembers(roleId);
     }
 
 
@@ -46,25 +48,23 @@ public class RoleController {
 //    }
 
 
-    //TODO implement
-    @ApiResponse(responseCode = "204")
+    @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Create role TODO")
 
     @PostMapping("/communities/{communityId}/roles")
-    public Mono<RoleDTO> createRole(@PathVariable Long communityId, @RequestBody RoleCreateDTO roleCreateDTO) {
-        return roleService.create(roleCreateDTO, communityId);
+    public Mono<RoleWithMembersDTO> createRole(@PathVariable Long communityId, @RequestBody RoleCreateRequest roleCreateRequest) {
+        return roleService.create(roleCreateRequest, communityId);
     }
 
 
-    //TODO implement
-    @ApiResponse(responseCode = "204")
+    @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Edit role TODO")
 
     @PatchMapping("/communities/{communityId}/roles/{roleId}")
-    public Mono<Role> editRole(@PathVariable Long roleId, @RequestBody RoleCreateDTO roleCreateDTO) {
-        return Mono.empty();
+    public Mono<RoleWithMembersDTO> editRole(@PathVariable Long roleId, @RequestBody JsonPatch jsonPatch) {
+        return roleService.update(roleId, jsonPatch);
     }
 
 

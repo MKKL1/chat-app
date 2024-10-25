@@ -10,7 +10,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleCreateDTO {
+public class RoleCreateRequest {
     private String name;
     private PermissionOverwrites permissionOverwrites;
     private Set<Long> members;
