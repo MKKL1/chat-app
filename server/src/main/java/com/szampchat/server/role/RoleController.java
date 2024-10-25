@@ -6,8 +6,12 @@ import com.szampchat.server.role.dto.RoleDTO;
 import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.service.RoleService;
+import com.szampchat.server.shared.docs.JsonPatchSchema;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +54,7 @@ public class RoleController {
 
     @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
-    @Operation(summary = "Create role TODO")
+    @Operation(summary = "Create role")
 
     @PostMapping("/communities/{communityId}/roles")
     public Mono<RoleWithMembersDTO> createRole(@PathVariable Long communityId, @RequestBody RoleCreateRequest roleCreateRequest) {
@@ -60,21 +64,21 @@ public class RoleController {
 
     @ApiResponse(responseCode = "200")
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
-    @Operation(summary = "Edit role TODO")
+    @Operation(summary = "Edit role", description = "Uses json patch to edit RoleWithMembersDTO")
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(array = @ArraySchema(schema = @Schema(implementation = JsonPatchSchema.class))))
     @PatchMapping("/communities/{communityId}/roles/{roleId}")
     public Mono<RoleWithMembersDTO> editRole(@PathVariable Long roleId, @RequestBody JsonPatch jsonPatch) {
         return roleService.update(roleId, jsonPatch);
     }
 
 
-    //TODO implement
     @ApiResponse(responseCode = "204")
     @OperationDocs({RESPONSE_419, REQUIRES_OWNER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
-    @Operation(summary = "Delete role TODO")
+    @Operation(summary = "Delete role")
 
     @DeleteMapping("/communities/{communityId}/roles/{roleId}")
     public Mono<Void> deleteRole(@PathVariable Long roleId) {
-        return Mono.empty();
+        return roleService.delete(roleId);
     }
 }

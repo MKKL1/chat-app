@@ -103,6 +103,10 @@ public class RoleService {
                 });
     }
 
+    public Mono<Void> delete(Long roleId) {
+        return roleRepository.removeById(roleId);
+    }
+
     private RoleWithMembersDTO patch(RoleWithMembersDTO existingRoleWithMembers, JsonPatch jsonPatch) throws InvalidPatchException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode roleWithMembersNode = objectMapper.convertValue(existingRoleWithMembers, JsonNode.class);
