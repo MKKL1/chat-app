@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.role.RoleMapper;
 import com.szampchat.server.role.dto.*;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
@@ -29,8 +31,8 @@ import java.util.stream.Collectors;
 public class RoleService {
     private final RoleRepository roleRepository;
     private final CommunityMemberService communityMemberService;
-    private final ModelMapper modelMapper;
-    private final UserRoleRepository userRoleRepository;
+    private final RoleMapper roleMapper;
+    private final UserRoleService userRoleService;
 
     public Mono<Boolean> hasAccessToRoleInfo(Long roleId, Long userId) {
         return getRole(roleId)
@@ -38,43 +40,31 @@ public class RoleService {
                 .flatMap(community -> communityMemberService.isMember(community, userId));
     }
 
-    public Flux<RoleNoCommunityDTO> getMemberRoles(Long communityId, Long userId) {
+    public Flux<RoleDTO> getMemberRoles(Long communityId, Long userId) {
         return roleRepository.findRolesByCommunityAndUser(communityId, userId)
-                .map(this::toNoCommunityDTO);
+                .map(roleMapper::toDto);
     }
 
     public Mono<RoleDTO> getRole(Long roleId) {
         return roleRepository.findById(roleId)
                 .switchIfEmpty(Mono.error(new RoleNotFoundException()))
-                .map(this::toDto);
+                .map(roleMapper::toDto);
+    }
+
+    public Flux<RoleDTO> getRolesByCommunity(Long communityId) {
+        return roleRepository.findRolesByCommunity(communityId)
+                .map(roleMapper::toDto);
     }
 
     public Mono<RoleWithMembersDTO> getRoleWithMembers(Long roleId) {
-        Mono<Set<Long>> membersMono = userRoleRepository.findUserRolesByRoleId(roleId)
-                .map(UserRole::getUserId)
+        Mono<Set<Long>> membersMono = userRoleService.getRoleMembers(roleId)
+                .map(UserRoleDTO::getUserId)
                 .collect(Collectors.toSet());
 
         Mono<RoleDTO> roleMono = getRole(roleId);
 
         return Mono.zip(roleMono, membersMono)
-                .map(tuple -> {
-                    RoleDTO roleDTO = tuple.getT1();
-                    Set<Long> members = tuple.getT2();
-                    return new RoleWithMembersDTO(roleDTO, members);
-                });
-    }
-
-    public Flux<RoleNoCommunityDTO> findRolesForCommunity(Long communityId) {
-        return roleRepository.findRolesByCommunity(communityId)
-                .map(this::toNoCommunityDTO);
-    }
-
-    RoleNoCommunityDTO toNoCommunityDTO(Role role) {
-        return modelMapper.map(role, RoleNoCommunityDTO.class);
-    }
-
-    RoleDTO toDto(Role role) {
-        return modelMapper.map(role, RoleDTO.class);
+                .map(tuple -> new RoleWithMembersDTO(tuple.getT1(), tuple.getT2()));
     }
 
     @Transactional
@@ -84,107 +74,70 @@ public class RoleService {
                     .permission(roleCreateRequest.getPermissionOverwrites())
                     .community(communityId)
                     .build())
-                .flatMap(role -> createBulkUserRole(role.getId(), roleCreateRequest.getMembers())
+                .flatMap(role -> userRoleService.createBulkUserRole(role.getId(), role.getCommunity(), roleCreateRequest.getMembers())
                         .map(UserRoleDTO::getUserId)
                         .collect(Collectors.toSet())
-                        .map(users -> new RoleWithMembersDTO(toDto(role), users)));
-    }
-
-    public Mono<UserRoleDTO> createUserRole(UserRoleDTO userRoleDTO) {
-        return getRole(userRoleDTO.getRoleId())
-                .flatMap(roleDTO -> createUserRoleFromCommunity(roleDTO, userRoleDTO))
-                .switchIfEmpty(Mono.error(new InvalidMembersException(List.of(userRoleDTO.getUserId()))));
-    }
-
-    public Flux<UserRoleDTO> createBulkUserRole(Long roleId, Set<Long> members) {
-        return getRole(roleId)
-                .flatMapMany(roleDTO ->
-                        Flux.fromIterable(members)
-                        .flatMap(member -> createUserRoleFromCommunity(roleDTO, new UserRoleDTO(roleId, member))
-                                .map(Optional::of)  // Wrap valid member in Optional
-                                .switchIfEmpty(Mono.just(Optional.empty()))  // Handle invalid members as empty Optional
-                                .map(optional -> new AbstractMap.SimpleEntry<>(member, optional))
-                        )
-                        //Collect list of valid and invalid members
-                        .collectList()
-                        .flatMapMany(results -> {
-                            List<Long> invalidMembers = results.stream()
-                                    .filter(entry -> entry.getValue().isEmpty())
-                                    .map(Map.Entry::getKey)
-                                    .collect(Collectors.toList());
-
-                            if (!invalidMembers.isEmpty())
-                                return Mono.error(new InvalidMembersException(invalidMembers));
-
-                            //Return valid members on success
-                            return Flux.fromStream(results.stream()
-                                            .filter(entry -> entry.getValue().isPresent())
-                                            .map(entry -> entry.getValue().get()
-                                            )
-                            );
-                        })
-                );
-    }
-
-    private Mono<UserRoleDTO> createUserRoleFromCommunity(RoleDTO roleDTO, UserRoleDTO userRoleDTO) {
-        return communityMemberService.isMember(roleDTO.getCommunity(), userRoleDTO.getUserId())
-                .flatMap(isMember -> {
-                    if (!isMember) {
-                        return Mono.empty();
-                    }
-
-                    return userRoleRepository.save(UserRole.builder()
-                            .userId(userRoleDTO.getUserId())
-                            .roleId(userRoleDTO.getRoleId())
-                            .build());
-                })
-                .map(userRole -> new UserRoleDTO(userRole.getRoleId(), userRole.getUserId()));
+                        .map(users -> new RoleWithMembersDTO(roleMapper.toDto(role), users)));
     }
 
     @Transactional
     public Mono<RoleWithMembersDTO> update(Long roleId, JsonPatch jsonPatch) {
         return getRoleWithMembers(roleId)
                 .flatMap(existingRoleWithMembers -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode roleWithMembersNode = objectMapper.convertValue(existingRoleWithMembers, JsonNode.class);
+                    RoleWithMembersDTO patchedRoleWithMembers = patch(existingRoleWithMembers, jsonPatch);
 
-                    try {
-                        JsonNode patchedNode = jsonPatch.apply(roleWithMembersNode);
+                    Mono<RoleDTO> updatedRoleMono = updateRoleEntityIfChanged(
+                            existingRoleWithMembers.getRole(),
+                            patchedRoleWithMembers.getRole()
+                    );
 
-                        RoleWithMembersDTO patchedRoleWithMembers = objectMapper.treeToValue(patchedNode, RoleWithMembersDTO.class);
+                    Mono<Set<Long>> updatedMembersMono = updateRoleMembersIfChanged(
+                            roleId,
+                            existingRoleWithMembers.getRole().getCommunity(),
+                            existingRoleWithMembers.getMembers(),
+                            patchedRoleWithMembers.getMembers()
+                    );
 
-                        //Make sure that community id is not updated
-                        patchedRoleWithMembers.getRole().setCommunity(existingRoleWithMembers.getRole().getCommunity());
-
-                        Mono<RoleDTO> updatedRoleMono = updateRoleEntityIfChanged(existingRoleWithMembers.getRole(), patchedRoleWithMembers.getRole());
-                        Mono<Set<Long>> updatedMembersMono = updateRoleMembersIfChanged(roleId, existingRoleWithMembers.getMembers(), patchedRoleWithMembers.getMembers());
-                        return Mono.zip(updatedRoleMono, updatedMembersMono)
-                                .map(tuple -> new RoleWithMembersDTO(tuple.getT1(), tuple.getT2()));
-
-                    } catch (JsonPatchException | JsonProcessingException e) {
-                        return Mono.error(new InvalidPatchException("Failed to apply patch", e));
-                    }
+                    return Mono.zip(updatedRoleMono, updatedMembersMono)
+                            .map(tuple -> new RoleWithMembersDTO(tuple.getT1(), tuple.getT2()));
                 });
+    }
+
+    private RoleWithMembersDTO patch(RoleWithMembersDTO existingRoleWithMembers, JsonPatch jsonPatch) throws InvalidPatchException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode roleWithMembersNode = objectMapper.convertValue(existingRoleWithMembers, JsonNode.class);
+
+        try {
+            JsonNode patchedNode = jsonPatch.apply(roleWithMembersNode);
+            RoleWithMembersDTO patchedRoleWithMembers = objectMapper.treeToValue(patchedNode, RoleWithMembersDTO.class);
+
+            long communityId = existingRoleWithMembers.getRole().getCommunity();
+            //Make sure that community id is not updated
+            patchedRoleWithMembers.getRole().setCommunity(communityId);
+
+            return patchedRoleWithMembers;
+        } catch (JsonPatchException | JsonProcessingException e) {
+            throw new InvalidPatchException("Failed to apply patch", e);
+        }
     }
 
     private Mono<RoleDTO> updateRoleEntityIfChanged(RoleDTO existingRole, RoleDTO patchedRole) {
         if (!existingRole.equals(patchedRole)) {
-            return roleRepository.save(toEntity(patchedRole)).map(this::toDto);
+            return roleRepository.save(roleMapper.toEntity(patchedRole)).map(roleMapper::toDto);
         }
         return Mono.just(existingRole);
     }
 
-    // Updates role members if there are changes, and returns updated member list
-    private Mono<Set<Long>> updateRoleMembersIfChanged(Long roleId, Set<Long> existingMembers, Set<Long> patchedMembers) {
+    private Mono<Set<Long>> updateRoleMembersIfChanged(Long roleId, Long communityId, Set<Long> existingMembers, Set<Long> patchedMembers) {
         if (!existingMembers.equals(patchedMembers)) {
-            return updateRoleMembers(roleId, patchedMembers);
+            return updateRoleMembers(roleId, communityId, patchedMembers);
         }
         return Mono.just(existingMembers);
     }
 
-    private Mono<Set<Long>> updateRoleMembers(Long roleId, Set<Long> newMembers) {
-        return userRoleRepository.findUserRolesByRoleId(roleId)
-                .map(UserRole::getUserId)
+    private Mono<Set<Long>> updateRoleMembers(Long roleId, Long communityId, Set<Long> newMembers) {
+        return userRoleService.getRoleMembers(roleId)
+                .map(UserRoleDTO::getUserId)
                 .collectList()
                 .flatMap(existingMembers -> {
                     List<Long> toAdd = newMembers.stream()
@@ -196,16 +149,13 @@ public class RoleService {
                             .collect(Collectors.toList());
 
                     Flux<Void> removeFlux = Flux.fromIterable(toRemove)
-                            .flatMap(user -> userRoleRepository.removeUserRolesByRoleIdAndUserId(roleId, user));
+                            .flatMap(user -> userRoleService.delete(roleId, user));
                     Flux<UserRoleDTO> addFlux = Flux.fromIterable(toAdd)
-                            .flatMap(memberId -> createUserRole(new UserRoleDTO(roleId, memberId)));
+                            .flatMap(memberId -> userRoleService.createUserRole(communityId, new UserRoleDTO(roleId, memberId)));
 
-                    return removeFlux.thenMany(addFlux).then(Mono.just(newMembers));
+                    return removeFlux
+                            .thenMany(addFlux)
+                            .then(Mono.just(newMembers));
                 });
     }
-
-    private Role toEntity(RoleDTO roleDTO) {
-        return modelMapper.map(roleDTO, Role.class);
-    }
-
 }

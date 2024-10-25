@@ -13,7 +13,7 @@ import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.service.RoleService;
-import com.szampchat.server.role.dto.RoleNoCommunityDTO;
+import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
@@ -76,8 +76,10 @@ public class CommunityService {
         Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
         //Collect members with corresponding roles
         Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
-        //Collect roles
-        Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
+        //Collect roles and remove "community" field
+        Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.getRolesByCommunity(communityId)
+                .map(roleDTO -> modelMapper.map(roleDTO, RoleNoCommunityDTO.class))
+                .collectList();
 
         return findById(communityId)
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)

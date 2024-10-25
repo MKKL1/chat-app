@@ -4,10 +4,9 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.permission.repository.PermissionRepository;
+import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.dto.RoleDTO;
-import com.szampchat.server.role.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.service.RoleService;
-import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.permission.data.PermissionFlag;
 import com.szampchat.server.permission.data.Permissions;
@@ -60,7 +59,7 @@ public class PermissionService {
                     return Mono.just(community.getBasePermissions())
                             .flatMap(basePermissions ->
                                     roleService.getMemberRoles(communityId, userId)
-                                            .map(RoleNoCommunityDTO::getPermissionOverwrites) // Get all permission overrides
+                                            .map(RoleDTO::getPermissionOverwrites) // Get all permission overrides
                                             .map(permissionOverride -> permissionOverride.apply(basePermissions)) // Apply them one by one
                                             .doOnNext(basePermissions::setPermissionData) // Set new permissions for next iteration
                                             .then(Mono.just(basePermissions)) // Return permission on finish

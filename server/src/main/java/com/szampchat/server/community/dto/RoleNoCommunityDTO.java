@@ -1,4 +1,4 @@
-package com.szampchat.server.role.dto;
+package com.szampchat.server.community.dto;
 
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import lombok.AllArgsConstructor;
