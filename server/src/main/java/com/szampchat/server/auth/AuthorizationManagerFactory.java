@@ -23,7 +23,6 @@ public class AuthorizationManagerFactory {
     private final PermissionService permissionService;
     private ObjectMapper mapper = new ObjectMapper();
 
-    //Hell
     private Mono<CurrentUser> getCurrentUser(Authentication authentication) {
         return Mono.just(authentication.getPrincipal())
                 .switchIfEmpty(Mono.error(new IllegalStateException("Principal is empty")))

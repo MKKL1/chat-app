@@ -3,7 +3,7 @@ package com.szampchat.server.auth;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
-import com.szampchat.server.role.RoleService;
+import com.szampchat.server.role.service.RoleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.server.authorization.AuthorizationContext;

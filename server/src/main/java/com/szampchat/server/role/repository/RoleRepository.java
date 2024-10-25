@@ -6,6 +6,7 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface RoleRepository extends R2dbcRepository<Role, Long> {
@@ -18,4 +19,6 @@ public interface RoleRepository extends R2dbcRepository<Role, Long> {
                           JOIN user_roles as ur on r.id = ur.role_id
         WHERE ur.user_id = :user_id""")
     Flux<Role> findRolesByCommunityAndUser(@Param("community_id") Long community_id, @Param("user_id") Long userId);
+
+    Mono<Long> removeRoleById(Long id);
 }
