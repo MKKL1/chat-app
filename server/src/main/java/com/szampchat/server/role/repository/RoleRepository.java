@@ -20,5 +20,5 @@ public interface RoleRepository extends R2dbcRepository<Role, Long> {
         WHERE ur.user_id = :user_id""")
     Flux<Role> findRolesByCommunityAndUser(@Param("community_id") Long community_id, @Param("user_id") Long userId);
 
-    Mono<Void> removeById(Long roleId);
+    Mono<Long> removeRoleById(Long id);
 }

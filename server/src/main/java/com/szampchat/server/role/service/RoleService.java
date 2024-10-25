@@ -5,19 +5,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.community.service.CommunityMemberService;
+import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.role.RoleMapper;
 import com.szampchat.server.role.dto.*;
 import com.szampchat.server.role.entity.Role;
-import com.szampchat.server.role.entity.UserRole;
-import com.szampchat.server.role.exception.InvalidMembersException;
+import com.szampchat.server.role.event.RoleCreateEvent;
+import com.szampchat.server.role.event.RoleDeleteEvent;
+import com.szampchat.server.role.event.RoleUpdateEvent;
 import com.szampchat.server.role.exception.RoleNotFoundException;
 import com.szampchat.server.role.repository.RoleRepository;
-import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.shared.InvalidPatchException;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -33,6 +33,7 @@ public class RoleService {
     private final CommunityMemberService communityMemberService;
     private final RoleMapper roleMapper;
     private final UserRoleService userRoleService;
+    private final EventSink eventSink;
 
     public Mono<Boolean> hasAccessToRoleInfo(Long roleId, Long userId) {
         return getRole(roleId)
@@ -74,10 +75,19 @@ public class RoleService {
                     .permission(roleCreateRequest.getPermissionOverwrites())
                     .community(communityId)
                     .build())
+                //Save role users
                 .flatMap(role -> userRoleService.createBulkUserRole(role.getId(), role.getCommunity(), roleCreateRequest.getMembers())
                         .map(UserRoleDTO::getUserId)
                         .collect(Collectors.toSet())
-                        .map(users -> new RoleWithMembersDTO(roleMapper.toDto(role), users)));
+                        .map(users -> new RoleWithMembersDTO(roleMapper.toDto(role), users)))
+                //Publish RoleCreateEvent
+                .doOnNext(roleWithMembersDTO -> eventSink.publish(RoleCreateEvent.builder()
+                                .recipient(Recipient.builder()
+                                        .context(Recipient.Context.COMMUNITY)
+                                        .id(roleWithMembersDTO.getRole().getCommunity())
+                                        .build())
+                                .data(roleWithMembersDTO)
+                        .build()));
     }
 
     @Transactional
@@ -100,11 +110,28 @@ public class RoleService {
 
                     return Mono.zip(updatedRoleMono, updatedMembersMono)
                             .map(tuple -> new RoleWithMembersDTO(tuple.getT1(), tuple.getT2()));
-                });
+                })
+                .doOnNext(roleWithMembersDTO -> eventSink.publish(RoleUpdateEvent.builder()
+                        .recipient(Recipient.builder()
+                                .context(Recipient.Context.COMMUNITY)
+                                .id(roleWithMembersDTO.getRole().getCommunity())
+                                .build())
+                        .data(roleWithMembersDTO)
+                        .build()));
     }
 
     public Mono<Void> delete(Long roleId) {
-        return roleRepository.removeById(roleId);
+        return getRole(roleId).flatMap(roleDTO ->
+                    roleRepository.removeRoleById(roleId)
+                    .doOnNext(deletedRoleId -> eventSink.publish(RoleDeleteEvent.builder()
+                                    .recipient(Recipient.builder()
+                                            .context(Recipient.Context.COMMUNITY)
+                                            .id(roleDTO.getCommunity())
+                                            .build())
+                                    .data(new RoleDeleteEvent.EventPayload(deletedRoleId))
+                            .build()))
+                )
+                .then();
     }
 
     private RoleWithMembersDTO patch(RoleWithMembersDTO existingRoleWithMembers, JsonPatch jsonPatch) throws InvalidPatchException {
