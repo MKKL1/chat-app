@@ -62,14 +62,11 @@ export class MessageComponent implements OnInit{
   }
 
   ngOnInit() {
-    console.log(this.userId);
-
     if(this.message.userId === this.userId){
       this.fromClient.set(true);
     }
 
     this.user = this.memberQuery.getEntity(this.message.userId)?.user;
-    console.log(this.user);
   }
 
   openOptions(){

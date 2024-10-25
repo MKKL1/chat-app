@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
@@ -14,7 +14,7 @@ import {Message} from "../../../models/message";
 import {MessageQuery} from "../../../store/message/message.query";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {MessageService} from "../../../services/message.service";
-import {Observable, tap} from "rxjs";
+import {Observable, Subscription, tap} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {UserService} from "../../../../core/services/user.service";
@@ -50,8 +50,10 @@ import {toSignal} from "@angular/core/rxjs-interop";
 
 // for now i have issue with listening to rabbit -> connection should open and close automatically after changing community
 
-export class TextChatComponent implements OnInit{
+export class TextChatComponent implements OnInit, OnDestroy{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
+
+  private channelSubscription: Subscription;
 
   // rerenders template if new data arrives
   readonly messages = toSignal(this.messageQuery.selectAll({
@@ -74,7 +76,11 @@ export class TextChatComponent implements OnInit{
   // to show and hide button in proper way i need to observe all channel latest message 😔
   ngOnInit() {
     // listening to changes of channel
-    this.channelQuery.selectActive().subscribe(channel => {
+    this.channelSubscription = this.channelQuery.selectActive().subscribe(channel => {
+      if(!channel){
+        return;
+      }
+
       this.channel = channel!;
       this.messageService.getMessages(channel?.id!);
       this.loadedAllData.set(false);
@@ -91,6 +97,10 @@ export class TextChatComponent implements OnInit{
 
   setResponse(event: { id: string, text: string }){
     this.messageToRespond = event;
+  }
+
+  ngOnDestroy() {
+    this.channelSubscription.unsubscribe();
   }
 
 }

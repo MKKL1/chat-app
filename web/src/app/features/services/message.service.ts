@@ -53,7 +53,7 @@ export class MessageService{
         this.messageStore.add(messages);
         const isLastMessage = messages.length % (this.limit - 1) === 0;
         if(isLastMessage){
-          console.log("Koniec danych");
+
         }
         return isLastMessage;
       })

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CommunityService} from "../../../services/community.service";
 import {CommunityQuery} from "../../../store/community/community.query";
@@ -6,6 +6,7 @@ import {Community} from "../../../models/community";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatCard, MatCardActions, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {MatButton} from "@angular/material/button";
+import {Subscription} from "rxjs";
 
 // TODO
 // add styling to invitation, center spinner
@@ -28,11 +29,13 @@ import {MatButton} from "@angular/material/button";
   templateUrl: './invitation.component.html',
   styleUrl: './invitation.component.scss'
 })
-export class InvitationComponent  implements OnInit{
+export class InvitationComponent  implements OnInit, OnDestroy{
   loadedInvitation: boolean = false;
   communityId: string | null | undefined;
   invitationId: string | null | undefined;
   community: Community | undefined;
+
+  private communitySubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,11 +65,18 @@ export class InvitationComponent  implements OnInit{
 
   acceptInvitation(){
     if (this.communityId != null && this.invitationId != null) {
-      this.communityService.acceptInvitation(this.communityId, this.invitationId).subscribe(res => {
-        console.log(res);
-        this.router.navigate(["/app/communities"]);
-      })
+      this.communitySubscription = this.communityService
+        .acceptInvitation(this.communityId, this.invitationId)
+        .subscribe(res => {
+          console.log(res);
+          this.router.navigate(["/app/communities"]);
+        }
+      );
     }
+  }
+
+  ngOnDestroy() {
+    this.communitySubscription.unsubscribe();
   }
 
 }

@@ -14,6 +14,7 @@ import {
 import RSocketWebsocketClient from 'rsocket-websocket-client';
 import {KeycloakService} from "keycloak-angular";
 import {Observable} from "rxjs";
+import {environment} from "../../../environment";
 
 // this service is injected in MainComponent.ts
 // which will be created after user sign in/up
@@ -26,13 +27,13 @@ export class RsocketConnection{
 
   // TODO get localhost:7000 from environment file instead of hard coding it
   // constant storing websocket url
-  private readonly websocketUrl: string = 'ws://localhost:8083/events';
+  private readonly websocketUrl: string = environment.websocketUrl;
 
   // Magical number representing maximal number of request client can make
   // Probably should be lower to make use of backpressure
   private readonly requestCount: number = 2147483647;
 
-  private client: RSocketClient<any, any> | undefined;
+  private readonly client: RSocketClient<any, any> | undefined;
 
   // Intellij shows that returned socket is of type ReactiveSocket<any, any>
   // but I can't import it
@@ -142,7 +143,7 @@ export class RsocketConnection{
       onComplete: (socket) => {
         // actual code executed after setting up connection starts here
         this.rsocket = socket;
-        console.log("Connected with Spring");
+        console.log("Connected with RSocket");
       },
       // handling errors with connection
       onError: (error: any) => console.error("Error occured: ", error),
@@ -151,5 +152,10 @@ export class RsocketConnection{
         // I'm not using this for now
       }
     });
+  }
+
+  public close(){
+    this.rsocket.close();
+    console.log(this.rsocket);
   }
 }

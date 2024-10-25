@@ -1,28 +1,25 @@
 import {inject, Injectable} from '@angular/core';
-import {Subject, Subscription} from "rxjs";
+import {Subject, tap} from "rxjs";
 import {MessageStore} from "../../features/store/message/message.store";
 import {EventHandler} from "./event.handler";
 import {Message} from "../../features/models/message";
 import {RsocketConnection} from "./rsocket.connection";
 import {TextChannelQuery} from "../../features/store/textChannel/text.channel.query";
 import {UserService} from "../services/user.service";
-import {Channel, ChannelType} from "../../features/models/channel";
+import {Channel} from "../../features/models/channel";
 import {MessageNotification} from "../../features/models/message-notification";
 import {formatDate} from "../../shared/utils/utils";
 import {MemberQuery} from "../../features/store/member/member.query";
 import {ChannelService} from "../../features/services/channel.service";
 import {showNotification} from "../../shared/utils/notifications";
-import {TextChannelStore} from "../../features/store/textChannel/text.channel.store";
 
 @Injectable({
   providedIn: 'root'
 })
-// don't work properly
 export class EventService {
 
   private rsocketConnection: RsocketConnection;
   private eventHandler: EventHandler;
-  private currentStreamSubscription: Subscription | null = null;
 
   private textChannelQuery = inject(TextChannelQuery);
   private channelService = inject(ChannelService);
@@ -32,7 +29,6 @@ export class EventService {
   // this subject is used to notify list of text channels about new message,
   // so it can add notification to proper channel from list
   private notificationSubject = new Subject<MessageNotification>();
-
   notification$ = this.notificationSubject.asObservable();
 
   constructor(private messageStore: MessageStore) {
@@ -44,22 +40,15 @@ export class EventService {
     this.rsocketConnection.connect();
   }
 
-  // broken as hell
   // after changing community from first there is no more data coming to text-chat component
-  // subscription is destroyed and it is never subscribed again
+  // stream is closed and it is never used again
   public handleNewStreamRequest(communityId: string) {
-    console.log(this.currentStreamSubscription);
-
-    // Unsubscribing current stream before creating a new one
-    this.closeCurrentStream();
-
-    console.log(this.currentStreamSubscription);
-
-    console.log(`Subscribing to: /community/${communityId}/messages`);
-
     // Create a new subscription, but don't use Event as a generic type
-    this.currentStreamSubscription = this.rsocketConnection
+    this.rsocketConnection
       .requestStream<any>(`/community/${communityId}/messages`)
+      .pipe(tap(() =>
+        console.log(`Subscriping to /community/${communityId}/messages`)
+      ))
       .subscribe({
         next: (event: any) => {
           console.log(`Event received: ${event.name}`);
@@ -71,23 +60,6 @@ export class EventService {
         error: (err: any) => console.error('Stream error:', err),
         complete: () => console.log('Stream completed'),
       });
-
-    console.log(this.currentStreamSubscription);
-  }
-
-  // TODO make it work
-  private closeCurrentStream() {
-    if (this.currentStreamSubscription !== undefined && this.currentStreamSubscription !== null && !this.currentStreamSubscription.closed) {
-      try {
-        this.currentStreamSubscription.unsubscribe();
-        this.currentStreamSubscription = null;
-        console.log('Previous stream unsubscribed successfully.');
-      } catch (error) {
-        console.error("Error during unsubscription:", error);
-      }
-    } else {
-      console.log('Stream already unsubscribed or never initialized');
-    }
   }
 
 

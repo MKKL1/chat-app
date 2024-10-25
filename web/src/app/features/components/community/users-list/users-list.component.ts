@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import {MatList, MatListItem, MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
@@ -8,7 +8,7 @@ import {MemberQuery} from "../../../store/member/member.query";
 import {Member} from "../../../models/member";
 import {MatCardModule} from '@angular/material/card';
 import {RoleQuery} from "../../../store/role/role.query";
-
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-users-list',
@@ -28,22 +28,30 @@ import {RoleQuery} from "../../../store/role/role.query";
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss'
 })
-export class UsersListComponent implements OnInit{
+export class UsersListComponent implements OnInit, OnDestroy{
 
   members = signal<Member[]>([]);
+
+  private memberSubscription: Subscription;
 
   constructor(private memberQuery: MemberQuery, private roleQuery: RoleQuery) {
   }
 
   ngOnInit() {
-    this.memberQuery.selectAll().subscribe(members => {
-      console.log(members);
-      this.members.set(members);
-    });
+    this.memberSubscription = this.memberQuery.selectAll()
+      .subscribe(members => {
+        console.log(members);
+        this.members.set(members);
+      }
+    );
   }
 
   getRoleName(id: string){
     return this.roleQuery.getEntity(id)?.name;
+  }
+
+  ngOnDestroy() {
+    this.memberSubscription.unsubscribe();
   }
 
 }
