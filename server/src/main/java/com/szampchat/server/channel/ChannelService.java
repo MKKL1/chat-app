@@ -2,13 +2,13 @@ package com.szampchat.server.channel;
 
 import com.szampchat.server.channel.dto.ChannelCreateDTO;
 import com.szampchat.server.channel.dto.ChannelDTO;
+import com.szampchat.server.channel.dto.ChannelRolesDTO;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.event.ChannelCreateEvent;
 import com.szampchat.server.channel.event.ChannelDeleteEvent;
 import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
-import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
@@ -18,6 +18,7 @@ import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,6 +28,8 @@ import reactor.core.publisher.Mono;
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
+    private ChannelRoleService channelRoleService;
+    private final ModelMapper modelMapper;
 
     private final ModelMapper modelMapper;
 
@@ -45,15 +48,21 @@ public class ChannelService {
     }
 
 
-    //TODO DTO!!!!
-    public Flux<Channel> findChannelsForCommunity(Long communityId) {
-        return channelRepository.findChannelsByCommunityId(communityId);
+    public Flux<ChannelDTO> getCommunityChannels(Long communityId) {
+        return channelRepository.findChannelsByCommunityId(communityId)
+                .map(this::toDTO);
     }
 
-//    //TODO right now there is no channel access permissions
-//    public Flux<Channel> getChannelsUserCanAccess(Long communityId, Long userId) {
-//        return findChannelsForCommunity(communityId);
-//    }
+    public Flux<ChannelRolesDTO> getCommunityChannelsWithRoles(Long communityId) {
+        return getCommunityChannels(communityId)
+                .flatMap(channelDTO ->
+                        //For each channel, get it's overwrites
+                        //TODO get in bulk
+                        channelRoleService.getChannelOverwrites(channelDTO.getId())
+                        .collectList()
+                        .map(list -> new ChannelRolesDTO(channelDTO, list))
+                );
+    }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel) {
         //TODO check if channel exists in different way
@@ -113,4 +122,8 @@ public class ChannelService {
             });
     }
 
+
+    public ChannelDTO toDTO(Channel channel) {
+        return modelMapper.map(channel, ChannelDTO.class);
+    }
 }

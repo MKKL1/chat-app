@@ -23,6 +23,6 @@ public class Recipient {
     public enum Context {
         COMMUNITY,
         USER,
-        CHANNEL
+//        CHANNEL
     }
 }

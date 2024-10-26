@@ -11,14 +11,13 @@ import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
 import com.szampchat.server.message.repository.ReactionRepository;
-import com.szampchat.server.snowflake.Snowflake;
+import com.szampchat.server.snowflake.SnowflakeGen;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Limit;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -37,7 +36,7 @@ public class MessageService {
     private final MessageAttachmentService messageAttachmentService;
     private final ReactionRepository reactionRepository;
     private final ModelMapper modelMapper;
-    private final Snowflake snowflake;
+    private final SnowflakeGen snowflakeGen;
     private final EventSink eventSender;
     private final FileStorageService fileStorageService;
 
@@ -59,7 +58,7 @@ public class MessageService {
 
     public Mono<MessageDTO> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId, FilePart file) {
         // generating snowflake for message
-        Long messageId = snowflake.nextId();
+        Long messageId = snowflakeGen.nextId();
 
         // creating message object
         Mono<Message> createMessageMono = Mono.fromSupplier(() -> {

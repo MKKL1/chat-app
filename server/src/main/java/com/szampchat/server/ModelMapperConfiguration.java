@@ -9,6 +9,8 @@ import com.szampchat.server.permission.converters.IntToPermissionConverter;
 import com.szampchat.server.permission.converters.LongToPermOverrideConverter;
 import com.szampchat.server.permission.converters.PermOverrideToLongConverter;
 import com.szampchat.server.permission.converters.PermissionToIntConverter;
+import com.szampchat.server.permission.data.PermissionOverwrites;
+import com.szampchat.server.permission.data.Permissions;
 import io.r2dbc.spi.ConnectionFactory;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +36,8 @@ public class ModelMapperConfiguration {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addSerializer(ChannelType.class, new ChannelTypeSerializer());
+        module.addSerializer(PermissionOverwrites.class, new PermissionOverwritesSerializer());
+        module.addSerializer(Permissions.class, new PermissionSerializer());
         objectMapper.registerModule(module);
         return objectMapper;
     }

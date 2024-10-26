@@ -12,7 +12,7 @@ public class SnowflakeConfiguration {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public Snowflake snowflake() {
-        return new Snowflake(NODE_ID, CUSTOM_EPOCH);
+    public SnowflakeGen snowflake() {
+        return new SnowflakeGen(NODE_ID, CUSTOM_EPOCH);
     }
 }

@@ -1,4 +1,4 @@
-package com.szampchat.server.role.dto;
+package com.szampchat.server.community.dto;
 
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+public class RoleNoCommunityDTO {
     private Long id;
     private String name;
     private PermissionOverwrites permissionOverwrites;
-    private Long community;
+//Removed community id, as all endpoints require to give community id anyway
+    //    private Long community;
 }

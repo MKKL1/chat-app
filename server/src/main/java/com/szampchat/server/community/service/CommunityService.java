@@ -1,7 +1,7 @@
 package com.szampchat.server.community.service;
 
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.channel.entity.Channel;
+import com.szampchat.server.channel.dto.ChannelRolesDTO;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
 import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
@@ -12,13 +12,14 @@ import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
-import com.szampchat.server.role.RoleService;
+import com.szampchat.server.role.service.RoleService;
+import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.shared.CustomPrincipalProvider;
-import com.szampchat.server.upload.FileException;
+import com.szampchat.server.upload.FileNotFoundException;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.UserService;
@@ -71,12 +72,14 @@ public class CommunityService {
     }
 
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(Long communityId) {
-        //Collect all channels of community
-        Mono<List<Channel>> channelFlux = channelService.findChannelsForCommunity(communityId).collectList();
+        //Collect all channels of community with role based permission overwrites
+        Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
         //Collect members with corresponding roles
         Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
-        //Collect roles
-        Mono<List<Role>> roleFlux = roleService.findRolesForCommunity(communityId).collectList();
+        //Collect roles and remove "community" field
+        Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.getRolesByCommunity(communityId)
+                .map(roleDTO -> modelMapper.map(roleDTO, RoleNoCommunityDTO.class))
+                .collectList();
 
         return findById(communityId)
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)
@@ -114,6 +117,7 @@ public class CommunityService {
                             communityMemberService.create(communityId, savedUser.getId())
                                 .doOnSuccess(row -> log.info(row.toString()))
                                 // todo maybe move creating role somewhere else
+                                    //TODO or remove default role
                                 // also add default role which make sense
                                 .then(roleRepository.save(Role.builder()
                                     .name("baseRole")
@@ -141,7 +145,7 @@ public class CommunityService {
                 if (existingCommunity.getImageUrl() != null) {
                     try {
                         return fileStorageService.delete(existingCommunity.getImageUrl())
-                            .onErrorMap(e -> new FileException("Error during deleting file: " + e.getMessage()))
+                            .onErrorMap(e -> new FileNotFoundException("Error during deleting file: " + e.getMessage()))
                             .then(Mono.just(existingCommunity));
                     } catch (FileSystemException e) {
                         return Mono.error(new FileSystemException("Cannot delete file"));

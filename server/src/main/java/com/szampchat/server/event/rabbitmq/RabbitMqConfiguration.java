@@ -16,7 +16,6 @@ public class RabbitMqConfiguration {
     public ConnectionFactory connectionFactoryRabbitMq(RabbitMqConnectionProperties properties) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.useNio();
-        //Hardcoding it for now
         connectionFactory.setHost(properties.getHost());
         connectionFactory.setPort(properties.getPort());
         connectionFactory.setUsername(properties.getUsername());

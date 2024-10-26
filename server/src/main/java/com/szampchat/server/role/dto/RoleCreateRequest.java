@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
-    private Long id;
+public class RoleCreateRequest {
     private String name;
     private PermissionOverwrites permissionOverwrites;
-    private Long community;
+    private Set<Long> members;
 }

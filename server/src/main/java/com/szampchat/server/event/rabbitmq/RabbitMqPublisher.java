@@ -57,10 +57,24 @@ class RabbitMqPublisher {
     //Creates initial structure for rabbitmq (exchanges, bindings)
     private Mono<Void> configureRabbitMq() {
         //Initial configuration, preferably should be moved to different service, as this is publisher
-        return sender.declare(ExchangeSpecification.exchange(rabbitMqProperties.getChatExchange()).durable(true).type("topic"))
-                .then(sender.declare(ExchangeSpecification.exchange(rabbitMqProperties.getMessageExchange()).durable(true).type("topic")))
+        return sender.declare(
+                ExchangeSpecification
+                        .exchange(rabbitMqProperties.getChatExchange())
+                        .durable(true)
+                        .type("topic"))
+                .then(sender.declare(
+                        ExchangeSpecification
+                                .exchange(rabbitMqProperties.getMessageExchange())
+                                .durable(true)
+                                .type("topic"))
+                )
                 //TODO maybe we can define bindings dynamically based on EventType
-                .then(sender.bindExchange(BindingSpecification.binding().exchangeFrom(rabbitMqProperties.getChatExchange()).exchangeTo(rabbitMqProperties.getMessageExchange()).routingKey("messages.#")))
-                .then();
+                .then(sender.bindExchange(
+                        BindingSpecification
+                                .binding()
+                                .exchangeFrom(rabbitMqProperties.getChatExchange())
+                                .exchangeTo(rabbitMqProperties.getMessageExchange())
+                                .routingKey("messages.#"))
+                ).then();
     }
 }

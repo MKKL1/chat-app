@@ -1,6 +1,7 @@
 package com.szampchat.server.channel.dto;
 
 import lombok.AllArgsConstructor;
+import com.szampchat.server.channel.ChannelType;
 import lombok.Data;
 
 @Data
@@ -8,7 +9,6 @@ import lombok.Data;
 public class ChannelDTO {
     private Long id;
     private String name;
-    // I changed that to communityId because community breaks data structures on frontend
     private Long communityId;
-    private Integer type;
+    private ChannelType type;
 }
