@@ -25,7 +25,7 @@ public class Permissions {
     }
 
     public boolean has(PermissionFlag permissionFlag) {
-        return (permissionData | (1 << permissionFlag.getOffset())) != 0;
+        return (permissionData & (1 << permissionFlag.getOffset())) != 0;
     }
 
     public boolean has(int permissionMask) {

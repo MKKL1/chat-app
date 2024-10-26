@@ -48,8 +48,6 @@ public class PermissionService {
                 .map(permissions -> permissions.has(permissionMask));
     }
 
-
-
     public Mono<Permissions> getUserPermissionsForCommunity(Long communityId, Long userId) {
         return communityService.findById(communityId)
                 .flatMap(community -> {

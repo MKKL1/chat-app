@@ -116,6 +116,7 @@ public class SecurityConfig {
                             .access(authMan.create(authFunc.hasAccessToRoleInfo))
                         .pathMatchers(HttpMethod.POST, "/communities/{communityId}/roles")
                             .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
+                        //TODO adding communityId for role in path may be dangerous, as user can give community id where they have permission and system may allow operation on role in different community
                         .pathMatchers(HttpMethod.PATCH, "/communities/{communityId}/roles/{roleId}")
                             .access(authMan.create(authFunc.hasAccessToRoleInfo, PermissionContext.COMMUNITY, PermissionFlag.ADMINISTRATOR))
                         .pathMatchers(HttpMethod.DELETE, "/communities/{communityId}/roles/{roleId}")
@@ -132,7 +133,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.DELETE, "/users")
                             .authenticated()
 //                        .pathMatchers("/api/file/**").permitAll()
-                        .anyExchange().authenticated()
+                        .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
