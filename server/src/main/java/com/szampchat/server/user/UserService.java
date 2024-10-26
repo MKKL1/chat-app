@@ -16,9 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.file.FileSystemException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,6 +41,11 @@ public class UserService {
     public Mono<UserDTO> findUserDTO(Long userId) {
         return findUser(userId)
             .map(user -> modelMapper.map(user, UserDTO.class));
+    }
+
+    public Flux<UserDTO> findUsers(List<Long> userIds) {
+        return userRepository.findByIdIn(userIds)
+                .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     //easy to cache, will practically never change
