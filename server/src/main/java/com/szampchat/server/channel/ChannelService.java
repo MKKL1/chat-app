@@ -12,12 +12,8 @@ import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.message.event.MessageCreateEvent;
-import com.szampchat.server.role.RoleService;
-import com.szampchat.server.snowflake.Snowflake;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,7 +25,6 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
     private ChannelRoleService channelRoleService;
-    private final ModelMapper modelMapper;
 
     private final ModelMapper modelMapper;
 
@@ -82,7 +77,7 @@ public class ChannelService {
                                     savedChannel.getId(),
                                     savedChannel.getName(),
                                     savedChannel.getCommunityId(),
-                                    savedChannel.getType().ordinal()
+                                    savedChannel.getType()
                                 )
                             )
                             .recipient(Recipient.builder()
