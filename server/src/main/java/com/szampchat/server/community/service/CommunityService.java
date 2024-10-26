@@ -7,6 +7,7 @@ import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.dto.FullCommunityInfoDTO;
 import com.szampchat.server.community.entity.Community;
+import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
@@ -18,6 +19,7 @@ import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.role.repository.UserRoleRepository;
+import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.upload.FileNotFoundException;
 import com.szampchat.server.upload.FilePath;
@@ -47,6 +49,7 @@ public class CommunityService {
     private final CustomPrincipalProvider customPrincipalProvider;
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
+    private final UserRoleService userRoleService;
 
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -75,7 +78,7 @@ public class CommunityService {
         //Collect all channels of community with role based permission overwrites
         Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
         //Collect members with corresponding roles
-        Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
+        Mono<List<CommunityMemberRolesDTO>> memberFlux = getCommunityMembersWithRoles(communityId).collectList();
         //Collect roles and remove "community" field
         Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.getRolesByCommunity(communityId)
                 .map(roleDTO -> modelMapper.map(roleDTO, RoleNoCommunityDTO.class))
@@ -85,6 +88,19 @@ public class CommunityService {
             .flatMap(community -> Mono.zip(channelFlux, memberFlux, roleFlux)
                 .map(data ->  new FullCommunityInfoDTO(community, data.getT1(), data.getT2(), data.getT3()))
             );
+    }
+
+    private Flux<CommunityMemberRolesDTO> getCommunityMembersWithRoles(Long communityId) {
+        return communityMemberService.getByCommunityId(communityId)
+                .map(CommunityMember::getUserId)
+                .collectList()
+                .flatMapMany(userRoleService::getMemberRoleIdsBulk)
+                .flatMap(userRolesDTO ->
+                        userService.findUserDTO(userRolesDTO.getUserId())
+                                .map(userDto -> CommunityMemberRolesDTO.builder()
+                                        .user(userDto)
+                                        .roles(userRolesDTO.getRoleIds())
+                                        .build()));
     }
 
     public Flux<Community> getUserCommunities(Long id){
