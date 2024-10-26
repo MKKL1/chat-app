@@ -12,12 +12,18 @@ import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
+import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
+import com.szampchat.server.role.dto.ChannelRoleOverwritesDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("channelService")
 @AllArgsConstructor
@@ -50,13 +56,20 @@ public class ChannelService {
 
     public Flux<ChannelRolesDTO> getCommunityChannelsWithRoles(Long communityId) {
         return getCommunityChannels(communityId)
-                .flatMap(channelDTO ->
-                        //For each channel, get it's overwrites
-                        //TODO get in bulk
-                        channelRoleService.getChannelOverwrites(channelDTO.getId())
-                        .collectList()
-                        .map(list -> new ChannelRolesDTO(channelDTO, list))
-                );
+                .collectList()
+                .flatMapMany(channelDTOs -> {
+                    List<Long> channelIds = channelDTOs.stream().map(ChannelDTO::getId).collect(Collectors.toList());
+
+                    return channelRoleService.getChannelOverwritesBulk(channelIds)
+                            .collectMap(ChannelRoleOverwritesDTO::getChannelId, ChannelRoleOverwritesDTO::getOverwrites)
+                            .flatMapMany(overwritesMap ->
+                                    Flux.fromIterable(channelDTOs)
+                                        .map(channelDTO -> {
+                                            List<ChannelRoleOverwriteDTO> overwrites = overwritesMap.getOrDefault(channelDTO.getId(), Collections.emptyList());
+                                            return new ChannelRolesDTO(channelDTO, overwrites);
+                                        })
+                            );
+                });
     }
 
     public Mono<Channel> createChannel(ChannelCreateDTO channel) {

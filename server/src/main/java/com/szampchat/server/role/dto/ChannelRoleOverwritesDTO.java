@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChannelRoleOverwriteDTO {
-    private Long roleId;
-    private PermissionOverwrites overwrites;
+public class ChannelRoleOverwritesDTO {
+    private Long channelId;
+    private List<ChannelRoleOverwriteDTO> overwrites;
 }
