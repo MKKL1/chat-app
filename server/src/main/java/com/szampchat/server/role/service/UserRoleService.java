@@ -2,9 +2,8 @@ package com.szampchat.server.role.service;
 
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.role.RoleMapper;
-import com.szampchat.server.role.dto.RoleDTO;
-import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.role.dto.UserRoleDTO;
+import com.szampchat.server.role.dto.UserRolesDTO;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.exception.InvalidMembersException;
 import com.szampchat.server.role.repository.UserRoleRepository;
@@ -26,6 +25,10 @@ public class UserRoleService {
     public Flux<UserRoleDTO> getRoleMembers(Long roleId) {
         return userRoleRepository.findUserRolesByRoleId(roleId)
                 .map(roleMapper::toDto);
+    }
+
+    public Flux<UserRolesDTO> getMemberRoleIdsBulk(List<Long> userIds) {
+        return userRoleRepository.findUserRolesByUserIds(userIds);
     }
 
     public Flux<Void> delete(Long roleId, Long userId) {

@@ -1,14 +1,15 @@
 package com.szampchat.server.role.dto;
 
-import com.szampchat.server.permission.data.PermissionOverwrites;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChannelRoleOverwriteDTO {
-    private Long roleId;
-    private PermissionOverwrites overwrites;
+public class UserRolesDTO {
+    private Long userId;
+    private Set<Long> roleIds;
 }

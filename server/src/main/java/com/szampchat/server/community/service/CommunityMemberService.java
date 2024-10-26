@@ -3,12 +3,11 @@ package com.szampchat.server.community.service;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.repository.CommunityMemberRepository;
+import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.user.UserService;
-import com.szampchat.server.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,7 +21,6 @@ import java.util.Set;
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final CustomPrincipalProvider customPrincipalProvider;
-    private final UserService userService;
 
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
@@ -44,25 +42,8 @@ public class CommunityMemberService {
                 .onErrorReturn(false);
     }
 
-    public Flux<CommunityMemberRolesDTO> getCommunityMembersWithRoles(Long communityId) {
-        return communityMemberRepository.findMemberWithRolesFromCommunity(communityId)
-                .collectMultimap(
-                        CommunityMemberRepository.CommunityMemberRolesRow::getUser,
-                        CommunityMemberRepository.CommunityMemberRolesRow::getRole)
-                .flatMapMany(map -> Flux.fromIterable(map.entrySet()))
-                .flatMap(entry -> {
-                    //We are using userService, as this method can be cached
-                    //TODO maybe something like getBulkUserDTO(List<Long> userIds) would fit here better
-                    Long userId = entry.getKey();
-                    if(userId == null) return Mono.empty();
-                    return userService.findUserDTO(entry.getKey()).map(userDto -> {
-                        Set<Long> roles = new HashSet<>(entry.getValue());
-                        return CommunityMemberRolesDTO.builder()
-                                .user(userDto)
-                                .roles(roles)
-                                .build();
-                    });
-                });
+    public Flux<CommunityMember> getByCommunityId(Long communityId) {
+        return communityMemberRepository.findByCommunityId(communityId);
     }
 
     public Mono<CommunityMember> create(Long communityId, Long userId) {

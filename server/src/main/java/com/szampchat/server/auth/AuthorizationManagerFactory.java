@@ -52,6 +52,7 @@ public class AuthorizationManagerFactory {
                                 case COMMUNITY ->
                                         permissionService.hasPermissionInCommunity(AuthorizationContextExtractor.getCommunityId(context), permissionFlags);
                                 //TODO add default case
+                                default -> Mono.just(false);
                             };
 
                             return permissionAuthorizedMono

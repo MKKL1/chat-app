@@ -7,17 +7,21 @@ import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.dto.FullCommunityInfoDTO;
 import com.szampchat.server.community.entity.Community;
+import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
+import com.szampchat.server.community.exception.FailedToSaveCommunityException;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
+import com.szampchat.server.role.dto.UserRolesDTO;
 import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.entity.UserRole;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.role.repository.UserRoleRepository;
+import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.upload.FileNotFoundException;
 import com.szampchat.server.upload.FilePath;
@@ -29,11 +33,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.file.FileSystemException;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 @AllArgsConstructor
@@ -47,6 +54,7 @@ public class CommunityService {
     private final CustomPrincipalProvider customPrincipalProvider;
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
+    private final UserRoleService userRoleService;
 
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -75,7 +83,7 @@ public class CommunityService {
         //Collect all channels of community with role based permission overwrites
         Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
         //Collect members with corresponding roles
-        Mono<List<CommunityMemberRolesDTO>> memberFlux = communityMemberService.getCommunityMembersWithRoles(communityId).collectList();
+        Mono<List<CommunityMemberRolesDTO>> memberFlux = getCommunityMembersWithRoles(communityId).collectList();
         //Collect roles and remove "community" field
         Mono<List<RoleNoCommunityDTO>> roleFlux = roleService.getRolesByCommunity(communityId)
                 .map(roleDTO -> modelMapper.map(roleDTO, RoleNoCommunityDTO.class))
@@ -87,10 +95,31 @@ public class CommunityService {
             );
     }
 
+    private Flux<CommunityMemberRolesDTO> getCommunityMembersWithRoles(Long communityId) {
+        return communityMemberService.getByCommunityId(communityId)
+                .map(CommunityMember::getUserId)
+                .collectList()
+                .flatMapMany(userIds ->
+                        userRoleService.getMemberRoleIdsBulk(userIds)
+                                .collectMap(UserRolesDTO::getUserId, Function.identity())
+                                .flatMapMany(userRolesMap ->
+                                        userService.findUsers(userIds)
+                                                .map(userDto -> {
+                                                    UserRolesDTO userRolesDTO = userRolesMap.get(userDto.getId());
+                                                    return CommunityMemberRolesDTO.builder()
+                                                            .user(userDto)
+                                                            .roles(userRolesDTO != null ? userRolesDTO.getRoleIds() : Collections.emptySet())
+                                                            .build();
+                                                })
+                                )
+                );
+    }
+
     public Flux<Community> getUserCommunities(Long id){
         return communityRepository.userCommunities(id);
     }
 
+    @Transactional
     public Mono<Community> save(CommunityCreateDTO communityDTO, FilePart file, Long ownerId) {
         // storing community image
         Mono<String> imageUrlMono = (file != null)
@@ -107,32 +136,18 @@ public class CommunityService {
                     .build();
 
             return communityRepository.save(community)
-                .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
+                .switchIfEmpty(Mono.error(new FailedToSaveCommunityException()))
                 .flatMap(savedCommunity -> {
                     Long communityId = savedCommunity.getId();
 
                     // After creating community its owner also need to be added as its member
-                    return userService.findUser(ownerId)
+                    return userService.findUserDTO(ownerId)
                         .flatMap(savedUser ->
                             communityMemberService.create(communityId, savedUser.getId())
                                 .doOnSuccess(row -> log.info(row.toString()))
-                                // todo maybe move creating role somewhere else
-                                    //TODO or remove default role
-                                // also add default role which make sense
-                                .then(roleRepository.save(Role.builder()
-                                    .name("baseRole")
-                                    .permission(new PermissionOverwrites())
-                                    .community(communityId).build())
-                                ))
-                                .flatMap(savedRole -> userRoleRepository.save(
-                                    UserRole.builder()
-                                        .roleId(savedRole.getId())
-                                        .userId(ownerId)
-                                        .build()
-                                ))
-                                .then(Mono.just(savedCommunity)
+                                .then(Mono.just(savedCommunity))
+                                //TODO maybe add default text channel?
                     );
-
                 });
         });
 
