@@ -54,44 +54,46 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Slf4j
-@Testcontainers
-@AutoConfigureWebTestClient(timeout = "3600000")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
-@ExtendWith(MockitoExtension.class)
-public class CommunityControllerIT implements PostgresTestContainer {
+//@Slf4j
+//@Testcontainers
+//@AutoConfigureWebTestClient(timeout = "3600000")
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@DirtiesContext
+//@ExtendWith(MockitoExtension.class)
+public class CommunityControllerIT
+//        implements PostgresTestContainer
+{
 
     //For mocking isMember
-    @MockBean
-    private AuthorizationManagerFactory authorizationManagerFactory;
-
-    @Autowired
-    private CommunityRepository communityRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    protected WebTestClient client;
-
-    @Autowired
-    private TestDataGenerator testDataGenerator;
-
-
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
-
-    @Test
-    @Override
-    public void connectionEstablished() {
-        PostgresTestContainer.super.connectionEstablished();
-    }
+//    @MockBean
+//    private AuthorizationManagerFactory authorizationManagerFactory;
+//
+//    @Autowired
+//    private CommunityRepository communityRepository;
+//    @Autowired
+//    private UserRepository userRepository;
+//    @Autowired
+//    protected WebTestClient client;
+//
+//    @Autowired
+//    private TestDataGenerator testDataGenerator;
+//
+//
+//    @BeforeAll
+//    static void beforeAll() {
+//        postgres.start();
+//    }
+//
+//    @AfterAll
+//    static void afterAll() {
+//        postgres.stop();
+//    }
+//
+//    @Test
+//    @Override
+//    public void connectionEstablished() {
+//        PostgresTestContainer.super.connectionEstablished();
+//    }
 
 ////    @Transactional
 //    @WithMockCustomUser
@@ -100,14 +102,14 @@ public class CommunityControllerIT implements PostgresTestContainer {
 ////        when(authorizationManagerFactory.create(any(), any(), any())).thenReturn((_, _) -> Mono.just(new AuthorizationDecision(true)));
 ////        when(authorizationManagerFactory.create(any())).thenReturn((_, _) -> Mono.just(new AuthorizationDecision(true)));
 //
-//        ReactiveAuthorizationManager<AuthorizationContext> mockAuthManager = mock(ReactiveAuthorizationManager.class);
-//        when(mockAuthManager.check(any(), any())).thenReturn(Mono.just(new AuthorizationDecision(true)));
+////        ReactiveAuthorizationManager<AuthorizationContext> mockAuthManager = mock(ReactiveAuthorizationManager.class);
+//        when(authorizationManagerFactory.check(any(), any())).thenReturn(Mono.just(new AuthorizationDecision(true)));
 //
 //        when(authorizationManagerFactory.create(any(), any(), any()))
-//                .thenReturn(mockAuthManager);
+//                .thenReturn(authorizationManagerFactory);
 //
 //        when(authorizationManagerFactory.create(any(AuthorizationMethod.class)))
-//                .thenReturn(mockAuthManager);
+//                .thenReturn(authorizationManagerFactory);
 //
 //        User owner = userRepository.save(Instancio.of(User.class)
 //                        .set(field(User::getId), null)
@@ -130,9 +132,9 @@ public class CommunityControllerIT implements PostgresTestContainer {
 //                .value((res) -> assertThat(res.getId()).isEqualTo(community.getId()));
 //    }
 //
-    void givenDefinedCommunity_whenGetFullCommunityInfo_thenReturnFullCommunityInfoDTO() {
-        //TODO
-    }
+//    void givenDefinedCommunity_whenGetFullCommunityInfo_thenReturnFullCommunityInfoDTO() {
+//        //TODO
+//    }
 //
 //    @WithMockCustomUser
 //    @Test

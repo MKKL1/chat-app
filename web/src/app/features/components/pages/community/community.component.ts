@@ -10,7 +10,7 @@ import {LayoutComponent} from "../../../../core/components/layout/layout.compone
 import {CommunityDetailsComponent} from "../../community/community-details/community-details.component";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-community',
@@ -31,8 +31,7 @@ import {Observable} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-// I don't if I should really convert this, because it will be so much more complicated
-
+// I don't know if I should really convert this, because it will be so much more complicated
 export class CommunityComponent implements OnInit{
     readonly dialog: MatDialog = inject(MatDialog);
     isCommunitySelected$!: Observable<boolean>;

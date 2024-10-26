@@ -1,10 +1,11 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnDestroy} from '@angular/core';
 import {MatTableModule} from "@angular/material/table";
 import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
 import {RoleQuery} from "../../../store/role/role.query";
+import {Subscription} from "rxjs";
 
 
 export interface Role{
@@ -24,7 +25,7 @@ export interface Role{
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
 })
-export class RolesComponent {
+export class RolesComponent implements OnDestroy{
   displayedColumns: string[] = ['name', 'members', 'edit'];
 
   roles: Role[] = [
@@ -36,8 +37,10 @@ export class RolesComponent {
 
   readonly dialog: MatDialog = inject(MatDialog);
 
+  private roleSubscription: Subscription;
+
   constructor(private roleQuery: RoleQuery) {
-    this.roleQuery.selectAll().subscribe(role => {
+    this.roleSubscription = this.roleQuery.selectAll().subscribe(role => {
       console.log(role);
     });
   }
@@ -49,5 +52,9 @@ export class RolesComponent {
       console.log("Dialog result: ");
       console.log(result);
     })
+  }
+
+  ngOnDestroy() {
+    this.roleSubscription.unsubscribe();
   }
 }

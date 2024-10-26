@@ -3,14 +3,19 @@
 <div class="message-container" [ngStyle]="fromClient() ?
   {'align-items': 'flex-end'}
   : {'align-items': 'flex-start'}">
-  <p>{{message.updatedAt.toDateString()}} {{message.edited ? '(edited)' : ''}}</p>
+
+  <!-- Username and time when messages was sent -->
+  <p><span class="username">{{user?.username}}</span> {{message.dateFormatted}} {{message.edited ? '(edited)' : ''}}</p>
   <div class="message-wrapper" [ngStyle]="fromClient() ?
     {'flex-direction': 'row-reverse'}
     : {'flex-direction': 'row'}">
     <div class="user-info-container">
-      <app-avatar [imagePath]="imagePath"></app-avatar>
-      <app-user-basic-info [user]="user" [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
-      </app-user-basic-info>
+      <!--   Member avatar   -->
+      <app-avatar [imagePath]="user?.imageUrl ?? 'avatar.jpg'"></app-avatar>
+      @if(user){
+        <app-user-basic-info [user]="user" [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
+        </app-user-basic-info>
+      }
     </div>
     <div class="message-content" [ngStyle]="fromClient() ?
     {'background': '#0d5043', 'margin-right': '10px'} :
@@ -25,16 +30,17 @@
 
       <!--   Attached files   -->
       @for(attachment of message.attachments; track attachment.id){
-        <div>
+        <div style="margin-top: 15px;">
           <img src="{{attachment.path}}">
         </div>
       }
 
       <!--   Attached gif   -->
       @if(message.gifLink !== ''){
-        <div class="gif-wrapper">
+        <div class="gif-wrapper" [ngStyle]="{'display': message.gifLink ? 'block': 'none'}">
           <img src="{{message.gifLink}}" alt="{{message.gifLink}}">
         </div>
+<!--        display: none;-->
       }
     </div>
 

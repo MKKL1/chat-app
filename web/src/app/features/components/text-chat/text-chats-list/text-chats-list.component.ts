@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatListModule} from "@angular/material/list";
 import {TextChannelInfoComponent} from "../text-channel-info/text-channel-info.component";
 import {MatButton, MatIconButton} from "@angular/material/button";
@@ -12,6 +12,8 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe} from "@angular/common";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {Subscription} from "rxjs";
+import {EventService} from "../../../../core/events/event.service";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -28,7 +30,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
   templateUrl: './text-chats-list.component.html',
   styleUrl: './text-chats-list.component.scss'
 })
-export class TextChatsListComponent{
+export class TextChatsListComponent {
     readonly dialog = inject(MatDialog);
 
     readonly textChannels = toSignal(this.channelQuery.selectAll({
@@ -44,7 +46,7 @@ export class TextChatsListComponent{
     }
 
     addChannel(){
-        this.dialog.open(CreateChannelComponent, {width: '60vw'});
+      this.dialog.open(CreateChannelComponent, {width: '60vw'});
     }
 
     editChannel(channel: Channel){

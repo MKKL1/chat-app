@@ -1,6 +1,6 @@
 import {ActiveState, EntityState, EntityStore, getEntityType, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
-import {Channel} from "../../models/channel";
+import {Channel, ChannelMessagesState} from "../../models/channel";
 
 export interface ChannelState extends EntityState<Channel, string>, ActiveState {}
 
@@ -12,6 +12,10 @@ export class TextChannelStore extends EntityStore<ChannelState> {
     super();
   }
 
+  override akitaPreAddEntity(newEntity: Channel): getEntityType<ChannelState> {
+    newEntity.messagesState = ChannelMessagesState.NotFetched;
+    return super.akitaPreAddEntity(newEntity);
+  }
 
 
 }

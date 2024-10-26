@@ -1,5 +1,7 @@
-<mat-list-item>
+<mat-list-item (click)="clearNotifications()" matBadge="{{count()}}" [matBadgeHidden]="count() === 0" matBadgeOverlap="true">
   <span matListItemTitle>{{ channel?.name }}
   </span>
-  <span matListItemLine>{{username}}: {{message | short}} {{date | date}}</span>
+  @if(count() > 0){
+    <span matListItemLine>{{this.notification()?.username}}: {{this.notification()?.message! | short}} {{this.notification()?.date}}</span>
+  }
 </mat-list-item>

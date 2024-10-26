@@ -15,6 +15,7 @@ import {BottomSheetComponent} from "../../../../shared/ui/bottom-sheet/bottom-sh
 import {MatListModule} from "@angular/material/list";
 import {UserService} from "../../../../core/services/user.service";
 import {User} from "../../../models/user";
+import {MemberQuery} from "../../../store/member/member.query";
 
 @Component({
   selector: 'app-message',
@@ -51,24 +52,21 @@ export class MessageComponent implements OnInit{
   showReactionPicker = signal<boolean>(false);
 
   imagePath: string = '';
-  // TODO get user info from members store
-  user: User = {
-    id: "", username: ""
-
-  };
+  user: User | undefined;
 
   constructor(
     private messageService: MessageService,
+    private memberQuery: MemberQuery,
     private dialog: MatDialog,
     private userService: UserService) {
   }
 
   ngOnInit() {
-    // add another case when message comes from other user
     if(this.message.userId === this.userId){
       this.fromClient.set(true);
-      this.imagePath = this.userService.getUser().imageUrl!;
     }
+
+    this.user = this.memberQuery.getEntity(this.message.userId)?.user;
   }
 
   openOptions(){

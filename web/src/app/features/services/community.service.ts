@@ -21,7 +21,6 @@ import {EventService} from "../../core/events/event.service";
 })
 export class CommunityService {
   private readonly apiPath: string = environment.api + "communities";
-  chuj: Role;
   private snackBar = inject(MatSnackBar);
 
   constructor(
@@ -40,29 +39,27 @@ export class CommunityService {
   fetchCommunity(id: string){
     const community = this.communityQuery.getEntity(id);
 
-    console.log(community);
-
     this.eventService.handleNewStreamRequest(community?.id!);
+
+    // After selecting new community as active, active channels have to be removed
+    // to prevent producing list of channels containing ones from both communities
+    this.textChannelStore.removeActive(this.textChannelQuery.getActiveId());
+    this.voiceChannelStore.removeActive(this.voiceChannelQuery.getActiveId());
 
     // Data about communities is stored in storage after initiating app
     // however data about channels, members etc. may be lacking
     // I introduce flag fullyFetched, so this method will now decide if data should be
-    // fetch data api (fullyFetched is false) or taken from storage (fullyFetched is true)
+    // fetched from api (fullyFetched is false) or taken from storage (fullyFetched is true)
     // This flag will be automatically set after updating community object
     if(community?.fullyFetched !== undefined && community?.fullyFetched){
       this.communityStore.setActive(community.id);
-      // After selecting new community as active, active channels have to be removed
-      // to prevent producing list of channels containing ones from both communities
-      this.textChannelStore.removeActive(this.textChannelQuery.getActiveId());
-      this.voiceChannelStore.removeActive(this.voiceChannelQuery.getActiveId());
       return;
     }
 
+    // this part is executed when data is not fetched yet
     // call api to get community data
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
-        console.log(res);
-        // maybe map this on backend
         return {
           community: res.community,
           roles: res.roles,
@@ -84,6 +81,7 @@ export class CommunityService {
         // after this community can be referenced by other parts of app
         // as a currently chosen one
         this.communityStore.setActive(response.community.id);
+
         // All relational data connected to community is normalized
         // and saved to separated stores which will make state of app easier to maintain
 
@@ -99,6 +97,7 @@ export class CommunityService {
           }
         });
 
+        // storing data related to community in separated stores
         this.textChannelStore.add(textChannels);
         this.voiceChannelStore.add(voiceChannels);
         this.roleStore.add(response.roles);
@@ -119,7 +118,6 @@ export class CommunityService {
     ).subscribe();
   }
 
-  // change those types
   createCommunity(form: {name: string}, file: File | undefined) {
     const formData = new FormData();
     formData.append('community', new Blob([JSON.stringify(form)], { type: 'application/json' }));
@@ -133,9 +131,9 @@ export class CommunityService {
         'enctype': 'multipart/form-data'
       })
     })
-      .subscribe(
-        community => this.communityStore.add(community)
-      );
+    .subscribe(
+      community => this.communityStore.add(community)
+    );
   }
 
   editCommunity(){

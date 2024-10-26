@@ -44,28 +44,32 @@ export class ChannelService {
     this.textChannelStore.setActive(channel.id);
   }
 
+  // I add channel in separated method, so it can be also used in EventService
+  addChannel(newChannel: Channel){
+    // it wouldn't be necessary if I could just pass numbers in json,
+    // but I can't because ids are too big and I have to map them to string
+    // and I can't tell if number is other value than id, so it also is mapped to string
+    // @ts-ignore
+    newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
+
+    if(newChannel.type === ChannelType.Text){
+      this.textChannelStore.add(newChannel);
+    } else {
+      this.voiceChannelStore.add(newChannel);
+    }
+  }
+
   createChannel(channel: any): Observable<Channel>{
     channel.communityId = this.communityQuery.getActiveId();
-
-    return this.http.post<Channel>(this.apiPath + "/" + this.communityQuery.getActiveId(), channel).pipe(
-      tap(newChannel => {
-        // it wouldn't be necessary if I could just pass numbers in json,
-        // but I can't because ids are too big and I have to map them to string
-        // and I can't tell if number is other value than id, so it also is mapped to string
-
-        // @ts-ignore
-        newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
-
-        if(newChannel.type === ChannelType.Text){
-          this.textChannelStore.add(newChannel);
-        } else {
-          this.voiceChannelStore.add(newChannel);
-        }
-      })
-    );
+    return this.http.post<Channel>(this.apiPath + "/" + this.communityQuery.getActiveId(), channel);
   }
 
   updateChannel(channel: Channel){
+    console.log(channel);
+    // @ts-ignore
+    channel.type = channel.type === 0 ? 'TEXT_CHANNEL' : 'VOICE_CHANNEL';
+    console.log(channel);
+
     return this.http.put<Channel>(this.apiPath + "/" + channel.id, {channel}).pipe(
       tap(updatedChannel => {
         if(!updatedChannel.id){
@@ -79,14 +83,14 @@ export class ChannelService {
     );
   }
 
+  removeChannel(id: string){
+    this.voiceChannelStore.remove(id);
+    this.textChannelStore.remove(id);
+  }
+
   // I'm too lazy to check channel type here
   // and there won't be channels with same id in both stores anyway
   deleteChannel(id: string){
-    return this.http.delete(this.apiPath + "/" + id).pipe(
-      tap(res => {
-        this.voiceChannelStore.remove(id);
-        this.textChannelStore.remove(id);
-      })
-    );
+    return this.http.delete(this.apiPath + "/" + id);
   }
 }

@@ -6,6 +6,7 @@ export const environment = {
   domain: 'http://localhost:4200/',
   api: 'http://localhost:8081/api/',
   keycloackUrl: 'http://localhost:8082',
+  websocketUrl: 'ws://localhost:8083/events',
   // white2115 birthday
   snowflakeEpoch: 1714867200000
 }

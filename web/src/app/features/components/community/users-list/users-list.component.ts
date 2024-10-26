@@ -1,11 +1,14 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
-import {MatNavList} from "@angular/material/list";
+import {MatList, MatListItem, MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
 import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {MemberQuery} from "../../../store/member/member.query";
-
+import {Member} from "../../../models/member";
+import {MatCardModule} from '@angular/material/card';
+import {RoleQuery} from "../../../store/role/role.query";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-users-list',
@@ -17,28 +20,38 @@ import {MemberQuery} from "../../../store/member/member.query";
     MatChipSet,
     MatChip,
     UserBasicInfoComponent,
-    MatNavList
+    MatNavList,
+    MatList,
+    MatListItem,
+    MatCardModule
   ],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss'
 })
-export class UsersListComponent implements OnInit{
-  readonly panelOpenState = signal(false);
+export class UsersListComponent implements OnInit, OnDestroy{
 
-  user = '';
+  members = signal<Member[]>([]);
 
-  constructor(private memberQuery: MemberQuery) {
+  private memberSubscription: Subscription;
+
+  constructor(private memberQuery: MemberQuery, private roleQuery: RoleQuery) {
   }
 
   ngOnInit() {
-    this.memberQuery.selectAll().subscribe(member => {
-      console.log(member);
-    });
+    this.memberSubscription = this.memberQuery.selectAll()
+      .subscribe(members => {
+        console.log(members);
+        this.members.set(members);
+      }
+    );
   }
 
-  users: any[] = [
-    {id: 1, name: "test1", roles: ["Owner", "Administator"]},
-    {id: 2, name: "test2"},
-    {id: 3, name: "test3"}
-  ];
+  getRoleName(id: string){
+    return this.roleQuery.getEntity(id)?.name;
+  }
+
+  ngOnDestroy() {
+    this.memberSubscription.unsubscribe();
+  }
+
 }

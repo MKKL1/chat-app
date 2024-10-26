@@ -1,7 +1,12 @@
-<p>invitation works!</p>
-@if (loadedInvitation) {
-  <h1>You were invited to community {{community?.name}} by {{community?.ownerId}}</h1>
-  <button (click)="acceptInvitation()">Accept</button>
-} @else {
-  <mat-spinner></mat-spinner>
-}
+<mat-card>
+  <mat-card-content>
+    <div>
+      <img src="{{community?.imageUrl}}">
+    </div>
+    <p>{{community?.ownerId}} invited you to join</p>
+    <h2>{{community?.name}}</h2>
+  </mat-card-content>
+  <mat-card-actions>
+    <button (click)="acceptInvitation()" mat-flat-button>Accept</button>
+  </mat-card-actions>
+</mat-card>

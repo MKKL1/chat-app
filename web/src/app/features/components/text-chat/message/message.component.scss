@@ -14,7 +14,7 @@
 
 .message-wrapper{
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .message-menu{
@@ -32,6 +32,10 @@
   word-break: break-word;
 }
 
+.gif-wrapper{
+  margin-top: 15px;
+}
+
 .gif-wrapper img{
   max-width: 70vw;
 }
@@ -46,6 +50,7 @@
 .user-info-container{
   position: relative;
   display: inline-block;
+  align-self: flex-start;
 }
 
 app-user-basic-info{
@@ -62,4 +67,9 @@ app-user-basic-info{
 .user-info-container:hover app-user-basic-info,
 .user-info-container app-user-basic-info:hover {
   display: block;
+}
+
+.username {
+  color: #79c1ab;
+  font-size: 140%;
 }

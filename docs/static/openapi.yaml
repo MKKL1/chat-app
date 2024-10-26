@@ -144,8 +144,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CommunityCreateDTO"
-        required: true
+              required:
+              - community
+              type: object
+              properties:
+                community:
+                  $ref: "#/components/schemas/CommunityCreateDTO"
+                file:
+                  type: string
+                  format: binary
       responses:
         "201":
           description: Created
@@ -163,21 +170,30 @@ paths:
     post:
       tags:
       - Role
-      summary: Create role TODO
+      summary: Create role
       operationId: createRole
+      parameters:
+      - name: communityId
+        in: path
+        description: ID of community
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RoleCreateDTO"
+              $ref: "#/components/schemas/RoleCreateRequest"
         required: true
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Role"
+                $ref: "#/components/schemas/RoleWithMembersDTO"
         "419":
           description: User not created
         "403":
@@ -352,15 +368,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MessageCreateDTO"
-        required: true
+              required:
+              - message
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/MessageCreateDTO"
+                file:
+                  type: string
+                  format: binary
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Message"
+                $ref: "#/components/schemas/MessageDTO"
         "419":
           description: User not created
         "403":
@@ -401,6 +424,17 @@ paths:
       - User
       summary: Edit avatar? TODO
       operationId: editAvatar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
       responses:
         "200":
           description: OK
@@ -485,15 +519,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Community"
-        required: true
+              required:
+              - community
+              - file
+              type: object
+              properties:
+                community:
+                  $ref: "#/components/schemas/Community"
+                file:
+                  type: string
+                  format: binary
       responses:
         "204":
           description: No Content
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Community"
+                $ref: "#/components/schemas/CommunityDTO"
         "419":
           description: User not created
         "401":
@@ -503,10 +545,34 @@ paths:
       security:
       - OAuthSecurity: []
   /communities/{communityId}/roles/{roleId}:
+    delete:
+      tags:
+      - Role
+      summary: Delete role
+      operationId: deleteRole
+      parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No Content
+        "419":
+          description: User not created
+        "403":
+          description: User is not an owner of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
+      security:
+      - OAuthSecurity: []
     patch:
       tags:
       - Role
-      summary: Edit role TODO
+      summary: Edit role
+      description: Uses json patch to edit RoleWithMembersDTO
       operationId: editRole
       parameters:
       - name: roleId
@@ -519,15 +585,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RoleCreateDTO"
+              type: array
+              items:
+                $ref: "#/components/schemas/JsonPatchSchema"
         required: true
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Role"
+                $ref: "#/components/schemas/RoleWithMembersDTO"
         "419":
           description: User not created
         "403":
@@ -680,7 +748,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Role"
+                $ref: "#/components/schemas/RoleWithMembersDTO"
         "419":
           description: User not created
         "403":
@@ -690,29 +758,18 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
-    delete:
+  /file/**:
+    get:
       tags:
-      - Role
-      summary: Delete role TODO
-      operationId: deleteRole
-      parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
+      - file-controller
+      operationId: getFile
       responses:
-        "204":
-          description: No Content
-        "419":
-          description: User not created
-        "403":
-          description: User is not an owner of community or resource is not available
-        "401":
-          description: Incorrect token scope (token not provided?)
-      security:
-      - OAuthSecurity: []
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
   /communities/{communityId}/info:
     get:
       tags:
@@ -778,7 +835,7 @@ components:
           description: ID of user
           format: int64
           example: 4501678724218880
-        name:
+        username:
           type: string
           description: User name
           example: User123
@@ -811,22 +868,23 @@ components:
         imageUrl:
           type: string
         basePermissions:
-          $ref: "#/components/schemas/Permissions"
-    Permissions:
-      type: object
-      properties:
-        permissionData:
           type: integer
           format: int32
-    RoleCreateDTO:
-      type: object
-    PermissionOverwrites:
+    RoleCreateRequest:
       type: object
       properties:
-        permissionOverwriteData:
+        name:
+          type: string
+        permissionOverwrites:
           type: integer
           format: int64
-    Role:
+        members:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+    RoleDTO:
       type: object
       properties:
         id:
@@ -834,11 +892,23 @@ components:
           format: int64
         name:
           type: string
-        permission:
-          $ref: "#/components/schemas/PermissionOverwrites"
+        permissionOverwrites:
+          type: integer
+          format: int64
         community:
           type: integer
           format: int64
+    RoleWithMembersDTO:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/RoleDTO"
+        members:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
     JoinRequestDTO:
       type: object
       properties:
@@ -889,91 +959,6 @@ components:
           format: int64
         gifLink:
           type: string
-    Message:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        text:
-          type: string
-        updated_at:
-          type: string
-          format: date-time
-        respondsToMessage:
-          type: integer
-          format: int64
-        gifLink:
-          type: string
-        channelId:
-          type: integer
-          format: int64
-        userId:
-          type: integer
-          format: int64
-    UserDescriptionDTO:
-      type: object
-      properties:
-        description:
-          type: string
-    EditMessageDTO:
-      type: object
-      properties:
-        text:
-          type: string
-    CommunityDTO:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: ID of community
-          format: int64
-          example: 4501678724218880
-        name:
-          type: string
-          description: Name of community
-          example: My community
-        ownerId:
-          type: integer
-          description: ID of community's owner
-          format: int64
-          example: 29754971884879872
-        imageUrl:
-          type: string
-          example: img/myimage.png
-        basePermissions:
-          $ref: "#/components/schemas/Permissions"
-    CommunityMemberRolesDTO:
-      type: object
-      properties:
-        user:
-          $ref: "#/components/schemas/UserDTO"
-        roles:
-          uniqueItems: true
-          type: array
-          description: Roles of user in given community
-          items:
-            type: integer
-            description: ID of role
-            format: int64
-            example: 8518649245597696
-    FullCommunityInfoDTO:
-      type: object
-      properties:
-        community:
-          $ref: "#/components/schemas/CommunityDTO"
-        channels:
-          type: array
-          items:
-            $ref: "#/components/schemas/Channel"
-        members:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityMemberRolesDTO"
-        roles:
-          type: array
-          items:
-            $ref: "#/components/schemas/Role"
     MessageAttachmentDTO:
       type: object
       properties:
@@ -991,6 +976,10 @@ components:
           type: string
           description: ID of attachment
           example: myfile.txt
+        path:
+          type: string
+          description: Path to file
+          example: uploads/messages/random_file_name.png
     MessageDTO:
       type: object
       properties:
@@ -1048,6 +1037,158 @@ components:
           type: boolean
           description: If current user reacted to the message
           example: true
+    UserDescriptionDTO:
+      type: object
+      properties:
+        description:
+          type: string
+    CommunityDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of community
+          format: int64
+          example: 4501678724218880
+        name:
+          type: string
+          description: Name of community
+          example: My community
+        ownerId:
+          type: integer
+          description: ID of community's owner
+          format: int64
+          example: 29754971884879872
+        imageUrl:
+          type: string
+          example: img/myimage.png
+        basePermissions:
+          type: integer
+          format: int32
+    JsonPatchSchema:
+      required:
+      - op
+      - path
+      - value
+      type: object
+      properties:
+        op:
+          type: string
+          enum:
+          - replace
+          - add
+          - remove
+          - copy
+          - move
+          - test
+        path:
+          type: string
+          example: /name
+        value:
+          type: string
+    EditMessageDTO:
+      type: object
+      properties:
+        text:
+          type: string
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        text:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        respondsToMessage:
+          type: integer
+          format: int64
+        gifLink:
+          type: string
+        channelId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+    ChannelDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        communityId:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum:
+          - TEXT_CHANNEL
+          - VOICE_CHANNEL
+    ChannelRoleOverwriteDTO:
+      type: object
+      properties:
+        roleId:
+          type: integer
+          format: int64
+        overwrites:
+          type: integer
+          format: int64
+    ChannelRolesDTO:
+      type: object
+      properties:
+        channel:
+          $ref: "#/components/schemas/ChannelDTO"
+        overwrites:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelRoleOverwriteDTO"
+    CommunityMemberRolesDTO:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserDTO"
+        roles:
+          uniqueItems: true
+          type: array
+          description: Roles of user in given community
+          items:
+            type: integer
+            description: ID of role
+            format: int64
+            example: 8518649245597696
+    FullCommunityInfoDTO:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/CommunityDTO"
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelRolesDTO"
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityMemberRolesDTO"
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleNoCommunityDTO"
+    RoleNoCommunityDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        permissionOverwrites:
+          type: integer
+          format: int64
   securitySchemes:
     OAuthSecurity:
       type: oauth2

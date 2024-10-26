@@ -10,6 +10,7 @@ import {FormsModule} from "@angular/forms";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {UserService} from "../../../../core/services/user.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-communities-list',

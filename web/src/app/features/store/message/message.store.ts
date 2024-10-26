@@ -1,7 +1,7 @@
 import {Message} from "../../models/message";
 import {EntityState, EntityStore, getEntityType, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
-import {filePathMapping, snowflakeDate} from "../../../shared/utils/utils";
+import {filePathMapping, formatDate, snowflakeDate} from "../../../shared/utils/utils";
 
 export interface MessageState extends EntityState<Message, string> {}
 
@@ -22,9 +22,10 @@ export class MessageStore extends EntityStore<MessageState>{
         };
       });
     }
-    
+
     // getting date from snowflake
     newEntity.updatedAt = snowflakeDate(newEntity.id);
+    newEntity.dateFormatted = formatDate(newEntity.updatedAt);
 
     return super.akitaPreAddEntity(newEntity);
   }
