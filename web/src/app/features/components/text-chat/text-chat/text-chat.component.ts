@@ -82,7 +82,7 @@ export class TextChatComponent implements OnInit, OnDestroy{
       }
 
       this.channel = channel!;
-      this.messageService.getMessages(channel?.id!);
+      this.messageService.getMessages(this.channelQuery.getActiveId()!, this.channel.messagesState!);
       this.loadedAllData.set(false);
     });
 
@@ -90,9 +90,7 @@ export class TextChatComponent implements OnInit, OnDestroy{
 
   loadMoreMessage(){
     const lastMessageId = this.messages()?.at(0)?.id;
-    this.messageService.loadMoreMessages(this.channelQuery.getActiveId()!, lastMessageId).subscribe(isLast => {
-      this.loadedAllData.set(isLast);
-    });
+    this.messageService.getMessages(this.channelQuery.getActiveId()!, this.channel.messagesState!, lastMessageId);
   }
 
   setResponse(event: { id: string, text: string }){

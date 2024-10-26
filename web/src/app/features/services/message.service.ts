@@ -1,14 +1,14 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Message} from "../models/message";
+import {ChannelMessagesState} from "../models/channel";
 import {MessageStore} from "../store/message/message.store";
 import {CreateMessageDto} from "../models/create.message.dto";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
-import {Params} from "@angular/router";
 import {ID} from "@datorama/akita";
-import {MessageQuery} from "../store/message/message.query";
-import {map, Observable, tap} from "rxjs";
+import {map, Observable} from "rxjs";
+import {TextChannelStore} from "../store/textChannel/text.channel.store";
 
 @Injectable({
   providedIn: 'root'
@@ -21,23 +21,43 @@ export class MessageService{
   constructor(
     private http: HttpClient,
     private channelQuery: TextChannelQuery,
-    private messageStore: MessageStore) {
+    private messageStore: MessageStore,
+    private channelStore: TextChannelStore) {
+  }
+
+  getMessages(channelId: ID, state: ChannelMessagesState, lastMessageId?: string){
+    channelId = channelId.toString();
+
+    switch(state){
+      case ChannelMessagesState.NotFetched:
+        this.fetchMessages(channelId).subscribe(messages => {
+          this.messageStore.add(messages);
+
+          if(messages.length < this.limit){
+            this.channelStore.update(channelId, {messagesState: ChannelMessagesState.FullyFetched});
+          } else {
+            this.channelStore.update(channelId, {messagesState: ChannelMessagesState.PartlyFetched});
+          }
+        });
+
+        break;
+      case ChannelMessagesState.PartlyFetched:
+        this.fetchMessages(channelId, lastMessageId).subscribe(messages => {
+          this.messageStore.add(messages);
+
+          if(messages.length < this.limit){
+            this.channelStore.update(channelId, {messagesState: ChannelMessagesState.FullyFetched});
+          }
+        });
+
+        break;
+      case ChannelMessagesState.FullyFetched:
+        return;
+    }
   }
 
   // for now after switching channel all message data is lost
-  getMessages(channelId: ID){
-    const params: any = {
-      limit: this.limit
-    }
-
-    this.http.get<Message[]>(this.api + `${channelId}/messages`, {
-      params
-    }).subscribe(messages => {
-        this.messageStore.set(messages);
-    });
-  }
-
-  loadMoreMessages(channelId: ID, lastMessageId?: ID): Observable<boolean>{
+  fetchMessages(channelId: ID, lastMessageId?: string): Observable<Message[]>{
     const params: any = {
       limit: this.limit
     }
@@ -48,16 +68,7 @@ export class MessageService{
 
     return this.http.get<Message[]>(this.api + `${channelId}/messages`, {
       params
-    }).pipe(
-      map(messages => {
-        this.messageStore.add(messages);
-        const isLastMessage = messages.length % (this.limit - 1) === 0;
-        if(isLastMessage){
-
-        }
-        return isLastMessage;
-      })
-    );
+    });
   }
 
   // we only want to send communityId, channelId and message text

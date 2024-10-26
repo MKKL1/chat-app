@@ -23,6 +23,7 @@ const messageMock = {
   userId: '420',
   edited: false,
   updatedAt: new Date(),
+  dateFormatted: '2024',
   reactions: [],
   attachments: []
 };

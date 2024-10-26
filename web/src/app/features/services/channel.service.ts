@@ -65,6 +65,11 @@ export class ChannelService {
   }
 
   updateChannel(channel: Channel){
+    console.log(channel);
+    // @ts-ignore
+    channel.type = channel.type === 0 ? 'TEXT_CHANNEL' : 'VOICE_CHANNEL';
+    console.log(channel);
+
     return this.http.put<Channel>(this.apiPath + "/" + channel.id, {channel}).pipe(
       tap(updatedChannel => {
         if(!updatedChannel.id){
