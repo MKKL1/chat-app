@@ -6,5 +6,7 @@ package com.szampchat.server.event.data;
  * For example type {@link EventType#MESSAGES} means that client will receive these events when they subscribe to {@code /community/{}/messages}
  */
 public enum EventType {
-    MESSAGES
+    MESSAGES,
+    GENERAL,
+    NOTIFICATIONS
 }

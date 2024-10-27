@@ -2,7 +2,10 @@ package com.szampchat.server.community.service;
 
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.entity.CommunityMember;
+import com.szampchat.server.community.event.MemberCreateEvent;
 import com.szampchat.server.community.repository.CommunityMemberRepository;
+import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.user.UserService;
@@ -21,6 +24,8 @@ import java.util.Set;
 public class CommunityMemberService {
     private final CommunityMemberRepository communityMemberRepository;
     private final CustomPrincipalProvider customPrincipalProvider;
+    private final UserService userService;
+    private final EventSink eventSink;
 
     public Mono<Boolean> isMember(Long communityId, Long userId) {
         return communityMemberRepository.isMemberOfCommunity(communityId, userId);
@@ -47,6 +52,18 @@ public class CommunityMemberService {
     }
 
     public Mono<CommunityMember> create(Long communityId, Long userId) {
-        return communityMemberRepository.save(new CommunityMember(communityId, userId));
+        return communityMemberRepository.save(new CommunityMember(communityId, userId))
+                .flatMap(communityMember -> userService.findUserDTO(communityMember.getUserId())
+                        .doOnNext(userDTO -> eventSink.publish(MemberCreateEvent.builder()
+                                .recipient(Recipient.builder()
+                                        .context(Recipient.Context.COMMUNITY)
+                                        .id(communityMember.getCommunityId())
+                                        .build()
+                                )
+                                .data(userDTO)
+                                .build())
+                        )
+                        .then(Mono.just(communityMember))
+                );
     }
 }

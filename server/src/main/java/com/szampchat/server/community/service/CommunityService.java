@@ -8,10 +8,13 @@ import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.dto.FullCommunityInfoDTO;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
+import com.szampchat.server.community.event.CommunityUpdateEvent;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.FailedToSaveCommunityException;
 import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
+import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.dto.UserRolesDTO;
@@ -55,9 +58,7 @@ public class CommunityService {
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
     private final UserRoleService userRoleService;
-
-    private final RoleRepository roleRepository;
-    private final UserRoleRepository userRoleRepository;
+    private final EventSink eventSink;
 
     public Mono<CommunityDTO> findById(Long id) {
         return communityRepository.findById(id)
@@ -115,8 +116,9 @@ public class CommunityService {
                 );
     }
 
-    public Flux<Community> getUserCommunities(Long id){
-        return communityRepository.userCommunities(id);
+    public Flux<CommunityDTO> getUserCommunities(Long id){
+        return communityRepository.userCommunities(id)
+                .map(this::toDTO);
     }
 
     @Transactional
@@ -154,9 +156,10 @@ public class CommunityService {
     }
 
     // from chat
-    public Mono<CommunityDTO> editCommunity(Long id, Community communityToUpdate, FilePart file){
+    public Mono<CommunityDTO> editCommunity(Long id, Community communityToUpdate, FilePart file) {
         return communityRepository.findById(id)
             .flatMap(existingCommunity -> {
+                //TODO simplify
                 if (existingCommunity.getImageUrl() != null) {
                     try {
                         return fileStorageService.delete(existingCommunity.getImageUrl())
@@ -172,17 +175,22 @@ public class CommunityService {
             .flatMap(existingCommunity -> {
                 BeanUtils.copyProperties(communityToUpdate, existingCommunity, "id", "imageUrl");
 
-                if (file != null) {
-                    return fileStorageService.save(file, FilePath.COMMUNITY)
-                        .flatMap(filepath -> {
-                            existingCommunity.setImageUrl(filepath);
-                            return communityRepository.save(existingCommunity)
-                                    .map(updatedCommunity -> modelMapper.map(updatedCommunity, CommunityDTO.class));
-                        });
-                } else {
-                    return communityRepository.save(existingCommunity)
-                            .map(updatedCommunity -> modelMapper.map(updatedCommunity, CommunityDTO.class));
-                }
+                //Save image if changed
+                return Mono.justOrEmpty(file)
+                        .flatMap(filePart -> fileStorageService.save(filePart, FilePath.COMMUNITY))
+                        .doOnNext(existingCommunity::setImageUrl)
+                        //Save community
+                        .then(communityRepository.save(existingCommunity))
+                        .map(updatedCommunity -> modelMapper.map(updatedCommunity, CommunityDTO.class))
+                        .doOnNext(communityDTO -> eventSink.publish(
+                                        CommunityUpdateEvent.builder()
+                                            .recipient(Recipient.builder()
+                                                    .context(Recipient.Context.COMMUNITY)
+                                                    .id(communityDTO.getId())
+                                                    .build())
+                                            .data(communityDTO)
+                                        .build())
+                        );
             });
     }
 
@@ -201,5 +209,9 @@ public class CommunityService {
                         .doOnSuccess(_ -> log.info("Deleted community by id: {}", id));
                 }
             });
+    }
+
+    CommunityDTO toDTO(Community community) {
+        return modelMapper.map(community, CommunityDTO.class);
     }
 }

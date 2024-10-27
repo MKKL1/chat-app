@@ -71,7 +71,7 @@ public class CommunityController {
             description = "Retrieves communities of logged in user")
 
     @GetMapping()
-    public Flux<Community> getUserCommunities(CurrentUser user){
+    public Flux<CommunityDTO> getUserCommunities(CurrentUser user){
         return communityService.getUserCommunities(user.getUserId());
     }
 
@@ -96,6 +96,7 @@ public class CommunityController {
                     Uses invitation link (it's id) to join community as current user.
                     This action result in expiration of invitation. (?)""")
 
+    //TODO not sure what should be response
     @PostMapping("/{communityId}/join")
 //    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
@@ -123,12 +124,11 @@ public class CommunityController {
     @Operation(summary = "Edit community",
             description = """
                     Edits community""")
-    //Use community dto?
+
     @PatchMapping("/{communityId}")
-    //@PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<CommunityDTO> editCommunity(
             @PathVariable Long communityId,
-            @RequestPart("community") Community community,
+            @RequestPart("community") Community community, //TODO DTO
             @RequestPart("file") FilePart file) {
         return communityService.editCommunity(communityId, community, file);
     }
@@ -140,7 +140,6 @@ public class CommunityController {
                     Removes community""")
 
     @DeleteMapping("/{communityId}")
-//    @PreAuthorize("@communityService.isOwner(#communityId)")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
         return communityService.delete(communityId);
     }
