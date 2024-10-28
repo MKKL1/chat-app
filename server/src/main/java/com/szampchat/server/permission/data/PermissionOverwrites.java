@@ -81,4 +81,12 @@ public class PermissionOverwrites {
     public Permissions applyToNew(Permissions basePermissions) {
         return new Permissions(apply(basePermissions));
     }
+
+    public long add(PermissionOverwrites other) {
+        return permissionOverwriteData | other.getPermissionOverwriteData();
+    }
+
+    public long add(long other) {
+        return permissionOverwriteData | other;
+    }
 }
