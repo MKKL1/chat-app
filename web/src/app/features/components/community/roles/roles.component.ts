@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy} from '@angular/core';
+import {Component, inject, OnDestroy, signal} from '@angular/core';
 import {MatTableModule} from "@angular/material/table";
 import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
@@ -6,12 +6,10 @@ import {MatDialog} from "@angular/material/dialog";
 import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
 import {RoleQuery} from "../../../store/role/role.query";
 import {Subscription} from "rxjs";
-
-
-export interface Role{
-  name: string;
-  members: number;
-}
+import {Role} from "../../../models/role";
+import {MatList, MatListModule} from "@angular/material/list";
+import {MatCard, MatCardModule} from "@angular/material/card";
+import {RoleService} from "../../../services/role.service";
 
 @Component({
   selector: 'app-roles',
@@ -20,7 +18,9 @@ export interface Role{
     MatTableModule,
     MatIconButton,
     MatIcon,
-    MatFabButton
+    MatFabButton,
+    MatListModule,
+    MatCardModule
   ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
@@ -28,30 +28,29 @@ export interface Role{
 export class RolesComponent implements OnDestroy{
   displayedColumns: string[] = ['name', 'members', 'edit'];
 
-  roles: Role[] = [
-    {name: 'Admin', members: 3},
-    {name: 'Guest', members: 12},
-    {name: 'Moderator', members: 5},
-    {name: 'Owner', members: 1}
-  ];
+  roles = signal<Role[]>([]);
 
   readonly dialog: MatDialog = inject(MatDialog);
 
   private roleSubscription: Subscription;
 
-  constructor(private roleQuery: RoleQuery) {
-    this.roleSubscription = this.roleQuery.selectAll().subscribe(role => {
-      console.log(role);
+  constructor(private roleQuery: RoleQuery, private roleService: RoleService) {
+    this.roleSubscription = this.roleQuery.selectAll().subscribe(roles => {
+      console.log(roles);
+      this.roles.set(roles)
     });
   }
 
-  openDialog(){
-    const dialogRef = this.dialog.open(RoleDialogComponent, {width: '60vw'});
-    dialogRef.afterClosed().subscribe(result => {
-      // here handle creating new community
-      console.log("Dialog result: ");
-      console.log(result);
-    })
+  addRole(){
+    this.dialog.open(RoleDialogComponent, {width: '60vw'});
+  }
+
+  editRole(id: string){
+
+  }
+
+  deleteRole(id: string){
+    this.roleService.deleteRole(id);
   }
 
   ngOnDestroy() {

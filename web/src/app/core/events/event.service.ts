@@ -12,6 +12,8 @@ import {formatDate} from "../../shared/utils/utils";
 import {MemberQuery} from "../../features/store/member/member.query";
 import {ChannelService} from "../../features/services/channel.service";
 import {showNotification} from "../../shared/utils/notifications";
+import {RoleStore} from "../../features/store/role/role.store";
+import {Role} from "../../features/models/role";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +27,7 @@ export class EventService {
   private channelService = inject(ChannelService);
   private userService = inject(UserService);
   private memberQuery = inject(MemberQuery);
+  private roleStore = inject(RoleStore);
 
   // this subject is used to notify list of text channels about new message,
   // so it can add notification to proper channel from list
@@ -109,6 +112,17 @@ export class EventService {
     handler.add('CHANNEL_DELETE_EVENT', (id: any) => {
       this.channelService.removeChannel(id);
     });
+
+    handler.add('ROLE_CREATE_EVENT', (res: {role: Role}) => {
+      console.log(res);
+      this.roleStore.add(res.role);
+    })
+
+    // event always return roleId: 1
+    handler.add('ROLE_DELETE_EVENT', (role: any) => {
+      console.log(role);
+      this.roleStore.remove(role.roleId);
+    })
 
     return handler;
   }
