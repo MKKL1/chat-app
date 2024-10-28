@@ -52,6 +52,7 @@ export class MessageService{
 
         break;
       case ChannelMessagesState.FullyFetched:
+        // because there is no action messages won't update
         return;
     }
   }
