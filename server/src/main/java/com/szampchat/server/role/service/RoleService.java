@@ -123,12 +123,12 @@ public class RoleService {
     public Mono<Void> delete(Long roleId) {
         return getRole(roleId).flatMap(roleDTO ->
                     roleRepository.removeRoleById(roleId)
-                    .doOnNext(deletedRoleId -> eventSink.publish(RoleDeleteEvent.builder()
+                    .doOnNext(_ -> eventSink.publish(RoleDeleteEvent.builder()
                                     .recipient(Recipient.builder()
                                             .context(Recipient.Context.COMMUNITY)
                                             .id(roleDTO.getCommunity())
                                             .build())
-                                    .data(new RoleDeleteEvent.EventPayload(deletedRoleId))
+                                    .data(new RoleDeleteEvent.EventPayload(roleId))
                             .build()))
                 )
                 .then();

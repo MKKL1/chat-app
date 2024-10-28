@@ -60,6 +60,7 @@ public class UserService {
         return findUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }
+
     public Mono<UserDTO> createUser(UserCreateDTO userCreateDTO, UUID currentUserId) {
         //If user doesn't exist, create user
         return findUserIdBySub(currentUserId)
@@ -80,7 +81,7 @@ public class UserService {
 
     }
 
-    Mono<UserDTO> editAvatar(FilePart file, Long userId){
+    public Mono<UserDTO> editAvatar(FilePart file, Long userId){
         return userRepository.findById(userId)
             .flatMap(user -> {
                 if(user.getImageUrl() != null){
@@ -100,11 +101,11 @@ public class UserService {
             });
     }
 
-    Mono<UserDTO> editDescription(String description, Long id){
+    public Mono<UserDTO> editDescription(String description, Long id){
         return Mono.empty();
     }
 
-    Mono<Void> deleteUser(Long id){
+    public Mono<Void> deleteUser(Long id){
         return userRepository.findById(id)
             .flatMap(existingCommunity -> {
                 if (existingCommunity.getImageUrl() != null) {
