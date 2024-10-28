@@ -105,7 +105,8 @@ export class CreateChannelComponent implements OnInit{
         communityId: this.communityId,
         name: this.channelForm.value.name ?? '',
         // ☠☠☠
-        type: this.channelForm.value.type == '0' ? ChannelType.Text : ChannelType.Voice ?? ChannelType.Text
+        type: this.channelForm.value.type == '0' ? ChannelType.Text : ChannelType.Voice ?? ChannelType.Text,
+        overwrites: []
       }
 
       this.channelService.updateChannel(channel).subscribe(channel => {

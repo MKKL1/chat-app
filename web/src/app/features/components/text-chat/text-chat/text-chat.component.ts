@@ -51,7 +51,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
 // for now i have issue with listening to rabbit -> connection should open and close automatically after changing community
 
 export class TextChatComponent implements OnInit, OnDestroy{
-  channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text};
+  channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text, overwrites: []};
 
   private channelSubscription: Subscription;
 

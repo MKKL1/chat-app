@@ -60,13 +60,15 @@ export class CommunityService {
     // call api to get community data
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
+        console.log(res);
         return {
           community: res.community,
           roles: res.roles,
           members: res.members,
-          channels: res.channels.map((channel: any) => ({
-            ...channel,
-            type: channel.type === '0' ? ChannelType.Text : ChannelType.Voice
+          channels: res.channels.map((channelData: any) => ({
+            ...channelData.channel,
+            type: channelData.channel.type === '0' ? ChannelType.Text : ChannelType.Voice,
+            overwrites: channelData.overwrites
           }))
         };
       })
