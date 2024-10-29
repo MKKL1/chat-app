@@ -15,6 +15,9 @@
           <button mat-icon-button (click)="deleteRole(role.id)">
             <mat-icon>delete</mat-icon>
           </button>
+          <button (click)="addMembersToRole(role)" mat-icon-button>
+            <mat-icon>manage_accounts</mat-icon>
+          </button>
         </mat-card-content>
       </mat-card>
   }

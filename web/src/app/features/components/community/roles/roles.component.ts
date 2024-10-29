@@ -11,6 +11,8 @@ import {MatList, MatListModule} from "@angular/material/list";
 import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../services/role.service";
 import {CommunityQuery} from "../../../store/community/community.query";
+import {EditMemberRoleComponent} from "../dialogs/edit-member-role/edit-member-role.component";
+import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
 
 @Component({
   selector: 'app-roles',
@@ -59,6 +61,15 @@ export class RolesComponent implements OnDestroy{
 
   deleteRole(id: string){
     this.roleService.deleteRole(id);
+  }
+
+  addMembersToRole(role: Role){
+    this.dialog.open(RoleMembersComponent, {
+      width: '60vw',
+      data: {
+        role: role
+      }
+    });
   }
 
   ngOnDestroy() {

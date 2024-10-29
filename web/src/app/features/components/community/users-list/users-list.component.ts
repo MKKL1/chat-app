@@ -49,18 +49,9 @@ export class UsersListComponent implements OnInit, OnDestroy{
     private memberQuery: MemberQuery,
     private roleQuery: RoleQuery,
     private communityQuery: CommunityQuery
-  ) {
-  }
+  ) {}
 
-  // we need to somehow filter members and roles before displaying them
   ngOnInit() {
-    // this.members.set(this.memberQuery.getAll({
-    //   filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
-    // }));
-    // console.log(this.memberQuery.getAll());
-    // console.log(this.memberQuery.getAll({
-    //   filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
-    // }))
     this.communitySubscription = this.communityQuery
       .selectActiveId()
       .subscribe(

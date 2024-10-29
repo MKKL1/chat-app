@@ -21,6 +21,7 @@ export class MemberStore extends EntityStore<MemberState>{
     // for example, the same user being stored multiple times as separate objects,
     // differing only by community.
 
+    // TODO
     // Ideally, communities would be stored in an array within a single user object
     // to avoid redundancy, but I don't have time to implement that now.
     newEntity.storeId = newEntity.communityId + newEntity.user.id;

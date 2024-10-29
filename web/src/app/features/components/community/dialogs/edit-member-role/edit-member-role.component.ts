@@ -44,6 +44,8 @@ import {CommunityQuery} from "../../../../store/community/community.query";
 })
 export class EditMemberRoleComponent implements OnInit{
 
+  member = signal<Member | null>(null);
+
   roles = signal<Role[]>([]);
   memberRoles = new FormControl('');
 
@@ -54,6 +56,7 @@ export class EditMemberRoleComponent implements OnInit{
               private communityQuery: CommunityQuery) {
     if(data){
       console.log(data.member);
+      this.member.set(data.member);
     }
   }
 
@@ -66,7 +69,7 @@ export class EditMemberRoleComponent implements OnInit{
   addRoles(){
     // array of roles ids
     console.log(this.memberRoles.value);
-    this.roleService.addRoleToMember();
+    //this.roleService.addRoleToMember( this.memberRoles.value);
   }
 
 }
