@@ -133,6 +133,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.DELETE, "/users")
                             .authenticated()
 //                        .pathMatchers("/api/file/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/join")
+                            .access(authMan.create(authFunc.isParticipant))
                         .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

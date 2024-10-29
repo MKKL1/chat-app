@@ -45,14 +45,16 @@ services:
       RABBITMQ_DEFAULT_PASS: root
     volumes:
       - ~/apps/rabbitmq:/var/lib/rabbitmq
-  livekit:
-    container_name: livekit
-    image: livekit/livekit-server:latest
-    ports:
-      - 7880:7880
-      - 7881:7881
-      - 7882:7882/udp
-    entrypoint: "/livekit-server --dev"
+      # TODO can't get it to work, maybe traeffik may help
+      # using local server for now
+  # livekit:
+    # container_name: livekit
+    # image: livekit/livekit-server:v1.8
+    # ports:
+    #   - 7880:7880
+    #   - 7881:7881
+    #   - 7882:7882/udp
+    # entrypoint: "/livekit-server --dev --bind 0.0.0.0"
 volumes:
   keycloak:
   # add postgres volume here

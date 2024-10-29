@@ -124,6 +124,16 @@
 			<artifactId>json-patch</artifactId>
 			<version>1.13</version>
 		</dependency>
+		<dependency>
+			<groupId>io.livekit</groupId>
+			<artifactId>livekit-server</artifactId>
+			<version>0.8.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jakewharton.retrofit</groupId>
+			<artifactId>retrofit2-reactor-adapter</artifactId>
+			<version>2.1.0</version>
+		</dependency>
 
 	</dependencies>
 	<build>
