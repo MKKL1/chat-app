@@ -2,3 +2,10 @@ mat-card{
   margin-bottom: 10px;
 }
 
+mat-card-title{
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+

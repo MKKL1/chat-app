@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import {MatList, MatListItem, MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
@@ -9,6 +9,12 @@ import {Member} from "../../../models/member";
 import {MatCardModule} from '@angular/material/card';
 import {RoleQuery} from "../../../store/role/role.query";
 import {Subscription} from "rxjs";
+import {MatIconButton} from "@angular/material/button";
+import {MatIcon} from "@angular/material/icon";
+import {MatDialog} from "@angular/material/dialog";
+import {EditMemberRoleComponent} from "../dialogs/edit-member-role/edit-member-role.component";
+import {Order} from "@datorama/akita";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-users-list',
@@ -23,7 +29,9 @@ import {Subscription} from "rxjs";
     MatNavList,
     MatList,
     MatListItem,
-    MatCardModule
+    MatCardModule,
+    MatIconButton,
+    MatIcon
   ],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss'
@@ -32,26 +40,54 @@ export class UsersListComponent implements OnInit, OnDestroy{
 
   members = signal<Member[]>([]);
 
-  private memberSubscription: Subscription;
+  private communitySubscription: Subscription;
 
-  constructor(private memberQuery: MemberQuery, private roleQuery: RoleQuery) {
+  matDialog = inject(MatDialog);
+
+
+  constructor(
+    private memberQuery: MemberQuery,
+    private roleQuery: RoleQuery,
+    private communityQuery: CommunityQuery
+  ) {
   }
 
+  // we need to somehow filter members and roles before displaying them
   ngOnInit() {
-    this.memberSubscription = this.memberQuery.selectAll()
-      .subscribe(members => {
-        console.log(members);
-        this.members.set(members);
-      }
-    );
+    // this.members.set(this.memberQuery.getAll({
+    //   filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    // }));
+    // console.log(this.memberQuery.getAll());
+    // console.log(this.memberQuery.getAll({
+    //   filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    // }))
+    this.communitySubscription = this.communityQuery
+      .selectActiveId()
+      .subscribe(
+        communityId => {
+          this.members.set(this.memberQuery.getAll({
+            filterBy: entity => entity.communityId === communityId
+          }));
+        }
+      );
   }
 
   getRoleName(id: string){
     return this.roleQuery.getEntity(id)?.name;
   }
 
+  editMemberRoles(member: Member){
+    console.log(member);
+    this.matDialog.open(EditMemberRoleComponent, {
+      width: '60vw',
+      data: {
+        member: member
+      }
+    });
+  }
+
   ngOnDestroy() {
-    this.memberSubscription.unsubscribe();
+    this.communitySubscription.unsubscribe();
   }
 
 }

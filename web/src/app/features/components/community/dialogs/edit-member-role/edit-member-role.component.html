@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Change user roles</h2>
+  <mat-dialog-content>
+    <div class="add-role">
+      <mat-form-field>
+        <mat-label>Role</mat-label>
+        <mat-select [formControl]="memberRoles" multiple>
+          @for(role of roles(); track role){
+            <mat-option [value]="role.id">{{role.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button mat-flat-button (click)="addRoles()">Add role</button>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button>Change</button>
+  </mat-dialog-actions>

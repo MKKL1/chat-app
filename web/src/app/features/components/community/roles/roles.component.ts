@@ -10,6 +10,7 @@ import {Role} from "../../../models/role";
 import {MatList, MatListModule} from "@angular/material/list";
 import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../services/role.service";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-roles',
@@ -33,12 +34,19 @@ export class RolesComponent implements OnDestroy{
   readonly dialog: MatDialog = inject(MatDialog);
 
   private roleSubscription: Subscription;
+  private communitySubscription: Subscription;
 
-  constructor(private roleQuery: RoleQuery, private roleService: RoleService) {
-    this.roleSubscription = this.roleQuery.selectAll().subscribe(roles => {
-      console.log(roles);
-      this.roles.set(roles)
-    });
+  constructor(private roleQuery: RoleQuery, private roleService: RoleService, private communityQuery: CommunityQuery) {
+    this.communitySubscription = this.communityQuery
+      .selectActiveId()
+      .subscribe(
+        communityId => {
+          this.roles.set(this.roleQuery.getAll({
+            filterBy: entity => entity.communityId === communityId
+          }));
+        }
+      );
+
   }
 
   addRole(){
@@ -54,6 +62,6 @@ export class RolesComponent implements OnDestroy{
   }
 
   ngOnDestroy() {
-    this.roleSubscription.unsubscribe();
+    this.communitySubscription.unsubscribe();
   }
 }

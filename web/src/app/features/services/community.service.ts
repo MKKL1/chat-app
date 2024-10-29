@@ -15,6 +15,7 @@ import {RoleStore} from "../store/role/role.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {EventService} from "../../core/events/event.service";
+import {Member} from "../models/member";
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +64,14 @@ export class CommunityService {
         console.log(res);
         return {
           community: res.community,
-          roles: res.roles,
-          members: res.members,
+          roles: res.roles.map((role: Role) => ({
+            ...role,
+            communityId: res.community.id
+          })),
+          members: res.members.map((member: Member) => ({
+            ...member,
+            communityId: res.community.id
+          })),
           channels: res.channels.map((channelData: any) => ({
             ...channelData.channel,
             type: channelData.channel.type === '0' ? ChannelType.Text : ChannelType.Voice,
@@ -75,14 +82,6 @@ export class CommunityService {
     ).subscribe({
       next: (response) => {
         console.log(response);
-
-        // Updating existing entity triggers setting fullyFetched flag
-        // which prevents fetching this community again
-        this.communityStore.update(id, response.community);
-        // making this community selected one
-        // after this community can be referenced by other parts of app
-        // as a currently chosen one
-        this.communityStore.setActive(response.community.id);
 
         // All relational data connected to community is normalized
         // and saved to separated stores which will make state of app easier to maintain
@@ -103,7 +102,16 @@ export class CommunityService {
         this.textChannelStore.add(textChannels);
         this.voiceChannelStore.add(voiceChannels);
         this.roleStore.add(response.roles);
+        // while adding members if member is in two communities he is ovewritten
         this.memberStore.add(response.members);
+
+        // Updating existing entity triggers setting fullyFetched flag
+        // which prevents fetching this community again
+        this.communityStore.update(id, response.community);
+        // making this community selected one
+        // after this community can be referenced by other parts of app
+        // as a currently chosen one
+        this.communityStore.setActive(response.community.id);
       },
       error: (err) => console.error(err)
     });

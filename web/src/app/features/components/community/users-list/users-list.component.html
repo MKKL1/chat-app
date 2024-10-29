@@ -3,7 +3,12 @@
     <mat-card appearance="outlined">
       <mat-card-header>
         <img mat-card-avatar src="{{member.user.imageUrl}}" class="example-header-image">
-        <mat-card-title>{{member.user.username}}</mat-card-title>
+        <mat-card-title>
+          <span>{{member.user.username}}</span>
+          <span><button (click)="editMemberRoles(member)" mat-icon-button>
+            <mat-icon>manage_accounts</mat-icon>
+          </button></span>
+        </mat-card-title>
         <mat-card-subtitle>
           <mat-chip-set>
             @for(role of member.roles; track role){
