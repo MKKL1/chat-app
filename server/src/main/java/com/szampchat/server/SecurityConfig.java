@@ -53,7 +53,9 @@ public class SecurityConfig {
             "/webjars/swagger-ui/**",
             "/error",
             "/api/file/**",
-            "/file/**"
+            "/file/**",
+            "/webhook" //TODO secure it from outside connections somehow
+                        // we don't want someone to be able to send fake events
     };
 
     @Bean

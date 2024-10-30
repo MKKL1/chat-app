@@ -2,7 +2,6 @@ package com.szampchat.server.voice;
 
 import com.szampchat.server.user.UserService;
 import com.szampchat.server.user.dto.UserDTO;
-import com.szampchat.server.voice.dto.VoiceTokenResponse;
 import io.livekit.server.AccessToken;
 import io.livekit.server.RoomJoin;
 import io.livekit.server.RoomName;
@@ -16,24 +15,32 @@ import reactor.core.scheduler.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @AllArgsConstructor
 @Service
 public class VoiceChannelService {
     private UserService userService;
     private RoomServiceClient roomServiceClient;
-    private final Scheduler scheduler = Schedulers.boundedElastic();
 
-    private Mono<LivekitModels.Room> createRoom(Long channelId) {
+    private final Map<Long, LivekitModels.Room> roomCache = new ConcurrentHashMap<>();
+
+    private Mono<LivekitModels.Room> createOrGetRoom(Long channelId) {
         return Mono.fromCallable(() -> {
-            Call<LivekitModels.Room> call = roomServiceClient.createRoom(channelId.toString());
-            Response<LivekitModels.Room> response = call.execute();
-            return response.body();
-        })
-        .publishOn(scheduler);
+            LivekitModels.Room room = roomCache.get(channelId);
+            if(room == null) {
+                Call<LivekitModels.Room> call = roomServiceClient.createRoom(channelId.toString());
+                Response<LivekitModels.Room> response = call.execute();
+                room = response.body();
+                roomCache.put(channelId, room);
+            }
+            return room;
+        });
     }
 
     public Mono<AccessToken> getTokenForChannel(Long channelId, Long userId) {
-        return Mono.zip(createRoom(channelId), userService.findUserDTO(userId))
+        return Mono.zip(createOrGetRoom(channelId), userService.findUserDTO(userId))
                 .map(tuple -> {
                     LivekitModels.Room room = tuple.getT1();
                     UserDTO user = tuple.getT2();
