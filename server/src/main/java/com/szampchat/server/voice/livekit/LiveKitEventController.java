@@ -1,22 +1,22 @@
-package com.szampchat.server.voice;
+package com.szampchat.server.voice.livekit;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 public class LiveKitEventController {
+    private final LiveKitEventService liveKitEventService;
 
-    @PostMapping("/webhook")
+    @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
     public Mono<Void> handleWebhook(@RequestBody String payload) {
         return Mono.fromRunnable(() -> {
-            log.info("Received payload: " + payload);
-            // Process the payload here
+            liveKitEventService.handleEventPayload(payload);
         });
     }
 }
