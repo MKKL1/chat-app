@@ -31,7 +31,6 @@ public class VoiceChannelController {
 
     @GetMapping("/channels/{channelId}/join")
     public Mono<VoiceTokenResponse> joinChannel(@PathVariable("channelId") Long channelId, CurrentUser currentUser) {
-        return voiceChannelService.getTokenForChannel(channelId, currentUser.getUserId())
-            .map(token -> new VoiceTokenResponse(token.toJwt()));
+        return voiceChannelService.getVoiceTokenResponse(channelId, currentUser.getUserId());
     }
 }

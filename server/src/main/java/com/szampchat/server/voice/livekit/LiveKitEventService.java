@@ -42,7 +42,7 @@ public class LiveKitEventService {
     }
 
     @PostConstruct
-    public void start() {
+    private void start() {
         asFlux()
                 .doOnNext(event -> log.debug("Event: {}", event.getEvent().toString()))
                 .subscribe();
@@ -59,5 +59,10 @@ public class LiveKitEventService {
      */
     public Flux<LivekitEvent> asFlux() {
         return events.asFlux().publishOn(scheduler);
+    }
+
+    public <T> Flux<T> on(Class<T> clazz) {
+        return asFlux()
+                .ofType(clazz);
     }
 }

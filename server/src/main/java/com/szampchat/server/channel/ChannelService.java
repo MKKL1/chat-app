@@ -43,9 +43,16 @@ public class ChannelService {
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 
+    @Deprecated
     public Mono<Channel> getChannel(Long channelId) {
         return channelRepository.findById(channelId)
                 .switchIfEmpty(Mono.error(new ChannelNotFoundException()));
+    }
+
+    public Mono<ChannelDTO> getChannelDTO(Long channelId) {
+        return channelRepository.findById(channelId)
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
+                .map(this::toDTO);
     }
 
 
