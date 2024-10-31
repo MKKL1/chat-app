@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit.events;
+package com.szampchat.server.voice.livekit.event;
 
 import livekit.LivekitWebhook;
 

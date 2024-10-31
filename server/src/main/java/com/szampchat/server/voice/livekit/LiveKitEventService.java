@@ -1,10 +1,9 @@
 package com.szampchat.server.voice.livekit;
 
-import com.szampchat.server.voice.livekit.events.*;
+import com.szampchat.server.voice.livekit.event.*;
 import io.livekit.server.WebhookReceiver;
 import jakarta.annotation.PostConstruct;
 import livekit.LivekitWebhook;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -14,7 +13,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @Slf4j

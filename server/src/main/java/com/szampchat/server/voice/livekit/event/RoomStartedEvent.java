@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit.events;
+package com.szampchat.server.voice.livekit.event;
 
 import livekit.LivekitModels;
 import livekit.LivekitWebhook;
@@ -7,11 +7,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class RoomFinishedEvent implements LivekitEvent {
+public class RoomStartedEvent implements LivekitEvent {
     private final LivekitWebhook.WebhookEvent event;
     private final LivekitModels.Room room;
 
-    public static RoomFinishedEvent create(LivekitWebhook.WebhookEvent event) {
-        return new RoomFinishedEvent(event, event.getRoom());
+    public static RoomStartedEvent create(LivekitWebhook.WebhookEvent event) {
+        return new RoomStartedEvent(event, event.getRoom());
     }
 }
