@@ -1,7 +1,7 @@
 package com.szampchat.server.community.service;
 
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.channel.dto.ChannelRolesDTO;
+import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
 import com.szampchat.server.community.dto.CommunityCreateDTO;
 import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
@@ -15,15 +15,10 @@ import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
 import com.szampchat.server.role.dto.UserRolesDTO;
 import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.community.dto.RoleNoCommunityDTO;
-import com.szampchat.server.role.entity.Role;
-import com.szampchat.server.role.entity.UserRole;
-import com.szampchat.server.role.repository.RoleRepository;
-import com.szampchat.server.role.repository.UserRoleRepository;
 import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import com.szampchat.server.upload.FileNotFoundException;
@@ -82,7 +77,7 @@ public class CommunityService {
 
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(Long communityId) {
         //Collect all channels of community with role based permission overwrites
-        Mono<List<ChannelRolesDTO>> channelFlux = channelService.getCommunityChannelsWithRoles(communityId).collectList();
+        Mono<List<ChannelFullInfoDTO>> channelFlux = channelService.getCommunityChannelsFullInfo(communityId).collectList();
         //Collect members with corresponding roles
         Mono<List<CommunityMemberRolesDTO>> memberFlux = getCommunityMembersWithRoles(communityId).collectList();
         //Collect roles and remove "community" field

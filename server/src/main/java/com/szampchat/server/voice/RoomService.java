@@ -6,16 +6,20 @@ import com.szampchat.server.user.UserService;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.voice.dto.VoiceTokenResponse;
 import com.szampchat.server.voice.exception.NotVoiceChannelException;
-import com.szampchat.server.voice.livekit.LivekitRepository;
+import com.szampchat.server.voice.repository.RoomRepository;
 import com.szampchat.server.voice.livekit.dto.RoomDTO;
 import io.livekit.server.AccessToken;
 import io.livekit.server.RoomJoin;
 import io.livekit.server.RoomName;
 import io.livekit.server.RoomServiceClient;
+import jakarta.annotation.PostConstruct;
 import livekit.LivekitModels;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Collection;
 
 import static com.szampchat.server.voice.RetrofitToReactor.toMono;
 
@@ -24,33 +28,26 @@ import static com.szampchat.server.voice.RetrofitToReactor.toMono;
 public class RoomService {
     private final UserService userService;
     private final RoomServiceClient roomServiceClient;
-    private final LivekitRepository livekitRepository;
+    private final RoomRepository roomRepository;
     private final ChannelService channelService;
 
-    private Mono<RoomDTO> createOrGetRoom(Long channelId) {
-        return livekitRepository.findRoom(channelId.toString())
-                .switchIfEmpty(toMono(roomServiceClient.createRoom(channelId.toString()))
-                                .map(this::toDTO)
-                                .flatMap(room -> livekitRepository.addRoom(channelId.toString(), room)
-                                        .then(Mono.just(room))
-                                )
-                );
+    public Flux<RoomDTO> getRoomForChannelBulk(Collection<Long> channelIds) {
+        return roomRepository.findRooms(channelIds.stream()
+                        .map(Object::toString)
+                        .toList());
     }
 
     public Mono<AccessToken> getTokenForChannel(Long channelId, Long userId) {
         return channelService.getChannelDTO(channelId)
                 .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
                 .switchIfEmpty(Mono.error(new NotVoiceChannelException()))
-                .flatMap(_ -> Mono.zip(createOrGetRoom(channelId), userService.findUserDTO(userId))
-                        .map(tuple -> {
-                            RoomDTO room = tuple.getT1();
-                            UserDTO user = tuple.getT2();
-
+                .flatMap(_ -> userService.findUserDTO(userId)
+                        .map(user -> {
                             AccessToken token = new AccessToken("devkey", "secret");//TODO
 
                             token.setName(user.getUsername());
                             token.setIdentity(userId.toString());
-                            token.addGrants(new RoomJoin(true), new RoomName(room.getName()));
+                            token.addGrants(new RoomJoin(true), new RoomName(channelId.toString()));
 
                             return token;
                         })

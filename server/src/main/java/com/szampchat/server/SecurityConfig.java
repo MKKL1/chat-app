@@ -157,7 +157,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.DELETE, "/users")
                             .authenticated()
 //                        .pathMatchers("/api/file/**").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/join")
+                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/voice/join")
                             .access(authMan.create(authFunc.isParticipant))
                         .anyExchange().denyAll()
                 )
