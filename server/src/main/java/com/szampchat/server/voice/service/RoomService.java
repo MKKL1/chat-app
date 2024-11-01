@@ -1,18 +1,16 @@
-package com.szampchat.server.voice;
+package com.szampchat.server.voice.service;
 
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.channel.ChannelType;
 import com.szampchat.server.user.UserService;
-import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.voice.dto.VoiceTokenResponse;
 import com.szampchat.server.voice.exception.NotVoiceChannelException;
-import com.szampchat.server.voice.repository.RoomRepository;
-import com.szampchat.server.voice.livekit.dto.RoomDTO;
+import com.szampchat.server.voice.repository.RedisRoomRepository;
+import com.szampchat.server.livekit.dto.RoomDTO;
 import io.livekit.server.AccessToken;
 import io.livekit.server.RoomJoin;
 import io.livekit.server.RoomName;
 import io.livekit.server.RoomServiceClient;
-import jakarta.annotation.PostConstruct;
 import livekit.LivekitModels;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,14 +19,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 
-import static com.szampchat.server.voice.RetrofitToReactor.toMono;
-
 @AllArgsConstructor
 @Service
 public class RoomService {
     private final UserService userService;
-    private final RoomServiceClient roomServiceClient;
-    private final RoomRepository roomRepository;
+    private final RedisRoomRepository roomRepository;
     private final ChannelService channelService;
 
     public Flux<RoomDTO> getRoomForChannelBulk(Collection<Long> channelIds) {
@@ -60,10 +55,5 @@ public class RoomService {
                 .map(token -> new VoiceTokenResponse(token.toJwt(), "ws://localhost:7880")); //TODO
     }
 
-    RoomDTO toDTO(LivekitModels.Room room) {
-        return RoomDTO.builder()
-                .sid(room.getSid())
-                .name(room.getName())
-                .build();
-    }
+
 }

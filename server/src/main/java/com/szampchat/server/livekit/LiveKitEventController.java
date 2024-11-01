@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit;
+package com.szampchat.server.livekit;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

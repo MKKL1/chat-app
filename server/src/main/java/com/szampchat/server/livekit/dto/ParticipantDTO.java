@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit.dto;
+package com.szampchat.server.livekit.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomDTO {
+public class ParticipantDTO {
     private String sid;
+    private String identity;
     private String name;
+    private int state;
 }

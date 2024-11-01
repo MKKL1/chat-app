@@ -1,6 +1,6 @@
-package com.szampchat.server.voice.livekit;
+package com.szampchat.server.livekit;
 
-import com.szampchat.server.voice.livekit.event.*;
+import com.szampchat.server.livekit.event.*;
 import io.livekit.server.WebhookReceiver;
 import jakarta.annotation.PostConstruct;
 import livekit.LivekitWebhook;

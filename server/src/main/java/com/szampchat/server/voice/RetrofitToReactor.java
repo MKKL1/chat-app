@@ -5,8 +5,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import java.io.IOException;
-
+//Small tool to help convert livekit responses to reactive stream with proper exception handling
 public class RetrofitToReactor {
 
     public static <T> Mono<T> toMono(Call<T> call) {

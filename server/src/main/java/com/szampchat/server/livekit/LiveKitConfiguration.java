@@ -1,7 +1,7 @@
-package com.szampchat.server.voice.livekit;
+package com.szampchat.server.livekit;
 
-import com.szampchat.server.voice.livekit.dto.ParticipantDTO;
-import com.szampchat.server.voice.livekit.dto.RoomDTO;
+import com.szampchat.server.livekit.dto.ParticipantDTO;
+import com.szampchat.server.livekit.dto.RoomDTO;
 import io.livekit.server.RoomServiceClient;
 import io.livekit.server.WebhookReceiver;
 import org.springframework.context.annotation.Bean;

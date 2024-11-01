@@ -14,7 +14,7 @@ import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
 import com.szampchat.server.role.dto.ChannelRoleOverwritesDTO;
-import com.szampchat.server.voice.ParticipantService;
+import com.szampchat.server.voice.service.ParticipantService;
 import com.szampchat.server.voice.dto.RoomParticipantsDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service("channelService")
 @AllArgsConstructor

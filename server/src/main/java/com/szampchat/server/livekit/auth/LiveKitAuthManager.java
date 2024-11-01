@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit.auth;
+package com.szampchat.server.livekit.auth;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

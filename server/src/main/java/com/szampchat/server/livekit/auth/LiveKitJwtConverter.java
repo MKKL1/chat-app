@@ -1,4 +1,4 @@
-package com.szampchat.server.voice.livekit.auth;
+package com.szampchat.server.livekit.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
