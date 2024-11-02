@@ -6,22 +6,26 @@ import com.szampchat.server.auth.CustomJwtAuthenticationConverter;
 import com.szampchat.server.auth.UserNotRegisteredException;
 import com.szampchat.server.permission.data.PermissionContext;
 import com.szampchat.server.permission.data.PermissionFlag;
+import com.szampchat.server.livekit.auth.LiveKitAuthManager;
+import com.szampchat.server.livekit.auth.LiveKitJwtConverter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -53,7 +57,9 @@ public class SecurityConfig {
             "/webjars/swagger-ui/**",
             "/error",
             "/api/file/**",
-            "/file/**"
+            "/file/**",
+            "/livekit/webhook" //TODO secure it from outside connections somehow
+                        // we don't want someone to be able to send fake events
     };
 
     @Bean
@@ -70,6 +76,24 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
+    public SecurityWebFilterChain securityFilterChainLiveKitWebhook(ServerHttpSecurity http) {
+        ReactiveAuthenticationManager authenticationManager = new LiveKitAuthManager("devkey", "secret");//TODO move to config
+        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
+        authenticationWebFilter.setServerAuthenticationConverter(new LiveKitJwtConverter());
+        authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance());
+
+        return http
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST ,"/livekit/webhook"))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(apiConfigurationSource()))
+                .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+                //TODO validate if body hash matches hash in jwt claim
+                .authorizeExchange(auth -> auth.anyExchange().permitAll())
+                .build();
+    }
+
+    @Bean
+    @Order(3)
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -133,6 +157,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.DELETE, "/users")
                             .authenticated()
 //                        .pathMatchers("/api/file/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/voice/join")
+                            .access(authMan.create(authFunc.isParticipant))
                         .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
