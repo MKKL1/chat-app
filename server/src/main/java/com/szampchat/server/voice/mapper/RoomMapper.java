@@ -1,6 +1,7 @@
 package com.szampchat.server.voice.mapper;
 
 import com.szampchat.server.livekit.dto.RoomDTO;
+import com.szampchat.server.voice.exception.InvalidRoomException;
 import livekit.LivekitModels;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,7 @@ public class RoomMapper {
         try {
             return Long.parseLong(roomId);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid roomId (" + roomId + ")");
+            throw new InvalidRoomException(roomId);
         }
     }
 

@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VoiceTokenResponse {
     private String token;
-    private String server;
 }

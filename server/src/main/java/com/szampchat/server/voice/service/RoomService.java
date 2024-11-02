@@ -52,7 +52,7 @@ public class RoomService {
 
     public Mono<VoiceTokenResponse> getVoiceTokenResponse(Long channelId, Long userId) {
         return getTokenForChannel(channelId, userId)
-                .map(token -> new VoiceTokenResponse(token.toJwt(), "ws://localhost:7880")); //TODO
+                .map(token -> new VoiceTokenResponse(token.toJwt()));
     }
 
 

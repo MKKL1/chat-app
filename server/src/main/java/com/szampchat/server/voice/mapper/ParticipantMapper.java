@@ -1,6 +1,7 @@
 package com.szampchat.server.voice.mapper;
 
 import com.szampchat.server.livekit.dto.ParticipantDTO;
+import com.szampchat.server.voice.exception.InvalidParticipantException;
 import livekit.LivekitModels;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class ParticipantMapper {
         try {
             return Long.parseLong(participantId);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid participantId (" + participantId + ")");
+            throw new InvalidParticipantException(participantId);
         }
     }
 
