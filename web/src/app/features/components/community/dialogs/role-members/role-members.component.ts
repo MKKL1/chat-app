@@ -19,6 +19,7 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {MatIcon} from "@angular/material/icon";
 import {AvatarComponent} from "../../../../../shared/ui/avatar/avatar.component";
 import {MatCard, MatCardModule} from "@angular/material/card";
+import {RoleService} from "../../../../services/role.service";
 
 @Component({
   selector: 'app-role-members',
@@ -53,7 +54,8 @@ export class RoleMembersComponent implements OnInit{
   constructor(public dialogRef: MatDialogRef<RoleMembersComponent>,
               @Inject(MAT_DIALOG_DATA) public data: {role: Role},
               private memberQuery: MemberQuery,
-              private communityQuery: CommunityQuery) {
+              private communityQuery: CommunityQuery,
+              private roleService: RoleService) {
     if(data){
       this.role.set(data.role);
     }
@@ -98,8 +100,22 @@ export class RoleMembersComponent implements OnInit{
   }
 
   persistChanges(){
-    // TODO compare changes in membersWithRole and members
-    // and decided which should be sent to api
+    // must filter it once again to get state of members with role before changes
+    const currentMembers = this.members().filter(member => member.roles.includes(this.role()?.id!));
+    const updatedMembersWithRole = this.membersWithRole();
+
+    const addedMembers = updatedMembersWithRole.filter(
+      updatedMember => !currentMembers.some(currentMember => currentMember.id === updatedMember.id)
+    );
+
+    const removedMembers = currentMembers.filter(
+      currentMember => !updatedMembersWithRole.some(updatedMember => updatedMember.id === currentMember.id)
+    );
+
+    console.log('Added Members:', addedMembers);
+    console.log('Removed Members:', removedMembers);
+
+    this.roleService.changeRoleMembers(this.role()!, addedMembers, removedMembers);
   }
 
 }

@@ -118,6 +118,10 @@ export class EventService {
       this.roleStore.add(res.role);
     })
 
+    handler.add('ROLE_UPDATE_EVENT', (res: any) => {
+      console.log(res);
+    });
+
     // event always return roleId: 1
     handler.add('ROLE_DELETE_EVENT', (role: any) => {
       console.log(role);
