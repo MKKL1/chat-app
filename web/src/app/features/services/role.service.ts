@@ -6,14 +6,10 @@ import {Observable} from "rxjs";
 import {Role} from "../models/role";
 import {Member} from "../models/member";
 
-interface MemberToAdd {
-  member: string;
-}
-
 interface Operation{
   op: string,
   path: string,
-  value: MemberToAdd[]
+  value: string
 }
 
 @Injectable({
@@ -46,34 +42,50 @@ export class RoleService {
   // I don't really know what should i send to update roles ???
   changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]){
     const communityId = this.communityQuery.getActiveId();
-    const path = "/role/1";
+    //let pathCounter: number = 1;
 
-    const addOperation: Operation = {
-      op: 'add',
-      path: path,
-      value: []
-    };
+    const operations: Operation[] = [];
 
-    const removeOperation: Operation = {
-      op: 'remove',
-      path: path,
-      value: []
-    };
+    // const addOperation: Operation = {
+    //   op: 'add',
+    //   path: path,
+    //   value: []
+    // };
+    //
+    // const removeOperation: Operation = {
+    //   op: 'remove',
+    //   path: path,
+    //   value: []
+    // };
 
     membersToRemoveIds.forEach(m => {
-      const member = { member:  m.id};
-      addOperation.value.push(member);
+      operations.push({
+        op: 'remove',
+        path: '/members',
+        value: m.id
+      });
+      //pathCounter++;
+      // const member = { member:  m.id};
+      // addOperation.value.push(member);
     });
 
     membersToAddIds.forEach(m => {
-      const member = {member: m.id};
-      addOperation.value.push(member);
+      operations.push({
+        op: 'add',
+        path: '/members',
+        value: m.id
+      });
+      //pathCounter++;
+
+      // const member = {member: m.id};
+      // addOperation.value.push(member);
     });
 
-    console.log([removeOperation, addOperation])
+    //console.log([removeOperation, addOperation])
 
-    this.http.patch(this.api + communityId + '/roles/' + role.id,
-      [addOperation, removeOperation]).subscribe();
+    console.log(operations);
+
+    this.http.patch(this.api + communityId + '/roles/' + role.id, operations).subscribe();
   }
 
 }
