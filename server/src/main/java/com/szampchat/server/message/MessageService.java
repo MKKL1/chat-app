@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +45,11 @@ public class MessageService {
     //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
     //TODO separate cacheable and non-cacheable parts of MessageFullDTO
     public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO, Long currentUserId) {
+        if(fetchMessagesDTO.getMessages() != null && !fetchMessagesDTO.getMessages().isEmpty()){
+            return getMessagesBulk(channelId, fetchMessagesDTO.getMessages(), currentUserId);
+        }
+
+        //TODO no need to wrapping it in Mono.just
         return Mono.just(fetchMessagesDTO)
                 .flatMapMany(request -> {
                     int limit = request.getLimit() != null ? request.getLimit() : 10;
@@ -173,5 +179,10 @@ public class MessageService {
 
                     return messageDTO;
                 });
+    }
+
+    public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
+        return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
+                .flatMap(message -> attachAdditionalDataToMessage(message, userId));
     }
 }
