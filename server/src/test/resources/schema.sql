@@ -78,7 +78,7 @@ create table community_members
 
 create table messages
 (
-    text                   varchar(255) not null,
+    text                   text not null,
     updated_at             timestamp,
     user_id                bigint       not null
         constraint fk_messages_on_user
