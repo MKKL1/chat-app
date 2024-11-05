@@ -1,8 +1,9 @@
 package com.szampchat.server.channel;
 
-import com.szampchat.server.channel.dto.ChannelCreateDTO;
+import com.szampchat.server.channel.dto.request.ChannelCreateRequest;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
+import com.szampchat.server.channel.dto.request.ChannelEditRequest;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.event.ChannelCreateEvent;
 import com.szampchat.server.channel.event.ChannelDeleteEvent;
@@ -34,16 +35,13 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final CommunityMemberService communityMemberService;
     private final ParticipantService participantService;
-    private ChannelRoleService channelRoleService;
-
+    private final ChannelRoleService channelRoleService;
     private final ModelMapper modelMapper;
-
     private final EventSink eventSender;
 
     //TODO cache it (this method will be called on most api operations)
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
-//                .doFirst(() -> System.out.println(channelId + " " + userId))
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 
@@ -99,62 +97,56 @@ public class ChannelService {
                 });
     }
 
-    public Mono<Channel> createChannel(ChannelCreateDTO channel) {
-        //TODO check if channel exists in different way
-        return channelRepository.doesChannelExist(channel.getName(), channel.getCommunityId())
-            .flatMap(existingChannel -> existingChannel ?
-                Mono.error(new ChannelAlreadyExistsException()) :
-                channelRepository.save(
-                    Channel.builder()
-                        .name(channel.getName())
-                        .communityId(channel.getCommunityId())
-                        .type(channel.getType())
-                        .build()
-                    ).doOnSuccess(savedChannel -> {
-                        eventSender.publish(ChannelCreateEvent.builder()
-                            // I don't use mapper because I don't want to make custom rules for enum
-                            .data(new ChannelDTO(
-                                    savedChannel.getId(),
-                                    savedChannel.getName(),
-                                    savedChannel.getCommunityId(),
-                                    savedChannel.getType()
-                                )
-                            )
-                            .recipient(Recipient.builder()
-                                    .context(Recipient.Context.COMMUNITY)
-                                    .id(savedChannel.getCommunityId())
-                                    .build())
-                            .build());
-                    })
+    public Mono<ChannelDTO> createChannel(ChannelCreateRequest channelCreateRequest, Long communityId) {
+        return channelRepository.existsByNameAndCommunityId(channelCreateRequest.getName(), communityId)
+                .flatMap(channelExists -> {
+                    if (channelExists) {
+                        return Mono.error(new ChannelAlreadyExistsException());
+                    }
+
+                    Channel newChannel = Channel.builder()
+                            .name(channelCreateRequest.getName())
+                            .communityId(communityId)
+                            .type(channelCreateRequest.getType())
+                            .build();
+
+                    return channelRepository.save(newChannel);
+                })
+                .map(this::toDTO)
+                .doOnSuccess(savedChannel -> eventSender.publish(ChannelCreateEvent.builder()
+                        .data(savedChannel)
+                        .recipient(Recipient.builder()
+                                .context(Recipient.Context.COMMUNITY)
+                                .id(savedChannel.getCommunityId())
+                                .build())
+                        .build())
                 );
     }
 
-    public Mono<Channel> editChannel(Long id, Channel channel){
-        return channelRepository.findById(id)
-            .flatMap(existingChannel -> {
-               existingChannel = channel;
-               return channelRepository.save(existingChannel);
-            });
+    public Mono<ChannelDTO> editChannel(Long channelId, ChannelEditRequest channelEditRequest){
+        return channelRepository.findById(channelId)
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
+                .flatMap(channel -> {
+                    channel.setName(channelEditRequest.getName());
+                    return channelRepository.save(channel);
+                })
+                .map(this::toDTO);
     }
 
     // issue with constraints
     public Mono<Void> deleteChannel(Long id){
         return channelRepository.findById(id)
-            .flatMap(channel -> {
-                // this id will be used in eventPublisher
-                Long communityId = channel.getCommunityId();
-                return channelRepository.deleteById(id)
-                    .then(Mono.fromRunnable(() -> {
-                        eventSender.publish(
+            .flatMap(channel -> channelRepository.deleteById(id)
+                    .doOnSuccess(_ -> eventSender.publish(
                             ChannelDeleteEvent.builder()
-                                .data(id)
-                                .recipient(Recipient.builder()
-                                    .context(Recipient.Context.COMMUNITY)
-                                    .id(communityId)
+                                    .data(id)
+                                    .recipient(Recipient.builder()
+                                            .context(Recipient.Context.COMMUNITY)
+                                            .id(channel.getCommunityId())
+                                            .build())
                                     .build())
-                                .build());
-                    }));
-            });
+                    )
+            );
     }
 
 
