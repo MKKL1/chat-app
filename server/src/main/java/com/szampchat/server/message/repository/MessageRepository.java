@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
+
 @Repository
 public interface MessageRepository extends ReactiveCrudRepository<Message, MessageId> {
     Flux<Message> findMessagesByChannelOrderByIdDesc(Long channel, Limit limit);
@@ -22,4 +24,6 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, Messa
     Flux<Message> findMessagesByChannel(@Param("channel") Long channel,
                                         @Param("before") Long before,
                                         @Param("limit") int limit);
+
+    Flux<Message> findMessagesByChannelAndIdIn(Long channel, Collection<Long> ids);
 }

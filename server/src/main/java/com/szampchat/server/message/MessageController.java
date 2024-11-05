@@ -3,13 +3,10 @@ package com.szampchat.server.message;
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.EventSink;
-import com.szampchat.server.message.dto.EditMessageDTO;
+import com.szampchat.server.message.dto.*;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.message.dto.FetchMessagesDTO;
-import com.szampchat.server.message.dto.MessageCreateDTO;
-import com.szampchat.server.message.dto.MessageDTO;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,6 +43,23 @@ public class MessageController {
                                         CurrentUser currentUser) {
         return messageService.getMessages(channelId, fetchMessagesDTO, currentUser.getUserId());
     }
+
+
+//    @ApiResponse(responseCode = "200")
+//    @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
+//    @Operation(summary = "Get messages by id", description = """
+//            Endpoint that allows for retrieving multiple messages, by list of ids provided in request body.
+//            Could be used for attaching initial message body, that some message is responding to.
+//
+//            It uses POST, but it could be changed to GET if needed
+//            """)
+//
+//    @PostMapping("/channels/{channelId}/messages/")
+//    public Flux<MessageDTO> getMessagesById(@PathVariable Long channelId,
+//                                            @RequestBody MessageBulkRequest  messageBulkRequest,
+//                                            CurrentUser currentUser) {
+//        return messageService.getMessagesBulk(channelId, messageBulkRequest, currentUser.getUserId());
+//    }
 
 
     @ApiResponse(responseCode = "201")
