@@ -8,8 +8,10 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
+import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.role.RoleMapper;
 import com.szampchat.server.role.dto.*;
+import com.szampchat.server.role.dto.request.RoleCreateRequest;
 import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.event.RoleCreateEvent;
 import com.szampchat.server.role.event.RoleDeleteEvent;
@@ -72,7 +74,7 @@ public class RoleService {
     public Mono<RoleWithMembersDTO> create(RoleCreateRequest roleCreateRequest, Long communityId) {
         return roleRepository.save(Role.builder()
                     .name(roleCreateRequest.getName())
-                    .permission(roleCreateRequest.getPermissionOverwrites())
+                    .permission(new PermissionOverwrites(roleCreateRequest.getPermissionOverwrites()))
                     .community(communityId)
                     .build())
                 //Save role users

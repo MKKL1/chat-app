@@ -3,6 +3,8 @@ package com.szampchat.server.message;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.*;
+import com.szampchat.server.message.dto.request.FetchMessagesRequest;
+import com.szampchat.server.message.dto.request.MessageCreateRequest;
 import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
@@ -44,13 +46,13 @@ public class MessageService {
     //Can't cache as it requires current user id
     //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
     //TODO separate cacheable and non-cacheable parts of MessageFullDTO
-    public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesDTO fetchMessagesDTO, Long currentUserId) {
-        if(fetchMessagesDTO.getMessages() != null && !fetchMessagesDTO.getMessages().isEmpty()){
-            return getMessagesBulk(channelId, fetchMessagesDTO.getMessages(), currentUserId);
+    public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesRequest fetchMessagesRequest, Long currentUserId) {
+        if(fetchMessagesRequest.getMessages() != null && !fetchMessagesRequest.getMessages().isEmpty()){
+            return getMessagesBulk(channelId, fetchMessagesRequest.getMessages(), currentUserId);
         }
 
         //TODO no need to wrapping it in Mono.just
-        return Mono.just(fetchMessagesDTO)
+        return Mono.just(fetchMessagesRequest)
                 .flatMapMany(request -> {
                     int limit = request.getLimit() != null ? request.getLimit() : 10;
 
@@ -62,7 +64,7 @@ public class MessageService {
                 .flatMap(message -> attachAdditionalDataToMessage(message, currentUserId));
     }
 
-    public Mono<MessageDTO> createMessage(MessageCreateDTO createMessage, Long userId, Long channelId, FilePart file) {
+    public Mono<MessageDTO> createMessage(MessageCreateRequest createMessage, Long userId, Long channelId, FilePart file) {
         // generating snowflake for message
         Long messageId = snowflakeGen.nextId();
 

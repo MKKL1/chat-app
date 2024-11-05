@@ -2,7 +2,7 @@ package com.szampchat.server.community.service;
 
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
-import com.szampchat.server.community.dto.CommunityCreateDTO;
+import com.szampchat.server.community.dto.request.CommunityCreateRequest;
 import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.dto.FullCommunityInfoDTO;
@@ -117,7 +117,7 @@ public class CommunityService {
     }
 
     @Transactional
-    public Mono<Community> save(CommunityCreateDTO communityDTO, FilePart file, Long ownerId) {
+    public Mono<Community> save(CommunityCreateRequest communityDTO, FilePart file, Long ownerId) {
         // storing community image
         Mono<String> imageUrlMono = (file != null)
                 ? fileStorageService.save(file, FilePath.COMMUNITY)

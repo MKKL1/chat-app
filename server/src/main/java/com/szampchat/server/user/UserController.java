@@ -2,17 +2,16 @@ package com.szampchat.server.user;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.shared.docs.OperationDocs;
-import com.szampchat.server.user.dto.UserCreateDTO;
+import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.dto.UserDescriptionDTO;
-import com.szampchat.server.user.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +24,7 @@ import static com.szampchat.server.shared.docs.DocsProperties.RESPONSE_401;
 @Tag(name = "User")
 @SecurityRequirement(name = "OAuthSecurity")
 
+@Validated
 @AllArgsConstructor
 @RestController
 public class UserController {
@@ -53,8 +53,8 @@ public class UserController {
             """)
 
     @PostMapping("/users")
-    public Mono<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO, Principal principal) {
-        return userService.createUser(userCreateDTO, UUID.fromString(principal.getName()));
+    public Mono<UserDTO> createUser(@RequestBody UserCreateRequest userCreateRequest, Principal principal) {
+        return userService.createUser(userCreateRequest, UUID.fromString(principal.getName()));
     }
 
 
