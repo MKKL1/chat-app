@@ -39,7 +39,6 @@ export class RoleService {
     });
   }
 
-  // I don't really know what should i send to update roles ???
   changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]): Observable<any>{
     const communityId = this.communityQuery.getActiveId();
     let pathCounter: number = 1;

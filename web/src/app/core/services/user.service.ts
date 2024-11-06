@@ -23,17 +23,8 @@ export class UserService {
 
   public user$: Observable<User> = this.userSubject.asObservable();
 
-  private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>({
-    canCreateChannel: false,
-    canCreateInvitation: false,
-    canCreateMessage: false,
-    canCreateReaction: false,
-    canDeleteMessage: false,
-    canModifyChannel: false,
-    canModifyRole: false,
-    isAdministrator: false,
-    rawValue: ""
-  });
+  private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>(
+    new Permission("0"));
 
   public permissions$: Observable<Permission> = this.permissionSubject.asObservable();
 

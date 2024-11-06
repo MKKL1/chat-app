@@ -4,5 +4,5 @@ export interface Role {
   id: string;
   name: string;
   communityId: string;
-  permission: string;
+  permissionOverwrites: string;
 }

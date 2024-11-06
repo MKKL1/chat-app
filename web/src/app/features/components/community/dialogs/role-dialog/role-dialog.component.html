@@ -3,7 +3,7 @@
   <mat-dialog-content>
     <mat-form-field appearance="outline">
       <mat-label>Role name</mat-label>
-      <input matInput formControlName="name">
+      <input matInput [formControl]="roleName">
     </mat-form-field>
     <p><mat-slide-toggle formControlName="isAdministrator" labelPosition="before">Administrator</mat-slide-toggle></p>
     <p><mat-slide-toggle formControlName="canModifyRole" labelPosition="before">Modify role</mat-slide-toggle></p>

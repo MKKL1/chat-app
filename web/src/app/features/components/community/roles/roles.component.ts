@@ -28,8 +28,6 @@ import {RoleMembersComponent} from "../dialogs/role-members/role-members.compone
   styleUrl: './roles.component.scss'
 })
 export class RolesComponent implements OnDestroy{
-  displayedColumns: string[] = ['name', 'members', 'edit'];
-
   roles = signal<Role[]>([]);
 
   readonly dialog: MatDialog = inject(MatDialog);
@@ -58,7 +56,11 @@ export class RolesComponent implements OnDestroy{
   }
 
   editRole(id: string){
-
+    const role = this.roles().filter(role => role.id === id);
+    this.dialog.open(RoleDialogComponent, {
+      width: '60vw',
+      data: {'roleToUpdate': role[0]}
+    });
   }
 
   deleteRole(id: string){
