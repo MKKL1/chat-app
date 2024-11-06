@@ -46,6 +46,8 @@ export class OverviewComponent implements OnInit, OnDestroy{
         this.selectedCommunity = signal(community!);
       }
     );
+
+    console.log(this.userService.getPermission());
   }
 
   deleteCommunity(id: string){
@@ -58,6 +60,11 @@ export class OverviewComponent implements OnInit, OnDestroy{
 
   createInvitation(){
     this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity().id}});
+  }
+
+  checkInvitationPermission(): boolean{
+    const permission = this.userService.getPermission();
+    return permission.canCreateInvitation;
   }
 
   ngOnDestroy() {

@@ -12,6 +12,7 @@ import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../services/role.service";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-roles',
@@ -35,7 +36,11 @@ export class RolesComponent implements OnDestroy{
   private roleSubscription: Subscription;
   private communitySubscription: Subscription;
 
-  constructor(private roleQuery: RoleQuery, private roleService: RoleService, private communityQuery: CommunityQuery) {
+  constructor(
+    private roleQuery: RoleQuery,
+    private roleService: RoleService,
+    private communityQuery: CommunityQuery,
+    private userService: UserService) {
     this.communitySubscription = this.communityQuery
       .selectActiveId()
       .subscribe(
@@ -74,6 +79,10 @@ export class RolesComponent implements OnDestroy{
         role: role
       }
     });
+  }
+
+  getAdminPermission(){
+    return this.userService.getPermission().isAdministrator;
   }
 
   ngOnDestroy() {

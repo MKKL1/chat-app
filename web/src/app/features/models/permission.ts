@@ -1,6 +1,6 @@
 export class Permission{
   // number in which bytes define if specific action is allowed
-  rawValue: string;
+  rawValue: bigint;
 
   isAdministrator: boolean;
   canModifyRole: boolean;
@@ -11,7 +11,11 @@ export class Permission{
   canDeleteMessage: boolean;
   canCreateReaction: boolean;
 
-  constructor(permissionBytes: string) {
+  constructor(permissionBytes: string | bigint) {
+    if(typeof permissionBytes === 'string'){
+      permissionBytes = BigInt(permissionBytes);
+    }
+
     this.rawValue = permissionBytes;
 
     console.log(permissionBytes);

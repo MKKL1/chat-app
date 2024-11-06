@@ -54,7 +54,7 @@ export class InvitationComponent  implements OnInit, OnDestroy{
 
 
       if (this.communityId != null) {
-        this.communityService.fetchCommunity(this.communityId);
+        this.communityService.changeCommunity(this.communityId);
       }
 
       // shouldn't be loaded from store, but there isn't any endpoint for this yet

@@ -59,7 +59,7 @@ export class CommunitiesListComponent implements OnInit {
   }
 
   selectCommunity(id: string){
-    this.communityService.fetchCommunity(id);
+    this.communityService.changeCommunity(id);
   }
 
   onToggleChange(value: string){

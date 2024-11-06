@@ -40,6 +40,7 @@ export class UsersListComponent implements OnInit, OnDestroy{
   members = signal<Member[]>([]);
 
   private communitySubscription: Subscription;
+  private membersSubscription: Subscription;
 
   constructor(
     private memberQuery: MemberQuery,
@@ -55,8 +56,17 @@ export class UsersListComponent implements OnInit, OnDestroy{
           this.members.set(this.memberQuery.getAll({
             filterBy: entity => entity.communityId === communityId
           }));
+
+          console.log(this.members());
         }
       );
+
+    this.membersSubscription = this.memberQuery.selectAll({
+      filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    }).subscribe(members => {
+      console.log(members);
+      this.members.set(members);
+    });
   }
 
   getRoleName(id: string){
@@ -65,6 +75,7 @@ export class UsersListComponent implements OnInit, OnDestroy{
 
   ngOnDestroy() {
     this.communitySubscription.unsubscribe();
+    this.membersSubscription.unsubscribe();
   }
 
 }

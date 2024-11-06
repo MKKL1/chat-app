@@ -6,6 +6,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {filePathMapping} from "../../shared/utils/utils";
 import {Permission} from "../../features/models/permission";
+import {overwriteBasePermission} from "../../shared/utils/binaryOperations";
 
 @Injectable({
   providedIn: 'root'
@@ -44,8 +45,9 @@ export class UserService {
     return this.permissionSubject.value;
   }
 
-  public setPermission(): void {
+  public setPermission(permission: Permission): void {
     // todo change user permissions
+    this.permissionSubject.next(permission);
   }
 
   fetchUserData(){
@@ -91,6 +93,26 @@ export class UserService {
     this.http.delete(this.api).subscribe(res => {
       this.keycloakService.logout();
     });
+  }
+
+  updateUserPermissions(basePermission: string, permissions: string[]){
+    let accumulatedPermissions = 0n;
+    for(let i = 0; i < permissions.length; i++){
+      accumulatedPermissions |= BigInt(permissions[i]);
+    }
+
+    // Krystian should review this
+    // example
+    // 00111110 overwritten bits
+    // 11100000 base permission bits
+    // 00111110 result
+
+    const currentPermissions = overwriteBasePermission(accumulatedPermissions, BigInt(basePermission));
+
+    console.log(currentPermissions.toString(2));
+    console.log(currentPermissions);
+
+    this.setPermission(new Permission(currentPermissions));
   }
 
 }

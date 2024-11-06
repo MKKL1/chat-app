@@ -16,6 +16,8 @@ import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {EventService} from "../../core/events/event.service";
 import {Member} from "../models/member";
+import {UserService} from "../../core/services/user.service";
+import {MemberQuery} from "../store/member/member.query";
 
 @Injectable({
   providedIn: 'root'
@@ -34,10 +36,11 @@ export class CommunityService {
     private textChannelQuery: TextChannelQuery,
     private memberStore: MemberStore,
     private roleStore: RoleStore,
-    private eventService: EventService
+    private eventService: EventService,
+    private userService: UserService
   ) { }
 
-  fetchCommunity(id: string){
+  changeCommunity(id: string){
     const community = this.communityQuery.getEntity(id);
 
     this.eventService.handleNewStreamRequest(community?.id!);
@@ -59,6 +62,10 @@ export class CommunityService {
 
     // this part is executed when data is not fetched yet
     // call api to get community data
+    this.fetchCommunity(id);
+  }
+
+  private fetchCommunity(id: string){
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
         console.log(res);
@@ -104,10 +111,17 @@ export class CommunityService {
         this.roleStore.add(response.roles);
         this.memberStore.add(response.members);
 
-        // TODO change user permission based on his roles
-        // first get all user roles, then compare them with basePermissions from community
-        // OR operation will be enough? No -> role permissions overwrite base permission
+        // getting base permission for community and list of
+        // permission overwrite delivered by different roles belonging to user
+        const basePermissions = response.community.basePermissions;
+        // getting roles of current user
+        const currentUserRoles = response.members
+          .find((m: any) => m.user.id === this.userService.getUser().id).roles;
+        const userPermissionsList = response.roles
+          .filter((role: Role) => currentUserRoles.includes(role.id))
+          .map((role: Role) => role.permissionOverwrites);
 
+        this.userService.updateUserPermissions(basePermissions, userPermissionsList);
 
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again

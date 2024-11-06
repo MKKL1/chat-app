@@ -67,8 +67,4 @@ export class RoleService {
     return this.http.patch(this.api + communityId + '/roles/' + role.id, operations);
   }
 
-  updateUserPermissions(){
-
-  }
-
 }

@@ -68,21 +68,27 @@
         <div matListItemTitle>Respond</div>
         <div matListItemLine>Answer to this message</div>
       </mat-list-item>
-      <mat-list-item (click)="updateReactionPicker()">
-        <mat-icon matListItemIcon>favorite</mat-icon>
-        <div matListItemTitle>React</div>
-        <div matListItemLine>Add reaction to message</div>
-      </mat-list-item>
-      <mat-list-item (click)="edit()">
-        <mat-icon matListItemIcon>edit_note</mat-icon>
-        <div matListItemTitle>Edit</div>
-        <div matListItemLine>Edit this message content</div>
-      </mat-list-item>
-      <mat-list-item (click)="delete()">
-        <mat-icon matListItemIcon>delete</mat-icon>
-        <div matListItemTitle>Delete</div>
-        <div matListItemLine>Delete this message</div>
-      </mat-list-item>
+      @if(canCreateReaction()){
+        <mat-list-item (click)="updateReactionPicker()">
+          <mat-icon matListItemIcon>favorite</mat-icon>
+          <div matListItemTitle>React</div>
+          <div matListItemLine>Add reaction to message</div>
+        </mat-list-item>
+      }
+      @if(fromClient()){
+        <mat-list-item (click)="edit()">
+          <mat-icon matListItemIcon>edit_note</mat-icon>
+          <div matListItemTitle>Edit</div>
+          <div matListItemLine>Edit this message content</div>
+        </mat-list-item>
+      }
+      @if(fromClient() || canDeleteMessage()){
+        <mat-list-item (click)="delete()">
+          <mat-icon matListItemIcon>delete</mat-icon>
+          <div matListItemTitle>Delete</div>
+          <div matListItemLine>Delete this message</div>
+        </mat-list-item>
+      }
     </mat-list>
   </div>
 </app-bottom-sheet>
