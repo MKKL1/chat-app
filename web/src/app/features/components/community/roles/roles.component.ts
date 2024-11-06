@@ -11,7 +11,6 @@ import {MatList, MatListModule} from "@angular/material/list";
 import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../services/role.service";
 import {CommunityQuery} from "../../../store/community/community.query";
-import {EditMemberRoleComponent} from "../dialogs/edit-member-role/edit-member-role.component";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
 
 @Component({
@@ -49,6 +48,9 @@ export class RolesComponent implements OnDestroy{
         }
       );
 
+    this.roleSubscription = this.roleQuery.selectAll({
+      filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    }).subscribe(roles => this.roles.set(roles));
   }
 
   addRole(){
@@ -74,5 +76,6 @@ export class RolesComponent implements OnDestroy{
 
   ngOnDestroy() {
     this.communitySubscription.unsubscribe();
+    this.roleSubscription.unsubscribe();
   }
 }

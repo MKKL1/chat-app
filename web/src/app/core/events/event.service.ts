@@ -14,6 +14,7 @@ import {ChannelService} from "../../features/services/channel.service";
 import {showNotification} from "../../shared/utils/notifications";
 import {RoleStore} from "../../features/store/role/role.store";
 import {Role} from "../../features/models/role";
+import {MemberStore} from "../../features/store/member/member.store";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class EventService {
   private channelService = inject(ChannelService);
   private userService = inject(UserService);
   private memberQuery = inject(MemberQuery);
+  private memberStore = inject(MemberStore);
   private roleStore = inject(RoleStore);
 
   // this subject is used to notify list of text channels about new message,
@@ -113,13 +115,33 @@ export class EventService {
       this.channelService.removeChannel(id);
     });
 
-    handler.add('ROLE_CREATE_EVENT', (res: {role: Role}) => {
-      console.log(res);
+    handler.add('ROLE_CREATE_EVENT', (res: any) => {
+      res.role.communityId = res.role.community;
       this.roleStore.add(res.role);
     })
 
+    // {
+    //   "role": {
+    //   "id": "64234317622018048",
+    //     "name": "rolename",
+    //     "permissionOverwrites": "26",
+    //     "community": "63919088711237632"
+    // },
+    //   "members": [
+    //   "63919009480835072"
+    // ]
+    // }
+
+    // there is no info if members where deleted only if they were added
+    // maybe remove all members from community and cached them again?
+
     handler.add('ROLE_UPDATE_EVENT', (res: any) => {
       console.log(res);
+      const roleId = res.role.id;
+      this.roleStore.update(roleId, res.role);
+
+      // TODO somehow update state of members
+
     });
 
     // event always return roleId: 1

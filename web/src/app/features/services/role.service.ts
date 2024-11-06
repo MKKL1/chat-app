@@ -9,7 +9,7 @@ import {Member} from "../models/member";
 interface Operation{
   op: string,
   path: string,
-  value: string
+  value: string | number
 }
 
 @Injectable({
@@ -40,52 +40,36 @@ export class RoleService {
   }
 
   // I don't really know what should i send to update roles ???
-  changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]){
+  changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]): Observable<any>{
     const communityId = this.communityQuery.getActiveId();
-    //let pathCounter: number = 1;
+    let pathCounter: number = 1;
 
     const operations: Operation[] = [];
-
-    // const addOperation: Operation = {
-    //   op: 'add',
-    //   path: path,
-    //   value: []
-    // };
-    //
-    // const removeOperation: Operation = {
-    //   op: 'remove',
-    //   path: path,
-    //   value: []
-    // };
-
-    membersToRemoveIds.forEach(m => {
-      operations.push({
-        op: 'remove',
-        path: '/members',
-        value: m.id
-      });
-      //pathCounter++;
-      // const member = { member:  m.id};
-      // addOperation.value.push(member);
-    });
 
     membersToAddIds.forEach(m => {
       operations.push({
         op: 'add',
-        path: '/members',
+        path: '/members/-',
         value: m.id
       });
-      //pathCounter++;
-
-      // const member = {member: m.id};
-      // addOperation.value.push(member);
     });
 
-    //console.log([removeOperation, addOperation])
+    membersToRemoveIds.forEach(m => {
+      operations.push({
+        op: 'remove',
+        path: '/members/' + pathCounter,
+        value: m.id
+      });
+      pathCounter++;
+    });
 
     console.log(operations);
 
-    this.http.patch(this.api + communityId + '/roles/' + role.id, operations).subscribe();
+    return this.http.patch(this.api + communityId + '/roles/' + role.id, operations);
+  }
+
+  updateUserPermissions(){
+
   }
 
 }

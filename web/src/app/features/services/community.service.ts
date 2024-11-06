@@ -102,8 +102,12 @@ export class CommunityService {
         this.textChannelStore.add(textChannels);
         this.voiceChannelStore.add(voiceChannels);
         this.roleStore.add(response.roles);
-        // while adding members if member is in two communities he is ovewritten
         this.memberStore.add(response.members);
+
+        // TODO change user permission based on his roles
+        // first get all user roles, then compare them with basePermissions from community
+        // OR operation will be enough? No -> role permissions overwrite base permission
+
 
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again

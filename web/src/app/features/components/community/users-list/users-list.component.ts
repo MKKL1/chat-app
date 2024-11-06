@@ -12,7 +12,6 @@ import {Subscription} from "rxjs";
 import {MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
-import {EditMemberRoleComponent} from "../dialogs/edit-member-role/edit-member-role.component";
 import {Order} from "@datorama/akita";
 import {CommunityQuery} from "../../../store/community/community.query";
 
@@ -42,9 +41,6 @@ export class UsersListComponent implements OnInit, OnDestroy{
 
   private communitySubscription: Subscription;
 
-  matDialog = inject(MatDialog);
-
-
   constructor(
     private memberQuery: MemberQuery,
     private roleQuery: RoleQuery,
@@ -65,16 +61,6 @@ export class UsersListComponent implements OnInit, OnDestroy{
 
   getRoleName(id: string){
     return this.roleQuery.getEntity(id)?.name;
-  }
-
-  editMemberRoles(member: Member){
-    console.log(member);
-    this.matDialog.open(EditMemberRoleComponent, {
-      width: '60vw',
-      data: {
-        member: member
-      }
-    });
   }
 
   ngOnDestroy() {

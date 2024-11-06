@@ -5,6 +5,7 @@ import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {filePathMapping} from "../../shared/utils/utils";
+import {Permission} from "../../features/models/permission";
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,20 @@ export class UserService {
 
   public user$: Observable<User> = this.userSubject.asObservable();
 
+  private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>({
+    canCreateChannel: false,
+    canCreateInvitation: false,
+    canCreateMessage: false,
+    canCreateReaction: false,
+    canDeleteMessage: false,
+    canModifyChannel: false,
+    canModifyRole: false,
+    isAdministrator: false,
+    rawValue: ""
+  });
+
+  public permissions$: Observable<Permission> = this.permissionSubject.asObservable();
+
   constructor(private http: HttpClient, private keycloakService: KeycloakService) {
   }
 
@@ -34,7 +49,14 @@ export class UserService {
     this.userSubject.next(user);
   }
 
-  // why it's fetching sub id instead of name??
+  public getPermission(): Permission {
+    return this.permissionSubject.value;
+  }
+
+  public setPermission(): void {
+    // todo change user permissions
+  }
+
   fetchUserData(){
       this.http.get<User>(this.api + "/me").subscribe({
         next: (user) => {

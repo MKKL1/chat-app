@@ -1,4 +1,4 @@
-import {Component, computed, Inject, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, Inject, OnInit, signal} from '@angular/core';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
@@ -20,6 +20,7 @@ import {MatIcon} from "@angular/material/icon";
 import {AvatarComponent} from "../../../../../shared/ui/avatar/avatar.component";
 import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../../services/role.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-role-members',
@@ -51,6 +52,8 @@ export class RoleMembersComponent implements OnInit{
 
   membersToAdd = new FormControl<string[]>([]);
 
+  private _snackBar = inject(MatSnackBar);
+
   constructor(public dialogRef: MatDialogRef<RoleMembersComponent>,
               @Inject(MAT_DIALOG_DATA) public data: {role: Role},
               private memberQuery: MemberQuery,
@@ -79,6 +82,12 @@ export class RoleMembersComponent implements OnInit{
   transferMembersBetweenLists(){
     console.log(this.membersToAdd.value);
     const idsToMove: string[] = this.membersToAdd.value!;
+
+    if(idsToMove.length === 0){
+      this._snackBar.open("There is no member to add!", "OK");
+      return;
+    }
+
     const membersToTransfer = this.membersWithoutRole()
       .filter(member => idsToMove.includes(member.id));
 
@@ -115,7 +124,9 @@ export class RoleMembersComponent implements OnInit{
     console.log('Added Members:', addedMembers);
     console.log('Removed Members:', removedMembers);
 
-    this.roleService.changeRoleMembers(this.role()!, addedMembers, removedMembers);
+    this.roleService.changeRoleMembers(this.role()!, addedMembers, removedMembers).subscribe(_ => {
+      this.dialogRef.close();
+    });
   }
 
 }
