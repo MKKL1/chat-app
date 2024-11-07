@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -45,8 +47,8 @@ public class ChannelController {
     @PutMapping("/channels/{channelId}")
     //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     //Check if user has permission to edit this channel
-    public Mono<ChannelDTO> editChannel(@PathVariable("channelId") Long channelId,
-                                        @RequestBody ChannelEditRequest channel) {
+    public Mono<ChannelDTO> editChannel(@PathVariable Long channelId,
+                                        @Valid @RequestBody ChannelEditRequest channel) {
         return channelService.editChannel(channelId, channel);
     }
 
