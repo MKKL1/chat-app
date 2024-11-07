@@ -4,7 +4,7 @@ import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
-import com.szampchat.server.user.exception.UserAlreadyExistsException;
+import com.szampchat.server.user.exception.KeycloakUserAlreadyExistsException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
 import org.junit.jupiter.api.Test;
@@ -88,7 +88,7 @@ public class UserServiceTests {
 
         // Assert
         StepVerifier.create(result)
-                .expectError(UserAlreadyExistsException.class)
+                .expectError(KeycloakUserAlreadyExistsException.class)
                 .verify();
     }
 

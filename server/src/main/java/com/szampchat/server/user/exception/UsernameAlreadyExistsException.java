@@ -1,11 +1,9 @@
 package com.szampchat.server.user.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.szampchat.server.shared.exception.AlreadyExistsException;
 
-@ResponseStatus(code = HttpStatus.CONFLICT, reason = "User name already exists")
-public class UsernameAlreadyExistsException extends RuntimeException{
-    public UsernameAlreadyExistsException(String username) {
-        super("User name '" + username + "' already exists");
+public class UsernameAlreadyExistsException extends AlreadyExistsException {
+    public UsernameAlreadyExistsException(String userName) {
+        super("user", "User " + userName);
     }
 }

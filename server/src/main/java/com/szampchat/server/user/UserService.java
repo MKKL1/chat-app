@@ -7,7 +7,7 @@ import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
-import com.szampchat.server.user.exception.UserAlreadyExistsException;
+import com.szampchat.server.user.exception.KeycloakUserAlreadyExistsException;
 import com.szampchat.server.user.exception.UserNotFoundException;
 import com.szampchat.server.user.exception.UsernameAlreadyExistsException;
 import com.szampchat.server.user.repository.UserRepository;
@@ -65,7 +65,7 @@ public class UserService {
     public Mono<UserDTO> createUser(UserCreateRequest userCreateRequest, UUID currentUserId) {
         //If user doesn't exist, create user
         return findUserIdBySub(currentUserId)
-                .flatMap(_ -> Mono.error(new UserAlreadyExistsException()))
+                .flatMap(_ -> Mono.error(new KeycloakUserAlreadyExistsException(currentUserId)))
                 //Save user to database
                 .switchIfEmpty(
                         userRepository.findByUsername(userCreateRequest.getUsername())
@@ -93,7 +93,7 @@ public class UserService {
                     try {
                         fileStorageService.delete(user.getImageUrl());
                     } catch (Exception e) {
-                        return Mono.error(new FileNotFoundException("Error during deleting file: " + e.getMessage()));
+                        return Mono.error(new FileNotFoundException("Error during deleting file: " + e.getMessage())); //TODO??
                     }
                 }
 
