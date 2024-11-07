@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import {MatList, MatListItem, MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
@@ -9,6 +9,11 @@ import {Member} from "../../../models/member";
 import {MatCardModule} from '@angular/material/card';
 import {RoleQuery} from "../../../store/role/role.query";
 import {Subscription} from "rxjs";
+import {MatIconButton} from "@angular/material/button";
+import {MatIcon} from "@angular/material/icon";
+import {MatDialog} from "@angular/material/dialog";
+import {Order} from "@datorama/akita";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-users-list',
@@ -23,7 +28,9 @@ import {Subscription} from "rxjs";
     MatNavList,
     MatList,
     MatListItem,
-    MatCardModule
+    MatCardModule,
+    MatIconButton,
+    MatIcon
   ],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss'
@@ -32,18 +39,34 @@ export class UsersListComponent implements OnInit, OnDestroy{
 
   members = signal<Member[]>([]);
 
-  private memberSubscription: Subscription;
+  private communitySubscription: Subscription;
+  private membersSubscription: Subscription;
 
-  constructor(private memberQuery: MemberQuery, private roleQuery: RoleQuery) {
-  }
+  constructor(
+    private memberQuery: MemberQuery,
+    private roleQuery: RoleQuery,
+    private communityQuery: CommunityQuery
+  ) {}
 
   ngOnInit() {
-    this.memberSubscription = this.memberQuery.selectAll()
-      .subscribe(members => {
-        console.log(members);
-        this.members.set(members);
-      }
-    );
+    this.communitySubscription = this.communityQuery
+      .selectActiveId()
+      .subscribe(
+        communityId => {
+          this.members.set(this.memberQuery.getAll({
+            filterBy: entity => entity.communityId === communityId
+          }));
+
+          console.log(this.members());
+        }
+      );
+
+    this.membersSubscription = this.memberQuery.selectAll({
+      filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    }).subscribe(members => {
+      console.log(members);
+      this.members.set(members);
+    });
   }
 
   getRoleName(id: string){
@@ -51,7 +74,8 @@ export class UsersListComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy() {
-    this.memberSubscription.unsubscribe();
+    this.communitySubscription.unsubscribe();
+    this.membersSubscription.unsubscribe();
   }
 
 }

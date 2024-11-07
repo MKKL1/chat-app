@@ -11,4 +11,5 @@ export interface Community {
   channels: Channel[];
   members: Member[];
   roles: Role[];
+  basePermissions: string;
 }

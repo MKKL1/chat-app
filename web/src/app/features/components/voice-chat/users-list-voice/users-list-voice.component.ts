@@ -20,6 +20,7 @@ import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe} from "@angular/common";
 import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-channel-info.component";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -55,7 +56,8 @@ export class UsersListVoiceComponent  implements OnInit{
   constructor(
     private channelQuery: VoiceChannelQuery,
     private channelService: ChannelService,
-    private communityQuery: CommunityQuery) {
+    private communityQuery: CommunityQuery,
+    private userService: UserService) {
   }
 
   ngOnInit() {
@@ -71,7 +73,7 @@ export class UsersListVoiceComponent  implements OnInit{
   }
 
   addChannel(){
-    const dialogRef = this.dialog.open(CreateChannelComponent, {width: '60vw'});
+    this.dialog.open(CreateChannelComponent, {width: '60vw'});
   }
 
   editChannel(channel: Channel){
@@ -86,6 +88,14 @@ export class UsersListVoiceComponent  implements OnInit{
 
   selectChannel(channel: Channel){
     this.channelService.selectVoiceChannel(channel);
+  }
+
+  canCreateChannel(){
+    return this.userService.getPermission().canCreateChannel;
+  }
+
+  canModifyChannel(){
+    return this.userService.getPermission().canModifyChannel;
   }
 
 }

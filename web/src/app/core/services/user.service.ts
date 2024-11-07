@@ -5,6 +5,8 @@ import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {filePathMapping} from "../../shared/utils/utils";
+import {Permission} from "../../features/models/permission";
+import {overwriteBasePermission} from "../../shared/utils/binaryOperations";
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,11 @@ export class UserService {
 
   public user$: Observable<User> = this.userSubject.asObservable();
 
+  private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>(
+    new Permission("0"));
+
+  public permissions$: Observable<Permission> = this.permissionSubject.asObservable();
+
   constructor(private http: HttpClient, private keycloakService: KeycloakService) {
   }
 
@@ -34,7 +41,15 @@ export class UserService {
     this.userSubject.next(user);
   }
 
-  // why it's fetching sub id instead of name??
+  public getPermission(): Permission {
+    return this.permissionSubject.value;
+  }
+
+  public setPermission(permission: Permission): void {
+    // todo change user permissions
+    this.permissionSubject.next(permission);
+  }
+
   fetchUserData(){
       this.http.get<User>(this.api + "/me").subscribe({
         next: (user) => {
@@ -78,6 +93,26 @@ export class UserService {
     this.http.delete(this.api).subscribe(res => {
       this.keycloakService.logout();
     });
+  }
+
+  updateUserPermissions(basePermission: string, permissions: string[]){
+    let accumulatedPermissions = 0n;
+    for(let i = 0; i < permissions.length; i++){
+      accumulatedPermissions |= BigInt(permissions[i]);
+    }
+
+    // Krystian should review this
+    // example
+    // 00111110 overwritten bits
+    // 11100000 base permission bits
+    // 00111110 result
+
+    const currentPermissions = overwriteBasePermission(accumulatedPermissions, BigInt(basePermission));
+
+    console.log(currentPermissions.toString(2));
+    console.log(currentPermissions);
+
+    this.setPermission(new Permission(currentPermissions));
   }
 
 }

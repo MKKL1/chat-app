@@ -24,6 +24,8 @@ export class TextChannelComponent implements OnDestroy{
     this.channelSubscription = this.channelQuery.selectActiveId().subscribe(id => {
       if(id){
         this.isChannelSelected.set(true);
+      } else {
+        this.isChannelSelected.set(false);
       }
     });
   }

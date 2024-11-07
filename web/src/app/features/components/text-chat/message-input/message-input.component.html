@@ -22,19 +22,22 @@
   </div>
 }
 
-<div class="message-input">
-  <!-- preventing from displaying additional margin at bottom (place for hint) -->
-  <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
-    <input [(ngModel)]="text" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
-  </mat-form-field>
-  <div class="icons">
-    <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
-    <mat-icon (click)="triggerFileInput()" fontIcon="attach_file" matTooltip="Choose file to attach"></mat-icon>
-    <mat-icon fontIcon="gif" matTooltip="Add gif to message" (click)="toggleGifSearch()"></mat-icon>
-    <mat-icon fontIcon="add_reaction" matTooltip="Add emoji to message" (click)="toggleEmojiPicker()"></mat-icon>
-    <mat-icon (click)="sendMessage()" fontIcon="send" matTooltip="Send message"></mat-icon>
+<!-- please do it in better way -->
+@if(canCreateMessage()){
+  <div class="message-input">
+    <!-- preventing from displaying additional margin at bottom (place for hint) -->
+    <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
+      <input [(ngModel)]="text" (keyup)="sendMessageKeyboard($event)" autocomplete="off" matInput placeholder="Write something here...">
+    </mat-form-field>
+    <div class="icons">
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
+      <mat-icon (click)="triggerFileInput()" fontIcon="attach_file" matTooltip="Choose file to attach"></mat-icon>
+      <mat-icon fontIcon="gif" matTooltip="Add gif to message" (click)="toggleGifSearch()"></mat-icon>
+      <mat-icon fontIcon="add_reaction" matTooltip="Add emoji to message" (click)="toggleEmojiPicker()"></mat-icon>
+      <mat-icon (click)="sendMessage()" fontIcon="send" matTooltip="Send message"></mat-icon>
+    </div>
   </div>
-</div>
+}
 
 @if(showEmojiPicker()){
   <app-emoji-picker (clickOutside)="closeEmojiPicker()" (emojiSelect)="appendEmojiToInputField($event)"></app-emoji-picker>

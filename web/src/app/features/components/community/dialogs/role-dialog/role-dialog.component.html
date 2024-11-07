@@ -1,15 +1,18 @@
 <h2 mat-dialog-title>Create new role</h2>
-<form>
+<form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
   <mat-dialog-content>
     <mat-form-field appearance="outline">
       <mat-label>Role name</mat-label>
-      <input matInput>
+      <input matInput [formControl]="roleName">
     </mat-form-field>
-    <p><mat-slide-toggle labelPosition="before">Permission 1</mat-slide-toggle></p>
-    <p><mat-slide-toggle labelPosition="before">Permission 2</mat-slide-toggle></p>
-    <p><mat-slide-toggle labelPosition="before">Permission 3</mat-slide-toggle></p>
-    <p><mat-slide-toggle labelPosition="before">Permission 4</mat-slide-toggle></p>
-    <p><mat-slide-toggle labelPosition="before">Permission 5</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="isAdministrator" labelPosition="before">Administrator</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canModifyRole" labelPosition="before">Modify role</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canCreateInvitation" labelPosition="before">Create invitation</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canCreateChannel" labelPosition="before">Create channel</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canModifyChannel" labelPosition="before">Modify channel</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canCreateMessage" labelPosition="before">Create message</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canDeleteMessage" labelPosition="before">Delete message</mat-slide-toggle></p>
+    <p><mat-slide-toggle formControlName="canCreateReaction" labelPosition="before">Create reaction</mat-slide-toggle></p>
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>

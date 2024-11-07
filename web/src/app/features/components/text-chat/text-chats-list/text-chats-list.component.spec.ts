@@ -5,9 +5,16 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {MatDialog} from "@angular/material/dialog";
 import {ChannelService} from "../../../services/channel.service";
+import {UserService} from "../../../../core/services/user.service";
 
 const channelServiceMock = {
   selectTextChannel: jest.fn()
+};
+
+const userServiceMock = {
+  getPermission: jest.fn().mockReturnValue({
+    canCreateChannel: true
+  })
 };
 
 describe('TextChatsListComponent', () => {
@@ -22,7 +29,8 @@ describe('TextChatsListComponent', () => {
       imports: [TextChatsListComponent],
       providers: [
         MatDialog,
-        {provide: ChannelService, useValue: channelServiceMock}
+        {provide: ChannelService, useValue: channelServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     })
     .compileComponents();

@@ -2,8 +2,10 @@
   @for(member of members(); track member.user.id){
     <mat-card appearance="outlined">
       <mat-card-header>
-        <img mat-card-avatar src="{{member.user.imageUrl}}" class="example-header-image">
-        <mat-card-title>{{member.user.username}}</mat-card-title>
+        <img mat-card-avatar src="{{member.user.imageUrl ?? 'avatar.jpg'}}" class="example-header-image">
+        <mat-card-title>
+          <span>{{member.user.username}}</span>
+        </mat-card-title>
         <mat-card-subtitle>
           <mat-chip-set>
             @for(role of member.roles; track role){

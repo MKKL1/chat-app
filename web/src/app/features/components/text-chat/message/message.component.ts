@@ -16,6 +16,7 @@ import {MatListModule} from "@angular/material/list";
 import {UserService} from "../../../../core/services/user.service";
 import {User} from "../../../models/user";
 import {MemberQuery} from "../../../store/member/member.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
   selector: 'app-message',
@@ -51,14 +52,14 @@ export class MessageComponent implements OnInit{
   fromClient = signal<boolean>(false);
   showReactionPicker = signal<boolean>(false);
 
-  imagePath: string = '';
   user: User | undefined;
 
   constructor(
     private messageService: MessageService,
     private memberQuery: MemberQuery,
     private dialog: MatDialog,
-    private userService: UserService) {
+    private userService: UserService,
+    private communityQuery: CommunityQuery) {
   }
 
   ngOnInit() {
@@ -66,7 +67,9 @@ export class MessageComponent implements OnInit{
       this.fromClient.set(true);
     }
 
-    this.user = this.memberQuery.getEntity(this.message.userId)?.user;
+    this.user = this.memberQuery.getAll({
+      filterBy: entity => entity.storeId === this.communityQuery.getActiveId()! + this.message.userId!
+    })[0].user;
   }
 
   openOptions(){
@@ -108,5 +111,13 @@ export class MessageComponent implements OnInit{
         id: this.message.id
       }
     });
+  }
+
+  canCreateReaction(): boolean {
+    return this.userService.getPermission().canCreateReaction;
+  }
+
+  canDeleteMessage(): boolean {
+    return this.userService.getPermission().canDeleteMessage;
   }
 }

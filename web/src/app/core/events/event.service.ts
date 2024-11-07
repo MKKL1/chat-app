@@ -12,6 +12,10 @@ import {formatDate} from "../../shared/utils/utils";
 import {MemberQuery} from "../../features/store/member/member.query";
 import {ChannelService} from "../../features/services/channel.service";
 import {showNotification} from "../../shared/utils/notifications";
+import {RoleStore} from "../../features/store/role/role.store";
+import {Role} from "../../features/models/role";
+import {MemberStore} from "../../features/store/member/member.store";
+import {CommunityQuery} from "../../features/store/community/community.query";
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +25,13 @@ export class EventService {
   private rsocketConnection: RsocketConnection;
   private eventHandler: EventHandler;
 
+  private communityQuery = inject(CommunityQuery);
   private textChannelQuery = inject(TextChannelQuery);
   private channelService = inject(ChannelService);
   private userService = inject(UserService);
   private memberQuery = inject(MemberQuery);
+  private memberStore = inject(MemberStore);
+  private roleStore = inject(RoleStore);
 
   // this subject is used to notify list of text channels about new message,
   // so it can add notification to proper channel from list
@@ -80,7 +87,9 @@ export class EventService {
           channelId: message.channelId,
           date: formatDate(message.updatedAt),
           message: message.text,
-          username: this.memberQuery.getEntity(message.userId)?.user.username!
+          username: this.memberQuery.getEntity(
+            this.communityQuery.getActiveId()
+            + message.userId)?.user.username!
         });
 
         showNotification(
@@ -91,11 +100,11 @@ export class EventService {
     });
 
     handler.add('MESSAGE_EDIT_EVENT', (message: Message) => {
-
+      // TODO implement
     });
 
     handler.add('MESSAGE_DELETE_EVENT', (message: Message) => {
-
+      // TODO implement
     });
 
     handler.add('CHANNEL_CREATE_EVENT', (channel: Channel) => {
@@ -103,12 +112,49 @@ export class EventService {
     });
 
     handler.add('CHANNEL_EDIT_EVENT', (channel: Channel) => {
-
+      // TODO implement
     });
 
     handler.add('CHANNEL_DELETE_EVENT', (id: any) => {
       this.channelService.removeChannel(id);
     });
+
+    handler.add('ROLE_CREATE_EVENT', (res: any) => {
+      res.role.communityId = res.role.community;
+      this.roleStore.add(res.role);
+    })
+
+    // {
+    //   "role": {
+    //   "id": "64234317622018048",
+    //     "name": "rolename",
+    //     "permissionOverwrites": "26",
+    //     "community": "63919088711237632"
+    // },
+    //   "members": [
+    //   "63919009480835072"
+    // ]
+    // }
+
+    // there is no info if members where deleted only if they were added
+    // maybe remove all members from community and cached them again?
+
+    // TODO implement
+    handler.add('ROLE_UPDATE_EVENT', (res: any) => {
+      console.log(res);
+      const roleId = res.role.id;
+      this.roleStore.update(roleId, res.role);
+
+      // TODO somehow update state of members
+
+    });
+
+    // TODO implement
+    // event always return roleId: 1
+    handler.add('ROLE_DELETE_EVENT', (role: any) => {
+      console.log(role);
+      this.roleStore.remove(role.roleId);
+    })
 
     return handler;
   }

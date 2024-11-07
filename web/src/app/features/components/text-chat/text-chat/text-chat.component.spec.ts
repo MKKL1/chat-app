@@ -11,7 +11,10 @@ const messageServiceMock = {
 };
 
 const userServiceMock = {
-  getUser: jest.fn()
+  getUser: jest.fn(),
+  getPermission: jest.fn().mockReturnValue({
+    canCreateMessage: false
+  })
 };
 
 describe('TextChatComponent', () => {

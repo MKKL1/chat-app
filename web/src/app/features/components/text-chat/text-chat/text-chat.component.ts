@@ -44,24 +44,13 @@ import {toSignal} from "@angular/core/rxjs-interop";
   styleUrl: './text-chat.component.scss'
 })
 
-// I don't add signals here because i'm not sure how this component will change in future
-
-// listen to channel changes if so -> change messages to messages from new channel -> first check if there are any messages -> if no load from api
-
-// for now i have issue with listening to rabbit -> connection should open and close automatically after changing community
-
 export class TextChatComponent implements OnInit, OnDestroy{
   channel: Channel = {communityId: "", id: "", name: "", type: ChannelType.Text, overwrites: []};
 
   private channelSubscription: Subscription;
 
   // rerenders template if new data arrives
-  readonly messages = toSignal(this.messageQuery.selectAll({
-    filterBy: entity => entity.channelId === this.channelQuery.getActiveId(),
-    sortBy: 'updatedAt',
-    sortByOrder: Order.ASC
-  }));
-
+  messages = signal<Message[]>([]);
   loadedAllData = signal<boolean>(false);
 
   messageToRespond: { id: string, text: string } = {id: '', text: ''};
@@ -77,6 +66,7 @@ export class TextChatComponent implements OnInit, OnDestroy{
   ngOnInit() {
     // listening to changes of channel
     this.channelSubscription = this.channelQuery.selectActive().subscribe(channel => {
+      console.log(channel);
       if(!channel){
         return;
       }
@@ -84,8 +74,27 @@ export class TextChatComponent implements OnInit, OnDestroy{
       this.channel = channel!;
       this.messageService.getMessages(this.channelQuery.getActiveId()!, this.channel.messagesState!);
       this.loadedAllData.set(false);
+
+      // Instead of waiting for changes from selectAll
+      // I explicitly use getAll to handle both changes of active channel and loading
+      // data more messages from api
+      this.messages.set(
+        this.messageQuery.getAll({
+            filterBy: entity => entity.channelId === this.channelQuery.getActiveId(),
+            sortBy: 'updatedAt',
+            sortByOrder: Order.ASC
+          })
+      );
     });
 
+    // listening to new messages
+    this.messageQuery.selectAll({
+      filterBy: entity => entity.channelId === this.channelQuery.getActiveId(),
+      sortBy: 'updatedAt',
+      sortByOrder: Order.ASC
+    }).subscribe(messages => {
+      this.messages.set(messages);
+    });
   }
 
   loadMoreMessage(){

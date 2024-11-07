@@ -15,6 +15,9 @@ import {RoleStore} from "../store/role/role.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {EventService} from "../../core/events/event.service";
+import {Member} from "../models/member";
+import {UserService} from "../../core/services/user.service";
+import {MemberQuery} from "../store/member/member.query";
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +36,11 @@ export class CommunityService {
     private textChannelQuery: TextChannelQuery,
     private memberStore: MemberStore,
     private roleStore: RoleStore,
-    private eventService: EventService
+    private eventService: EventService,
+    private userService: UserService
   ) { }
 
-  fetchCommunity(id: string){
+  changeCommunity(id: string){
     const community = this.communityQuery.getEntity(id);
 
     this.eventService.handleNewStreamRequest(community?.id!);
@@ -58,13 +62,23 @@ export class CommunityService {
 
     // this part is executed when data is not fetched yet
     // call api to get community data
+    this.fetchCommunity(id);
+  }
+
+  private fetchCommunity(id: string){
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
         console.log(res);
         return {
           community: res.community,
-          roles: res.roles,
-          members: res.members,
+          roles: res.roles.map((role: Role) => ({
+            ...role,
+            communityId: res.community.id
+          })),
+          members: res.members.map((member: Member) => ({
+            ...member,
+            communityId: res.community.id
+          })),
           channels: res.channels.map((channelData: any) => ({
             ...channelData.channel,
             type: channelData.channel.type === '0' ? ChannelType.Text : ChannelType.Voice,
@@ -75,14 +89,6 @@ export class CommunityService {
     ).subscribe({
       next: (response) => {
         console.log(response);
-
-        // Updating existing entity triggers setting fullyFetched flag
-        // which prevents fetching this community again
-        this.communityStore.update(id, response.community);
-        // making this community selected one
-        // after this community can be referenced by other parts of app
-        // as a currently chosen one
-        this.communityStore.setActive(response.community.id);
 
         // All relational data connected to community is normalized
         // and saved to separated stores which will make state of app easier to maintain
@@ -104,6 +110,26 @@ export class CommunityService {
         this.voiceChannelStore.add(voiceChannels);
         this.roleStore.add(response.roles);
         this.memberStore.add(response.members);
+
+        // getting base permission for community and list of
+        // permission overwrite delivered by different roles belonging to user
+        const basePermissions = response.community.basePermissions;
+        // getting roles of current user
+        const currentUserRoles = response.members
+          .find((m: any) => m.user.id === this.userService.getUser().id).roles;
+        const userPermissionsList = response.roles
+          .filter((role: Role) => currentUserRoles.includes(role.id))
+          .map((role: Role) => role.permissionOverwrites);
+
+        this.userService.updateUserPermissions(basePermissions, userPermissionsList);
+
+        // Updating existing entity triggers setting fullyFetched flag
+        // which prevents fetching this community again
+        this.communityStore.update(id, response.community);
+        // making this community selected one
+        // after this community can be referenced by other parts of app
+        // as a currently chosen one
+        this.communityStore.setActive(response.community.id);
       },
       error: (err) => console.error(err)
     });

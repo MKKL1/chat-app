@@ -13,6 +13,7 @@ let voiceChannel: Channel = {
   id: '123',
   name: 'Test voice channel',
   type: ChannelType.Voice,
+  overwrites: []
 };
 
 let textChannel: Channel = {
@@ -20,6 +21,7 @@ let textChannel: Channel = {
   id: '124',
   name: 'Test text channel',
   type: ChannelType.Text,
+  overwrites: []
 };
 
 describe('ChannelService', () => {
@@ -85,6 +87,7 @@ describe('ChannelService', () => {
       id: '125',
       name: 'Created channel',
       type: ChannelType.Text,
+      overwrites: []
     };
 
     service.createChannel(mockNewChannel).subscribe((newChannel) => {
@@ -107,6 +110,7 @@ describe('ChannelService', () => {
       id: '123',
       name: 'New name',
       type: ChannelType.Voice,
+      overwrites: []
     };
 
     voiceChannelStore.add(voiceChannel);

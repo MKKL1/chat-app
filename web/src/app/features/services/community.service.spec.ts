@@ -12,10 +12,15 @@ import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {MemberStore} from "../store/member/member.store";
 import {RoleStore} from "../store/role/role.store";
 import {EventService} from "../../core/events/event.service";
+import {UserService} from "../../core/services/user.service";
 
 const eventServiceMock = {
   handleNewRequestStream: jest.fn()
 };
+
+const userServiceMock = {
+  updateUserPermissions: jest.fn()
+}
 
 describe('CommunityService', () => {
   let service: CommunityService;
@@ -29,7 +34,8 @@ describe('CommunityService', () => {
         CommunityService,
         provideHttpClient(),
         provideHttpClientTesting(),
-        {provide: EventService, useValue: eventServiceMock}
+        {provide: EventService, useValue: eventServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     });
 

@@ -3,6 +3,8 @@ import { MessageComponent } from './message.component';
 import {MatDialog} from "@angular/material/dialog";
 import {MessageService} from "../../../services/message.service";
 import {UserService} from "../../../../core/services/user.service";
+import {MemberQuery} from "../../../store/member/member.query";
+import {CommunityQuery} from "../../../store/community/community.query";
 
 const messageServiceMock = {
   addReaction: jest.fn()
@@ -13,7 +15,27 @@ const userServiceMock = {
     id: '123',
     username: 'test-username',
     imageUrl: 'test-location.jpg',
-  }))
+  })),
+  getPermission: jest.fn().mockReturnValue({
+    canCreateReaction: true
+  })
+};
+
+const memberQueryMock = {
+  getAll: jest.fn().mockReturnValue([
+    {
+      user: {
+        id: '420',
+        username: 'mocked-user',
+        imageUrl: 'mock-image.jpg',
+      },
+      storeId: 'some-store-id'
+    }
+  ])
+};
+
+const communityQueryMock = {
+  getActiveId: jest.fn().mockReturnValue('some-store-id')
 };
 
 const messageMock = {
@@ -38,7 +60,9 @@ describe('MessageComponent', () => {
       providers: [
         MatDialog,
         {provide: MessageService, useValue: messageServiceMock},
-        {provide: UserService, useValue: userServiceMock}
+        {provide: UserService, useValue: userServiceMock},
+        {provide: MemberQuery, useValue: memberQueryMock},
+        {provide: CommunityQuery, useValue: communityQueryMock}
       ]
     })
     .compileComponents();

@@ -1,0 +1,22 @@
+.add-member{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+
+.card-container{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+mat-card-content{
+  display: flex;
+  align-items: center;
+  font-size: 140%;
+}
+
+mat-card{
+  margin-bottom: 10px;
+}

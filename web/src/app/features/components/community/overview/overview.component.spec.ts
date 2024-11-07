@@ -11,7 +11,10 @@ const communityServiceMock = {
 };
 
 const userServiceMock = {
-  getUser: jest.fn(() => '123')
+  getUser: jest.fn(() => '123'),
+  getPermission: jest.fn().mockReturnValue({
+    canCreateInvitation: true
+  })
 };
 
 describe('OverviewComponent', () => {

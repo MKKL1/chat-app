@@ -5,9 +5,16 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {ChannelService} from "../../../services/channel.service";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {MatDialog} from "@angular/material/dialog";
+import {UserService} from "../../../../core/services/user.service";
 
 const channelServiceMock = {
   selectVoiceChannel: jest.fn()
+};
+
+const userServiceMock = {
+  getPermission: jest.fn().mockReturnValue({
+    canCreateChannel: true
+  })
 };
 
 describe('UsersListVoiceComponent', () => {
@@ -22,7 +29,8 @@ describe('UsersListVoiceComponent', () => {
       imports: [UsersListVoiceComponent],
       providers: [
         MatDialog,
-        {provide: ChannelService, useValue: channelServiceMock}
+        {provide: ChannelService, useValue: channelServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     })
     .compileComponents();

@@ -10,6 +10,7 @@ import {ClickOutsideDirective} from "../../../../shared/directives/click-outside
 import {MessageService} from "../../../services/message.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 import {previewImage} from "../../../../shared/utils/utils";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-message-input',
@@ -42,7 +43,7 @@ export class MessageInputComponent {
 
   @Input() messageToRespond?: { id: string, text: string };
 
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService, private userService: UserService) {
   }
 
   // wrapper for handling key input
@@ -134,6 +135,10 @@ export class MessageInputComponent {
 
   closeGifSearch(){
     this.showGifSearch.set(false);
+  }
+
+  canCreateMessage(){
+    return this.userService.getPermission().canCreateMessage;
   }
 
 }

@@ -14,6 +14,7 @@ import {AsyncPipe} from "@angular/common";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {Subscription} from "rxjs";
 import {EventService} from "../../../../core/events/event.service";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -42,7 +43,8 @@ export class TextChatsListComponent {
     constructor(
       private channelQuery: TextChannelQuery,
       private channelService: ChannelService,
-      private communityQuery: CommunityQuery) {
+      private communityQuery: CommunityQuery,
+      private userService: UserService) {
     }
 
     addChannel(){
@@ -61,5 +63,13 @@ export class TextChatsListComponent {
 
     selectChannel(channel: Channel){
       this.channelService.selectTextChannel(channel);
+    }
+
+    canCreateChannel(){
+      return this.userService.getPermission().canCreateChannel;
+    }
+
+    canModifyChannel(){
+      return this.userService.getPermission().canModifyChannel;
     }
 }
