@@ -22,6 +22,7 @@ import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-c
 import {toSignal} from "@angular/core/rxjs-interop";
 import {UserService} from "../../../../core/services/user.service";
 import {VoiceChatService} from "../../../services/voice-chat.service";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -59,7 +60,8 @@ export class UsersListVoiceComponent  implements OnInit{
     private channelService: ChannelService,
     private communityQuery: CommunityQuery,
     private userService: UserService,
-    private voiceChat: VoiceChatService) {
+    private voiceChat: VoiceChatService,
+    private messageService: MessageService) {
   }
 
   ngOnInit() {
@@ -91,6 +93,7 @@ export class UsersListVoiceComponent  implements OnInit{
   selectChannel(channel: Channel){
     this.channelService.selectVoiceChannel(channel);
     this.voiceChat.joinRoom();
+    this.messageService.add({ severity: 'info', summary: 'Joined room', detail: 'Connected with ' + channel.name })
   }
 
   canCreateChannel(){

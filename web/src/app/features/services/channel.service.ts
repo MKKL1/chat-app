@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Channel, ChannelType} from "../models/channel";
 import {environment} from "../../../environment";
@@ -6,6 +6,7 @@ import {Observable, tap} from "rxjs";
 import {CommunityQuery} from "../store/community/community.query";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
+import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 
 @Injectable({
   providedIn: 'root'

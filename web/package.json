@@ -29,6 +29,7 @@
     "keycloak-angular": "^16.0.1",
     "keycloak-js": "^25.0.2",
     "livekit-client": "^2.6.0",
+    "primeng": "^17.18.11",
     "rsocket-core": "^0.0.29-alpha.0",
     "rsocket-websocket-client": "^0.0.29-alpha.0",
     "rxjs": "~7.8.0",

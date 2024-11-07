@@ -1,7 +1,8 @@
-import {Component, HostBinding} from '@angular/core';
+import {Component, HostBinding, Input} from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {VoiceChatService} from "../../../services/voice-chat.service";
+import {Member} from "../../../models/member";
 
 @Component({
   selector: 'app-user-panel',
@@ -15,15 +16,15 @@ import {VoiceChatService} from "../../../services/voice-chat.service";
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent {
-  @HostBinding('class.speaking') speaking: boolean = true;
+  @Input() member: Member | null;
+
+  @HostBinding('class.speaking') speaking: boolean = false;
   muted: boolean = false;
   silent: boolean = false;
-  image: string | null = null;
-  username: string = "Username";
 
   constructor(private voiceChat: VoiceChatService) {
     // setting random value just to see difference in ui
-    this.speaking = Math.random() < 0.5;
+    //this.speaking = Math.random() < 0.5;
   }
 
   toggleMuted(){
