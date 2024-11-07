@@ -21,6 +21,7 @@ import {AsyncPipe} from "@angular/common";
 import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-channel-info.component";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {UserService} from "../../../../core/services/user.service";
+import {VoiceChatService} from "../../../services/voice-chat.service";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -57,7 +58,8 @@ export class UsersListVoiceComponent  implements OnInit{
     private channelQuery: VoiceChannelQuery,
     private channelService: ChannelService,
     private communityQuery: CommunityQuery,
-    private userService: UserService) {
+    private userService: UserService,
+    private voiceChat: VoiceChatService) {
   }
 
   ngOnInit() {
@@ -88,6 +90,7 @@ export class UsersListVoiceComponent  implements OnInit{
 
   selectChannel(channel: Channel){
     this.channelService.selectVoiceChannel(channel);
+    this.voiceChat.joinRoom();
   }
 
   canCreateChannel(){

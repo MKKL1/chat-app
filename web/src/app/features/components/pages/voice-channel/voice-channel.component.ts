@@ -4,6 +4,7 @@ import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.compone
 import {UsersListVoiceComponent} from "../../voice-chat/users-list-voice/users-list-voice.component";
 import {MatIcon} from "@angular/material/icon";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
+import {VoiceChatService} from "../../../services/voice-chat.service";
 
 @Component({
   selector: 'app-voice-channel',
@@ -32,11 +33,10 @@ export class VoiceChannelComponent{
   clientMuted: boolean = false;
   clientSilent: boolean = false;
 
-  // error why using OnInit for some reason
+  constructor(private voiceChat: VoiceChatService) {
+  }
+
   ngOnInit() {
-    // this.subscription = this.screenSizeService.isMobileView$.subscribe(isMobile => {
-    //   this.isMobile = isMobile;
-    // });
   }
 
   toggleClientMuted(){
@@ -45,5 +45,9 @@ export class VoiceChannelComponent{
 
   toggleClientSilent(){
     this.clientSilent = !this.clientSilent;
+  }
+
+  disconnect(){
+    this.voiceChat.leaveRoom();
   }
 }

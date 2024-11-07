@@ -1,6 +1,7 @@
 import {Component, HostBinding} from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
+import {VoiceChatService} from "../../../services/voice-chat.service";
 
 @Component({
   selector: 'app-user-panel',
@@ -20,7 +21,7 @@ export class UserPanelComponent {
   image: string | null = null;
   username: string = "Username";
 
-  constructor() {
+  constructor(private voiceChat: VoiceChatService) {
     // setting random value just to see difference in ui
     this.speaking = Math.random() < 0.5;
   }
