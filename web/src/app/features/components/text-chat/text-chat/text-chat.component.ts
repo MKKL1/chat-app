@@ -87,6 +87,14 @@ export class TextChatComponent implements OnInit, OnDestroy{
       );
     });
 
+    // listening to new messages
+    this.messageQuery.selectAll({
+      filterBy: entity => entity.channelId === this.channelQuery.getActiveId(),
+      sortBy: 'updatedAt',
+      sortByOrder: Order.ASC
+    }).subscribe(messages => {
+      this.messages.set(messages);
+    });
   }
 
   loadMoreMessage(){

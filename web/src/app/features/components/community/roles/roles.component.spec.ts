@@ -2,6 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RolesComponent } from './roles.component';
 import {MatDialog} from "@angular/material/dialog";
+import {RoleService} from "../../../services/role.service";
+import {UserService} from "../../../../core/services/user.service";
+
+const mockRoleService = {
+  deleteRole: jest.fn()
+};
+
+const mockUserService = {
+  getPermission: jest.fn().mockReturnValue({
+    isAdministrator: true
+  })
+};
 
 describe('RolesComponent', () => {
   let component: RolesComponent;
@@ -11,7 +23,9 @@ describe('RolesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RolesComponent],
       providers: [
-        MatDialog
+        MatDialog,
+        {provide: RoleService, useValue: mockRoleService},
+        {provide: UserService, useValue: mockUserService}
       ]
     })
     .compileComponents();

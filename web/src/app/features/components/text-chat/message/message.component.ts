@@ -52,7 +52,6 @@ export class MessageComponent implements OnInit{
   fromClient = signal<boolean>(false);
   showReactionPicker = signal<boolean>(false);
 
-  imagePath: string = '';
   user: User | undefined;
 
   constructor(

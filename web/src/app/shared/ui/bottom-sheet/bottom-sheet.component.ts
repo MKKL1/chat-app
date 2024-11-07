@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, Renderer2, signal} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  Renderer2,
+  signal
+} from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
 
 @Component({
@@ -16,6 +26,8 @@ export class BottomSheetComponent implements AfterViewInit, OnDestroy{
   @Input() backgroundColor: string;
   @Input() color: string;
   @Input() addOverlay: boolean = false;
+
+  @Output() close = new EventEmitter<void>();
 
   constructor(private el: ElementRef) {
   }

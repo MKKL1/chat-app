@@ -14,7 +14,9 @@ export class MemberStore extends EntityStore<MemberState>{
 
   override akitaPreAddEntity(newEntity: Member): getEntityType<MemberState> {
     newEntity.id = newEntity.user.id;
-    newEntity.user.imageUrl = filePathMapping(newEntity.user.imageUrl!);
+    if(newEntity.user.imageUrl !== null){
+      newEntity.user.imageUrl = filePathMapping(newEntity.user.imageUrl!);
+    }
 
     // storeId ensures each member added is unique and prevents overwriting
     // existing store entries with the same id. This approach may lead to redundant user data,

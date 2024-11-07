@@ -7,9 +7,8 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {ID} from "@datorama/akita";
-import {map, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
-
 @Injectable({
   providedIn: 'root'
 })
@@ -95,7 +94,9 @@ export class MessageService{
   }
 
   editMessage(id: string, text: string){
-    this.http.patch<Message>(this.api + `/${id}`, {
+    const channelId = this.channelQuery.getActiveId();
+
+    this.http.patch<Message>(this.api + `${channelId}/messages/${id}`, {
       text: text
     }).subscribe(message => {
       this.messageStore.update(message.id, message);
@@ -118,4 +119,5 @@ export class MessageService{
   deleteReaction(){
 
   }
+
 }
