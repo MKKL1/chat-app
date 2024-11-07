@@ -124,14 +124,13 @@ public class ChannelService {
     }
 
     public Mono<ChannelDTO> editChannel(Long channelId, ChannelEditRequest channelEditRequest){
-        return Mono.error(new ChannelNotFoundException(channelId));
-//        return channelRepository.findById(channelId)
-//                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
-//                .flatMap(channel -> {
-//                    channel.setName(channelEditRequest.getName());
-//                    return channelRepository.save(channel);
-//                })
-//                .map(this::toDTO);
+        return channelRepository.findById(channelId)
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException(channelId)))
+                .flatMap(channel -> {
+                    channel.setName(channelEditRequest.getName());
+                    return channelRepository.save(channel);
+                })
+                .map(this::toDTO);
     }
 
     // issue with constraints

@@ -80,9 +80,10 @@ public class UserServiceTests {
         UserCreateRequest userCreateRequest = new UserCreateRequest();
         UUID currentUserSub = UUID.randomUUID();
         Long currentUserId = 123L;
+        User user = new User();
+        user.setId(currentUserId);
 
-        doReturn(Mono.just(currentUserId)).when(userService).findUserIdBySub(currentUserSub);
-
+        doReturn(Mono.just(user)).when(userService).findUserBySub(currentUserSub);
         // Act
         Mono<UserDTO> result = userService.createUser(userCreateRequest, currentUserSub);
 
@@ -146,7 +147,9 @@ public class UserServiceTests {
 
     @Test
     public void createUser_UserDoesNotExist_CreateUserAndReturnUserDTO() {
+        String username = "test username";
         UserCreateRequest userCreateRequest = new UserCreateRequest(); // Populate with test data
+        userCreateRequest.setUsername(username);
         UUID currentUserSub = UUID.randomUUID();
 
         User user = new User(); // Create a User entity for the mapping
@@ -158,6 +161,7 @@ public class UserServiceTests {
 
         when(modelMapper.map(userCreateRequest, User.class)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(Mono.just(user));
+        when(userRepository.findByUsername(username)).thenReturn(Mono.empty());
         when(userSubjectRepository.save(any(UserSubject.class)))
                 .thenReturn(Mono.just(new UserSubject()));
         when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);

@@ -876,7 +876,7 @@ components:
       type: object
       properties:
         name:
-          maxLength: 64
+          maxLength: 32
           minLength: 0
           type: string
     ChannelDTO:

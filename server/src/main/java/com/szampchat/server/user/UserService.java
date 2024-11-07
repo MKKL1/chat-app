@@ -36,7 +36,7 @@ public class UserService {
     @Deprecated
     public Mono<User> findUser(Long userId) {
         return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new UserNotFoundException()));
+            .switchIfEmpty(Mono.error(new UserNotFoundException())); //TODO Maybe we shouldn't throw error here
     }
 
     public Mono<UserDTO> findUserDTO(Long userId) {
@@ -51,40 +51,60 @@ public class UserService {
 
     //easy to cache, will practically never change
     public Mono<Long> findUserIdBySub(UUID sub) {
-        //TODO Throw 404
         return userSubjectRepository.findBySub(sub)
                 .map(UserSubject::getUserId);
     }
 
     public Mono<User> findUserBySub(UUID sub) {
-        //TODO Throw 404
         return findUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }
 
     public Mono<UserDTO> createUser(UserCreateRequest userCreateRequest, UUID currentUserId) {
-        //If user doesn't exist, create user
-        return findUserIdBySub(currentUserId)
-                .flatMap(_ -> Mono.error(new KeycloakUserAlreadyExistsException(currentUserId)))
-                //Save user to database
-                .switchIfEmpty(
-                        userRepository.findByUsername(userCreateRequest.getUsername())
-                                .flatMap(_ -> Mono.error(new UsernameAlreadyExistsException(userCreateRequest.getUsername())))
-                        .map(userDto -> modelMapper.map(userDto, User.class))
-                        .flatMap(userRepository::save)
-                        //We have to wait for userRepository::save to finish to obtain id of user in database
-                        //Saving user id <-> keycloak id mapping
-                        .flatMap(savedUser -> userSubjectRepository.save(
-                                UserSubject.builder()
-                                        .userId(savedUser.getId())
-                                        .sub(currentUserId)
-                                        .build())
-                                .then(Mono.just(savedUser)))
-                )
-                //Map saved user to UserDTO
-                .map(savedUser -> modelMapper.map(savedUser, UserDTO.class));
-
+        return checkUserExistsBySub(currentUserId)
+                .flatMap(userExists -> {
+                    if(userExists)
+                        return Mono.error(new KeycloakUserAlreadyExistsException(currentUserId));
+                    return Mono.empty();
+                })
+                //Mono defer is used here to not create Mono response immediately (wait for code above to fail)
+                .then(Mono.defer(() -> checkUsernameExists(userCreateRequest.getUsername())))
+                .flatMap(usernameExists -> {
+                    if(usernameExists)
+                        return Mono.error(new UsernameAlreadyExistsException(userCreateRequest.getUsername()));
+                    return Mono.just(true);
+                })
+                .then(saveNewUser(userCreateRequest, currentUserId));
     }
+
+    private Mono<Boolean> checkUserExistsBySub(UUID sub) {
+        return findUserBySub(sub).hasElement();
+    }
+
+    private Mono<Boolean> checkUsernameExists(String username) {
+        return userRepository.findByUsername(username)
+                .hasElement();
+    }
+
+    private Mono<UserDTO> saveNewUser(UserCreateRequest userCreateRequest, UUID currentUserId) {
+        return Mono.just(userCreateRequest)
+                .map(request -> modelMapper.map(request, User.class))
+                .flatMap(userRepository::save)
+                .flatMap(savedUser -> saveUserSubject(savedUser, currentUserId)
+                        .thenReturn(savedUser)
+                )
+                .map(savedUser -> modelMapper.map(savedUser, UserDTO.class));
+    }
+
+    private Mono<UserSubject> saveUserSubject(User savedUser, UUID currentUserId) {
+        UserSubject userSubject = UserSubject.builder()
+                .userId(savedUser.getId())
+                .sub(currentUserId)
+                .build();
+
+        return userSubjectRepository.save(userSubject);
+    }
+
 
     public Mono<UserDTO> editAvatar(FilePart file, Long userId){
         return userRepository.findById(userId)
