@@ -50,7 +50,7 @@ public class RoleService {
 
     public Mono<RoleDTO> getRole(Long roleId) {
         return roleRepository.findById(roleId)
-                .switchIfEmpty(Mono.error(new RoleNotFoundException()))
+                .switchIfEmpty(Mono.error(new RoleNotFoundException(roleId)))
                 .map(roleMapper::toDto);
     }
 

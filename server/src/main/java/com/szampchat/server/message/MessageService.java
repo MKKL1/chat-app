@@ -118,15 +118,15 @@ public class MessageService {
 
     public Mono<Message> getMessage(Long messageId, Long channelId) {
         return messageRepository.findById(new MessageId(messageId, channelId))
-                .switchIfEmpty(Mono.error(new MessageNotFoundException()));
+                .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
     public Mono<Message> editMessage(Long messageId, Long channelId, String text, Long userId) {
         return getMessage(messageId, channelId)
             .flatMap(message -> {
-                if(!Objects.equals(message.getUser(), userId)){
-                    return Mono.error(new Exception("Message doesn't belong to user"));
-                }
+//                if(!Objects.equals(message.getUser(), userId)){
+//                    return Mono.error(new Exception("Message doesn't belong to user"));
+//                }
 
                 message.setText(text);
                 return messageRepository.save(message);
@@ -141,9 +141,9 @@ public class MessageService {
 
 
                 //TODO check in pre authorize
-                if(!Objects.equals(message.getUser(), userId)){
-                    return Mono.error(new Exception("Message doesn't belong to user"));
-                }
+//                if(!Objects.equals(message.getUser(), userId)){
+//                    return Mono.error(new Exception("Message doesn't belong to user"));
+//                }
 
 
                 return messageRepository.deleteById(new MessageId(messageId, channelId));

@@ -48,12 +48,12 @@ public class ChannelService {
     @Deprecated
     public Mono<Channel> getChannel(Long channelId) {
         return channelRepository.findById(channelId)
-                .switchIfEmpty(Mono.error(new ChannelNotFoundException()));
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException(channelId)));
     }
 
     public Mono<ChannelDTO> getChannelDTO(Long channelId) {
         return channelRepository.findById(channelId)
-                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
+                .switchIfEmpty(Mono.error(new ChannelNotFoundException(channelId)))
                 .map(this::toDTO);
     }
 
@@ -101,7 +101,7 @@ public class ChannelService {
         return channelRepository.existsByNameAndCommunityId(channelCreateRequest.getName(), communityId)
                 .flatMap(channelExists -> {
                     if (channelExists) {
-                        return Mono.error(new ChannelAlreadyExistsException());
+                        return Mono.error(new ChannelAlreadyExistsException(channelCreateRequest.getName()));
                     }
 
                     Channel newChannel = Channel.builder()
@@ -124,13 +124,14 @@ public class ChannelService {
     }
 
     public Mono<ChannelDTO> editChannel(Long channelId, ChannelEditRequest channelEditRequest){
-        return channelRepository.findById(channelId)
-                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
-                .flatMap(channel -> {
-                    channel.setName(channelEditRequest.getName());
-                    return channelRepository.save(channel);
-                })
-                .map(this::toDTO);
+        return Mono.error(new ChannelNotFoundException(channelId));
+//        return channelRepository.findById(channelId)
+//                .switchIfEmpty(Mono.error(new ChannelNotFoundException()))
+//                .flatMap(channel -> {
+//                    channel.setName(channelEditRequest.getName());
+//                    return channelRepository.save(channel);
+//                })
+//                .map(this::toDTO);
     }
 
     // issue with constraints

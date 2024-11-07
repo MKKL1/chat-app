@@ -11,7 +11,6 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.event.CommunityUpdateEvent;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.FailedToSaveCommunityException;
-import com.szampchat.server.community.exception.NotOwnerException;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
@@ -62,11 +61,7 @@ public class CommunityService {
     }
 
     public Mono<Boolean> isOwner(Long communityId, Long userId) {
-        //It can be just findById(communityId) and then check from there
-        //TODO use findById
-        return communityRepository.isOwnerOfCommunity(communityId, userId).flatMap(
-            owner -> owner ? Mono.just(true) : Mono.error(new NotOwnerException())//false?
-        );
+        return communityRepository.isOwnerOfCommunity(communityId, userId);
     }
 
     public Mono<Boolean> isOwner(Long communityId) {
@@ -133,6 +128,8 @@ public class CommunityService {
                     .build();
 
             return communityRepository.save(community)
+                    //Since I don't see when saving a new community could fail (data is validated on controller),
+                    // I am going to leave it as internal server error
                 .switchIfEmpty(Mono.error(new FailedToSaveCommunityException()))
                 .flatMap(savedCommunity -> {
                     Long communityId = savedCommunity.getId();

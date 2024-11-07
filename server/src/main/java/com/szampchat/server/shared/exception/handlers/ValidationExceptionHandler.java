@@ -1,8 +1,7 @@
-package com.szampchat.server.shared.exception;
+package com.szampchat.server.shared.exception.handlers;
 
 import com.szampchat.server.shared.exception.dto.ErrorResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.szampchat.server.shared.exception.dto.ValidationErrorDTO;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,30 +16,22 @@ import java.util.List;
 @Order(-2)
 public class ValidationExceptionHandler {
     @ExceptionHandler(WebExchangeBindException.class)
-    public ResponseEntity<ErrorResponse<ValidationErrorDTO>> handleValidationExceptions(final WebExchangeBindException ex, final ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponse<List<ValidationErrorDTO>>> handleValidationExceptions(final WebExchangeBindException ex, final ServerWebExchange exchange) {
         List<ValidationErrorDTO> validationErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(fieldError -> new ValidationErrorDTO(fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
 
-        ErrorResponse<ValidationErrorDTO> errorResponse = ErrorResponse.<ValidationErrorDTO>builder()
+        ErrorResponse<List<ValidationErrorDTO>> errorResponse = ErrorResponse.<List<ValidationErrorDTO>>builder()
                 .path(exchange.getRequest().getPath().value())
                 .status(HttpStatus.BAD_REQUEST.value())
-                .error("Bad request")
                 .message("Validation error")
                 .type("validation_error")
                 .errors(validationErrors)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class ValidationErrorDTO {
-        private String field;
-        private String message;
     }
 
 }
