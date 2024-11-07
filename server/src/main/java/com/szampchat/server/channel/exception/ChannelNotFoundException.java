@@ -1,8 +1,11 @@
 package com.szampchat.server.channel.exception;
 
+import com.szampchat.server.shared.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Channel not found")
-public class ChannelNotFoundException extends RuntimeException{
+public class ChannelNotFoundException extends NotFoundException {
+    public ChannelNotFoundException(Long channelId) {
+        super("channel", "Channel " + channelId.toString());
+    }
 }

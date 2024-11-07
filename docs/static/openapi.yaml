@@ -25,7 +25,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Channel"
+              $ref: "#/components/schemas/ChannelEditRequest"
         required: true
       responses:
         "204":
@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Channel"
+                $ref: "#/components/schemas/ChannelDTO"
         "419":
           description: User not created
         "403":
@@ -83,7 +83,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCreateDTO"
+              $ref: "#/components/schemas/UserCreateRequest"
         required: true
       responses:
         "200":
@@ -110,6 +110,20 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+  /livekit/webhook:
+    post:
+      tags:
+      - live-kit-event-controller
+      operationId: handleWebhook
+      requestBody:
+        content:
+          application/webhook+json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
   /communities:
     get:
       tags:
@@ -125,7 +139,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Community"
+                  $ref: "#/components/schemas/CommunityDTO"
         "419":
           description: User not created
         "401":
@@ -149,7 +163,7 @@ paths:
               type: object
               properties:
                 community:
-                  $ref: "#/components/schemas/CommunityCreateDTO"
+                  $ref: "#/components/schemas/CommunityCreateRequest"
                 file:
                   type: string
                   format: binary
@@ -224,7 +238,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/JoinRequestDTO"
+              $ref: "#/components/schemas/JoinRequest"
         required: true
       responses:
         "201":
@@ -280,11 +294,20 @@ paths:
       - Channel
       summary: Create channel
       operationId: createChannel
+      parameters:
+      - name: communityId
+        in: path
+        description: ID of community
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChannelCreateDTO"
+              $ref: "#/components/schemas/ChannelCreateRequest"
         required: true
       responses:
         "201":
@@ -292,7 +315,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Channel"
+                $ref: "#/components/schemas/ChannelDTO"
         "419":
           description: User not created
         "403":
@@ -329,9 +352,22 @@ paths:
         description: Max number of messages
         required: false
         schema:
+          maximum: 100
+          minimum: 1
           type: integer
           format: int32
         example: 10
+      - name: messages
+        in: query
+        description: List of messages to retrieve. Ignores other parameters if set
+        required: false
+        schema:
+          maxItems: 10
+          minItems: 0
+          type: array
+          items:
+            type: integer
+            format: int64
       responses:
         "200":
           description: OK
@@ -373,7 +409,7 @@ paths:
               type: object
               properties:
                 message:
-                  $ref: "#/components/schemas/MessageCreateDTO"
+                  $ref: "#/components/schemas/MessageCreateRequest"
                 file:
                   type: string
                   format: binary
@@ -662,7 +698,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EditMessageDTO"
+              $ref: "#/components/schemas/EditMessageRequest"
         required: true
       responses:
         "204":
@@ -804,9 +840,46 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+  /channels/{channelId}/voice/join:
+    get:
+      tags:
+      - voice-channel-controller
+      summary: Join voice channel
+      operationId: joinChannel
+      parameters:
+      - name: channelId
+        in: path
+        description: ID of channel
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: "4501678724218880"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceTokenResponse"
+        "419":
+          description: User not created
+        "403":
+          description: User is not a member of community or resource is not available
+        "401":
+          description: Incorrect token scope (token not provided?)
 components:
   schemas:
-    Channel:
+    ChannelEditRequest:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 32
+          minLength: 0
+          type: string
+    ChannelDTO:
       type: object
       properties:
         id:
@@ -822,10 +895,14 @@ components:
           enum:
           - TEXT_CHANNEL
           - VOICE_CHANNEL
-    UserCreateDTO:
+    UserCreateRequest:
+      required:
+      - username
       type: object
       properties:
         username:
+          maxLength: 32
+          minLength: 0
           type: string
     UserDTO:
       type: object
@@ -847,10 +924,14 @@ components:
           type: string
           description: Short message which describes user
           example: My description
-    CommunityCreateDTO:
+    CommunityCreateRequest:
+      required:
+      - name
       type: object
       properties:
         name:
+          maxLength: 64
+          minLength: 0
           type: string
           description: Name of community
           example: My community
@@ -871,9 +952,14 @@ components:
           type: integer
           format: int32
     RoleCreateRequest:
+      required:
+      - name
+      - permissionOverwrites
       type: object
       properties:
         name:
+          maxLength: 64
+          minLength: 0
           type: string
         permissionOverwrites:
           type: integer
@@ -909,7 +995,7 @@ components:
           items:
             type: integer
             format: int64
-    JoinRequestDTO:
+    JoinRequest:
       type: object
       properties:
         invitationId:
@@ -933,23 +1019,29 @@ components:
           type: string
           description: Invitation link to community
           example: community/4501678724218880/join/29754971884879870
-    ChannelCreateDTO:
+    ChannelCreateRequest:
+      required:
+      - name
       type: object
       properties:
-        communityId:
-          type: integer
-          format: int64
         name:
+          maxLength: 64
+          minLength: 0
           type: string
         type:
           type: string
           enum:
           - TEXT_CHANNEL
           - VOICE_CHANNEL
-    MessageCreateDTO:
+    MessageCreateRequest:
+      required:
+      - communityId
+      - text
       type: object
       properties:
         text:
+          maxLength: 65535
+          minLength: 0
           type: string
         communityId:
           type: integer
@@ -958,6 +1050,9 @@ components:
           type: integer
           format: int64
         gifLink:
+          maxLength: 255
+          minLength: 0
+          pattern: ^(http|https)://.*\.(gif|png|jpg|jpeg|webp)$
           type: string
     MessageAttachmentDTO:
       type: object
@@ -1086,10 +1181,14 @@ components:
           example: /name
         value:
           type: string
-    EditMessageDTO:
+    EditMessageRequest:
+      required:
+      - text
       type: object
       properties:
         text:
+          maxLength: 65535
+          minLength: 0
           type: string
     Message:
       type: object
@@ -1113,22 +1212,21 @@ components:
         userId:
           type: integer
           format: int64
-    ChannelDTO:
+    ChannelFullInfoDTO:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        communityId:
-          type: integer
-          format: int64
-        type:
-          type: string
-          enum:
-          - TEXT_CHANNEL
-          - VOICE_CHANNEL
+        channel:
+          $ref: "#/components/schemas/ChannelDTO"
+        overwrites:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelRoleOverwriteDTO"
+        participants:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
     ChannelRoleOverwriteDTO:
       type: object
       properties:
@@ -1138,15 +1236,6 @@ components:
         overwrites:
           type: integer
           format: int64
-    ChannelRolesDTO:
-      type: object
-      properties:
-        channel:
-          $ref: "#/components/schemas/ChannelDTO"
-        overwrites:
-          type: array
-          items:
-            $ref: "#/components/schemas/ChannelRoleOverwriteDTO"
     CommunityMemberRolesDTO:
       type: object
       properties:
@@ -1169,7 +1258,7 @@ components:
         channels:
           type: array
           items:
-            $ref: "#/components/schemas/ChannelRolesDTO"
+            $ref: "#/components/schemas/ChannelFullInfoDTO"
         members:
           type: array
           items:
@@ -1189,6 +1278,11 @@ components:
         permissionOverwrites:
           type: integer
           format: int64
+    VoiceTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
   securitySchemes:
     OAuthSecurity:
       type: oauth2

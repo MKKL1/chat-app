@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ChannelType {
+    //TODO remove value, why even use enum if we do it like this
     TEXT_CHANNEL(0),
     VOICE_CHANNEL(1);
 

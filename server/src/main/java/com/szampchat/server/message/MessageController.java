@@ -1,22 +1,20 @@
 package com.szampchat.server.message;
 
 import com.szampchat.server.auth.CurrentUser;
-import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.event.EventSink;
 import com.szampchat.server.message.dto.*;
+import com.szampchat.server.message.dto.request.EditMessageRequest;
+import com.szampchat.server.message.dto.request.FetchMessagesRequest;
+import com.szampchat.server.message.dto.request.MessageCreateRequest;
 import com.szampchat.server.message.entity.Message;
-import com.szampchat.server.message.event.MessageCreateEvent;
-import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,6 +24,7 @@ import static com.szampchat.server.shared.docs.DocsProperties.*;
 @Tag(name = "Message")
 @SecurityRequirement(name = "OAuthSecurity")
 
+@Validated
 @AllArgsConstructor
 @RestController
 public class MessageController {
@@ -39,9 +38,9 @@ public class MessageController {
     @GetMapping("/channels/{channelId}/messages")
 //    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Flux<MessageDTO> getMessages(@PathVariable Long channelId,
-                                        @ParameterObject FetchMessagesDTO fetchMessagesDTO,
+                                        @ParameterObject FetchMessagesRequest fetchMessagesRequest,
                                         CurrentUser currentUser) {
-        return messageService.getMessages(channelId, fetchMessagesDTO, currentUser.getUserId());
+        return messageService.getMessages(channelId, fetchMessagesRequest, currentUser.getUserId());
     }
 
 
@@ -69,10 +68,10 @@ public class MessageController {
     @PostMapping("/channels/{channelId}/messages")
     //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
     public Mono<MessageDTO> createMessage(@PathVariable Long channelId,
-                                       @RequestPart("message") MessageCreateDTO messageCreateDTO,
+                                       @RequestPart("message") MessageCreateRequest messageCreateRequest,
                                        @RequestPart(value = "file", required = false) FilePart file,
                                        CurrentUser currentUser) {
-        return messageService.createMessage(messageCreateDTO, currentUser.getUserId(), channelId, file);
+        return messageService.createMessage(messageCreateRequest, currentUser.getUserId(), channelId, file);
     }
 
 
@@ -86,7 +85,7 @@ public class MessageController {
 
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
 //    @PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageDTO editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
+    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageRequest editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
         return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
     }
 
