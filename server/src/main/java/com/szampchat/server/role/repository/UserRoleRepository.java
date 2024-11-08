@@ -16,10 +16,15 @@ public interface UserRoleRepository extends R2dbcRepository<UserRole, Long> {
     Flux<Void> removeUserRolesByRoleIdAndUserId(Long roleId, Long userId);
 
     @Query("""
-        SELECT user_id, array_agg(role_id) AS role_ids
-        FROM user_roles
-        WHERE user_id IN (:ids)
-        GROUP BY user_id;
+        SELECT ur.user_id, array_agg(ur.role_id) AS role_ids
+        FROM user_roles ur
+                 JOIN (
+            SELECT id
+            FROM roles
+            WHERE community_id = :community_id
+        ) r ON ur.role_id = r.id
+        WHERE ur.user_id IN (:ids)
+        GROUP BY ur.user_id;
 """)
-    Flux<UserRolesDTO> findUserRolesByUserIds(List<Long> ids);
+    Flux<UserRolesDTO> findUserRolesByUserIds(List<Long> ids, @Param("community_id") Long communityId);
 }

@@ -91,7 +91,7 @@ public class CommunityService {
                 .map(CommunityMember::getUserId)
                 .collectList()
                 .flatMapMany(userIds ->
-                        userRoleService.getMemberRoleIdsBulk(userIds)
+                        userRoleService.getMemberRoleIdsBulk(userIds, communityId)
                                 .collectMap(UserRolesDTO::getUserId, Function.identity())
                                 .flatMapMany(userRolesMap ->
                                         userService.findUsers(userIds)
