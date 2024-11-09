@@ -6,7 +6,7 @@
   }
   @for (channel of voiceChannels(); track channel) {
     <div style="display: flex; flex-direction: row; align-items: center">
-      <app-text-channel-info
+      <app-text-channel-info [ngClass]="{'active': channel.id === selectedChannelId()}"
         (click)="selectChannel(channel)"
         [channel]="channel">
       </app-text-channel-info>

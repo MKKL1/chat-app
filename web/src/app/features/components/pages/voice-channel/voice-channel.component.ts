@@ -4,7 +4,7 @@ import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.compone
 import {UsersListVoiceComponent} from "../../voice-chat/users-list-voice/users-list-voice.component";
 import {MatIcon} from "@angular/material/icon";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
-import {VoiceChatService} from "../../../services/voice-chat.service";
+import {ParticipantInfo, VoiceChatService} from "../../../services/voice-chat.service";
 import {VoiceChannelQuery} from "../../../store/voiceChannel/voice.channel.query";
 import {UserService} from "../../../../core/services/user.service";
 import {Channel} from "../../../models/channel";
@@ -14,6 +14,11 @@ import {Subscription} from "rxjs";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {Member} from "../../../models/member";
+import {NgClass} from "@angular/common";
+import {User} from "../../../models/user";
+import {MessageService} from "primeng/api";
+import {MatButton, MatButtonModule} from "@angular/material/button";
+import {VoiceChannelStore} from "../../../store/voiceChannel/voice.channel.store";
 
 @Component({
   selector: 'app-voice-channel',
@@ -25,7 +30,9 @@ import {Member} from "../../../models/member";
     UsersListVoiceComponent,
     MatIcon,
     LayoutComponent,
-    TextChatComponent
+    TextChatComponent,
+    NgClass,
+    MatButtonModule
   ],
   templateUrl: './voice-channel.component.html',
   styleUrl: './voice-channel.component.scss'
@@ -34,13 +41,15 @@ import {Member} from "../../../models/member";
 
 export class VoiceChannelComponent implements OnInit, OnDestroy{
   selectedChannel = signal<Channel | null>(null);
+  currentUser: User;
 
-  participants = signal<string[]>([]);
+  participants = signal<ParticipantInfo[]>([]);
+  speakers = signal<string[]>([]);
   // all community members
   members = signal<Member[]>([]);
 
-  clientMuted: boolean = false;
-  clientCamera: boolean = false;
+  clientMicrophone = signal<boolean>(false);
+  clientCamera = signal<boolean>(false);
 
   querySubscription: Subscription;
   participantsSubscription: Subscription;
@@ -50,9 +59,12 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
   constructor(
     private voiceChat: VoiceChatService,
     private voiceChannelQuery: VoiceChannelQuery,
+    private voiceChannelStore: VoiceChannelStore,
     private memberQuery: MemberQuery,
     private communityQuery: CommunityQuery,
-    private userService: UserService) {
+    private userService: UserService,
+    private messageService: MessageService) {
+    this.currentUser = userService.getUser();
   }
 
   // what happens if i changed community during talking?
@@ -67,8 +79,10 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     this.querySubscription = this.voiceChannelQuery
       .selectActive()
       .subscribe(channel => {
+        console.log(channel);
         this.selectedChannel.set(channel!);
     });
+
 
     this.participantsSubscription = this.voiceChat.participantsSubject$
       .subscribe(participants => {
@@ -79,26 +93,40 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     this.speakersSubscription = this.voiceChat.speakersSubject$
       .subscribe(speakers => {
         console.log(speakers);
+        this.speakers.set(speakers);
     });
   }
 
-  toggleClientMuted(){
-    this.clientMuted = !this.clientMuted;
-    this.voiceChat.setMicrophone(this.clientMuted);
+  toggleClientMicrophone(){
+    this.clientMicrophone.set(!this.clientMicrophone());
+    this.voiceChat.setMicrophone(this.clientMicrophone());
   }
 
   toggleClientCamera(){
-    this.clientCamera = !this.clientCamera;
-    this.voiceChat.setCamera(this.clientCamera);
+    this.clientCamera.set(!this.clientCamera());
+    this.voiceChat.setCamera(this.clientCamera());
   }
-
+  //
+  // shareScreen(){
+  //   this.voiceChat.toggleScreenSharing();
+  // }
+  //
   disconnect(){
     this.voiceChat.leaveRoom();
+    this.voiceChannelStore.removeActive(this.selectedChannel()?.id);
+    this.selectedChannel.set(null);
+    this.clientCamera.set(false);
+    this.clientMicrophone.set(false);
+    this.messageService.add({severity: 'info', summary: 'Disconnected from channel'});
   }
 
   findParticipantData(participantId: string): Member{
     return this.members().filter(member => member.id === participantId)[0];
   }
+  //
+  // findParticipantById(id: string){
+  //   return this.participants().find(participant => participant.identity === id);
+  // }
 
   ngOnDestroy() {
     this.querySubscription.unsubscribe();

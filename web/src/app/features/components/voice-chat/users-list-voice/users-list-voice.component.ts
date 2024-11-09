@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {
   MatAccordion,
   MatExpansionPanel,
@@ -17,36 +17,39 @@ import {Channel} from "../../../models/channel";
 import {ChannelService} from "../../../services/channel.service";
 import {VoiceChannelQuery} from "../../../store/voiceChannel/voice.channel.query";
 import {CommunityQuery} from "../../../store/community/community.query";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, NgClass} from "@angular/common";
 import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-channel-info.component";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {UserService} from "../../../../core/services/user.service";
 import {VoiceChatService} from "../../../services/voice-chat.service";
 import {MessageService} from "primeng/api";
+import {ID} from "@datorama/akita";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-users-list-voice',
   standalone: true,
-    imports: [
-        MatAccordion,
-        MatChip,
-        MatChipSet,
-        MatExpansionPanel,
-        MatExpansionPanelHeader,
-        MatExpansionPanelTitle,
-        UserBasicInfoComponent,
-        MatListModule,
-        RouterLink,
-        MatButton,
-        MatIcon,
-        AsyncPipe,
-        MatIconButton,
-        TextChannelInfoComponent
-    ],
+  imports: [
+    MatAccordion,
+    MatChip,
+    MatChipSet,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    UserBasicInfoComponent,
+    MatListModule,
+    RouterLink,
+    MatButton,
+    MatIcon,
+    AsyncPipe,
+    MatIconButton,
+    TextChannelInfoComponent,
+    NgClass
+  ],
   templateUrl: './users-list-voice.component.html',
   styleUrl: './users-list-voice.component.scss'
 })
-export class UsersListVoiceComponent  implements OnInit{
+export class UsersListVoiceComponent  implements OnInit, OnDestroy{
   readonly dialog = inject(MatDialog);
 
   readonly voiceChannels = toSignal(this.channelQuery.selectAll({
@@ -54,6 +57,9 @@ export class UsersListVoiceComponent  implements OnInit{
       (entity, index) => entity.communityId === this.communityQuery.getActiveId()
     ]
   }));
+
+  selectedChannelId = signal<ID | null>(null);
+  channelSubscription: Subscription;
 
   constructor(
     private channelQuery: VoiceChannelQuery,
@@ -65,7 +71,12 @@ export class UsersListVoiceComponent  implements OnInit{
   }
 
   ngOnInit() {
-
+    this.channelSubscription = this.channelQuery.selectActiveId()
+      .subscribe(id => {
+        if(id !== undefined){
+          this.selectedChannelId.set(id);
+        }
+    });
   }
 
   get voiceChannels$(){
@@ -102,6 +113,10 @@ export class UsersListVoiceComponent  implements OnInit{
 
   canModifyChannel(){
     return this.userService.getPermission().canModifyChannel;
+  }
+
+  ngOnDestroy() {
+    this.channelSubscription.unsubscribe();
   }
 
 }

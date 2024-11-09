@@ -37,6 +37,10 @@ $material-app-theme: mat.define-theme(
 }
 // end of theme
 
+// primeng for messages
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+
 .flex {
   display: flex;
 }

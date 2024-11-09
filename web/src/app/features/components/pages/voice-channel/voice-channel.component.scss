@@ -9,10 +9,23 @@
   background-color: #f0f0f0;
 }
 
+.participants {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-auto-rows: 1fr;
+  padding: 10px;
+}
+
 .container{
   width: 100%;
   height: auto;
-  padding: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .grid-container {
@@ -56,5 +69,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.speaking{
+  border: 4px solid lightgreen;
 }
