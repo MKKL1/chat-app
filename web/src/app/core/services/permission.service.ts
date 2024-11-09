@@ -1,5 +1,5 @@
-import {Injectable} from "@angular/core";
-import {BehaviorSubject, Observable} from "rxjs";
+import {Injectable, OnDestroy} from "@angular/core";
+import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {Permission} from "../../features/models/permission";
 import {CommunityStore} from "../../features/store/community/community.store";
 import {TextChannelStore} from "../../features/store/textChannel/text.channel.store";
@@ -18,7 +18,7 @@ import {Channel, ChannelRole} from "../../features/models/channel";
 @Injectable({
   providedIn: 'root'
 })
-export class PermissionService {
+export class PermissionService implements OnDestroy{
   //Represents current permission
   private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>(
     new Permission("0"));
@@ -28,9 +28,10 @@ export class PermissionService {
   private basePerm: bigint = 0n;
   private permCommunityMask: bigint = 0n;
 
-  constructor(private communityQuery: CommunityQuery,
-              private memberQuery: MemberQuery,
-              private roleQuery: RoleQuery,
+  private textChannelSub: Subscription;
+  private voiceChannelSub: Subscription;
+
+  constructor(private memberQuery: MemberQuery,
               private textChannelQuery: TextChannelQuery,
               private voiceChannelQuery: VoiceChannelQuery,
               private userService: UserService
@@ -46,18 +47,23 @@ export class PermissionService {
     //
     // })
 
-    textChannelQuery.selectActive().subscribe(channel => {
+    this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
       if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel?.overwrites!)
+      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
+      this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
 
-    voiceChannelQuery.selectActive().subscribe(channel => {
+    this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
       //same as above
       if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel?.overwrites!)
+      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
+      this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
+  }
+
+  ngOnDestroy(): void {
+    this.textChannelSub.unsubscribe();
+    this.voiceChannelSub.unsubscribe();
   }
 
   private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
@@ -78,13 +84,18 @@ export class PermissionService {
     console.log("New perms: ", newPerms)
   }
 
-  public setCommunityPermission(basePermissions: bigint, userPermissions: bigint[]) {
+  public setCommunityPermission(basePermissions: bigint, userPermissions: bigint[], isOwner: boolean) {
     this.basePerm = basePermissions
-    //Calculate summed overwrite mask and save it
-    this.permCommunityMask = sumMasks(userPermissions)
+    let newPerms: Permission;
+    if(isOwner) {
+      newPerms = new Permission(0xFFFFFFFFn)
+    } else {
+      //Calculate summed overwrite mask and save it
+      this.permCommunityMask = sumMasks(userPermissions)
 
-    //Apply overwrites
-    const newPerms = new Permission(applyOverwrite(this.basePerm, this.permCommunityMask))
+      //Apply overwrites
+      newPerms = new Permission(applyOverwrite(this.basePerm, this.permCommunityMask))
+    }
 
     //Emit new permissions
     this.permissionSubject.next(newPerms)
@@ -93,4 +104,6 @@ export class PermissionService {
   public getPermission(): Permission {
     return this.permissionSubject.value;
   }
+
+
 }
