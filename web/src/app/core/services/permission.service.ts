@@ -12,6 +12,7 @@ import {Role} from "../../features/models/role";
 import {applyOverwrite, applyOverwrites} from "../../shared/utils/permOperations";
 import {MemberQuery} from "../../features/store/member/member.query";
 import {RoleQuery} from "../../features/store/role/role.query";
+import {ChannelRole} from "../../features/models/channel";
 
 //TODO unit testing
 @Injectable({
@@ -51,7 +52,20 @@ export class PermissionService {
       //Get overwrites of given roles, sum them and save them
       //Update permission, based on saved base permission and ALL overwrites
 
-      console.log(channel)
+      const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
+      console.log("User roles ", userRoles)
+
+      const overwritesOfChannelForUser = channel?.overwrites
+        .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
+        .map((channelRole: ChannelRole) => channelRole.overwrites)
+        .map((overwrite: string) => BigInt(overwrite))
+
+      //TODO throw exception if null?
+      const permChannelMask = sumMasks(overwritesOfChannelForUser!)
+      const combinedMask = permChannelMask | this.permCommunityMask
+      const newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
+      this.permissionSubject.next(newPerms)
+      console.log("New perms: ", newPerms)
     })
 
     voiceChannelQuery.selectActive().subscribe(channel => {
