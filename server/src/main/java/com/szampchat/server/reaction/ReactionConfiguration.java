@@ -1,7 +1,6 @@
 package com.szampchat.server.reaction;
 
-import com.szampchat.server.livekit.dto.RoomDTO;
-import com.szampchat.server.reaction.dto.ReactionDTO;
+import com.szampchat.server.reaction.dto.ReactionListDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -13,10 +12,10 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 @Configuration
 public class ReactionConfiguration {
     @Bean
-    public ReactiveRedisTemplate<String, ReactionDTO> reactionDTOReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
-        Jackson2JsonRedisSerializer<ReactionDTO> serializer = new Jackson2JsonRedisSerializer<>(ReactionDTO.class);
-        RedisSerializationContext<String, ReactionDTO> context = RedisSerializationContext
-                .<String, ReactionDTO>newSerializationContext(RedisSerializer.string())
+    public ReactiveRedisTemplate<String, ReactionListDTO> reactionDTOReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
+        Jackson2JsonRedisSerializer<ReactionListDTO> serializer = new Jackson2JsonRedisSerializer<>(ReactionListDTO.class);
+        RedisSerializationContext<String, ReactionListDTO> context = RedisSerializationContext
+                .<String, ReactionListDTO>newSerializationContext(RedisSerializer.string())
                 .value(serializer)
                 .build();
         return new ReactiveRedisTemplate<>(connectionFactory, context);
