@@ -21,6 +21,7 @@ import {AsyncPipe} from "@angular/common";
 import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-channel-info.component";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {UserService} from "../../../../core/services/user.service";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -57,7 +58,7 @@ export class UsersListVoiceComponent  implements OnInit{
     private channelQuery: VoiceChannelQuery,
     private channelService: ChannelService,
     private communityQuery: CommunityQuery,
-    private userService: UserService) {
+    private permissionService: PermissionService) {
   }
 
   ngOnInit() {
@@ -91,11 +92,11 @@ export class UsersListVoiceComponent  implements OnInit{
   }
 
   canCreateChannel(){
-    return this.userService.getPermission().canCreateChannel;
+    return this.permissionService.getPermission().canCreateChannel;
   }
 
   canModifyChannel(){
-    return this.userService.getPermission().canModifyChannel;
+    return this.permissionService.getPermission().canModifyChannel;
   }
 
 }

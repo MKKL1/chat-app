@@ -6,7 +6,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {filePathMapping} from "../../shared/utils/utils";
 import {Permission} from "../../features/models/permission";
-import {applyOverwriteMask} from "../../shared/utils/permOperations";
+import {applyOverwrite} from "../../shared/utils/permOperations";
 
 @Injectable({
   providedIn: 'root'

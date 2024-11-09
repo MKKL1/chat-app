@@ -18,6 +18,7 @@ import {EventService} from "../../core/events/event.service";
 import {Member} from "../models/member";
 import {UserService} from "../../core/services/user.service";
 import {MemberQuery} from "../store/member/member.query";
+import {PermissionService} from "../../core/services/permission.service";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,8 @@ export class CommunityService {
     private memberStore: MemberStore,
     private roleStore: RoleStore,
     private eventService: EventService,
-    private userService: UserService
+    private userService: UserService,
+    private permissionService: PermissionService
   ) { }
 
   changeCommunity(id: string){
@@ -114,17 +116,20 @@ export class CommunityService {
 
         //Moving this logic to permission service so it could be updated when active community changes, not when it is fetched
         //What if request is cached and permission doesn't change? This should fix it
-        // // getting base permission for community and list of
-        // // permission overwrite delivered by different roles belonging to user
-        // const basePermissions = response.community.basePermissions;
-        // // getting roles of current user
-        // const currentUserRoles = response.members
-        //   .find((m: any) => m.user.id === this.userService.getUser().id).roles;
-        // const userPermissionsList = response.roles
-        //   .filter((role: Role) => currentUserRoles.includes(role.id))
-        //   .map((role: Role) => role.permissionOverwrites);
-        //
-        // this.userService.updateUserPermissions(basePermissions, userPermissionsList);
+        //Update: still doing it here, as I am not sure how to do it
+
+        // getting base permission for community and list of
+        // permission overwrite delivered by different roles belonging to user
+        const basePermissions = BigInt(response.community.basePermissions);
+        // getting roles of current user
+        const currentUserRoles = response.members
+          .find((m: any) => m.user.id === this.userService.getUser().id).roles;
+        const userPermissionsList = response.roles
+          .filter((role: Role) => currentUserRoles.includes(role.id))
+          .map((role: Role) => role.permissionOverwrites)
+          .map((perm: string) => BigInt(perm));
+
+        this.permissionService.setCommunityPermission(basePermissions, userPermissionsList);
 
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again

@@ -11,6 +11,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {UserService} from "../../../../core/services/user.service";
 import {CreateCommunityComponent} from "../dialogs/create-community/create-community.component";
 import {Subscription} from "rxjs";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-overview',
@@ -35,8 +36,9 @@ export class OverviewComponent implements OnInit, OnDestroy{
 
   constructor(
     protected communityQuery: CommunityQuery,
-    protected userService: UserService,
-    private communityService: CommunityService) {
+    private permissionService: PermissionService,
+    private communityService: CommunityService,
+    protected userService: UserService) {
   }
 
   ngOnInit() {
@@ -47,7 +49,7 @@ export class OverviewComponent implements OnInit, OnDestroy{
       }
     );
 
-    console.log(this.userService.getPermission());
+    console.log(this.permissionService.getPermission());
   }
 
   deleteCommunity(id: string){
@@ -63,7 +65,7 @@ export class OverviewComponent implements OnInit, OnDestroy{
   }
 
   checkInvitationPermission(): boolean{
-    const permission = this.userService.getPermission();
+    const permission = this.permissionService.getPermission();
     return permission.canCreateInvitation;
   }
 

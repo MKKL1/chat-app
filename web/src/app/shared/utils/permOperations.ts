@@ -1,6 +1,6 @@
 import {sumMasks} from "./binaryOperations";
 
-export function applyOverwriteMask(permissions: bigint, overwrite: bigint): bigint {
+export function applyOverwrite(permissions: bigint, overwrite: bigint): bigint {
   let newPermissions = permissions;
 
   newPermissions |= overwrite;
@@ -10,5 +10,5 @@ export function applyOverwriteMask(permissions: bigint, overwrite: bigint): bigi
 }
 
 export function applyOverwrites(basePermission: bigint, permOverwrites: bigint[]): bigint {
-  return applyOverwriteMask(basePermission, sumMasks(permOverwrites));
+  return applyOverwrite(basePermission, sumMasks(permOverwrites));
 }
