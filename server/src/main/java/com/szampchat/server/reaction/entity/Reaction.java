@@ -1,4 +1,4 @@
-package com.szampchat.server.message.entity;
+package com.szampchat.server.reaction.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

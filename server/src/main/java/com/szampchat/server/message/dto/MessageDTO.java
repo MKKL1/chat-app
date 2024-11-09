@@ -2,6 +2,7 @@ package com.szampchat.server.message.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.szampchat.server.reaction.dto.ReactionDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,5 @@ public class MessageDTO {
     private String gifLink;
 
     private List<MessageAttachmentDTO> attachments;
-    private List<ReactionPreviewDTO> reactions;
+    private List<ReactionDTO> reactions;
 }

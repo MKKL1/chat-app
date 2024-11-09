@@ -12,7 +12,8 @@ import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
-import com.szampchat.server.message.repository.ReactionRepository;
+import com.szampchat.server.reaction.dto.ReactionDTO;
+import com.szampchat.server.reaction.repository.ReactionRepository;
 import com.szampchat.server.snowflake.SnowflakeGen;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
@@ -27,7 +28,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -161,23 +161,21 @@ public class MessageService {
     //Make it public, and allow for multiple messages to be processed
     // I'm not sure if it should stay like this, but works for now
     Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
-        Mono<List<ReactionPreviewDTO>> reactionsMono = reactionRepository
-                .fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
-                .collectList();
+
 
         Mono<List<MessageAttachmentDTO>> attachmentsMono = messageAttachmentService
                 .findMessageAttachments(message.getId(), message.getChannel())
                 .collectList();
 
-        return Mono.zip(reactionsMono, attachmentsMono)
+        return Mono.zip(Mono.empty(), attachmentsMono)
                 .map(tuple -> {
-                    List<ReactionPreviewDTO> reactionPreviews = tuple.getT1();
+//                    List<ReactionDTO> reactionPreviews = tuple.getT1();
                     List<MessageAttachmentDTO> attachments = tuple.getT2();
 
 
                     MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
                     messageDTO.setAttachments(attachments);
-                    messageDTO.setReactions(reactionPreviews);
+//                    messageDTO.setReactions(reactionPreviews);
 
                     return messageDTO;
                 });

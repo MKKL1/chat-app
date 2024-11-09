@@ -28,23 +28,4 @@ public class LiveKitConfiguration {
         return new WebhookReceiver("devkey", "secret");
     }
 
-    @Bean
-    public ReactiveRedisTemplate<String, RoomDTO> redisRoomTemplate(ReactiveRedisConnectionFactory factory) {
-        Jackson2JsonRedisSerializer<RoomDTO> serializer = new Jackson2JsonRedisSerializer<>(RoomDTO.class);
-        RedisSerializationContext<String, RoomDTO> context = RedisSerializationContext
-                .<String, RoomDTO>newSerializationContext(RedisSerializer.string())
-                .value(serializer)
-                .build();
-        return new ReactiveRedisTemplate<>(factory, context);
-    }
-
-    @Bean
-    public ReactiveRedisTemplate<String, ParticipantDTO> redisParticipantTemplate(ReactiveRedisConnectionFactory factory) {
-        Jackson2JsonRedisSerializer<ParticipantDTO> serializer = new Jackson2JsonRedisSerializer<>(ParticipantDTO.class);
-        RedisSerializationContext<String, ParticipantDTO> context = RedisSerializationContext
-                .<String, ParticipantDTO>newSerializationContext(RedisSerializer.string())
-                .value(serializer)
-                .build();
-        return new ReactiveRedisTemplate<>(factory, context);
-    }
 }
