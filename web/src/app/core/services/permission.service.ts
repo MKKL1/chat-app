@@ -47,33 +47,32 @@ export class PermissionService {
     // })
 
     textChannelQuery.selectActive().subscribe(channel => {
+      if(!channel) return;
       const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
       this.updatePermsFromChannel(userRoles!, channel?.overwrites!)
     })
 
     voiceChannelQuery.selectActive().subscribe(channel => {
       //same as above
+      if(!channel) return;
       const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
       this.updatePermsFromChannel(userRoles!, channel?.overwrites!)
     })
   }
 
   private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
-    //Get overwrites for roles from channel
-    //Select roles that user has
-    //Get overwrites of given roles, sum them and save them
-    //Update permission, based on saved base permission and ALL overwrites
-    // const userRoles = memberQuery.getEntity(channel?.communityId! + userService.getUser().id)?.roles
-    console.log("User roles ", userRoles)
-
+    //Get overwrites that affect user
     const overwritesOfChannelForUser = channelRoles
       .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
       .map((channelRole: ChannelRole) => channelRole.overwrites)
       .map((overwrite: string) => BigInt(overwrite))
 
-    //TODO throw exception if null?
+    //TODO handle null
+    //Sum all permission overwrites (community and channel)
     const permChannelMask = sumMasks(overwritesOfChannelForUser!)
     const combinedMask = permChannelMask | this.permCommunityMask
+
+    //Update permission, based on saved base permission and ALL overwrites
     const newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
     this.permissionSubject.next(newPerms)
     console.log("New perms: ", newPerms)
