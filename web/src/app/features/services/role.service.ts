@@ -41,7 +41,6 @@ export class RoleService {
 
   changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]): Observable<any>{
     const communityId = this.communityQuery.getActiveId();
-    let pathCounter: number = 1;
 
     const operations: Operation[] = [];
 
@@ -56,10 +55,9 @@ export class RoleService {
     membersToRemoveIds.forEach(m => {
       operations.push({
         op: 'remove',
-        path: '/members/' + pathCounter,
+        path: '/members/0',
         value: m.id
       });
-      pathCounter++;
     });
 
     console.log(operations);

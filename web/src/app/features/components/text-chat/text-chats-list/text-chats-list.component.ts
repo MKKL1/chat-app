@@ -15,6 +15,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
 import {Subscription} from "rxjs";
 import {EventService} from "../../../../core/events/event.service";
 import {UserService} from "../../../../core/services/user.service";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -44,7 +45,7 @@ export class TextChatsListComponent {
       private channelQuery: TextChannelQuery,
       private channelService: ChannelService,
       private communityQuery: CommunityQuery,
-      private userService: UserService) {
+      private permissionService: PermissionService) {
     }
 
     addChannel(){
@@ -66,10 +67,10 @@ export class TextChatsListComponent {
     }
 
     canCreateChannel(){
-      return this.userService.getPermission().canCreateChannel;
+      return this.permissionService.getPermission().canCreateChannel;
     }
 
     canModifyChannel(){
-      return this.userService.getPermission().canModifyChannel;
+      return this.permissionService.getPermission().canModifyChannel;
     }
 }

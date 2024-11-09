@@ -13,6 +13,7 @@ import {RoleService} from "../../../services/role.service";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
 import {UserService} from "../../../../core/services/user.service";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-roles',
@@ -40,7 +41,7 @@ export class RolesComponent implements OnDestroy{
     private roleQuery: RoleQuery,
     private roleService: RoleService,
     private communityQuery: CommunityQuery,
-    private userService: UserService) {
+    private permissionService: PermissionService) {
     this.communitySubscription = this.communityQuery
       .selectActiveId()
       .subscribe(
@@ -82,7 +83,7 @@ export class RolesComponent implements OnDestroy{
   }
 
   getAdminPermission(){
-    return this.userService.getPermission().isAdministrator;
+    return this.permissionService.getPermission().isAdministrator;
   }
 
   ngOnDestroy() {

@@ -150,7 +150,6 @@ export class EventService {
     });
 
     // TODO implement
-    // event always return roleId: 1
     handler.add('ROLE_DELETE_EVENT', (role: any) => {
       console.log(role);
       this.roleStore.remove(role.roleId);

@@ -11,6 +11,7 @@ import {MessageService} from "../../../services/message.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 import {previewImage} from "../../../../shared/utils/utils";
 import {UserService} from "../../../../core/services/user.service";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-message-input',
@@ -43,7 +44,7 @@ export class MessageInputComponent {
 
   @Input() messageToRespond?: { id: string, text: string };
 
-  constructor(private messageService: MessageService, private userService: UserService) {
+  constructor(private messageService: MessageService, private permissionService: PermissionService) {
   }
 
   // wrapper for handling key input
@@ -138,7 +139,7 @@ export class MessageInputComponent {
   }
 
   canCreateMessage(){
-    return this.userService.getPermission().canCreateMessage;
+    return this.permissionService.getPermission().canCreateMessage;
   }
 
 }
