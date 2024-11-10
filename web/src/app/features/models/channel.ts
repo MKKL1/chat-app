@@ -4,6 +4,7 @@ export interface Channel{
   communityId: string;
   type: ChannelType;
   overwrites: string[];
+  participants?: string[];
   lastMessageId?: string;
   messagesState?: ChannelMessagesState;
 }

@@ -19,16 +19,4 @@ export class UserPanelComponent {
   @Input() member: Member | null;
   @Input() participant: ParticipantInfo | null;
   @Input() isSpeaking: boolean = false;
-  //
-  // isCameraEnabled: boolean;
-  //
-  // @Input() set cameraEnabled(value: boolean){
-  //   this.isCameraEnabled = value;
-  //   console.log('changed camera');
-  // }
-  // @Input() fromCurrentUser: boolean;
-  //
-  // constructor(private voiceChat: VoiceChatService) {
-  // }
-
 }

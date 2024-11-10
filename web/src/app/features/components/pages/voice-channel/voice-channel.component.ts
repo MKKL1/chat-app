@@ -41,7 +41,6 @@ import {VoiceChannelStore} from "../../../store/voiceChannel/voice.channel.store
 
 export class VoiceChannelComponent implements OnInit, OnDestroy{
   selectedChannel = signal<Channel | null>(null);
-  currentUser: User;
 
   participants = signal<ParticipantInfo[]>([]);
   speakers = signal<string[]>([]);
@@ -63,9 +62,7 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     private voiceChannelStore: VoiceChannelStore,
     private memberQuery: MemberQuery,
     private communityQuery: CommunityQuery,
-    private userService: UserService,
     private messageService: MessageService) {
-    this.currentUser = userService.getUser();
   }
 
   // what happens if i changed community during talking?
@@ -80,20 +77,17 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     this.querySubscription = this.voiceChannelQuery
       .selectActive()
       .subscribe(channel => {
-        console.log(channel);
         this.selectedChannel.set(channel!);
     });
 
 
     this.participantsSubscription = this.voiceChat.participantsSubject$
       .subscribe(participants => {
-        console.log(participants);
         this.participants.set(participants);
     });
 
     this.speakersSubscription = this.voiceChat.speakersSubject$
       .subscribe(speakers => {
-        console.log(speakers);
         this.speakers.set(speakers);
     });
   }
@@ -125,10 +119,6 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
   findParticipantData(participantId: string): Member{
     return this.members().filter(member => member.id === participantId)[0];
   }
-  //
-  // findParticipantById(id: string){
-  //   return this.participants().find(participant => participant.identity === id);
-  // }
 
   ngOnDestroy() {
     this.querySubscription.unsubscribe();

@@ -16,6 +16,7 @@ import {RoleStore} from "../../features/store/role/role.store";
 import {Role} from "../../features/models/role";
 import {MemberStore} from "../../features/store/member/member.store";
 import {CommunityQuery} from "../../features/store/community/community.query";
+import {VoiceChannelStore} from "../../features/store/voiceChannel/voice.channel.store";
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,7 @@ export class EventService {
   private communityQuery = inject(CommunityQuery);
   private textChannelQuery = inject(TextChannelQuery);
   private channelService = inject(ChannelService);
+  private voiceChannelStore = inject(VoiceChannelStore);
   private userService = inject(UserService);
   private memberQuery = inject(MemberQuery);
   private memberStore = inject(MemberStore);
@@ -155,6 +157,24 @@ export class EventService {
       console.log(role);
       this.roleStore.remove(role.roleId);
     })
+
+    handler.add('PARTICIPANT_CREATE_EVENT', (res: {channelId: string, userId: string}) => {
+      this.voiceChannelStore.update(res.channelId, (channel) => {
+        return {
+          ...channel,
+          participants: [...channel.participants!, res.userId],
+        };
+      });
+    });
+
+    handler.add('PARTICIPANT_DELETE_EVENT', (res: {channelId: string, userId: string}) => {
+      this.voiceChannelStore.update(res.channelId, (channel) => {
+        return {
+          ...channel,
+          participants: channel.participants!.filter(id => id !== res.userId),
+        };
+      });
+    });
 
     return handler;
   }

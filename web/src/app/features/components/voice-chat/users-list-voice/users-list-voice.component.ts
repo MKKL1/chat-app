@@ -25,6 +25,12 @@ import {VoiceChatService} from "../../../services/voice-chat.service";
 import {MessageService} from "primeng/api";
 import {ID} from "@datorama/akita";
 import {Subscription} from "rxjs";
+import {MemberQuery} from "../../../store/member/member.query";
+import { Member } from '../../../models/member';
+import {AvatarGroupModule} from "primeng/avatargroup";
+import {AvatarModule} from "primeng/avatar";
+import {MatBadge} from "@angular/material/badge";
+import {ShorteningPipe} from "../../../../shared/pipes/ShorteningPipe";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -44,7 +50,11 @@ import {Subscription} from "rxjs";
     AsyncPipe,
     MatIconButton,
     TextChannelInfoComponent,
-    NgClass
+    NgClass,
+    AvatarGroupModule,
+    AvatarModule,
+    MatBadge,
+    ShorteningPipe
   ],
   templateUrl: './users-list-voice.component.html',
   styleUrl: './users-list-voice.component.scss'
@@ -59,31 +69,32 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
   }));
 
   selectedChannelId = signal<ID | null>(null);
-  channelSubscription: Subscription;
+  channelSub: Subscription;
+
+  members = signal<Member[]>([]);
+  membersSub: Subscription;
 
   constructor(
     private channelQuery: VoiceChannelQuery,
     private channelService: ChannelService,
     private communityQuery: CommunityQuery,
+    private memberQuery: MemberQuery,
     private userService: UserService,
     private voiceChat: VoiceChatService,
     private messageService: MessageService) {
   }
 
   ngOnInit() {
-    this.channelSubscription = this.channelQuery.selectActiveId()
+    console.log(this.channelQuery.getAll());
+    this.membersSub = this.memberQuery.selectAll({
+      filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+    }).subscribe(members => this.members.set(members));
+
+    this.channelSub = this.channelQuery.selectActiveId()
       .subscribe(id => {
         if(id !== undefined){
           this.selectedChannelId.set(id);
         }
-    });
-  }
-
-  get voiceChannels$(){
-    return this.channelQuery.selectAll({
-      filterBy: [
-        (entity, index) => entity.communityId === this.communityQuery.getActiveId()
-      ]
     });
   }
 
@@ -115,8 +126,13 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
     return this.userService.getPermission().canModifyChannel;
   }
 
+  getParticipantImage(id: string){
+    return this.members().find(m => m.user.id === id)?.user.imageUrl;
+  }
+
   ngOnDestroy() {
-    this.channelSubscription.unsubscribe();
+    this.channelSub.unsubscribe();
+    this.membersSub.unsubscribe();
   }
 
 }

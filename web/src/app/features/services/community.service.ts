@@ -17,7 +17,6 @@ import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {EventService} from "../../core/events/event.service";
 import {Member} from "../models/member";
 import {UserService} from "../../core/services/user.service";
-import {MemberQuery} from "../store/member/member.query";
 
 @Injectable({
   providedIn: 'root'
@@ -82,7 +81,8 @@ export class CommunityService {
           channels: res.channels.map((channelData: any) => ({
             ...channelData.channel,
             type: channelData.channel.type === '0' ? ChannelType.Text : ChannelType.Voice,
-            overwrites: channelData.overwrites
+            overwrites: channelData.overwrites,
+            participants: channelData.participants
           }))
         };
       })
