@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ReactionListDTO {
-    private Collection<ReactionCountDTO> reactions;
+@NoArgsConstructor
+public class ReactionCountDTO {
+    private String emoji;
+    private int count;
 }
