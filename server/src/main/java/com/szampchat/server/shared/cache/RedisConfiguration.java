@@ -1,6 +1,7 @@
 package com.szampchat.server.shared.cache;
 
 import com.szampchat.server.livekit.dto.RoomDTO;
+import com.szampchat.server.reaction.dto.ReactionListDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -41,6 +42,20 @@ public class RedisConfiguration {
         RedisSerializationContext<String, Object> serializationContext = RedisSerializationContext
                 .<String, Object>newSerializationContext(RedisSerializer.string())
                 .value(RedisSerializer.json())
+                .build();
+        return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
+    }
+
+    @Bean
+    public ReactiveRedisTemplate<String, String> stringReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
+        return new ReactiveRedisTemplate<>(connectionFactory, RedisSerializationContext.string());
+    }
+
+    @Bean
+    public ReactiveRedisTemplate<String, Long> longReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
+        RedisSerializationContext<String, Long> serializationContext = RedisSerializationContext
+                .<String, Long>newSerializationContext(RedisSerializer.string())
+                .value(new GenericToStringSerializer<>(Long.class))
                 .build();
         return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
     }

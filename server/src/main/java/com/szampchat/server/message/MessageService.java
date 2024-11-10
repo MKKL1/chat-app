@@ -191,19 +191,6 @@ public class MessageService {
 
     public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
         return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
-                .collectList()
-                .flatMapMany(messages -> reactionService.getReactionsForUserBulk(channelId, messageIds, userId)
-                        .collectMap(
-                                ReactionOverviewBulkDTO::getMessageId,
-                                ReactionOverviewBulkDTO::getReactionOverviewDTOS
-                        ).flatMapMany(map -> Flux.fromIterable(messages)
-                                .map(message -> {
-                                    MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
-                                    messageDTO.setReactions(map.get(message.getId()).stream().toList());
-
-                                    return messageDTO;
-                                })
-                        )
-                );
+                .flatMap(message -> attachAdditionalDataToMessage(message, userId));
     }
 }

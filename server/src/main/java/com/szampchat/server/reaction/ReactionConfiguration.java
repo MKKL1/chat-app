@@ -11,13 +11,13 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
 public class ReactionConfiguration {
-    @Bean
-    public ReactiveRedisTemplate<String, ReactionListDTO> reactionDTOReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
-        Jackson2JsonRedisSerializer<ReactionListDTO> serializer = new Jackson2JsonRedisSerializer<>(ReactionListDTO.class);
-        RedisSerializationContext<String, ReactionListDTO> context = RedisSerializationContext
-                .<String, ReactionListDTO>newSerializationContext(RedisSerializer.string())
-                .value(serializer)
-                .build();
-        return new ReactiveRedisTemplate<>(connectionFactory, context);
-    }
+//    @Bean
+//    public ReactiveRedisTemplate<String, ReactionListDTO> reactionDTOReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
+//        Jackson2JsonRedisSerializer<ReactionListDTO> serializer = new Jackson2JsonRedisSerializer<>(ReactionListDTO.class);
+//        RedisSerializationContext<String, ReactionListDTO> context = RedisSerializationContext
+//                .<String, ReactionListDTO>newSerializationContext(RedisSerializer.string())
+//                .value(serializer)
+//                .build();
+//        return new ReactiveRedisTemplate<>(connectionFactory, context);
+//    }
 }
