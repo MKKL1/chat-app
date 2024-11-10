@@ -2,7 +2,6 @@ package com.szampchat.server.reaction.repository.redis;
 
 import com.szampchat.server.reaction.entity.ReactionCount;
 import com.szampchat.server.reaction.entity.ReactionList;
-import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Repository;
@@ -17,6 +16,7 @@ public class ReactionCountRepository {
     private final ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate;
     private final ReactiveValueOperations<String, ReactionList> valueOpsReaction;
     private static final String REACTIONS_CACHE_NAME = "rcnt:";
+    private final Duration defaultTtl = Duration.ofMinutes(30);
 
     public ReactionCountRepository(ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate) {
         this.redisReactionTemplate = redisReactionTemplate;
@@ -28,7 +28,7 @@ public class ReactionCountRepository {
                 .map(dto -> new ReactionCount(dto.getEmoji(), dto.getCount()))
                 .collectList()
                 .filter(list -> !list.isEmpty())
-                .flatMap(list -> valueOpsReaction.set(buildKey(channelId, messageId), new ReactionList(list), Duration.ofMinutes(5)));
+                .flatMap(list -> valueOpsReaction.set(buildKey(channelId, messageId), new ReactionList(list), defaultTtl));
     }
 
     public Flux<ReactionCount> get(Long channelId, Long messageId) {

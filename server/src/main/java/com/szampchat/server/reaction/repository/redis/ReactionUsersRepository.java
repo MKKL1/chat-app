@@ -19,20 +19,22 @@ import java.util.Map;
 public class ReactionUsersRepository {
     private final ReactiveRedisTemplate<String, String> redisStringTemplate;
     private final ReactiveSetOperations<String, String> setOps;
-
     private static final String REACTIONS_USERS_CACHE_NAME = "rusr:";
+    private final Duration defaultTtl = Duration.ofMinutes(30);
 
     public ReactionUsersRepository(ReactiveRedisTemplate<String, String> redisStringTemplate) {
         this.redisStringTemplate = redisStringTemplate;
         setOps = redisStringTemplate.opsForSet();
     }
 
-    public Mono<Long> save(Long channelId, Long messageId, Collection<EmojiUserPair> emojiUserPairs) {
+    public Mono<Boolean> save(Long channelId, Long messageId, Collection<EmojiUserPair> emojiUserPairs) {
+        String key = buildKey(channelId, messageId);
         return Flux.fromIterable(emojiUserPairs)
                 .map(this::combineUserAndEmoji)
                 .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(reactionValueList -> setOps.add(buildKey(channelId, messageId), reactionValueList.toArray(new String[0])));
+                .filter(list -> !list.isEmpty()) //Should I remove old object if it exists?
+                .flatMap(reactionValueList -> setOps.add(key, reactionValueList.toArray(new String[0])))
+                .flatMap(_ -> redisStringTemplate.expire(key, defaultTtl));
     }
 
     public Mono<Map<EmojiUserPair, Boolean>> contains(Long channelId, Long messageId, Collection<EmojiUserPair> emojiUserPairs) {

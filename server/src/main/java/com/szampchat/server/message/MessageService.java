@@ -169,7 +169,7 @@ public class MessageService {
                 .collectList();
 
         Mono<List<ReactionOverviewDTO>> reactionsMono = reactionService
-                .getReactionsForUser(message.getChannel(), message.getId(), message.getUser())
+                .getReactionsForUser(message.getChannel(), message.getId(), currentUserId)
                 .collectList();
 
         return Mono.zip(reactionsMono, attachmentsMono)
@@ -186,7 +186,8 @@ public class MessageService {
                 });
     }
 
-    public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
+    /*
+        public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
         return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
                 .collectList()
                 .flatMapMany(messages -> reactionService.getReactionsForUserBulk(channelId, messageIds, userId)
@@ -202,5 +203,10 @@ public class MessageService {
                                 })
                         )
                 );
+     */
+
+    public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
+        return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
+                .flatMap(message -> attachAdditionalDataToMessage(message, userId));
     }
 }
