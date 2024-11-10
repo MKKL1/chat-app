@@ -10,11 +10,12 @@ import {ChannelService} from "../../../services/channel.service";
 import {IsOwnerDirective} from "../../../../shared/directives/is-owner.directive";
 import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {CommunityQuery} from "../../../store/community/community.query";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, NgClass} from "@angular/common";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {Subscription} from "rxjs";
 import {EventService} from "../../../../core/events/event.service";
 import {UserService} from "../../../../core/services/user.service";
+import {ID} from "@datorama/akita";
 import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
@@ -27,12 +28,13 @@ import {PermissionService} from "../../../../core/services/permission.service";
     MatIcon,
     MatIconButton,
     IsOwnerDirective,
-    AsyncPipe
+    AsyncPipe,
+    NgClass
   ],
   templateUrl: './text-chats-list.component.html',
   styleUrl: './text-chats-list.component.scss'
 })
-export class TextChatsListComponent {
+export class TextChatsListComponent implements OnDestroy{
     readonly dialog = inject(MatDialog);
 
     readonly textChannels = toSignal(this.channelQuery.selectAll({
@@ -41,11 +43,22 @@ export class TextChatsListComponent {
        ]
     }));
 
+    channelSubscription: Subscription;
+    selectedChannelId = signal<ID | null>(null);
+
     constructor(
       private channelQuery: TextChannelQuery,
       private channelService: ChannelService,
       private communityQuery: CommunityQuery,
+      private userService: UserService,
       private permissionService: PermissionService) {
+
+      this.channelSubscription = this.channelQuery.selectActiveId()
+        .subscribe(id => {
+          if(id !== undefined){
+            this.selectedChannelId.set(id);
+          }
+      });
     }
 
     addChannel(){
@@ -72,5 +85,9 @@ export class TextChatsListComponent {
 
     canModifyChannel(){
       return this.permissionService.getPermission().canModifyChannel;
+    }
+
+    ngOnDestroy() {
+      this.channelSubscription.unsubscribe();
     }
 }

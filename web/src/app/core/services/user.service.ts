@@ -51,12 +51,9 @@ export class UserService {
           this.setUser(user);
         },
         error: (err: HttpErrorResponse) => {
-          // if backend returns error with status 419, it means user is not fully registered yet
-          // to complete registration another request to backend must be sent
+          // If status 419, complete registration and retry fetching user data
           if(err.status === this.errorStatus){
             this.registerUser().subscribe(res => {
-              // after registering user, we are trying to
-              // get user data from api once again
               this.fetchUserData();
             });
           }

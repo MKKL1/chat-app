@@ -17,6 +17,7 @@ import {environment} from "../environment";
 import {GlobalErrorHandler} from "./core/global.error.handler";
 import {numbersDeserializationInterceptor} from "./core/interceptors/numbers.deserialization.interceptor";
 import {persistState} from "@datorama/akita";
+import {MessageService} from "primeng/api";
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -57,6 +58,7 @@ export const appConfig: ApplicationConfig = {
         multi: true,
         deps: [KeycloakService]
     },
+    {provide: MessageService}
 
     // {
     //   provide: 'persistStorage',

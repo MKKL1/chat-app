@@ -3,6 +3,7 @@ export interface Channel{
   name: string;
   communityId: string;
   type: ChannelType;
+  participants?: string[];
   overwrites: ChannelRole[];
   lastMessageId?: string;
   messagesState?: ChannelMessagesState;

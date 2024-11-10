@@ -84,7 +84,8 @@ export class CommunityService {
           channels: res.channels.map((channelData: any) => ({
             ...channelData.channel,
             type: channelData.channel.type === '0' ? ChannelType.Text : ChannelType.Voice,
-            overwrites: channelData.overwrites
+            overwrites: channelData.overwrites,
+            participants: channelData.participants
           }))
         };
       })

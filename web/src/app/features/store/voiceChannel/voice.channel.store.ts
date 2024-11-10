@@ -1,10 +1,12 @@
-import {EntityStore, StoreConfig} from "@datorama/akita";
+import {ActiveState, EntityState, EntityStore, StoreConfig} from "@datorama/akita";
 import {Injectable} from "@angular/core";
-import {ChannelState} from "../textChannel/text.channel.store";
+import {Channel} from "../../models/channel";
+
+export interface VoiceChannelState extends EntityState<Channel, string>, ActiveState {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({name: 'community'})
-export class VoiceChannelStore extends EntityStore<ChannelState> {
+export class VoiceChannelStore extends EntityStore<VoiceChannelState> {
 
   constructor() {
     super();

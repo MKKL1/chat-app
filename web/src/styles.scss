@@ -37,6 +37,10 @@ $material-app-theme: mat.define-theme(
 }
 // end of theme
 
+// primeng for messages
+@import "primeng/resources/themes/aura-light-teal/theme.css";
+@import "primeng/resources/primeng.css";
+
 .flex {
   display: flex;
 }
@@ -69,4 +73,8 @@ app-emoji-picker, app-gif-search{
   height: 150px;
   border-radius: 50%;
   margin-bottom: 10px;
+}
+
+.pointer, .pointer:hover{
+  cursor: pointer;
 }

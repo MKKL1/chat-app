@@ -1,30 +1,28 @@
 <app-layout>
   <app-users-list-voice sidebar></app-users-list-voice>
-  <div class="container" content>
-    <div class="voice-nav">
-      <h3>{{channelName}}</h3>
-      <div>
-        <mat-icon fontIcon="{{clientSilent ? 'mic_off' : 'mic'}}"></mat-icon>
-        <mat-icon (click)="toggleClientMuted()" fontIcon="{{clientMuted ? 'volume_off' : 'volume_up'}}"></mat-icon>
+  @if(selectedChannel()){
+    <div class="container" content>
+      <div class="voice-nav">
+        <h3>{{selectedChannel()?.name}}</h3>
+        <button mat-button (click)="disconnect()">Disconnect</button>
+        <button mat-button (click)="shareScreen()">
+          {{ sharingScreen() ? 'End screen sharing' : 'Share screen'}}
+        </button>
+        <div>
+          <mat-icon (click)="toggleClientCamera()" fontIcon="{{clientCamera() ? 'videocam' : 'videocam_off'}}"></mat-icon>
+          <mat-icon (click)="toggleClientMicrophone()" fontIcon="{{clientMicrophone() ? 'volume_up' : 'volume_off'}}"></mat-icon>
+        </div>
+      </div>
+      <div class="participants">
+        @for(participant of participants(); track participant.identity){
+          <app-user-panel [ngClass]="{'speaking': speakers().includes(participant.identity)}"
+            [member]="findParticipantData(participant.identity)"
+            [participant]="participant">
+          </app-user-panel>
+        }
       </div>
     </div>
-    <div class="grid-container">
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-      <app-user-panel></app-user-panel>
-    </div>
-  </div>
+  } @else{
+    <div content class="w-100"><h1 class="flex-center w-100">No voice chat selected</h1></div>
+  }
 </app-layout>
