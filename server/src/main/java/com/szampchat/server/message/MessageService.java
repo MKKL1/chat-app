@@ -199,7 +199,7 @@ public class MessageService {
                         ).flatMapMany(map -> Flux.fromIterable(messages)
                                 .map(message -> {
                                     MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
-                                    messageDTO.setReactions(map.get(message.getId()).stream().toList());
+                                    messageDTO.setReactions(map.getOrDefault(message.getId(), List.of()).stream().toList());
 
                                     return messageDTO;
                                 })

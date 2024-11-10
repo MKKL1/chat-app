@@ -3,7 +3,6 @@ package com.szampchat.server.reaction;
 import com.szampchat.server.reaction.dto.*;
 import com.szampchat.server.reaction.repository.ReactionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.ReactiveListOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveSetOperations;
 import org.springframework.data.redis.core.ReactiveValueOperations;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ReactionCacheService {
@@ -42,6 +40,7 @@ public class ReactionCacheService {
         Mono<Boolean> saveReactionDto = Flux.fromIterable(reactionUsersDTOS)
                 .map(dto -> new ReactionCountDTO(dto.getEmoji(), dto.getUsers().size()))
                 .collectList()
+                .filter(list -> !list.isEmpty())
                 .flatMap(list -> valueOpsReaction.set(cacheKeyReaction, new ReactionListDTO(list)));
 
         Mono<Long> saveUsers = Flux.fromIterable(reactionUsersDTOS)
@@ -50,6 +49,7 @@ public class ReactionCacheService {
                     return Flux.fromStream(dto.getUsers().stream().map(user -> combineUserAndEmoji(emoji, user)));
                 })
                 .collectList()
+                .filter(list -> !list.isEmpty())
                 .flatMap(reactionValueList -> setOpsString.add(cacheKeyUserSet, reactionValueList.toArray(new String[0])));
 
         return Mono.zip(saveReactionDto, saveUsers).then();
@@ -81,6 +81,7 @@ public class ReactionCacheService {
 
         return Mono.just(reactionListDTO)
                 .map(ReactionListDTO::getReactions)
+                .filter(reactionCounts -> !reactionCounts.isEmpty())
                 .flatMapMany(reactionCounts -> {
                     Map<String, String> userEmojis = new HashMap<>(); //Map of emoji-> "emoji:user"
                     for (ReactionCountDTO reactionCountDTO : reactionCounts) {
@@ -187,7 +188,7 @@ public class ReactionCacheService {
 //
 //    }
 
-    public Mono<Boolean> addReactionToCache(Long channelId, Long messageId, Long userId, String emoji) {
+    public Mono<Boolean> save(Long channelId, Long messageId, Long userId, String emoji) {
         //Retrieve old reaction list
         final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
         ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
@@ -196,7 +197,9 @@ public class ReactionCacheService {
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
 
         String userEmojiValue = combineUserAndEmoji(emoji, userId);
-        return setOpsString.isMember(cacheKeyUserSet, userEmojiValue)
+        return redisStringTemplate.hasKey(cacheKeyReaction)
+                .filter(hasKey -> hasKey)
+                .flatMap(_ -> setOpsString.isMember(cacheKeyUserSet, userEmojiValue))
                 .filter(isMember -> !isMember)
                 .flatMap(_ -> setOpsString.add(cacheKeyUserSet, userEmojiValue))
                 .flatMap(_ -> valueOpsString.get(cacheKeyReaction))
@@ -218,7 +221,7 @@ public class ReactionCacheService {
                 });
     }
 
-    public Mono<Boolean> removeReactionFromCache(Long channelId, Long messageId, Long userId, String emoji) {
+    public Mono<Boolean> remove(Long channelId, Long messageId, Long userId, String emoji) {
         final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
         ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
 
@@ -226,7 +229,9 @@ public class ReactionCacheService {
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
 
         String userEmojiValue = combineUserAndEmoji(emoji, userId);
-        return setOpsString.remove(cacheKeyUserSet, userEmojiValue)
+        return redisStringTemplate.hasKey(cacheKeyReaction)
+                .filter(hasKey -> hasKey)
+                .flatMap(_ -> setOpsString.remove(cacheKeyUserSet, userEmojiValue))
                 .filter(index -> index != 0)
                 .flatMap(_ -> valueOpsString.get(cacheKeyReaction))
                 .flatMap(oldValue -> {

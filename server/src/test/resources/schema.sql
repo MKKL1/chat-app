@@ -111,20 +111,25 @@ create table message_attachment
 
 create table reactions
 (
-    emoji       char   not null,
-    user_id     bigint not null
+    emoji      char   not null,
+    user_id    bigint not null
         constraint fk_reactions_on_user
-            references users on delete cascade ,
-    reaction_id bigint not null,
-    channel_id  bigint not null
+            references public.users
+            on delete cascade,
+    channel_id bigint not null
         constraint fk_reactions_on_channel
-            references channels on delete cascade ,
-    message_id  bigint,
-    constraint pk_reactions
-        primary key (reaction_id, channel_id),
+            references public.channels
+            on delete cascade,
+    message_id bigint,
     constraint fk_reactions_on_meidmechid
-        foreign key (message_id, channel_id) references messages on delete cascade
+        foreign key (message_id, channel_id) references public.messages
+            on delete cascade
 );
+
+create unique index reactions_emoji_user_id_channel_id_message_id_uindex
+    on public.reactions (emoji, user_id, channel_id, message_id);
+
+
 
 create table user_roles
 (
