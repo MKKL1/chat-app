@@ -182,6 +182,71 @@ public class ReactionCacheService {
                     return Flux.concat(cachedResultsFlux, dbResults);
                 });
     }
+
+//    public Mono<Boolean> hasReaction(Long channelId, Long messageId, Long userId, String emoji) {
+//
+//    }
+
+    public Mono<Boolean> addReactionToCache(Long channelId, Long messageId, Long userId, String emoji) {
+        //Retrieve old reaction list
+        final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
+        ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
+
+        final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
+        ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
+
+        String userEmojiValue = combineUserAndEmoji(emoji, userId);
+        return setOpsString.isMember(cacheKeyUserSet, userEmojiValue)
+                .filter(isMember -> !isMember)
+                .flatMap(_ -> setOpsString.add(cacheKeyUserSet, userEmojiValue))
+                .flatMap(_ -> valueOpsString.get(cacheKeyReaction))
+                //If it's empty, that's ok
+                .flatMap(oldValue -> {
+                    //Find reaction
+                    Optional<ReactionCountDTO> reactionCountOpt = oldValue.getReactions()
+                            .stream().filter(reactionCountDTO -> reactionCountDTO.getEmoji().equals(emoji))
+                            .findFirst();
+
+                    if(reactionCountOpt.isEmpty()) {
+                        oldValue.getReactions().add(new ReactionCountDTO(emoji, 1));
+                    } else {
+                        ReactionCountDTO reactionCountDTO = reactionCountOpt.get();
+                        reactionCountDTO.setCount(reactionCountDTO.getCount() + 1);
+                    }
+
+                    return valueOpsString.set(cacheKeyReaction, oldValue);
+                });
+    }
+
+    public Mono<Boolean> removeReactionFromCache(Long channelId, Long messageId, Long userId, String emoji) {
+        final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
+        ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
+
+        final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
+        ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
+
+        String userEmojiValue = combineUserAndEmoji(emoji, userId);
+        return setOpsString.remove(cacheKeyUserSet, userEmojiValue)
+                .filter(index -> index != 0)
+                .flatMap(_ -> valueOpsString.get(cacheKeyReaction))
+                .flatMap(oldValue -> {
+                    Optional<ReactionCountDTO> reactionCountOpt = oldValue.getReactions()
+                            .stream().filter(reactionCountDTO -> reactionCountDTO.getEmoji().equals(emoji))
+                            .findFirst();
+
+                    if(reactionCountOpt.isPresent()) {
+                        ReactionCountDTO reactionCountDTO = reactionCountOpt.get();
+                        if(reactionCountDTO.getCount() < 2) {
+                            oldValue.getReactions().remove(reactionCountDTO);
+                        } else {
+                            reactionCountDTO.setCount(reactionCountDTO.getCount() - 1);
+                        }
+
+                    }
+
+                    return valueOpsString.set(cacheKeyReaction, oldValue);
+                });
+    }
 }
 
 
