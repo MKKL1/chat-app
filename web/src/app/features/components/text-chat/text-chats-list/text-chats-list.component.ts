@@ -16,6 +16,7 @@ import {Subscription} from "rxjs";
 import {EventService} from "../../../../core/events/event.service";
 import {UserService} from "../../../../core/services/user.service";
 import {ID} from "@datorama/akita";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-text-chats-list',
@@ -49,7 +50,8 @@ export class TextChatsListComponent implements OnDestroy{
       private channelQuery: TextChannelQuery,
       private channelService: ChannelService,
       private communityQuery: CommunityQuery,
-      private userService: UserService) {
+      private userService: UserService,
+      private permissionService: PermissionService) {
 
       this.channelSubscription = this.channelQuery.selectActiveId()
         .subscribe(id => {
@@ -78,11 +80,11 @@ export class TextChatsListComponent implements OnDestroy{
     }
 
     canCreateChannel(){
-      return this.userService.getPermission().canCreateChannel;
+      return this.permissionService.getPermission().canCreateChannel;
     }
 
     canModifyChannel(){
-      return this.userService.getPermission().canModifyChannel;
+      return this.permissionService.getPermission().canModifyChannel;
     }
 
     ngOnDestroy() {

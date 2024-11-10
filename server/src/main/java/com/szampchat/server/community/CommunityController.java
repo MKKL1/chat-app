@@ -2,13 +2,14 @@ package com.szampchat.server.community;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.community.dto.*;
+import com.szampchat.server.community.dto.request.CommunityCreateRequest;
+import com.szampchat.server.community.dto.request.JoinRequest;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
 import com.szampchat.server.shared.docs.OperationDocs;
-import com.szampchat.server.upload.FilePath;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -99,8 +99,8 @@ public class CommunityController {
     //TODO not sure what should be response
     @PostMapping("/{communityId}/join")
 //    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
-    public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequestDTO joinRequestDTO, CurrentUser currentUser) {
-        return invitationService.addMemberToCommunity(communityId, joinRequestDTO.invitationId(), currentUser.getUserId());
+    public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequest joinRequest, CurrentUser currentUser) {
+        return invitationService.addMemberToCommunity(communityId, joinRequest.invitationId(), currentUser.getUserId());
     }
 
     @ApiResponse(responseCode = "201")
@@ -113,7 +113,7 @@ public class CommunityController {
     //Everyone can create community, no authorization, or at least limit one user to having 10 communities TODO?
     @PostMapping()
     public Mono<Community> createCommunity(
-            @RequestPart("community") CommunityCreateDTO community,
+            @RequestPart("community") CommunityCreateRequest community,
             @RequestPart(value = "file", required = false) FilePart file,
             CurrentUser user) {
         return communityService.save(community, file, user.getUserId());

@@ -3,12 +3,12 @@ create table users
     id          bigint       not null
         constraint pk_users
             primary key,
-    name        varchar(255) not null
+    name        varchar(32) not null
         constraint uc_users_name
             unique,
-    email       varchar(255)
-        constraint uc_users_email
-            unique,
+--     email       varchar(255)
+--         constraint uc_users_email
+--             unique,
     image_url   varchar(255),
     description varchar(255),
     sub         uuid
@@ -44,7 +44,7 @@ create table roles
     id           bigint       not null
         constraint pk_roles
             primary key,
-    name         varchar(255) not null,
+    name         varchar(64) not null,
     permission   bigint       not null,
     community_id bigint       not null
         constraint fk_roles_on_community
@@ -78,7 +78,7 @@ create table community_members
 
 create table messages
 (
-    text                   varchar(255) not null,
+    text                   text not null,
     updated_at             timestamp,
     user_id                bigint       not null
         constraint fk_messages_on_user

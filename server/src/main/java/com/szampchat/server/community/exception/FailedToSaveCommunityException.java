@@ -3,6 +3,5 @@ package com.szampchat.server.community.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Failed to save community")
-public class FailedToSaveCommunityException extends Exception{
+public class FailedToSaveCommunityException extends RuntimeException{
 }

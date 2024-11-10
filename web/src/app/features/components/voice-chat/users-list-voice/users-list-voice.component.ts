@@ -31,6 +31,7 @@ import {AvatarGroupModule} from "primeng/avatargroup";
 import {AvatarModule} from "primeng/avatar";
 import {MatBadge} from "@angular/material/badge";
 import {ShorteningPipe} from "../../../../shared/pipes/ShorteningPipe";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-users-list-voice',
@@ -81,7 +82,8 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
     private memberQuery: MemberQuery,
     private userService: UserService,
     private voiceChat: VoiceChatService,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private permissionService: PermissionService) {
   }
 
   ngOnInit() {
@@ -119,11 +121,11 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
   }
 
   canCreateChannel(){
-    return this.userService.getPermission().canCreateChannel;
+    return this.permissionService.getPermission().canCreateChannel;
   }
 
   canModifyChannel(){
-    return this.userService.getPermission().canModifyChannel;
+    return this.permissionService.getPermission().canModifyChannel;
   }
 
   getParticipantImage(id: string){

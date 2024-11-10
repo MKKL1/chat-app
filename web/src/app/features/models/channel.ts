@@ -3,10 +3,15 @@ export interface Channel{
   name: string;
   communityId: string;
   type: ChannelType;
-  overwrites: string[];
   participants?: string[];
+  overwrites: ChannelRole[];
   lastMessageId?: string;
   messagesState?: ChannelMessagesState;
+}
+
+export interface ChannelRole {
+  overwrites: string;
+  roleId: string;
 }
 
 export enum ChannelType {

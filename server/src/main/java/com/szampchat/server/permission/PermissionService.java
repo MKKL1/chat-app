@@ -77,7 +77,7 @@ public class PermissionService {
     }
 
     public Mono<Permissions> getUserPermissionsForChannel(Long channelId, Long userId) {
-        return channelService.getChannel(channelId)
+        return channelService.getChannelDTO(channelId)
                 .flatMap(channel ->
                         getPermissionOverwrites(channel.getCommunityId(), userId)
                                 .flatMap(communityPermissionOverwrites ->

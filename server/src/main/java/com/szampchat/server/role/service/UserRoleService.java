@@ -27,8 +27,8 @@ public class UserRoleService {
                 .map(roleMapper::toDto);
     }
 
-    public Flux<UserRolesDTO> getMemberRoleIdsBulk(List<Long> userIds) {
-        return userRoleRepository.findUserRolesByUserIds(userIds);
+    public Flux<UserRolesDTO> getMemberRoleIdsBulk(List<Long> userIds, Long communityId) {
+        return userRoleRepository.findUserRolesByUserIds(userIds, communityId);
     }
 
     public Flux<Void> delete(Long roleId, Long userId) {

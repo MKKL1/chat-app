@@ -1,10 +1,8 @@
 package com.szampchat.server.role;
 
 import com.github.fge.jsonpatch.JsonPatch;
-import com.szampchat.server.role.dto.RoleCreateRequest;
-import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.dto.request.RoleCreateRequest;
 import com.szampchat.server.role.dto.RoleWithMembersDTO;
-import com.szampchat.server.role.entity.Role;
 import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.shared.docs.JsonPatchSchema;
 import com.szampchat.server.shared.docs.OperationDocs;
@@ -16,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +24,7 @@ import static com.szampchat.server.shared.docs.DocsProperties.RESPONSE_401;
 @Tag(name = "Role")
 @SecurityRequirement(name = "OAuthSecurity")
 
+@Validated
 @AllArgsConstructor
 @RestController()
 public class RoleController {
@@ -57,7 +57,8 @@ public class RoleController {
     @Operation(summary = "Create role")
 
     @PostMapping("/communities/{communityId}/roles")
-    public Mono<RoleWithMembersDTO> createRole(@PathVariable Long communityId, @RequestBody RoleCreateRequest roleCreateRequest) {
+    public Mono<RoleWithMembersDTO> createRole(@PathVariable Long communityId,
+                                               @RequestBody RoleCreateRequest roleCreateRequest) {
         return roleService.create(roleCreateRequest, communityId);
     }
 
@@ -68,7 +69,8 @@ public class RoleController {
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(array = @ArraySchema(schema = @Schema(implementation = JsonPatchSchema.class))))
     @PatchMapping("/communities/{communityId}/roles/{roleId}")
-    public Mono<RoleWithMembersDTO> editRole(@PathVariable Long roleId, @RequestBody JsonPatch jsonPatch) {
+    public Mono<RoleWithMembersDTO> editRole(@PathVariable Long roleId,
+                                             @RequestBody JsonPatch jsonPatch) {
         return roleService.update(roleId, jsonPatch);
     }
 

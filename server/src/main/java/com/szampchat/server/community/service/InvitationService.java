@@ -39,14 +39,15 @@ public class InvitationService {
         // check if invitation is valid
         // for now link won't be deleted from db after accepting invitation
         //TODO add one time invitation?
-        return invitationRepository.isValid(invitationId, communityId).flatMap(isValid -> {
-            if(!isValid) {
-                return Mono.error(new InvalidInvitationException());
-            }
+        return invitationRepository.isValid(invitationId, communityId)
+                .flatMap(isValid -> {
+                    if(!isValid) {
+                        return Mono.error(new InvalidInvitationException(invitationId));
+                    }
 
-            // add invited user as member of community
-            return communityMemberService.create(communityId, userId);
-        });
+                    // add invited user as member of community
+                    return communityMemberService.create(communityId, userId);
+                });
     }
 
     // Single invitation can be used to invite multiple users, and it's only limited by it expired date

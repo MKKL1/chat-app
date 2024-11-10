@@ -1,6 +1,6 @@
 package com.szampchat.server.message;
 
-import com.szampchat.server.message.dto.FetchMessagesDTO;
+import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.MessageDTO;
 import com.szampchat.server.message.entity.Message;
 import org.junit.jupiter.api.Test;
@@ -30,9 +30,9 @@ public class MessageServiceTests {
         Long channelId = 1L;
         Long currentUserId = 123L;
         Integer limit = 5;
-        FetchMessagesDTO fetchMessagesDTO = new FetchMessagesDTO();
-        fetchMessagesDTO.setLimit(limit);
-        fetchMessagesDTO.setBefore(null);
+        FetchMessagesRequest fetchMessagesRequest = new FetchMessagesRequest();
+        fetchMessagesRequest.setLimit(limit);
+        fetchMessagesRequest.setBefore(null);
 
         Message message1 = new Message();
         Message message2 = new Message();
@@ -46,7 +46,7 @@ public class MessageServiceTests {
         doReturn(Mono.just(messageDTO2)).when(messageService).attachAdditionalDataToMessage(eq(message2), eq(currentUserId));
 
 
-        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesDTO, currentUserId);
+        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesRequest, currentUserId);
 
 
         StepVerifier.create(result)
@@ -61,9 +61,9 @@ public class MessageServiceTests {
         Long currentUserId = 123L;
         Integer limit = 5;
         Long messageId = 100L;
-        FetchMessagesDTO fetchMessagesDTO = new FetchMessagesDTO();
-        fetchMessagesDTO.setLimit(limit);
-        fetchMessagesDTO.setBefore(messageId); //not actual snowflake ID
+        FetchMessagesRequest fetchMessagesRequest = new FetchMessagesRequest();
+        fetchMessagesRequest.setLimit(limit);
+        fetchMessagesRequest.setBefore(messageId); //not actual snowflake ID
 
         Message message1 = new Message();
         Message message2 = new Message();
@@ -76,7 +76,7 @@ public class MessageServiceTests {
         doReturn(Mono.just(messageDTO1)).when(messageService).attachAdditionalDataToMessage(eq(message1), eq(currentUserId));
         doReturn(Mono.just(messageDTO2)).when(messageService).attachAdditionalDataToMessage(eq(message2), eq(currentUserId));
 
-        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesDTO, currentUserId);
+        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesRequest, currentUserId);
 
         StepVerifier.create(result)
                 .expectNext(messageDTO1)
@@ -88,9 +88,9 @@ public class MessageServiceTests {
     void getMessages_DefaultLimit() {
         Long channelId = 1L;
         Long currentUserId = 123L;
-        FetchMessagesDTO fetchMessagesDTO = new FetchMessagesDTO();
-        fetchMessagesDTO.setLimit(null);
-        fetchMessagesDTO.setBefore(null);
+        FetchMessagesRequest fetchMessagesRequest = new FetchMessagesRequest();
+        fetchMessagesRequest.setLimit(null);
+        fetchMessagesRequest.setBefore(null);
 
         Message message1 = new Message();
         Message message2 = new Message();
@@ -103,7 +103,7 @@ public class MessageServiceTests {
         doReturn(Mono.just(messageDTO1)).when(messageService).attachAdditionalDataToMessage(eq(message1), eq(currentUserId));
         doReturn(Mono.just(messageDTO2)).when(messageService).attachAdditionalDataToMessage(eq(message2), eq(currentUserId));
 
-        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesDTO, currentUserId);
+        Flux<MessageDTO> result = messageService.getMessages(channelId, fetchMessagesRequest, currentUserId);
 
         StepVerifier.create(result)
                 .expectNext(messageDTO1)

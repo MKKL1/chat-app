@@ -17,6 +17,7 @@ import {UserService} from "../../../../core/services/user.service";
 import {User} from "../../../models/user";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 @Component({
   selector: 'app-message',
@@ -58,7 +59,7 @@ export class MessageComponent implements OnInit{
     private messageService: MessageService,
     private memberQuery: MemberQuery,
     private dialog: MatDialog,
-    private userService: UserService,
+    private permissionService: PermissionService,
     private communityQuery: CommunityQuery) {
   }
 
@@ -114,10 +115,10 @@ export class MessageComponent implements OnInit{
   }
 
   canCreateReaction(): boolean {
-    return this.userService.getPermission().canCreateReaction;
+    return this.permissionService.getPermission().canCreateReaction;
   }
 
   canDeleteMessage(): boolean {
-    return this.userService.getPermission().canDeleteMessage;
+    return this.permissionService.getPermission().canDeleteMessage;
   }
 }

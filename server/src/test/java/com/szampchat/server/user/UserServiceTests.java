@@ -1,10 +1,10 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.user.dto.UserCreateDTO;
+import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
 import com.szampchat.server.user.entity.UserSubject;
-import com.szampchat.server.user.exception.UserAlreadyExistsException;
+import com.szampchat.server.user.exception.KeycloakUserAlreadyExistsException;
 import com.szampchat.server.user.repository.UserRepository;
 import com.szampchat.server.user.repository.UserSubjectRepository;
 import org.junit.jupiter.api.Test;
@@ -77,18 +77,19 @@ public class UserServiceTests {
     @Test
     public void createUser_UserAlreadyExists_ReturnsError() {
         // Arrange
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        UserCreateRequest userCreateRequest = new UserCreateRequest();
         UUID currentUserSub = UUID.randomUUID();
         Long currentUserId = 123L;
+        User user = new User();
+        user.setId(currentUserId);
 
-        doReturn(Mono.just(currentUserId)).when(userService).findUserIdBySub(currentUserSub);
-
+        doReturn(Mono.just(user)).when(userService).findUserBySub(currentUserSub);
         // Act
-        Mono<UserDTO> result = userService.createUser(userCreateDTO, currentUserSub);
+        Mono<UserDTO> result = userService.createUser(userCreateRequest, currentUserSub);
 
         // Assert
         StepVerifier.create(result)
-                .expectError(UserAlreadyExistsException.class)
+                .expectError(KeycloakUserAlreadyExistsException.class)
                 .verify();
     }
 
@@ -146,7 +147,9 @@ public class UserServiceTests {
 
     @Test
     public void createUser_UserDoesNotExist_CreateUserAndReturnUserDTO() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO(); // Populate with test data
+        String username = "test username";
+        UserCreateRequest userCreateRequest = new UserCreateRequest(); // Populate with test data
+        userCreateRequest.setUsername(username);
         UUID currentUserSub = UUID.randomUUID();
 
         User user = new User(); // Create a User entity for the mapping
@@ -156,14 +159,15 @@ public class UserServiceTests {
 
         doReturn(Mono.empty()).when(userService).findUserIdBySub(currentUserSub);
 
-        when(modelMapper.map(userCreateDTO, User.class)).thenReturn(user);
+        when(modelMapper.map(userCreateRequest, User.class)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(Mono.just(user));
+        when(userRepository.findByUsername(username)).thenReturn(Mono.empty());
         when(userSubjectRepository.save(any(UserSubject.class)))
                 .thenReturn(Mono.just(new UserSubject()));
         when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
 
         // Act
-        Mono<UserDTO> result = userService.createUser(userCreateDTO, currentUserSub);
+        Mono<UserDTO> result = userService.createUser(userCreateRequest, currentUserSub);
 
         // Assert
         StepVerifier.create(result)
@@ -173,7 +177,7 @@ public class UserServiceTests {
         // Verify that the save methods were called with the correct parameters
         verify(userRepository).save(user);
         verify(userSubjectRepository).save(any(UserSubject.class));
-        verify(modelMapper).map(userCreateDTO, User.class);
+        verify(modelMapper).map(userCreateRequest, User.class);
         verify(modelMapper).map(user, UserDTO.class);
     }
 

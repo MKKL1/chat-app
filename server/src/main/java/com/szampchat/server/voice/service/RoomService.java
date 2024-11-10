@@ -35,7 +35,7 @@ public class RoomService {
     public Mono<AccessToken> getTokenForChannel(Long channelId, Long userId) {
         return channelService.getChannelDTO(channelId)
                 .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
-                .switchIfEmpty(Mono.error(new NotVoiceChannelException()))
+                .switchIfEmpty(Mono.error(new NotVoiceChannelException(channelId)))
                 .flatMap(_ -> userService.findUserDTO(userId)
                         .map(user -> {
                             AccessToken token = new AccessToken("devkey", "secret");//TODO

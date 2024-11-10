@@ -30,6 +30,7 @@ export class ChannelService {
       return;
     }
 
+    //TODO update permissions
     this.voiceChannelStore.setActive(channel.id);
   }
 
@@ -42,6 +43,7 @@ export class ChannelService {
       return;
     }
 
+    //TODO update permissions
     this.textChannelStore.setActive(channel.id);
   }
 
