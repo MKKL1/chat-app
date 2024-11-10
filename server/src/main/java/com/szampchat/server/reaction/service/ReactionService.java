@@ -59,7 +59,6 @@ public class ReactionService {
 //        ).flatMap(_ -> reactionCacheService.save(channelId, messageId, userId, request.getEmoji())).then();
 //        //TODO send event
 //    }
-//
 //    public Mono<Void> deleteReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
 //        return reactionRepository.deleteByMessageAndChannelAndEmojiAndUser(messageId, channelId, request.getEmoji(), userId)
 //                .switchIfEmpty(Mono.error(new ReactionNotFoundException(request.getEmoji())))

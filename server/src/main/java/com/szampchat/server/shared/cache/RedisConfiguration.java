@@ -17,7 +17,7 @@ import java.time.Duration;
 public class RedisConfiguration {
     @Primary
     @Bean
-    public ReactiveRedisConnectionFactory reactiveRedisConnectionFactory() {
+    public LettuceConnectionFactory reactiveRedisConnectionFactory() {
         return new LettuceConnectionFactory("localhost", 6379);
     }
 

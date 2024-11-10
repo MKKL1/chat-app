@@ -1,5 +1,7 @@
 package com.szampchat.server.reaction.repository.redis;
 
+import com.redis.lettucemod.api.StatefulRedisModulesConnection;
+import com.redis.lettucemod.api.reactive.RedisModulesReactiveCommands;
 import com.szampchat.server.reaction.entity.ReactionCount;
 import com.szampchat.server.reaction.entity.ReactionList;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -15,12 +17,15 @@ import java.util.Collection;
 public class ReactionCountRepository {
     private final ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate;
     private final ReactiveValueOperations<String, ReactionList> valueOpsReaction;
+    private final RedisModulesReactiveCommands<String, ReactionList> reactiveModulesCommands;
     private static final String REACTIONS_CACHE_NAME = "rcnt:";
     private final Duration defaultTtl = Duration.ofMinutes(30);
 
-    public ReactionCountRepository(ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate) {
+    public ReactionCountRepository(ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate,
+                                   StatefulRedisModulesConnection<String, ReactionList> statefulRedisModulesConnection) {
         this.redisReactionTemplate = redisReactionTemplate;
-        valueOpsReaction = redisReactionTemplate.opsForValue();
+        this.valueOpsReaction = redisReactionTemplate.opsForValue();
+        this.reactiveModulesCommands = statefulRedisModulesConnection.reactive();
     }
 
     public Mono<Boolean> save(Long channelId, Long messageId, Collection<ReactionCount> reactionCounts) {

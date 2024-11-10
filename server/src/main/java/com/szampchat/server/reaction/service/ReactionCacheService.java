@@ -2,6 +2,7 @@ package com.szampchat.server.reaction.service;
 
 import com.szampchat.server.reaction.dto.*;
 import com.szampchat.server.reaction.entity.EmojiUserPair;
+import com.szampchat.server.reaction.entity.Reaction;
 import com.szampchat.server.reaction.entity.ReactionCount;
 import com.szampchat.server.reaction.entity.ReactionList;
 import com.szampchat.server.reaction.repository.ReactionRepository;
@@ -77,6 +78,10 @@ public class ReactionCacheService {
 //
 //    public Flux<ReactionOverviewBulkDTO> getBulk(Long channelId, Collection<Long> messageIds, Long userId) {
 //        return messageIds
+//    }
+
+//    public Mono<Void> addUserReaction(Reaction reaction) {
+//
 //    }
 }
 
