@@ -1,4 +1,4 @@
-package com.szampchat.server.reaction.dto;
+package com.szampchat.server.reaction.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,6 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReactionListDTO {
-    private Collection<ReactionCountDTO> reactions;
+public class ReactionList {
+    private Collection<ReactionCount> reactions;
 }

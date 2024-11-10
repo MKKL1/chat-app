@@ -1,4 +1,4 @@
-package com.szampchat.server.reaction;
+package com.szampchat.server.reaction.service;
 
 import com.szampchat.server.reaction.dto.ReactionOverviewBulkDTO;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;

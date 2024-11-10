@@ -1,7 +1,5 @@
 package com.szampchat.server.shared.cache;
 
-import com.szampchat.server.livekit.dto.RoomDTO;
-import com.szampchat.server.reaction.dto.ReactionListDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -14,7 +12,6 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.*;
 
 import java.time.Duration;
-import java.util.Collections;
 
 @Configuration
 public class RedisConfiguration {
@@ -45,11 +42,11 @@ public class RedisConfiguration {
                 .build();
         return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
     }
-
-    @Bean
-    public ReactiveRedisTemplate<String, String> stringReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
-        return new ReactiveRedisTemplate<>(connectionFactory, RedisSerializationContext.string());
-    }
+//
+//    @Bean
+//    public ReactiveRedisTemplate<String, String> stringReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {
+//        return new ReactiveRedisTemplate<>(connectionFactory, RedisSerializationContext.string());
+//    }
 
     @Bean
     public ReactiveRedisTemplate<String, Long> longReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory) {

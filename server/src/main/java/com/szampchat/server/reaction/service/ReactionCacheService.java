@@ -1,6 +1,8 @@
-package com.szampchat.server.reaction;
+package com.szampchat.server.reaction.service;
 
 import com.szampchat.server.reaction.dto.*;
+import com.szampchat.server.reaction.entity.ReactionCount;
+import com.szampchat.server.reaction.entity.ReactionList;
 import com.szampchat.server.reaction.repository.ReactionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,11 +20,11 @@ import java.util.stream.Collectors;
 public class ReactionCacheService {
     private final ReactionRepository reactionRepository;
     private final ReactiveRedisTemplate<String, String> redisStringTemplate;
-    private final ReactiveRedisTemplate<String, ReactionListDTO> redisReactionTemplate;
+    private final ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate;
 
     public ReactionCacheService(ReactionRepository reactionRepository,
                                 @Qualifier("stringReactiveRedisTemplate") ReactiveRedisTemplate<String, String> redisStringTemplate,
-                                @Qualifier("reactionListDTOReactiveRedisTemplate") ReactiveRedisTemplate<String, ReactionListDTO> redisReactionTemplate) {
+                                @Qualifier("reactionListDTOReactiveRedisTemplate") ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate) {
         this.reactionRepository = reactionRepository;
         this.redisStringTemplate = redisStringTemplate;
         this.redisReactionTemplate = redisReactionTemplate;
@@ -35,22 +38,22 @@ public class ReactionCacheService {
         final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
 
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
-        ReactiveValueOperations<String, ReactionListDTO> valueOpsReaction = redisReactionTemplate.opsForValue();
+        ReactiveValueOperations<String, ReactionList> valueOpsReaction = redisReactionTemplate.opsForValue();
 
-        Mono<Boolean> saveReactionDto = Flux.fromIterable(reactionUsersDTOS)
-                .map(dto -> new ReactionCountDTO(dto.getEmoji(), dto.getUsers().size()))
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(list -> valueOpsReaction.set(cacheKeyReaction, new ReactionListDTO(list)));
+//        Mono<Boolean> saveReactionDto = Flux.fromIterable(reactionUsersDTOS)
+//                .map(dto -> new ReactionCount(dto.getEmoji(), dto.getUsers().size()))
+//                .collectList()
+//                .filter(list -> !list.isEmpty())
+//                .flatMap(list -> valueOpsReaction.set(cacheKeyReaction, new ReactionList(list), Duration.ofMinutes(5)));
 
-        Mono<Long> saveUsers = Flux.fromIterable(reactionUsersDTOS)
-                .flatMap(dto -> {
-                    String emoji = dto.getEmoji();
-                    return Flux.fromStream(dto.getUsers().stream().map(user -> combineUserAndEmoji(emoji, user)));
-                })
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(reactionValueList -> setOpsString.add(cacheKeyUserSet, reactionValueList.toArray(new String[0])));
+//        Mono<Long> saveUsers = Flux.fromIterable(reactionUsersDTOS)
+//                .flatMap(dto -> {
+//                    String emoji = dto.getEmoji();
+//                    return Flux.fromStream(dto.getUsers().stream().map(user -> combineUserAndEmoji(emoji, user)));
+//                })
+//                .collectList()
+//                .filter(list -> !list.isEmpty())
+//                .flatMap(reactionValueList -> setOpsString.add(cacheKeyUserSet, reactionValueList.toArray(new String[0])));
 
         return Mono.zip(saveReactionDto, saveUsers).then();
     }
@@ -69,40 +72,38 @@ public class ReactionCacheService {
 
     private Flux<ReactionOverviewDTO> getFromCache(Long channelId, Long messageId, Long userId) {
         final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
-        ReactiveValueOperations<String, ReactionListDTO> valueOpsReaction = redisReactionTemplate.opsForValue();
+        ReactiveValueOperations<String, ReactionList> valueOpsReaction = redisReactionTemplate.opsForValue();
 
         return valueOpsReaction.get(cacheKeyReaction)
                 .flatMapMany(list -> processReactionList(channelId, messageId, userId, list));
     }
 
-    private Flux<ReactionOverviewDTO> processReactionList(Long channelId, Long messageId, Long userId, ReactionListDTO reactionListDTO) {
+    private Flux<ReactionOverviewDTO> processReactionList(Long channelId, Long messageId, Long userId, ReactionList reactionList) {
         final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
 
-        return Mono.just(reactionListDTO)
-                .map(ReactionListDTO::getReactions)
+        return Mono.just(reactionList)
+                .map(ReactionList::getReactions)
                 .filter(reactionCounts -> !reactionCounts.isEmpty())
                 .flatMapMany(reactionCounts -> {
                     Map<String, String> userEmojis = new HashMap<>(); //Map of emoji-> "emoji:user"
-                    for (ReactionCountDTO reactionCountDTO : reactionCounts) {
-                        userEmojis.put(reactionCountDTO.getEmoji(), combineUserAndEmoji(reactionCountDTO.getEmoji(), userId));
+                    for (ReactionCount reactionCount : reactionCounts) {
+                        userEmojis.put(reactionCount.getEmoji(), combineUserAndEmoji(reactionCount.getEmoji(), userId));
                     }
 
                     return setOpsString.isMember(cacheKeyUserSet, userEmojis.values().toArray()) //Returns Map of "emoji:user"->me
                             .flatMapMany(isMeMap -> Flux.fromIterable(reactionCounts)
-                                    .map(reactionCountDTO -> {
-                                        String emoji = reactionCountDTO.getEmoji();
+                                    .map(reactionCount -> {
+                                        String emoji = reactionCount.getEmoji();
                                         String emojiUserKey = userEmojis.get(emoji);
                                         boolean isMe = isMeMap.get(emojiUserKey);
-                                        return new ReactionOverviewDTO(emoji, reactionCountDTO.getCount(), isMe);
+                                        return new ReactionOverviewDTO(emoji, reactionCount.getCount(), isMe);
                                     })
                             );
                 });
     }
 
-    private String combineUserAndEmoji(String emoji, Long userId) {
-        return emoji + ":" + userId;
-    }
+
 
     private Flux<ReactionOverviewDTO> getFromDB(Long channelId, Long messageId, Long userId) {
         return reactionRepository.fetchGroupedReactions(channelId, messageId)
@@ -128,15 +129,15 @@ public class ReactionCacheService {
                 .map(messageId -> REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId)
                 .toList();
 
-        ReactiveValueOperations<String, ReactionListDTO> valueOpsReaction = redisReactionTemplate.opsForValue();
+        ReactiveValueOperations<String, ReactionList> valueOpsReaction = redisReactionTemplate.opsForValue();
 
         return valueOpsReaction.multiGet(cacheKeys)
                 .flatMapMany(cachedResults -> {
                     // Map cache results to messageIds
-                    Map<Long, ReactionListDTO> cachedMap = new HashMap<>();
+                    Map<Long, ReactionList> cachedMap = new HashMap<>();
                     Iterator<Long> messageIdIterator = messageIds.iterator();
 
-                    for (ReactionListDTO cachedResult : cachedResults) {
+                    for (ReactionList cachedResult : cachedResults) {
                         Long messageId = messageIdIterator.next();
                         if (cachedResult != null) {
                             cachedMap.put(messageId, cachedResult);
@@ -191,7 +192,7 @@ public class ReactionCacheService {
     public Mono<Boolean> save(Long channelId, Long messageId, Long userId, String emoji) {
         //Retrieve old reaction list
         final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
-        ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
+        ReactiveValueOperations<String, ReactionList> valueOpsString = redisReactionTemplate.opsForValue();
 
         final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
@@ -206,24 +207,24 @@ public class ReactionCacheService {
                 //If it's empty, that's ok
                 .flatMap(oldValue -> {
                     //Find reaction
-                    Optional<ReactionCountDTO> reactionCountOpt = oldValue.getReactions()
-                            .stream().filter(reactionCountDTO -> reactionCountDTO.getEmoji().equals(emoji))
+                    Optional<ReactionCount> reactionCountOpt = oldValue.getReactions()
+                            .stream().filter(reactionCount -> reactionCount.getEmoji().equals(emoji))
                             .findFirst();
 
                     if(reactionCountOpt.isEmpty()) {
-                        oldValue.getReactions().add(new ReactionCountDTO(emoji, 1));
+                        oldValue.getReactions().add(new ReactionCount(emoji, 1));
                     } else {
-                        ReactionCountDTO reactionCountDTO = reactionCountOpt.get();
-                        reactionCountDTO.setCount(reactionCountDTO.getCount() + 1);
+                        ReactionCount reactionCount = reactionCountOpt.get();
+                        reactionCount.setCount(reactionCount.getCount() + 1);
                     }
 
-                    return valueOpsString.set(cacheKeyReaction, oldValue);
+                    return valueOpsString.set(cacheKeyReaction, oldValue, Duration.ofMinutes(5));
                 });
     }
 
     public Mono<Boolean> remove(Long channelId, Long messageId, Long userId, String emoji) {
         final String cacheKeyReaction = REACTIONS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
-        ReactiveValueOperations<String, ReactionListDTO> valueOpsString = redisReactionTemplate.opsForValue();
+        ReactiveValueOperations<String, ReactionList> valueOpsString = redisReactionTemplate.opsForValue();
 
         final String cacheKeyUserSet = REACTIONS_USERS_CACHE_NAME + "channel:" + channelId + ":message:" + messageId;
         ReactiveSetOperations<String, String> setOpsString = redisStringTemplate.opsForSet();
@@ -235,21 +236,21 @@ public class ReactionCacheService {
                 .filter(index -> index != 0)
                 .flatMap(_ -> valueOpsString.get(cacheKeyReaction))
                 .flatMap(oldValue -> {
-                    Optional<ReactionCountDTO> reactionCountOpt = oldValue.getReactions()
-                            .stream().filter(reactionCountDTO -> reactionCountDTO.getEmoji().equals(emoji))
+                    Optional<ReactionCount> reactionCountOpt = oldValue.getReactions()
+                            .stream().filter(reactionCount -> reactionCount.getEmoji().equals(emoji))
                             .findFirst();
 
                     if(reactionCountOpt.isPresent()) {
-                        ReactionCountDTO reactionCountDTO = reactionCountOpt.get();
-                        if(reactionCountDTO.getCount() < 2) {
-                            oldValue.getReactions().remove(reactionCountDTO);
+                        ReactionCount reactionCount = reactionCountOpt.get();
+                        if(reactionCount.getCount() < 2) {
+                            oldValue.getReactions().remove(reactionCount);
                         } else {
-                            reactionCountDTO.setCount(reactionCountDTO.getCount() - 1);
+                            reactionCount.setCount(reactionCount.getCount() - 1);
                         }
 
                     }
 
-                    return valueOpsString.set(cacheKeyReaction, oldValue);
+                    return valueOpsString.set(cacheKeyReaction, oldValue, Duration.ofMinutes(5));
                 });
     }
 }

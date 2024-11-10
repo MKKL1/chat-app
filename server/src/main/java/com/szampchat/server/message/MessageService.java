@@ -12,10 +12,9 @@ import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
-import com.szampchat.server.reaction.ReactionService;
+import com.szampchat.server.reaction.service.ReactionService;
 import com.szampchat.server.reaction.dto.ReactionOverviewBulkDTO;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
-import com.szampchat.server.reaction.dto.ReactionUsersBulkDTO;
 import com.szampchat.server.snowflake.SnowflakeGen;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
@@ -30,8 +29,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

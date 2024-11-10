@@ -2,6 +2,7 @@ package com.szampchat.server.reaction;
 
 import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.reaction.dto.request.ReactionUpdateRequest;
+import com.szampchat.server.reaction.service.ReactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
