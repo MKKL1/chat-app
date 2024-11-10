@@ -87,6 +87,11 @@ export class VoiceChatService{
         // is ignored by trackMuted and trackUnmuted events
         // so ui state brake
         this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+          track.attach(this.audio);
+          console.log('video-' + participant.identity);
+          const video = document.getElementById('video-' + participant.identity) as HTMLMediaElement;
+          track.attach(video);
+
           const participants = this.participantsSubject$.value;
           const participantIndex = participants.findIndex(p => p.identity === participant.identity);
 
@@ -94,11 +99,13 @@ export class VoiceChatService{
             const updatedParticipants = [...participants];
             updatedParticipants[participantIndex] = {
               ...updatedParticipants[participantIndex],
-              audioEnabled: track.kind === 'audio' ? true : updatedParticipants[participantIndex].audioEnabled
+              audioEnabled: track.kind === 'audio' ? true : updatedParticipants[participantIndex].audioEnabled,
+              videoEnabled: track.kind === 'video' ? true : updatedParticipants[participantIndex].videoEnabled
             };
             console.log(updatedParticipants);
             this.participantsSubject$.next(updatedParticipants);
           }
+
         });
 
         // share data about currently speaking participants
@@ -106,15 +113,7 @@ export class VoiceChatService{
           this.speakersSubject$.next(speakers.map(speaker => speaker.identity));
         });
 
-        this.room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
       });
-  }
-
-  private handleTrackSubscribed(track: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant){
-    track.attach(this.audio);
-    //console.log('video-' + participant.identity);
-    //const video = document.getElementById('video-' + participant.identity) as HTMLMediaElement;
-    //track.attach(video);
   }
 
   private addParticipant(participant: Participant){
@@ -179,6 +178,12 @@ export class VoiceChatService{
   setMicrophone(allow: boolean){
     if(this.room){
       this.room.localParticipant.setMicrophoneEnabled(allow);
+    }
+  }
+
+  setScreenSharing(allow: boolean){
+    if(this.room){
+      this.room.localParticipant.setScreenShareEnabled(allow);
     }
   }
 

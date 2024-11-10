@@ -5,41 +5,22 @@
       <div class="voice-nav">
         <h3>{{selectedChannel()?.name}}</h3>
         <button mat-button (click)="disconnect()">Disconnect</button>
-<!--        <button (click)="shareScreen()">Share screen</button>-->
+        <button mat-button (click)="shareScreen()">
+          {{ sharingScreen() ? 'End screen sharing' : 'Share screen'}}
+        </button>
         <div>
           <mat-icon (click)="toggleClientCamera()" fontIcon="{{clientCamera() ? 'videocam' : 'videocam_off'}}"></mat-icon>
           <mat-icon (click)="toggleClientMicrophone()" fontIcon="{{clientMicrophone() ? 'volume_up' : 'volume_off'}}"></mat-icon>
         </div>
       </div>
       <div class="participants">
-        @for(participant of participants(); track participant){
+        @for(participant of participants(); track participant.identity){
           <app-user-panel [ngClass]="{'speaking': speakers().includes(participant.identity)}"
             [member]="findParticipantData(participant.identity)"
             [participant]="participant">
-
           </app-user-panel>
-<!--            <p>{{participant.identity}}</p>-->
-<!--            <p>{{participant.audioEnabled}}</p>-->
-<!--            <p>{{participant.videoEnabled}}</p>-->
         }
       </div>
-      <!--   FIX THIS   -->
-<!--      <div class="grid-container">-->
-<!--        <app-user-panel-->
-<!--          [fromCurrentUser]="true"-->
-<!--          [cameraEnabled]="clientCamera"-->
-<!--          [member]="findParticipantData(currentUser.id)">-->
-<!--        </app-user-panel>-->
-<!--      </div>-->
-<!--      <div class="grid-container">-->
-<!--        @for(participant of participants(); track participant){-->
-<!--            <app-user-panel [ngClass]="{'speaking': speakers().includes(participant.identity)}"-->
-<!--                            [member]="findParticipantData(participant.identity)"-->
-<!--                            [participant]="participant"-->
-<!--                            [fromCurrentUser]="false">-->
-<!--            </app-user-panel>-->
-<!--        }-->
-<!--      </div>-->
     </div>
   } @else{
     <div content><h1 class="flex-center w-100">No voice chat selected</h1></div>

@@ -50,6 +50,7 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
 
   clientMicrophone = signal<boolean>(false);
   clientCamera = signal<boolean>(false);
+  sharingScreen = signal<boolean>(false);
 
   querySubscription: Subscription;
   participantsSubscription: Subscription;
@@ -106,11 +107,12 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     this.clientCamera.set(!this.clientCamera());
     this.voiceChat.setCamera(this.clientCamera());
   }
-  //
-  // shareScreen(){
-  //   this.voiceChat.toggleScreenSharing();
-  // }
-  //
+
+  shareScreen(){
+    this.sharingScreen.set(!this.sharingScreen());
+    this.voiceChat.setScreenSharing(this.sharingScreen());
+  }
+
   disconnect(){
     this.voiceChat.leaveRoom();
     this.voiceChannelStore.removeActive(this.selectedChannel()?.id);

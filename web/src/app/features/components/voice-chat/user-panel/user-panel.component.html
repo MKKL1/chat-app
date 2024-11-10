@@ -1,5 +1,8 @@
 <div class="participant" [ngClass]="{'speaking': isSpeaking}">
-  <img src="{{member?.user?.imageUrl ?? 'avatar.jpg'}}">
+  @if(!participant?.videoEnabled){
+    <img src="{{member?.user?.imageUrl ?? 'avatar.jpg'}}">
+  }
+  <video id="video-{{participant?.identity}}"></video>
   <div class="voice-username">
     {{participant?.videoEnabled}}-{{'video-' + participant?.identity}}-{{member?.user?.username}}
   </div>
@@ -8,24 +11,3 @@
     <mat-icon fontIcon="{{participant?.audioEnabled ? 'volume_up' : 'volume_off'}}"></mat-icon>
   </div>
 </div>
-
-
-<!--<div>-->
-<!--  @if(fromCurrentUser){-->
-<!--&lt;!&ndash;    @if(cameraEnabled){&ndash;&gt;-->
-<!--&lt;!&ndash;      <video id="my-video" autoplay [muted]="'muted'" muted></video>&ndash;&gt;-->
-<!--&lt;!&ndash;    } @else {&ndash;&gt;-->
-<!--&lt;!&ndash;      <img src="{{member?.user?.imageUrl ?? 'https://s1.zerochan.net/Makima.600.3905493.jpg'}}" >&ndash;&gt;-->
-<!--&lt;!&ndash;    }&ndash;&gt;-->
-<!--  } @else {-->
-<!--    <div>-->
-<!--    <video class="video-element" id="{{'video-' + participant?.identity}}"></video>-->
-<!--    @if(participant?.videoEnabled){-->
-<!--      <img class="cover-image" src="{{member?.user?.imageUrl ?? 'https://s1.zerochan.net/Makima.600.3905493.jpg'}}" >-->
-<!--    }-->
-<!--    </div>-->
-<!--  }-->
-<!--</div>-->
-<!--<div class="voice-username">{{member?.user?.username}}</div>-->
-
-

@@ -13,6 +13,7 @@
   background-color: #232323;
   border-radius: 5px;
   position: relative;
+  overflow: hidden;
 }
 
 .participant img {
@@ -21,6 +22,18 @@
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   object-fit: cover;
+  z-index: 2;
+}
+
+.participant video {
+  position: absolute; /* Umieszcza wideo wewnątrz kontenera bez zmiany jego rozmiaru */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Wypełnia kontener bez zniekształceń */
+  border-radius: 5px;
+  z-index: 1;
 }
 
 .voice-username{
