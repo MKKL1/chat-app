@@ -26,7 +26,8 @@ public class DefaultExceptionHandler {
                 .errors(ex.getMessage())
                 .build();
 
-        return Mono.just(new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR));
+        return Mono.fromRunnable(ex::printStackTrace).thenReturn(
+            new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
 

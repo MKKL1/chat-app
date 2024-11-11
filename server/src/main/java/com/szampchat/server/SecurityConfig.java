@@ -159,6 +159,11 @@ public class SecurityConfig {
 //                        .pathMatchers("/api/file/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/channels/{channelId}/voice/join")
                             .access(authMan.create(authFunc.isParticipant))
+                        //ReactionController
+                        .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages/{messageId}/reactions")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
+                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}/reactions")
+                            .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
                         .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

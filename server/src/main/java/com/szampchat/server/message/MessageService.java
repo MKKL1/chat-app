@@ -12,7 +12,9 @@ import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
-import com.szampchat.server.message.repository.ReactionRepository;
+import com.szampchat.server.reaction.service.ReactionService;
+import com.szampchat.server.reaction.dto.ReactionOverviewBulkDTO;
+import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.snowflake.SnowflakeGen;
 import com.szampchat.server.upload.FilePath;
 import com.szampchat.server.upload.FileStorageService;
@@ -27,7 +29,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -37,7 +38,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final MessageAttachmentRepository messageAttachmentRepository;
     private final MessageAttachmentService messageAttachmentService;
-    private final ReactionRepository reactionRepository;
+    private final ReactionService reactionService;
     private final ModelMapper modelMapper;
     private final SnowflakeGen snowflakeGen;
     private final EventSink eventSender;
@@ -161,17 +162,19 @@ public class MessageService {
     //Make it public, and allow for multiple messages to be processed
     // I'm not sure if it should stay like this, but works for now
     Mono<MessageDTO> attachAdditionalDataToMessage(Message message, Long currentUserId) {
-        Mono<List<ReactionPreviewDTO>> reactionsMono = reactionRepository
-                .fetchGroupedReactions(message.getChannel(), message.getId(), currentUserId)
-                .collectList();
+
 
         Mono<List<MessageAttachmentDTO>> attachmentsMono = messageAttachmentService
                 .findMessageAttachments(message.getId(), message.getChannel())
                 .collectList();
 
+        Mono<List<ReactionOverviewDTO>> reactionsMono = reactionService
+                .getReactionsForUser(message.getChannel(), message.getId(), currentUserId)
+                .collectList();
+
         return Mono.zip(reactionsMono, attachmentsMono)
                 .map(tuple -> {
-                    List<ReactionPreviewDTO> reactionPreviews = tuple.getT1();
+                    List<ReactionOverviewDTO> reactionPreviews = tuple.getT1();
                     List<MessageAttachmentDTO> attachments = tuple.getT2();
 
 
@@ -182,6 +185,25 @@ public class MessageService {
                     return messageDTO;
                 });
     }
+
+    /*
+        public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
+        return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
+                .collectList()
+                .flatMapMany(messages -> reactionService.getReactionsForUserBulk(channelId, messageIds, userId)
+                        .collectMap(
+                                ReactionOverviewBulkDTO::getMessageId,
+                                ReactionOverviewBulkDTO::getReactionOverviewDTOS
+                        ).flatMapMany(map -> Flux.fromIterable(messages)
+                                .map(message -> {
+                                    MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+                                    messageDTO.setReactions(map.getOrDefault(message.getId(), List.of()).stream().toList());
+
+                                    return messageDTO;
+                                })
+                        )
+                );
+     */
 
     public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
         return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)

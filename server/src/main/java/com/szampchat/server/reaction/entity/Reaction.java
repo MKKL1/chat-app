@@ -1,5 +1,7 @@
-package com.szampchat.server.message.entity;
+package com.szampchat.server.reaction.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Column;
@@ -7,6 +9,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table("reactions")
 public class Reaction {
     @Column("emoji")
@@ -14,9 +18,6 @@ public class Reaction {
 
     @Column("user_id")
     private Long user;
-
-    @Column("reaction_id")
-    private Long id;
 
     @Column("message_id")
     private Long message;

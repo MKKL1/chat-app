@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 
@@ -33,6 +34,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @SecurityScheme(name = "OAuthSecurity",
 		type = SecuritySchemeType.OAUTH2,
 		flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "http://url.com/auth")))
+@EnableCaching
 @SpringBootApplication
 public class SzampchatServerApplication {
 
