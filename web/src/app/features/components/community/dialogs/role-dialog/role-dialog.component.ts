@@ -18,6 +18,7 @@ import {setBit} from "../../../../../shared/utils/binaryOperations";
 import {RoleService} from "../../../../services/role.service";
 import {Role} from "../../../../models/role";
 import {Permission} from "../../../../models/permission";
+import {SelectButtonModule} from "primeng/selectbutton";
 
 @Component({
   selector: 'app-role-dialog',
@@ -33,7 +34,8 @@ import {Permission} from "../../../../models/permission";
     MatInputModule,
     ReactiveFormsModule,
     MatSlideToggle,
-    FormsModule
+    FormsModule,
+    SelectButtonModule
   ],
   templateUrl: './role-dialog.component.html',
   styleUrl: './role-dialog.component.scss'
@@ -47,6 +49,12 @@ export class RoleDialogComponent {
   roleName = new FormControl('');
 
   editing: boolean = false;
+
+  roleOptions: any[] = [
+    {icon: 'pi pi-check', value: 'allow'},
+    {icon: 'pi pi-minus', value: 'none'},
+    {icon: 'pi pi-times', value: 'denied'}
+  ];
 
   constructor(
     private fb: FormBuilder,
