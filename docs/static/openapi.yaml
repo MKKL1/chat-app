@@ -429,6 +429,59 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+  /channels/{channelId}/messages/{messageId}/reactions:
+    post:
+      tags:
+      - reaction-controller
+      operationId: createReaction
+      parameters:
+      - name: channelId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReactionUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - reaction-controller
+      operationId: deleteReaction
+      parameters:
+      - name: channelId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReactionUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
   /users/description:
     patch:
       tags:
@@ -1105,7 +1158,7 @@ components:
         reactions:
           type: array
           items:
-            $ref: "#/components/schemas/ReactionPreviewDTO"
+            $ref: "#/components/schemas/ReactionOverviewDTO"
         channelId:
           type: integer
           description: ID of message's text channel
@@ -1116,22 +1169,21 @@ components:
           description: ID of user that sent message
           format: int64
           example: 4501678724218880
-    ReactionPreviewDTO:
+    ReactionOverviewDTO:
       type: object
       properties:
         emoji:
           type: string
-          description: Emoji in unicode
-          example: 👍
         count:
           type: integer
-          description: How many users used this reaction
           format: int32
-          example: 10
         me:
           type: boolean
-          description: If current user reacted to the message
-          example: true
+    ReactionUpdateRequest:
+      type: object
+      properties:
+        emoji:
+          type: string
     UserDescriptionDTO:
       type: object
       properties:
