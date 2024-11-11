@@ -22,19 +22,16 @@ public class ReactionService {
     private final ReactionRepository reactionRepository;
 
     public Flux<ReactionOverviewDTO> getReactionsForUser(Long channelId, Long messageId, Long userId) {
-        return reactionCacheService.isCached(channelId, messageId)
-                .flatMapMany(isCached -> {
-                    if(isCached) return reactionCacheService.get(channelId, messageId, userId);
-
-                    return reactionRepository.fetchGroupedReactions(channelId, messageId)
+        return reactionCacheService.get(channelId, messageId, userId)
+                .switchIfEmpty(reactionRepository.fetchGroupedReactions(channelId, messageId)
                             .collectList()
                             .flatMap(reactionUsersDTOS -> reactionCacheService.save(channelId, messageId, reactionUsersDTOS)
                                     .publishOn(Schedulers.boundedElastic())
                                     .thenReturn(reactionUsersDTOS))
                             .flatMapMany(reactionUsersDTOS -> Flux.fromIterable(reactionUsersDTOS)
                                     .map(reactionUsersDTO -> toOverview(reactionUsersDTO, userId))
-                            );
-                });
+                            )
+                );
     }
 
     private ReactionOverviewDTO toOverview(ReactionUsersDTO reactionUsersDTO, Long userId) {

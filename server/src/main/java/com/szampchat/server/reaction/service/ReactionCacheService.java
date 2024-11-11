@@ -58,6 +58,7 @@ public class ReactionCacheService {
     public Flux<ReactionOverviewDTO> get(Long channelId, Long messageId, Long userId) {
         return reactionCountRepository.get(channelId, messageId)
                 .collectList()
+                .filter(list -> !list.isEmpty())
                 .flatMapMany(reactionCountList -> {
                     List<EmojiUserPair> emojiUserPairs = reactionCountList.stream()
                                 .map(reactionCount -> new EmojiUserPair(reactionCount.getEmoji(), userId))
