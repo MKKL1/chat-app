@@ -162,7 +162,7 @@ public class SecurityConfig {
                         //ReactionController
                         .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages/{messageId}/reactions")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
-                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/voice/join")
+                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}/reactions")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
                         .anyExchange().denyAll()
                 )

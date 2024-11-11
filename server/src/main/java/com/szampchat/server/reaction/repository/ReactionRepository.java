@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 
 @Repository
-public interface ReactionRepository extends R2dbcRepository<Reaction, Void> {
+public interface ReactionRepository extends R2dbcRepository<Reaction, Reaction> {
     @Query("""
         SELECT r.emoji, array_agg(r.user_id) AS users
         FROM reactions r

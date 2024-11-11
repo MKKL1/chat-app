@@ -19,7 +19,7 @@ import java.util.Map;
 public class ReactionUsersRepository {
     private final ReactiveRedisTemplate<String, String> redisStringTemplate;
     private final ReactiveSetOperations<String, String> setOps;
-    private static final String REACTIONS_USERS_CACHE_NAME = "rusr:";
+    private static final String REACTIONS_USERS_CACHE_NAME = "rusr";
     private final Duration defaultTtl = Duration.ofMinutes(30);
 
     public ReactionUsersRepository(ReactiveRedisTemplate<String, String> redisStringTemplate) {
@@ -52,8 +52,15 @@ public class ReactionUsersRepository {
                 );
     }
 
-    public Mono<Long> add(Long channelId, Long messageId, EmojiUserPair emojiUserPair) {
-        return setOps.add(buildKey(channelId, messageId), combineUserAndEmoji(emojiUserPair));
+    public Mono<Boolean> add(Long channelId, Long messageId, EmojiUserPair emojiUserPair) {
+        String key = buildKey(channelId, messageId);
+        return exists(channelId, messageId)
+                .flatMap(exists -> {
+                    if(exists)
+                        return setOps.add(key, combineUserAndEmoji(emojiUserPair))
+                                .thenReturn(true);
+                    return Mono.just(false);
+                });
     }
 
     public Mono<Long> remove(Long channelId, Long messageId, EmojiUserPair emojiUserPair) {

@@ -21,12 +21,12 @@ public class ReactionController {
                                      @RequestBody ReactionUpdateRequest request) {
         return reactionService.createReaction(channelId, messageId, currentUser.getUserId(), request);
     }
-//
-//    @DeleteMapping("/channels/{channelId}/messages/{messageId}/reactions")
-//    public Mono<Void> deleteReaction(@PathVariable Long channelId,
-//                                     @PathVariable Long messageId,
-//                                     CurrentUser currentUser,
-//                                     @RequestBody ReactionUpdateRequest request) {
-//        return reactionService.deleteReaction(channelId, messageId, currentUser.getUserId(), request);
-//    }
+
+    @DeleteMapping("/channels/{channelId}/messages/{messageId}/reactions")
+    public Mono<Void> deleteReaction(@PathVariable Long channelId,
+                                     @PathVariable Long messageId,
+                                     CurrentUser currentUser,
+                                     @RequestBody ReactionUpdateRequest request) {
+        return reactionService.deleteReaction(channelId, messageId, currentUser.getUserId(), request);
+    }
 }

@@ -83,7 +83,14 @@ public class ReactionCacheService {
 
     public Mono<Void> addUserReaction(Reaction reaction) {
         return reactionUsersRepository.add(reaction.getChannel(), reaction.getMessage(), new EmojiUserPair(reaction.getEmoji(), reaction.getUser()))
-                .flatMap(_ -> reactionCountRepository.increment(reaction));
+                .flatMap(_ -> reactionCountRepository.increment(reaction))
+                .then();
+    }
+
+    public Mono<Void> removeUserReaction(Reaction reaction) {
+        return reactionUsersRepository.remove(reaction.getChannel(), reaction.getMessage(), new EmojiUserPair(reaction.getEmoji(), reaction.getUser()))
+                .flatMap(_ -> reactionCountRepository.decrement(reaction))
+                .then();
     }
 }
 

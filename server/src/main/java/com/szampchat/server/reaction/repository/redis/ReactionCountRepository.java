@@ -19,7 +19,7 @@ import java.util.Collection;
 public class ReactionCountRepository {
     private final ReactiveRedisTemplate<String, String> redisReactionTemplate;
     private final ReactiveHashOperations<String, String, Integer> reactiveHashOperations;
-    private static final String REACTIONS_CACHE_NAME = "rcnt:";
+    private static final String REACTIONS_CACHE_NAME = "rcnt";
     private final Duration defaultTtl = Duration.ofMinutes(30);
 
     public Mono<Boolean> save(Long channelId, Long messageId, Collection<ReactionCount> reactionCounts) {
@@ -53,10 +53,25 @@ public class ReactionCountRepository {
         return REACTIONS_CACHE_NAME + ":" + channelId + ":" + messageId;
     }
 
-    public Mono<Void> increment(Reaction reaction) {
+    public Mono<Boolean> increment(Reaction reaction) {
         String key = buildKey(reaction.getChannel(), reaction.getMessage());
-        return reactiveHashOperations.increment(key, reaction.getEmoji(), 1)
-                .switchIfEmpty(reactiveHashOperations.put(key, reaction.getEmoji(), 1).thenReturn(0L))
-                .then();
+        return exists(reaction.getChannel(), reaction.getMessage())
+                .flatMap(exists -> {
+                    if(exists)
+                        return reactiveHashOperations.increment(key, reaction.getEmoji(), 1)
+                                .switchIfEmpty(reactiveHashOperations.put(key, reaction.getEmoji(), 1).thenReturn(0L))
+                                .thenReturn(true);
+                    return Mono.just(false);
+                });
+    }
+
+    public Mono<Boolean> decrement(Reaction reaction) {
+        String key = buildKey(reaction.getChannel(), reaction.getMessage());
+        return reactiveHashOperations.increment(key, reaction.getEmoji(), -1)
+                .flatMap(newVal -> {
+                    if (newVal < 1)
+                        return reactiveHashOperations.remove(key, reaction.getEmoji()).thenReturn(true);
+                    return Mono.just(false);
+                });
     }
 }

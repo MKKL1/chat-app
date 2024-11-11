@@ -5,9 +5,11 @@ import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.reaction.dto.ReactionUsersDTO;
 import com.szampchat.server.reaction.dto.request.ReactionUpdateRequest;
 import com.szampchat.server.reaction.entity.Reaction;
+import com.szampchat.server.reaction.exception.ReactionAlreadyExistsException;
 import com.szampchat.server.reaction.exception.ReactionNotFoundException;
 import com.szampchat.server.reaction.repository.ReactionRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -53,14 +55,23 @@ public class ReactionService {
                 .message(messageId)
                 .user(userId)
                 .build();
-        return reactionRepository.save(reaction).flatMap(_ -> reactionCacheService.addUserReaction(reaction)).then();
+        return reactionRepository.save(reaction)
+                .onErrorMap(DuplicateKeyException.class, _ -> new ReactionAlreadyExistsException(reaction.getEmoji()))
+                .flatMap(_ -> reactionCacheService.addUserReaction(reaction)).then();
         //TODO send event
     }
-//    public Mono<Void> deleteReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
-//        return reactionRepository.deleteByMessageAndChannelAndEmojiAndUser(messageId, channelId, request.getEmoji(), userId)
-//                .switchIfEmpty(Mono.error(new ReactionNotFoundException(request.getEmoji())))
-//                .flatMap(_ -> reactionCacheService.remove(channelId, messageId, userId, request.getEmoji())).then();
-//        //TODO send event
-//    }
+
+    public Mono<Void> deleteReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
+        Reaction reaction = Reaction.builder()
+                .emoji(request.getEmoji())
+                .channel(channelId)
+                .message(messageId)
+                .user(userId)
+                .build();
+        return reactionRepository.deleteByMessageAndChannelAndEmojiAndUser(messageId, channelId, request.getEmoji(), userId)
+                .then(reactionCacheService.removeUserReaction(reaction))
+                .then();
+        //TODO send event
+    }
 }
 
