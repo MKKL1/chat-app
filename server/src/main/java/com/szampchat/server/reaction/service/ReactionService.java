@@ -46,16 +46,16 @@ public class ReactionService {
 //        return reactionCacheService.fetchAndCacheReactionsBulk(channelId, messageIds, userId);
 //    }
 
-//    public Mono<Void> createReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
-//        return reactionRepository.save(Reaction.builder()
-//                .emoji(request.getEmoji())
-//                .channel(channelId)
-//                .message(messageId)
-//                .user(userId)
-//                .build()
-//        ).flatMap(_ -> reactionCacheService.save(channelId, messageId, userId, request.getEmoji())).then();
-//        //TODO send event
-//    }
+    public Mono<Void> createReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
+        Reaction reaction = Reaction.builder()
+                .emoji(request.getEmoji())
+                .channel(channelId)
+                .message(messageId)
+                .user(userId)
+                .build();
+        return reactionRepository.save(reaction).flatMap(_ -> reactionCacheService.addUserReaction(reaction)).then();
+        //TODO send event
+    }
 //    public Mono<Void> deleteReaction(Long channelId, Long messageId, Long userId, ReactionUpdateRequest request) {
 //        return reactionRepository.deleteByMessageAndChannelAndEmojiAndUser(messageId, channelId, request.getEmoji(), userId)
 //                .switchIfEmpty(Mono.error(new ReactionNotFoundException(request.getEmoji())))

@@ -1,5 +1,6 @@
 package com.szampchat.server.reaction.repository.redis;
 
+import com.szampchat.server.reaction.entity.Reaction;
 import com.szampchat.server.reaction.entity.ReactionCount;
 import com.szampchat.server.reaction.entity.ReactionList;
 import lombok.AllArgsConstructor;
@@ -50,5 +51,12 @@ public class ReactionCountRepository {
 
     private String buildKey(Long channelId, Long messageId) {
         return REACTIONS_CACHE_NAME + ":" + channelId + ":" + messageId;
+    }
+
+    public Mono<Void> increment(Reaction reaction) {
+        String key = buildKey(reaction.getChannel(), reaction.getMessage());
+        return reactiveHashOperations.increment(key, reaction.getEmoji(), 1)
+                .switchIfEmpty(reactiveHashOperations.put(key, reaction.getEmoji(), 1).thenReturn(0L))
+                .then();
     }
 }

@@ -14,13 +14,13 @@ import reactor.core.publisher.Mono;
 public class ReactionController {
     private final ReactionService reactionService;
 
-//    @PostMapping("/channels/{channelId}/messages/{messageId}/reactions")
-//    public Mono<Void> createReaction(@PathVariable Long channelId,
-//                                     @PathVariable Long messageId,
-//                                     CurrentUser currentUser,
-//                                     @RequestBody ReactionUpdateRequest request) {
-//        return reactionService.createReaction(channelId, messageId, currentUser.getUserId(), request);
-//    }
+    @PostMapping("/channels/{channelId}/messages/{messageId}/reactions")
+    public Mono<Void> createReaction(@PathVariable Long channelId,
+                                     @PathVariable Long messageId,
+                                     CurrentUser currentUser,
+                                     @RequestBody ReactionUpdateRequest request) {
+        return reactionService.createReaction(channelId, messageId, currentUser.getUserId(), request);
+    }
 //
 //    @DeleteMapping("/channels/{channelId}/messages/{messageId}/reactions")
 //    public Mono<Void> deleteReaction(@PathVariable Long channelId,
