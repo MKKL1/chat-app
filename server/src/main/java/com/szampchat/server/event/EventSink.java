@@ -25,7 +25,7 @@ public class EventSink {
     private final Sinks.Many<InternalEvent<?>> events = Sinks.many().multicast().onBackpressureBuffer(bufferSize, false);
 
     public void publish(InternalEvent<?> event) {
-        log.debug("Publishing event {}", event);
+        log.info("Publishing event {}", event);
         events.emitNext(event, emitFailureHandler);
     }
 
