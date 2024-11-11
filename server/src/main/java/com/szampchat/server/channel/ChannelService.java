@@ -20,6 +20,7 @@ import com.szampchat.server.voice.dto.RoomParticipantsDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import com.szampchat.server.role.service.ChannelRoleService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -40,6 +41,7 @@ public class ChannelService {
     private final EventSink eventSender;
 
     //TODO cache it (this method will be called on most api operations)
+    @Cacheable(value = "ispart", key = "{#channelId, #userId}", cacheManager = "caffeineCacheManager")
     public Mono<Boolean> isParticipant(Long channelId, Long userId) {
         return getChannel(channelId)
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));

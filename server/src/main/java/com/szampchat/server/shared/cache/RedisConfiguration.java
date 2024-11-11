@@ -22,8 +22,9 @@ public class RedisConfiguration {
         return new LettuceConnectionFactory("localhost", 6379);
     }
 
+    @Primary
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration defaults = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(5))
                 .enableTimeToIdle();

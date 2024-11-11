@@ -53,11 +53,10 @@ public class CommunityService {
     private final FileStorageService fileStorageService;
     private final UserRoleService userRoleService;
     private final EventSink eventSink;
+    private final CommunityCacheService communityCacheService;
 
     public Mono<CommunityDTO> findById(Long id) {
-        return communityRepository.findById(id)
-                .switchIfEmpty(Mono.error(new CommunityNotFoundException()))
-                .map(community -> modelMapper.map(community, CommunityDTO.class));
+        return communityCacheService.findById(id);
     }
 
     public Mono<Boolean> isOwner(Long communityId, Long userId) {

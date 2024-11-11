@@ -15,6 +15,7 @@ import com.szampchat.server.user.repository.UserSubjectRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
+    private final UserCacheService userCacheService;
     private final UserSubjectRepository userSubjectRepository;
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
@@ -49,14 +51,10 @@ public class UserService {
                 .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
-    //easy to cache, will practically never change
-    public Mono<Long> findUserIdBySub(UUID sub) {
-        return userSubjectRepository.findBySub(sub)
-                .map(UserSubject::getUserId);
-    }
+
 
     public Mono<User> findUserBySub(UUID sub) {
-        return findUserIdBySub(sub)
+        return userCacheService.findUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }
 
