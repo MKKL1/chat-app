@@ -142,11 +142,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.redis</groupId>
-			<artifactId>lettucemod-spring</artifactId>
-			<version>4.1.2</version>
-		</dependency>
 
 
 	</dependencies>

@@ -1,9 +1,6 @@
 package com.szampchat.server.reaction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redis.lettucemod.RedisModulesClient;
-import com.redis.lettucemod.api.StatefulRedisModulesConnection;
-import com.redis.lettucemod.cluster.RedisModulesClusterClient;
 import com.szampchat.server.reaction.entity.ReactionList;
 import com.szampchat.server.shared.cache.JsonCodec;
 import com.szampchat.server.snowflake.SnowflakeCacheManager;
@@ -32,10 +29,5 @@ public class ReactionConfiguration {
                 .value(serializer)
                 .build();
         return new ReactiveRedisTemplate<>(connectionFactory, context);
-    }
-
-    @Bean
-    public StatefulRedisModulesConnection<String, ReactionList> statefulRedisModulesConnection(RedisModulesClient redisClient, ObjectMapper objectMapper) {
-        return redisClient.connect(new JsonCodec<>(objectMapper, ReactionList.class));
     }
 }

@@ -56,7 +56,7 @@ services:
   #   entrypoint: "/livekit-server --config /etc/livekit.yaml"
   redis:
     container_name: redis
-    image: redis/redis-stack:latest
+    image: redis:alpine
     ports:
       - 6379:6379
     volumes:

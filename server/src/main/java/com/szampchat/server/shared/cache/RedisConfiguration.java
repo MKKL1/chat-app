@@ -8,6 +8,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.ReactiveHashOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.*;
 
@@ -55,5 +56,16 @@ public class RedisConfiguration {
                 .value(new GenericToStringSerializer<>(Long.class))
                 .build();
         return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
+    }
+
+    @Bean
+    public ReactiveHashOperations<String, String, Integer> reactiveHashOperations(ReactiveRedisConnectionFactory connectionFactory) {
+        var template = new ReactiveRedisTemplate<>(
+                connectionFactory,
+                RedisSerializationContext.<String, Integer>newSerializationContext(new StringRedisSerializer())
+                        .hashKey(RedisSerializer.string())
+                        .hashValue(new GenericToStringSerializer<>(Integer.class))
+                        .build());
+        return template.opsForHash();
     }
 }

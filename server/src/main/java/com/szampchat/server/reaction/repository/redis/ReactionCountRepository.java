@@ -1,9 +1,9 @@
 package com.szampchat.server.reaction.repository.redis;
 
-import com.redis.lettucemod.api.StatefulRedisModulesConnection;
-import com.redis.lettucemod.api.reactive.RedisModulesReactiveCommands;
 import com.szampchat.server.reaction.entity.ReactionCount;
 import com.szampchat.server.reaction.entity.ReactionList;
+import lombok.AllArgsConstructor;
+import org.springframework.data.redis.core.ReactiveHashOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Repository;
@@ -13,33 +13,27 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.Collection;
 
+@AllArgsConstructor
 @Repository
 public class ReactionCountRepository {
-    private final ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate;
-    private final ReactiveValueOperations<String, ReactionList> valueOpsReaction;
-    private final RedisModulesReactiveCommands<String, ReactionList> reactiveModulesCommands;
+    private final ReactiveRedisTemplate<String, String> redisReactionTemplate;
+    private final ReactiveHashOperations<String, String, Integer> reactiveHashOperations;
     private static final String REACTIONS_CACHE_NAME = "rcnt:";
     private final Duration defaultTtl = Duration.ofMinutes(30);
 
-    public ReactionCountRepository(ReactiveRedisTemplate<String, ReactionList> redisReactionTemplate,
-                                   StatefulRedisModulesConnection<String, ReactionList> statefulRedisModulesConnection) {
-        this.redisReactionTemplate = redisReactionTemplate;
-        this.valueOpsReaction = redisReactionTemplate.opsForValue();
-        this.reactiveModulesCommands = statefulRedisModulesConnection.reactive();
-    }
-
     public Mono<Boolean> save(Long channelId, Long messageId, Collection<ReactionCount> reactionCounts) {
+        String key = buildKey(channelId, messageId);
         return Flux.fromIterable(reactionCounts)
-                .map(dto -> new ReactionCount(dto.getEmoji(), dto.getCount()))
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(list -> valueOpsReaction.set(buildKey(channelId, messageId), new ReactionList(list), defaultTtl));
+                .collectMap(ReactionCount::getEmoji, ReactionCount::getCount)
+                .filter(map -> !map.isEmpty())
+                .flatMap(map -> reactiveHashOperations.putAll(key, map))
+                .flatMap(_ -> redisReactionTemplate.expire(key, defaultTtl))
+                .hasElement();
     }
 
     public Flux<ReactionCount> get(Long channelId, Long messageId) {
-        return valueOpsReaction.get(buildKey(channelId, messageId))
-                .map(ReactionList::getReactions)
-                .flatMapIterable(reactionCounts -> reactionCounts);
+        return reactiveHashOperations.entries(buildKey(channelId, messageId))
+                .map(entry -> new ReactionCount(entry.getKey(), entry.getValue()));
     }
 
     public Mono<Boolean> exists(Long channelId, Long messageId) {
