@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
-import {Subject, tap} from "rxjs";
+import {filter, Subject, tap} from "rxjs";
 import {MessageStore} from "../../features/store/message/message.store";
-import {EventHandler} from "./event.handler";
+import {EventCallback, EventHandler} from "./event.handler";
 import {Message} from "../../features/models/message";
 import {RsocketConnection} from "./rsocket.connection";
 import {TextChannelQuery} from "../../features/store/textChannel/text.channel.query";
@@ -17,6 +17,11 @@ import {Role} from "../../features/models/role";
 import {MemberStore} from "../../features/store/member/member.store";
 import {CommunityQuery} from "../../features/store/community/community.query";
 import {VoiceChannelStore} from "../../features/store/voiceChannel/voice.channel.store";
+
+export interface Event {
+  name: string;
+  data: any;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +47,8 @@ export class EventService {
 
   constructor(private messageStore: MessageStore) {
     this.rsocketConnection = new RsocketConnection();
-    this.eventHandler = this.initEventHandler();
+    this.eventHandler = new EventHandler();
+    this.initEventHandler();
   }
 
   public init(){
@@ -71,14 +77,15 @@ export class EventService {
       });
   }
 
+  public on(eventName: string, handler: EventCallback){
+    this.eventHandler.add(eventName, handler);
+  }
 
   // First idea was to create EventHandler object in separated file and
   // add callbacks there, but with this approach passed functions
   // would not be able to use classes delivered by DI, which makes them almost useless
   private initEventHandler(){
-    const handler = new EventHandler();
-
-    handler.add('MESSAGE_CREATE_EVENT', (message: Message) => {
+    this.eventHandler.add('MESSAGE_CREATE_EVENT', (message: Message) => {
       this.messageStore.add(message);
 
       // check if messages is from other user and if it is from other channel
@@ -101,27 +108,27 @@ export class EventService {
       }
     });
 
-    handler.add('MESSAGE_EDIT_EVENT', (message: Message) => {
+    this.eventHandler.add('MESSAGE_EDIT_EVENT', (message: Message) => {
       // TODO implement
     });
 
-    handler.add('MESSAGE_DELETE_EVENT', (message: Message) => {
+    this.eventHandler.add('MESSAGE_DELETE_EVENT', (message: Message) => {
       // TODO implement
     });
 
-    handler.add('CHANNEL_CREATE_EVENT', (channel: Channel) => {
+    this.eventHandler.add('CHANNEL_CREATE_EVENT', (channel: Channel) => {
       this.channelService.addChannel(channel);
     });
 
-    handler.add('CHANNEL_EDIT_EVENT', (channel: Channel) => {
+    this.eventHandler.add('CHANNEL_EDIT_EVENT', (channel: Channel) => {
       // TODO implement
     });
 
-    handler.add('CHANNEL_DELETE_EVENT', (id: any) => {
+    this.eventHandler.add('CHANNEL_DELETE_EVENT', (id: any) => {
       this.channelService.removeChannel(id);
     });
 
-    handler.add('ROLE_CREATE_EVENT', (res: any) => {
+    this.eventHandler.add('ROLE_CREATE_EVENT', (res: any) => {
       res.role.communityId = res.role.community;
       this.roleStore.add(res.role);
     })
@@ -142,7 +149,7 @@ export class EventService {
     // maybe remove all members from community and cached them again?
 
     // TODO implement
-    handler.add('ROLE_UPDATE_EVENT', (res: any) => {
+    this.eventHandler.add('ROLE_UPDATE_EVENT', (res: any) => {
       console.log(res);
       const roleId = res.role.id;
       this.roleStore.update(roleId, res.role);
@@ -152,12 +159,12 @@ export class EventService {
     });
 
     // TODO implement
-    handler.add('ROLE_DELETE_EVENT', (role: any) => {
-      console.log(role);
-      this.roleStore.remove(role.roleId);
-    })
+    // handler.add('ROLE_DELETE_EVENT', (role: any) => {
+    //   console.log(role);
+    //   this.roleStore.remove(role.roleId);
+    // })
 
-    handler.add('PARTICIPANT_CREATE_EVENT', (res: {channelId: string, userId: string}) => {
+    this.eventHandler.add('PARTICIPANT_CREATE_EVENT', (res: {channelId: string, userId: string}) => {
       this.voiceChannelStore.update(res.channelId, (channel) => {
         return {
           ...channel,
@@ -166,7 +173,7 @@ export class EventService {
       });
     });
 
-    handler.add('PARTICIPANT_DELETE_EVENT', (res: {channelId: string, userId: string}) => {
+    this.eventHandler.add('PARTICIPANT_DELETE_EVENT', (res: {channelId: string, userId: string}) => {
       this.voiceChannelStore.update(res.channelId, (channel) => {
         return {
           ...channel,
@@ -174,7 +181,5 @@ export class EventService {
         };
       });
     });
-
-    return handler;
   }
 }

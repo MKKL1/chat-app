@@ -43,15 +43,14 @@ export class VoiceChatService{
   }
 
   async joinRoom(): Promise<void>{
+    if (this.room !== null) {
+      this.leaveRoom();
+    }
+
     const channelId = this.voiceChannelQuery.getActiveId();
     this.http.get(environment.api + `channels/${channelId}/voice/join`)
       .subscribe(async (res: any) => {
         this.token = res.token;
-
-        if (this.room !== null) {
-          this.leaveRoom();
-        }
-
         this.room = new Room();
         await this.room.connect(this.wsUrl, this.token);
 

@@ -8,7 +8,7 @@
     <div [ngClass]="{'active': channel.id === selectedChannelId()}">
       <div style="display: flex; flex-direction: row; align-items: center" >
         <mat-list-item (click)="selectChannel(channel)"  class="pointer">
-          <span matListItemTitle  class="pointer">{{ channel?.name }}</span>
+          <span matListItemTitle  class="pointer">{{ channel?.name! | short}}</span>
         </mat-list-item>
         @if(canModifyChannel()){
           <button (click)="editChannel(channel)" mat-icon-button>
