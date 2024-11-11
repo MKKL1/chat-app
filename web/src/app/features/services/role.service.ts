@@ -25,6 +25,8 @@ export class RoleService {
               private communityQuery: CommunityQuery,
               private eventService: EventService,
               private roleStore: RoleStore) {
+      this.eventService.on('ROLE_CREATE_EVENT', this.handleCreateRole);
+      this.eventService.on('ROLE_UPDATE_EVENT', this.handleUpdateRole);
       this.eventService.on('ROLE_DELETE_EVENT', this.handleDeleteRole);
   }
 
@@ -69,13 +71,32 @@ export class RoleService {
   }
 
   // handling events
-   private handleCreateRole(event: Event){
+  private handleCreateRole = (res: any) => {
+   res.role.communityId = res.role.community;
+   this.roleStore.add(res.role);
+  };
 
-   }
+  // {
+  //   "role": {
+  //   "id": "64234317622018048",
+  //     "name": "rolename",
+  //     "permissionOverwrites": "26",
+  //     "community": "63919088711237632"
+  // },
+  //   "members": [
+  //   "63919009480835072"
+  // ]
+  // }
 
-   private handleDeleteRole = (role: any) => {
-     console.log(role);
-     this.roleStore.remove(role.roleId);
-   };
+  // there is no info if members where deleted only if they were added
+  // maybe remove all members from community and cached them again?
+  private handleUpdateRole = (res: any) => {
+    console.log(res);
+  };
+
+  private handleDeleteRole = (role: any) => {
+   console.log(role);
+   this.roleStore.remove(role.roleId);
+  };
 
 }
