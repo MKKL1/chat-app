@@ -20,7 +20,6 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {UserService} from "../../../../core/services/user.service";
 import {MatButton} from "@angular/material/button";
 import {Order} from "@datorama/akita";
-import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-text-chat',

@@ -111,6 +111,7 @@ public class CommunityService {
                 .map(this::toDTO);
     }
 
+    // TODO REMOVE Mono.just(null);
     @Transactional
     public Mono<Community> save(CommunityCreateRequest communityDTO, FilePart file, Long ownerId) {
         // storing community image

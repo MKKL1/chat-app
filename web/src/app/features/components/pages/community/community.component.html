@@ -1,17 +1,6 @@
 <app-layout>
   <app-communities-list sidebar></app-communities-list>
-<!--
-  O Async Pipe, thou gift divine,
-  In templates’ heart, thy stars align.
-  No more we manage state alone,
-  For in thy care, our streams are shown.
-
-  Thou dost await with patient grace,
-  Handling data’s endless race.
-  With thee, our views are pure and bright,
-  O Async Pipe, our guiding light!
--->
-  @if(isCommunitySelected$ | async){
+  @if(isCommunitySelected()){
     <app-community-details content class="community-container"></app-community-details>
   } @else {
     <h1 content class="flex-center" style="width: 100%">No community selected!</h1>

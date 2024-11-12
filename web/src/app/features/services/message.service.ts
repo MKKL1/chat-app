@@ -40,6 +40,8 @@ export class MessageService{
     this.eventService.on('MESSAGE_CREATE_EVENT', this.handleCreateMessage);
     this.eventService.on('MESSAGE_UPDATE_EVENT', this.handleUpdateMessage);
     this.eventService.on('MESSAGE_DELETE_EVENT', this.handleDeleteMessage);
+    this.eventService.on('REACTION_CREATE_EVENT', this.handleCreateReaction);
+    this.eventService.on('REACTION_DELETE_EVENT', this.handleDeleteReaction);
   }
 
   getMessages(channelId: ID, state: ChannelMessagesState, lastMessageId?: string){
@@ -147,6 +149,7 @@ export class MessageService{
   }
 
   private handleCreateMessage = (message: Message) => {
+    console.log(message);
     this.messageStore.add(message);
     // check if messages is from other user and if it is from other channel
     // if yes send system notification
@@ -174,6 +177,47 @@ export class MessageService{
 
   private handleDeleteMessage = (message: Message) => {
     console.log(message);
+  };
+
+  // {
+  //   "emoji": "😀",
+  //   "channelId": "69412425505439744",
+  //   "messageId": "69425807574958080",
+  //   "userId": "69419377962778624"
+  // }
+
+  private handleCreateReaction = (res: any) => {
+    const isCurrentUser = this.userService.getUser().id === res.userId;
+
+    console.log(res);
+    this.messageStore.update(res.messageId, (message) => {
+      const existingReaction = message.reactions.find((reaction) => reaction.emoji === res.emoji);
+      if (existingReaction) {
+        // increment counter if reaction exists
+        return {
+          ...message,
+          reactions: message.reactions.map((reaction) =>
+            reaction.emoji === res.emoji
+              ? { ...reaction, count: reaction.count + 1, me: isCurrentUser }
+              : reaction
+          ),
+        };
+      } else {
+        // adding new reaction if not exists
+        return {
+          ...message,
+          reactions: [
+            ...message.reactions,
+            { emoji: res.emoji, count: 1, me: isCurrentUser }
+          ],
+        };
+      }
+    });
+  };
+
+  // TODO implement
+  private handleDeleteReaction = (res: any) => {
+    console.log(res);
   };
 
 }

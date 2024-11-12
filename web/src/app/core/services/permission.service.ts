@@ -1,17 +1,12 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {Permission} from "../../features/models/permission";
-import {CommunityStore} from "../../features/store/community/community.store";
-import {TextChannelStore} from "../../features/store/textChannel/text.channel.store";
-import {CommunityQuery} from "../../features/store/community/community.query";
 import {TextChannelQuery} from "../../features/store/textChannel/text.channel.query";
 import {VoiceChannelQuery} from "../../features/store/voiceChannel/voice.channel.query";
 import {sumMasks} from "../../shared/utils/binaryOperations";
 import {UserService} from "./user.service";
-import {Role} from "../../features/models/role";
 import {applyOverwrite, applyOverwrites} from "../../shared/utils/permOperations";
 import {MemberQuery} from "../../features/store/member/member.query";
-import {RoleQuery} from "../../features/store/role/role.query";
 import {Channel, ChannelRole} from "../../features/models/channel";
 
 //TODO unit testing
@@ -50,14 +45,14 @@ export class PermissionService implements OnDestroy{
     this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
       if(!channel) return;
       const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel.overwrites)
+      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
 
     this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
       //same as above
       if(!channel) return;
       const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel.overwrites)
+      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
   }
 

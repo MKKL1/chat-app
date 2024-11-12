@@ -50,6 +50,19 @@
     </div>
   </div>
 
+  <!-- reactions -->
+  @if(message.reactions && message.reactions.length > 0){
+
+    <div style="margin-top: 3px">
+      <mat-chip (click)="removeReaction()">
+        @for(reaction of message.reactions; track reaction){
+          <span [ngClass]="{'my-reaction': reaction.me}">
+            {{reaction.emoji}} {{reaction.count}}
+          </span>
+        }
+      </mat-chip>
+    </div>
+  }
 </div>
 
 @if(showReactionPicker()){

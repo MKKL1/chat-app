@@ -18,6 +18,7 @@ import {User} from "../../../models/user";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {MatChip} from "@angular/material/chips";
 
 @Component({
   selector: 'app-message',
@@ -34,7 +35,8 @@ import {PermissionService} from "../../../../core/services/permission.service";
     EmojiPickerComponent,
     UserBasicInfoComponent,
     BottomSheetComponent,
-    MatListModule
+    MatListModule,
+    MatChip
   ],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
@@ -71,6 +73,8 @@ export class MessageComponent implements OnInit{
     this.user = this.memberQuery.getAll({
       filterBy: entity => entity.storeId === this.communityQuery.getActiveId()! + this.message.userId!
     })[0].user;
+
+    console.log(this.message);
   }
 
   openOptions(){
@@ -91,8 +95,9 @@ export class MessageComponent implements OnInit{
     this.messageService.addReaction(emoji, this.message.id);
   }
 
-  removeReaction(emoji: string){
-    this.messageService.deleteReaction(emoji, this.message.id);
+  removeReaction(){
+    const emoji = this.message.reactions.find(r => r.me)?.emoji;
+    this.messageService.deleteReaction(emoji!, this.message.id);
   }
 
   updateReactionPicker(){

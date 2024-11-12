@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {UsersListComponent} from "../../community/users-list/users-list.component";
 import {UserPanelComponent} from "../../voice-chat/user-panel/user-panel.component";
 import {MatFabButton} from "@angular/material/button";
@@ -31,15 +31,16 @@ import {Observable, Subscription} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-// I don't know if I should really convert this, because it will be so much more complicated
 export class CommunityComponent implements OnInit{
     readonly dialog: MatDialog = inject(MatDialog);
-    isCommunitySelected$!: Observable<boolean>;
+    isCommunitySelected = signal<boolean>(false);
 
     constructor(private communityQuery: CommunityQuery) {}
 
     ngOnInit() {
-      this.isCommunitySelected$ = this.communityQuery.isCommunitySelected$;
+      this.communityQuery.selectActive().subscribe(community => {
+        this.isCommunitySelected.set(community !== undefined);
+      });
     }
 
     openDialog(){

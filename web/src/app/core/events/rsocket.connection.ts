@@ -148,7 +148,6 @@ export class RsocketConnection{
       // handling errors with connection
       onError: (error: any) => console.error("Error occured: ", error),
       onSubscribe: (cancel: any) => {
-        console.log(`Canceled ${cancel}`);
         // I'm not using this for now
       }
     });
