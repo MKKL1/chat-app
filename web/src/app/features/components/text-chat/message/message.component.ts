@@ -88,7 +88,11 @@ export class MessageComponent implements OnInit{
   appendReaction(emoji: string){
     console.log(emoji);
     this.showReactionPicker.set(false);
-    this.messageService.addReaction(emoji, this.message.id, this.userId ?? '');
+    this.messageService.addReaction(emoji, this.message.id);
+  }
+
+  removeReaction(emoji: string){
+    this.messageService.deleteReaction(emoji, this.message.id);
   }
 
   updateReactionPicker(){

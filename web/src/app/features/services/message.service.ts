@@ -128,14 +128,22 @@ export class MessageService{
     });
   }
 
-  // todo implement
-  addReaction(reaction: string, messageId: string, userId: string){
+  addReaction(reaction: string, messageId: string){
+    const channelId = this.channelQuery.getActiveId();
     console.log(reaction);
+    this.http.post(`${this.api}${channelId}/messages/${messageId}/reactions`,{emoji: reaction})
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 
-  // todo implement
-  deleteReaction(){
-
+  deleteReaction(reaction: string, messageId: string){
+    const channelId = this.channelQuery.getActiveId();
+    console.log(reaction);
+    this.http.delete(`${this.api}${channelId}/messages/${messageId}/reactions`)
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 
   private handleCreateMessage = (message: Message) => {
