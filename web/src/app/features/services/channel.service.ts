@@ -7,6 +7,7 @@ import {CommunityQuery} from "../store/community/community.query";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
+import {EventService} from "../../core/events/event.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +15,16 @@ import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 export class ChannelService {
   private readonly apiPath: string = environment.api + "channels";
 
-  constructor(
-    private http: HttpClient,
-    private textChannelStore: TextChannelStore,
-    private voiceChannelStore: VoiceChannelStore,
-    private communityQuery: CommunityQuery) {
+  constructor(private http: HttpClient,
+              private textChannelStore: TextChannelStore,
+              private voiceChannelStore: VoiceChannelStore,
+              private communityQuery: CommunityQuery,
+              private eventService: EventService) {
+    this.eventService.on('CHANNEL_CREATE_EVENT', this.handleAddChannel);
+    this.eventService.on('CHANNEL_UPDATE_EVENT', this.handleUpdateChannel);
+    this.eventService.on('CHANNEL_DELETE_EVENT', this.handleDeleteChannel);
+    this.eventService.on('PARTICIPANT_CREATE_EVENT', this.handleCreateParticipant);
+    this.eventService.on('PARTICIPANT_DELETE_EVENT', this.handleDeleteParticipant);
   }
 
   selectVoiceChannel(channel: Channel){
@@ -47,21 +53,6 @@ export class ChannelService {
     this.textChannelStore.setActive(channel.id);
   }
 
-  // I add channel in separated method, so it can be also used in EventService
-  addChannel(newChannel: Channel){
-    // it wouldn't be necessary if I could just pass numbers in json,
-    // but I can't because ids are too big and I have to map them to string
-    // and I can't tell if number is other value than id, so it also is mapped to string
-    // @ts-ignore
-    newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
-
-    if(newChannel.type === ChannelType.Text){
-      this.textChannelStore.add(newChannel);
-    } else {
-      this.voiceChannelStore.add(newChannel);
-    }
-  }
-
   createChannel(channel: any): Observable<Channel>{
     // channel.communityId = this.communityQuery.getActiveId(); not needed/will throw exception
     //This request was moved to /communities as POST /channels/{communityId} is very similar to GET /channels/{channelId}
@@ -87,14 +78,51 @@ export class ChannelService {
     );
   }
 
-  removeChannel(id: string){
-    this.voiceChannelStore.remove(id);
-    this.textChannelStore.remove(id);
-  }
-
   // I'm too lazy to check channel type here
   // and there won't be channels with same id in both stores anyway
   deleteChannel(id: string){
     return this.http.delete(this.apiPath + "/" + id);
   }
+
+  private handleAddChannel = (newChannel: Channel) => {
+    // it wouldn't be necessary if I could just pass numbers in json,
+    // but I can't because ids are too big and I have to map them to string
+    // and I can't tell if number is other value than id, so it also is mapped to string
+    // @ts-ignore
+    newChannel.type = newChannel.type === '0' ? ChannelType.Text : ChannelType.Voice;
+
+    if(newChannel.type === ChannelType.Text){
+      this.textChannelStore.add(newChannel);
+    } else {
+      this.voiceChannelStore.add(newChannel);
+    }
+  };
+
+  private handleUpdateChannel = (channel: Channel) => {
+      // TODO IMPLEMENT
+  };
+
+  private handleDeleteChannel = (id: any) => {
+    this.voiceChannelStore.remove(id);
+    this.textChannelStore.remove(id);
+  };
+
+  private handleCreateParticipant = (res: {channelId: string, userId: string}) => {
+    this.voiceChannelStore.update(res.channelId, (channel) => {
+      return {
+        ...channel,
+        participants: [...channel.participants!, res.userId],
+      };
+    });
+  };
+
+  private handleDeleteParticipant = (res: {channelId: string, userId: string}) => {
+    this.voiceChannelStore.update(res.channelId, (channel) => {
+      return {
+        ...channel,
+        participants: channel.participants!.filter(id => id !== res.userId),
+      };
+    });
+  };
+
 }

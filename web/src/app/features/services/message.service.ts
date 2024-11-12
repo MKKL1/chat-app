@@ -7,8 +7,15 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {ID} from "@datorama/akita";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
+import {EventService} from "../../core/events/event.service";
+import {formatDate} from "../../shared/utils/utils";
+import {showNotification} from "../../shared/utils/notifications";
+import {MessageNotification} from "../models/message-notification";
+import {UserService} from "../../core/services/user.service";
+import {MemberQuery} from "../store/member/member.query";
+import {CommunityQuery} from "../store/community/community.query";
 @Injectable({
   providedIn: 'root'
 })
@@ -17,11 +24,22 @@ export class MessageService{
 
   limit: number = 10;
 
-  constructor(
-    private http: HttpClient,
-    private channelQuery: TextChannelQuery,
-    private messageStore: MessageStore,
-    private channelStore: TextChannelStore) {
+  // this subject is used to notify list of text channels about new message,
+  // so it can add notification to proper channel from list
+  private notificationSubject = new Subject<MessageNotification>();
+  notification$ = this.notificationSubject.asObservable();
+
+  constructor(private http: HttpClient,
+              private channelQuery: TextChannelQuery,
+              private messageStore: MessageStore,
+              private channelStore: TextChannelStore,
+              private eventService: EventService,
+              private userService: UserService,
+              private memberQuery: MemberQuery,
+              private communityQuery: CommunityQuery) {
+    this.eventService.on('MESSAGE_CREATE_EVENT', this.handleCreateMessage);
+    this.eventService.on('MESSAGE_UPDATE_EVENT', this.handleUpdateMessage);
+    this.eventService.on('MESSAGE_DELETE_EVENT', this.handleDeleteMessage);
   }
 
   getMessages(channelId: ID, state: ChannelMessagesState, lastMessageId?: string){
@@ -110,14 +128,52 @@ export class MessageService{
     });
   }
 
-  // todo implement
-  addReaction(reaction: string, messageId: string, userId: string){
+  addReaction(reaction: string, messageId: string){
+    const channelId = this.channelQuery.getActiveId();
     console.log(reaction);
+    this.http.post(`${this.api}${channelId}/messages/${messageId}/reactions`,{emoji: reaction})
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 
-  // todo implement
-  deleteReaction(){
-
+  deleteReaction(reaction: string, messageId: string){
+    const channelId = this.channelQuery.getActiveId();
+    console.log(reaction);
+    this.http.delete(`${this.api}${channelId}/messages/${messageId}/reactions`)
+      .subscribe(res => {
+        console.log(res);
+      });
   }
+
+  private handleCreateMessage = (message: Message) => {
+    this.messageStore.add(message);
+    // check if messages is from other user and if it is from other channel
+    // if yes send system notification
+    if (this.userService.getUser().id !== message.userId && this.channelQuery.getActiveId() !== message.channelId) {
+      // send notification to channel list
+      this.notificationSubject.next({
+        channelId: message.channelId,
+        date: formatDate(message.updatedAt),
+        message: message.text,
+        username: this.memberQuery.getEntity(
+          this.communityQuery.getActiveId()
+          + message.userId)?.user.username!
+      });
+
+      showNotification(
+        `New message on channel ${this.channelQuery.getEntity(message.channelId)?.name}`,
+        message.text
+      );
+    }
+  }
+
+  private handleUpdateMessage = (message: Message) => {
+    console.log(message);
+  };
+
+  private handleDeleteMessage = (message: Message) => {
+    console.log(message);
+  };
 
 }

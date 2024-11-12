@@ -38,8 +38,9 @@ $material-app-theme: mat.define-theme(
 // end of theme
 
 // primeng for messages
-@import "primeng/resources/themes/aura-light-teal/theme.css";
+@import "primeng/resources/themes/aura-dark-teal/theme.css";
 @import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
 
 .flex {
   display: flex;

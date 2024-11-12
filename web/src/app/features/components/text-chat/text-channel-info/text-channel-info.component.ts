@@ -9,6 +9,7 @@ import {MatBadge} from "@angular/material/badge";
 import {MessageNotification} from "../../../models/message-notification";
 import {Subscription} from "rxjs";
 import {EventService} from "../../../../core/events/event.service";
+import {MessageService} from "../../../services/message.service";
 
 @Component({
   selector: 'app-text-channel-info',
@@ -28,20 +29,14 @@ import {EventService} from "../../../../core/events/event.service";
 export class TextChannelInfoComponent implements OnInit, OnDestroy{
   @Input() channel: Channel | undefined;
 
-  private eventService = inject(EventService);
+  private messageService = inject(MessageService);
   private notificationSubscription: Subscription;
 
   notification = signal<MessageNotification | null>(null);
   count = signal<number>(0);
 
-  // TODO add variables for data which will be displayed
-  username: string = "User 1";
-  // Testing pipe which will transform it to shorter form
-  message: string = "Example messageExample messageExample messageExample messageExample messageExample message";
-  date: Date = new Date();
-
   ngOnInit() {
-    this.notificationSubscription = this.eventService.notification$.subscribe((notification) => {
+    this.notificationSubscription = this.messageService.notification$.subscribe((notification) => {
       if(notification.channelId === this.channel?.id){
         this.count.update(x => x + 1);
         this.notification.set(notification);
