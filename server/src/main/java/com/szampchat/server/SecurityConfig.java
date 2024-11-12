@@ -101,7 +101,7 @@ public class SecurityConfig {
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
                         //ChannelController
-                        .pathMatchers(HttpMethod.POST, "/channels/{communityId}")
+                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/channels")
                             .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
                         .pathMatchers(HttpMethod.PUT, "/channels/{channelId}")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
