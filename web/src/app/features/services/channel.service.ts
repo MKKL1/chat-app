@@ -63,8 +63,9 @@ export class ChannelService {
   }
 
   createChannel(channel: any): Observable<Channel>{
-    channel.communityId = this.communityQuery.getActiveId();
-    return this.http.post<Channel>(this.apiPath + "/" + this.communityQuery.getActiveId(), channel);
+    // channel.communityId = this.communityQuery.getActiveId(); not needed/will throw exception
+    //This request was moved to /communities as POST /channels/{communityId} is very similar to GET /channels/{channelId}
+    return this.http.post<Channel>(environment.api + "communities/" + this.communityQuery.getActiveId() + "/channels", channel);
   }
 
   updateChannel(channel: Channel){

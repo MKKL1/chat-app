@@ -33,7 +33,7 @@ public class ChannelController {
     @Operation(summary = "Create channel")
 
     //TODO change path of this endpoint? /communities/{}/channels
-    @PostMapping("/channels/{communityId}")
+    @PostMapping("/communities/{communityId}/channels")
     public Mono<ChannelDTO> createChannel(@RequestBody ChannelCreateRequest channelCreateRequest,
                                        @PathVariable Long communityId) {
         return channelService.createChannel(channelCreateRequest, communityId);
