@@ -9,4 +9,10 @@ export class RoleQuery extends QueryEntity<RoleState> {
     super(store);
   }
 
+  getByCommunityId(id: string){
+    return this.getAll({
+      filterBy: entity => entity.communityId === id
+    });
+  }
+
 }

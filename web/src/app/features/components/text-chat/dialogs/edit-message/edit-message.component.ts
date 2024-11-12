@@ -15,24 +15,26 @@ import {MatSelect} from "@angular/material/select";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MessageService} from "../../../../services/message.service";
 import {Message} from "../../../../models/message";
+import {EditPermissionsComponent} from "../edit-permissions/edit-permissions.component";
 
 @Component({
   selector: 'app-edit-message',
   standalone: true,
-    imports: [
-        MatButton,
-        MatDialogActions,
-        MatDialogClose,
-        MatDialogContent,
-        MatDialogTitle,
-        MatFormField,
-        MatInput,
-        MatLabel,
-        MatOption,
-        MatProgressSpinner,
-        MatSelect,
-        ReactiveFormsModule
-    ],
+  imports: [
+    MatButton,
+    MatDialogActions,
+    MatDialogClose,
+    MatDialogContent,
+    MatDialogTitle,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatOption,
+    MatProgressSpinner,
+    MatSelect,
+    ReactiveFormsModule,
+    EditPermissionsComponent
+  ],
   templateUrl: './edit-message.component.html',
 })
 export class EditMessageComponent {

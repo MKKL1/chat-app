@@ -1,6 +1,6 @@
 <div class="participant" [ngClass]="{'speaking': isSpeaking}">
   @if(!participant?.videoEnabled){
-    <img src="{{member?.user?.imageUrl ?? 'avatar.jpg'}}">
+    <img src="{{member?.user?.imageUrl ?? 'avatar.png'}}">
   }
   <video id="video-{{participant?.identity}}"></video>
   <div class="voice-username">

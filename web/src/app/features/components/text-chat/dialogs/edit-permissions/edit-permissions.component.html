@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>Update channel permissions</h2>
+  <mat-dialog-content style="display: flex; flex-direction: column">
+    <div class="flex">
+      <mat-list role="list">
+        @for(role of roles(); track role.id){
+          <mat-list-item (click)="selectRole(role)" role="listitem">
+            {{role.name}}
+          </mat-list-item>
+        }
+      </mat-list>
+      <div>
+        @if(!selectedRole()){
+          <h1>No role selected!</h1>
+        } @else {
+          <h1>{{selectedRole()?.name}}</h1>
+          <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
+            <div class="flex">
+              <p>Is administrator</p>
+              <p-selectButton [options]="roleOptions" optionLabel="icon">
+                <ng-template let-item pTemplate>
+                  <i [class]="item.icon"></i>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <div class="flex">
+              <p>Modify channel</p>
+              <p-selectButton [options]="roleOptions" optionLabel="icon">
+                <ng-template let-item pTemplate>
+                  <i [class]="item.icon"></i>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <div class="flex">
+              <p>Create message</p>
+              <p-selectButton [options]="roleOptions" optionLabel="icon">
+                <ng-template let-item pTemplate>
+                  <i [class]="item.icon"></i>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <div class="flex">
+              <p>Delete message</p>
+              <p-selectButton [options]="roleOptions" optionLabel="icon">
+                <ng-template let-item pTemplate>
+                  <i [class]="item.icon"></i>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <div class="flex">
+              <p>Create reaction</p>
+              <p-selectButton [options]="roleOptions" optionLabel="icon">
+                <ng-template let-item pTemplate>
+                  <i [class]="item.icon"></i>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <button mat-button>Submit</button>
+          </form>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Done</button>
+  </mat-dialog-actions>

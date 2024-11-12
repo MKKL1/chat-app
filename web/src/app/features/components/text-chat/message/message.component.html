@@ -9,7 +9,7 @@
     : {'flex-direction': 'row'}">
     <div class="user-info-container">
       <!--   Member avatar   -->
-      <app-avatar [imagePath]="user?.imageUrl ?? 'avatar.jpg'"></app-avatar>
+      <app-avatar [imagePath]="user?.imageUrl ?? 'avatar.png'"></app-avatar>
       @if(user){
         <app-user-basic-info [user]="user" [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
         </app-user-basic-info>
