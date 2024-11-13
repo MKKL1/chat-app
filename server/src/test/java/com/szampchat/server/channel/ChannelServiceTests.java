@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +28,7 @@ class ChannelServiceTests {
     @Mock
     private CommunityMemberService communityMemberService;
 
+    @Spy
     @InjectMocks
     private ChannelService channelService;
 
@@ -79,14 +82,19 @@ class ChannelServiceTests {
         Long channelId = 1L;
 
         Channel channel = new Channel();
+        channel.setId(channelId);
+
+        ChannelDTO channelDTO = new ChannelDTO();
+        channelDTO.setId(channelId);
 
         when(channelRepository.findById(eq(channelId)))
                 .thenReturn(Mono.just(channel));
+        doReturn(channelDTO).when(channelService).toDTO(eq(channel));
 
-        Mono<Channel> result = channelService.getChannel(channelId);
+        Mono<ChannelDTO> result = channelService.getChannel(channelId);
 
         StepVerifier.create(result)
-                .expectNext(channel)
+                .expectNext(channelDTO)
                 .verifyComplete();
     }
 
@@ -97,29 +105,38 @@ class ChannelServiceTests {
         when(channelRepository.findById(eq(channelId)))
                 .thenReturn(Mono.empty());
 
-        Mono<Channel> result = channelService.getChannel(channelId);
+        Mono<ChannelDTO> result = channelService.getChannel(channelId);
 
         StepVerifier.create(result)
                 .expectError(ChannelNotFoundException.class)
                 .verify();
     }
 
-    //TODO fix test
-//    @Test
-//    void getCommunityChannels() {
-//        Long communityId = 1L;
-//
-//        Channel channel1 = new Channel();
-//        Channel channel2 = new Channel();
-//
-//        when(channelRepository.findChannelsByCommunityId(eq(communityId)))
-//                .thenReturn(Flux.just(channel1, channel2));
-//
-//        Flux<ChannelDTO> result = channelService.getCommunityChannels(communityId);
-//
-//        StepVerifier.create(result)
-//                .expectNext(channel1)
-//                .expectNext(channel2)
-//                .verifyComplete();
-//    }
+    @Test
+    void getCommunityChannels() {
+        Long communityId = 1L;
+
+        Channel channel1 = new Channel();
+        channel1.setId(2L);
+        Channel channel2 = new Channel();
+        channel1.setId(3L);
+
+        ChannelDTO channel1DTO = new ChannelDTO();
+        channel1DTO.setId(2L);
+
+        ChannelDTO channel2DTO = new ChannelDTO();
+        channel2DTO.setId(3L);
+
+        when(channelRepository.findChannelsByCommunityId(eq(communityId)))
+                .thenReturn(Flux.just(channel1, channel2));
+        doReturn(channel1DTO).when(channelService).toDTO(eq(channel1));
+        doReturn(channel2DTO).when(channelService).toDTO(eq(channel2));
+
+        Flux<ChannelDTO> result = channelService.getCommunityChannels(communityId);
+
+        StepVerifier.create(result)
+                .expectNext(channel1DTO)
+                .expectNext(channel2DTO)
+                .verifyComplete();
+    }
 }

@@ -13,7 +13,6 @@ import com.szampchat.server.voice.event.ParticipantDeleteEvent;
 import com.szampchat.server.voice.mapper.ParticipantMapper;
 import com.szampchat.server.voice.mapper.RoomMapper;
 import com.szampchat.server.voice.repository.ParticipantRepository;
-import com.szampchat.server.voice.repository.RoomRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,6 +66,6 @@ public class ParticipantEventService {
 
     private Mono<ChannelDTO> getChannel(String roomName) {
         return Mono.just(roomMapper.roomIdToChannelId(roomName))
-                .flatMap(channelService::getChannelDTO);
+                .flatMap(channelService::getChannel);
     }
 }

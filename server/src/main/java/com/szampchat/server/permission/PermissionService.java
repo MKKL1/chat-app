@@ -4,6 +4,7 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.permission.data.PermissionOverwrites;
+import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.permission.repository.PermissionRepository;
 import com.szampchat.server.role.dto.RoleDTO;
 import com.szampchat.server.role.service.RoleService;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 @Slf4j
@@ -60,10 +60,10 @@ public class PermissionService {
                     return Mono.just(community.getBasePermissions())
                             .flatMap(basePermissions ->
                                     getPermissionOverwrites(communityId, userId)
-                                        .map(permissionOverwrites -> permissionOverwrites.applyToNew(basePermissions))
+                                        .map(permissionOverwrites -> permissionOverwrites.applyToNew(basePermissions, PermissionScope.COMMUNITY))
                             );
                 })
-                .doOnNext(permissions -> log.info("User {} on community {} has perms {}", userId, communityId, permissions.getPermissionData()))
+                .doOnNext(permissions -> log.info("User {} on community {} has perms {}", userId, communityId, permissions))
                 //If role granted ADMIN flag, grant all permissions
                 .map(permissions -> permissions.has(PermissionFlag.ADMINISTRATOR) ? Permissions.allAllowed() : permissions);
     }
@@ -77,23 +77,23 @@ public class PermissionService {
     }
 
     public Mono<Permissions> getUserPermissionsForChannel(Long channelId, Long userId) {
-        return channelService.getChannelDTO(channelId)
+        return channelService.getChannel(channelId)
                 .flatMap(channel ->
                         getPermissionOverwrites(channel.getCommunityId(), userId)
                                 .flatMap(communityPermissionOverwrites ->
                                     permissionRepository.findPermissionsByChannelAndUser(channelId, userId)
                                             .map(PermissionOverwrites::getPermissionOverwriteData)
                                             .reduce(0L, (acc, permissionData) -> acc | permissionData)
-                                            .map(accumulatedPermissions -> new PermissionOverwrites(communityPermissionOverwrites.add(accumulatedPermissions)))
+                                            .map(accumulatedPermissions -> new PermissionOverwrites(communityPermissionOverwrites.sum(accumulatedPermissions)))
                                 )
                                 .flatMap(channelsOverwrites -> communityService.findById(channel.getCommunityId())
                                         .flatMap(community -> {
                                             if (community.getOwnerId().equals(userId)) return Mono.just(Permissions.allAllowed());
 
-                                            return Mono.just(channelsOverwrites.applyToNew(community.getBasePermissions()));
+                                            return Mono.just(channelsOverwrites.applyToNew(community.getBasePermissions(), PermissionScope.CHANNEL));
                                         })
                                 )
-                                .doOnNext(permissions -> log.info("User {} on channel {} has perms {}", userId, channelId, permissions.getPermissionData()))
+                                .doOnNext(permissions -> log.info("User {} on channel {} has perms {}", userId, channelId, permissions))
                 )
                 .map(permissions -> permissions.has(PermissionFlag.ADMINISTRATOR) ? Permissions.allAllowed() : permissions);
     }

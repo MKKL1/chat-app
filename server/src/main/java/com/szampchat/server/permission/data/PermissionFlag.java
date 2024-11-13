@@ -1,31 +1,24 @@
 package com.szampchat.server.permission.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-//TODO It doesn't have to be enum
+@AllArgsConstructor
 @Getter
 public enum PermissionFlag {
-    ADMINISTRATOR(0, false, false),
-    ROLE_MODIFY(1, false, false),
-    INVITE_CREATE(2, false, false),
-    CHANNEL_CREATE(3, true, false),
-    CHANNEL_MODIFY(4, true, false),
-    MESSAGE_CREATE(5, true, true),
-    MESSAGE_DELETE(6, true, true),
-    REACTION_CREATE(7, true, true);
+    ADMINISTRATOR(new PermissionFlagData(0, false, false, "ADMINISTRATOR")),
+    INVITE_CREATE(new PermissionFlagData(2, false, false, "INVITE_CREATE")),
+    CHANNEL_CREATE(new PermissionFlagData(3, false, false, "CHANNEL_CREATE")),
 
-    final byte offset;
-    final boolean channelOverwrite;
-    final boolean defaultPerm;
+    CHANNEL_MODIFY(new PermissionFlagData(4, true, false, "CHANNEL_MODIFY")),
+    MESSAGE_CREATE(new PermissionFlagData(5, true, true, "MESSAGE_CREATE")),
+    MESSAGE_DELETE(new PermissionFlagData(6, true, true, "MESSAGE_DELETE")),
+    REACTION_CREATE(new PermissionFlagData(7, true, true, "REACTION_CREATE"));
 
-    PermissionFlag(int offset, boolean channel, boolean defaultPerm) {
-        this.offset = (byte) offset;
-        this.channelOverwrite = channel;
-        this.defaultPerm = defaultPerm;
-    }
+    final PermissionFlagData data;
 
     public int asMask() {
-        return 1 << offset;
+        return 1 << data.offset();
     }
 
     /**
@@ -34,8 +27,8 @@ public enum PermissionFlag {
     public static int getChannelOverwriteMask() {
         int mask = 0;
         for (PermissionFlag permissionFlag : PermissionFlag.values()) {
-            if(permissionFlag.channelOverwrite)
-                mask |= 1 << permissionFlag.offset;
+            if(permissionFlag.data.canChannelOverwrite())
+                mask |= 1 << permissionFlag.data.offset();
         }
         return mask;
     }
@@ -43,8 +36,8 @@ public enum PermissionFlag {
     public static int getDefaultPermissionMask() {
         int mask = 0;
         for (PermissionFlag permissionFlag : PermissionFlag.values()) {
-            if(permissionFlag.defaultPerm)
-                mask |= 1 << permissionFlag.offset;
+            if(permissionFlag.data.isDefault())
+                mask |= 1 << permissionFlag.data.offset();
         }
         return mask;
     }
@@ -52,8 +45,13 @@ public enum PermissionFlag {
     public static int combineFlags(PermissionFlag... permissionFlags) {
         int mask = 0;
         for (PermissionFlag permissionFlag : permissionFlags) {
-            mask |= 1 << permissionFlag.offset;
+            mask |= 1 << permissionFlag.data.offset();
         }
         return mask;
+    }
+
+    @Override
+    public String toString() {
+        return data.name();
     }
 }

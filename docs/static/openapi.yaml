@@ -43,6 +43,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - CHANNEL_MODIFY
     delete:
       tags:
       - Channel
@@ -69,6 +71,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - CHANNEL_MODIFY
   /users:
     post:
       tags:
@@ -216,6 +220,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - ADMINISTRATOR
   /communities/{communityId}/join:
     post:
       tags:
@@ -288,7 +294,9 @@ paths:
           description: User is not an owner of community or resource is not available
       security:
       - OAuthSecurity: []
-  /channels/{communityId}:
+      x-permissions:
+      - INVITE_CREATE
+  /communities/{communityId}/channels:
     post:
       tags:
       - Channel
@@ -324,6 +332,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - CHANNEL_CREATE
   /channels/{channelId}/messages:
     get:
       tags:
@@ -429,6 +439,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - MESSAGE_CREATE
   /channels/{channelId}/messages/{messageId}/reactions:
     post:
       tags:
@@ -456,6 +468,8 @@ paths:
       responses:
         "200":
           description: OK
+      x-permissions:
+      - REACTION_CREATE
     delete:
       tags:
       - reaction-controller
@@ -633,6 +647,8 @@ paths:
           description: User is not an owner of community or resource is not available
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - ADMINISTRATOR
   /communities/{communityId}/roles/{roleId}:
     delete:
       tags:
@@ -657,6 +673,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - ADMINISTRATOR
     patch:
       tags:
       - Role
@@ -694,6 +712,8 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
+      x-permissions:
+      - ADMINISTRATOR
   /channels/{channelId}/messages/{messageId}:
     delete:
       tags:

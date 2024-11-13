@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class Permissions {
     }
 
     public boolean has(PermissionFlag permissionFlag) {
-        return (permissionData & (1 << permissionFlag.getOffset())) != 0;
+        return (permissionData & (1 << permissionFlag.data.offset())) != 0;
     }
 
     public boolean has(int permissionMask) {
@@ -35,14 +37,14 @@ public class Permissions {
     public boolean has(PermissionFlag... permissionFlags) {
         int combinedMask = 0;
         for (PermissionFlag flag : permissionFlags) {
-            combinedMask |= (1 << flag.getOffset());
+            combinedMask |= (1 << flag.data.offset());
         }
 
         return has(combinedMask);
     }
 
     public void allow(PermissionFlag permissionFlag) {
-        permissionData |= (1 << permissionFlag.getOffset());
+        permissionData |= (1 << permissionFlag.data.offset());
     }
 
     public void allow(PermissionFlag... permissionFlags) {
@@ -54,7 +56,7 @@ public class Permissions {
     }
 
     public void deny(PermissionFlag permissionFlag) {
-        permissionData &= ~(1 << permissionFlag.getOffset());
+        permissionData &= ~(1 << permissionFlag.data.offset());
     }
 
     public void deny(PermissionFlag... permissionFlags) {
@@ -71,5 +73,14 @@ public class Permissions {
 
     public void denyAll() {
         permissionData = 0;
+    }
+
+    @Override
+    public String toString() {
+        if(permissionData == Integer.MAX_VALUE) return "Permissions: ALL";
+        return "Permissions: " + Arrays.stream(PermissionFlag.values())
+                .filter(this::has)
+                .map(PermissionFlag::toString)
+                .toList();
     }
 }
