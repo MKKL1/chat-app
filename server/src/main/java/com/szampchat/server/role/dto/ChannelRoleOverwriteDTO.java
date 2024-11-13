@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChannelRoleOverwriteDTO {
     private Long roleId;
-    private PermissionOverwrites overwrites;
+    private Long overwrites;
 }

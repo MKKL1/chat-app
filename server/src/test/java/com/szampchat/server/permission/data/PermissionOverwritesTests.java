@@ -1,5 +1,6 @@
 package com.szampchat.server.permission.data;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
 import static com.szampchat.server.permission.data.PermissionFlag.*;
@@ -16,8 +17,15 @@ public class PermissionOverwritesTests {
 
         long data = permissionOverwrites.getPermissionOverwriteData();
         assertThat(data).isNotEqualTo(0L);
-        assertThat(data).isNotEqualTo(permissionMask); //It should not include Administrator perm
-        assertThat(data).isEqualTo(CHANNEL_CREATE.asMask() | CHANNEL_MODIFY.asMask());
+        assertThat((data & (1L << CHANNEL_CREATE.asMask())) == 0)
+                .as("check that permission overwrite doesn't include CHANNEL_CREATE in CHANNEL scope")
+                .isTrue();
+        assertThat((data & (1L << ADMINISTRATOR.asMask())) == 0)
+                .as("check that permission overwrite doesn't include ADMINISTRATOR in CHANNEL scope")
+                .isTrue();
+        assertThat(data)
+                .as("check that permission overwrite only includes CHANNEL_MODIFY which can be overwritten in CHANNEL scope")
+                .isEqualTo(CHANNEL_MODIFY.asMask());
     }
 
     @Test
@@ -28,8 +36,14 @@ public class PermissionOverwritesTests {
         permissionOverwrites.deny(PermissionScope.CHANNEL, permissionMask);
 
         long data = permissionOverwrites.getPermissionOverwriteData();
-        assertThat(data).isNotEqualTo(0L);
-        assertThat(data).isNotEqualTo((long) permissionMask << 32); //It should not include Administrator perm
-        assertThat(data).isEqualTo((long) (CHANNEL_CREATE.asMask() | CHANNEL_MODIFY.asMask()) << 32);
+        assertThat((data & (1L << (CHANNEL_CREATE.asMask() + 32))) == 0)
+                .as("check that permission overwrite doesn't include CHANNEL_CREATE in CHANNEL scope")
+                .isTrue();
+        assertThat((data & (1L << (ADMINISTRATOR.asMask() + 32))) == 0)
+                .as("check that permission overwrite doesn't include ADMINISTRATOR in CHANNEL scope")
+                .isTrue();
+        assertThat(data)
+                .as("check that permission overwrite only includes CHANNEL_MODIFY which can be overwritten in CHANNEL scope")
+                .isEqualTo((long) CHANNEL_MODIFY.asMask() << 32);
     }
 }

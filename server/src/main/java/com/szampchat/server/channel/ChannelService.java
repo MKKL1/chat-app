@@ -36,7 +36,6 @@ public class ChannelService {
     private final CommunityMemberService communityMemberService;
     private final ParticipantService participantService;
     private final ChannelRoleService channelRoleService;
-    private final ModelMapper modelMapper;
     private final EventSink eventSender;
 
     //TODO cache it (this method will be called on most api operations)
@@ -45,13 +44,7 @@ public class ChannelService {
                 .flatMap(channel -> communityMemberService.isMember(channel.getCommunityId(), userId));
     }
 
-    @Deprecated
-    public Mono<Channel> getChannel(Long channelId) {
-        return channelRepository.findById(channelId)
-                .switchIfEmpty(Mono.error(new ChannelNotFoundException(channelId)));
-    }
-
-    public Mono<ChannelDTO> getChannelDTO(Long channelId) {
+    public Mono<ChannelDTO> getChannel(Long channelId) {
         return channelRepository.findById(channelId)
                 .switchIfEmpty(Mono.error(new ChannelNotFoundException(channelId)))
                 .map(this::toDTO);
@@ -151,6 +144,11 @@ public class ChannelService {
 
 
     public ChannelDTO toDTO(Channel channel) {
-        return modelMapper.map(channel, ChannelDTO.class);
+        return ChannelDTO.builder()
+                .id(channel.getId())
+                .name(channel.getName())
+                .type(channel.getType())
+                .communityId(channel.getCommunityId())
+                .build();
     }
 }

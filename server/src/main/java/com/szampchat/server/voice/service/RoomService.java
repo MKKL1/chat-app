@@ -10,8 +10,6 @@ import com.szampchat.server.livekit.dto.RoomDTO;
 import io.livekit.server.AccessToken;
 import io.livekit.server.RoomJoin;
 import io.livekit.server.RoomName;
-import io.livekit.server.RoomServiceClient;
-import livekit.LivekitModels;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -33,7 +31,7 @@ public class RoomService {
     }
 
     public Mono<AccessToken> getTokenForChannel(Long channelId, Long userId) {
-        return channelService.getChannelDTO(channelId)
+        return channelService.getChannel(channelId)
                 .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
                 .switchIfEmpty(Mono.error(new NotVoiceChannelException(channelId)))
                 .flatMap(_ -> userService.findUserDTO(userId)

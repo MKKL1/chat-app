@@ -34,13 +34,13 @@ public class PermissionOverwrites {
     //TODO define context in which overwrite should be applied,
     //For example, invite_create should be community only flag, and it shouldn't be overridden by channel permissions
     public void allow(PermissionScope permissionScope, PermissionFlag permissionFlag) {
-        allow(permissionScope, 1 << permissionFlag.getOffset());
+        allow(permissionScope, 1 << permissionFlag.data.offset());
     }
 
     public void allow(PermissionScope permissionScope, PermissionFlag... permissionFlags) {
         int combinedMask = 0;
         for (PermissionFlag flag : permissionFlags) {
-            combinedMask |= (1 << flag.getOffset());
+            combinedMask |= (1 << flag.data.offset());
         }
 
         allow(permissionScope, combinedMask);
@@ -52,13 +52,13 @@ public class PermissionOverwrites {
     }
 
     public void deny(PermissionScope permissionScope, PermissionFlag permissionFlag) {
-        deny(permissionScope, 1 << permissionFlag.getOffset());
+        deny(permissionScope, 1 << permissionFlag.data.offset());
     }
 
     public void deny(PermissionScope permissionScope, PermissionFlag... permissionFlags) {
         int combinedMask = 0;
         for (PermissionFlag flag : permissionFlags) {
-            combinedMask |= (1 << flag.getOffset());
+            combinedMask |= (1 << flag.data.offset());
         }
 
         deny(permissionScope, combinedMask);
@@ -69,24 +69,30 @@ public class PermissionOverwrites {
         permissionOverwriteData |= (long) (permissionMask & mask) << 32;
     }
 
-    public int apply(Permissions basePermissions) {
+    public int apply(Permissions basePermissions, PermissionScope scope) {
         int newPermissions = basePermissions.getPermissionData();
 
-        newPermissions |= (int) permissionOverwriteData;
-        newPermissions &= ~((int)(permissionOverwriteData >> 32));
+        long validatedOverwriteData = validateAndGet(scope);
+        newPermissions |= (int) validatedOverwriteData;
+        newPermissions &= ~((int)(validatedOverwriteData >> 32));
 
         return newPermissions;
     }
 
-    public Permissions applyToNew(Permissions basePermissions) {
-        return new Permissions(apply(basePermissions));
+    public Permissions applyToNew(Permissions basePermissions, PermissionScope scope) {
+        return new Permissions(apply(basePermissions, scope));
     }
 
-    public long add(PermissionOverwrites other) {
+    public long sum(PermissionOverwrites other) {
         return permissionOverwriteData | other.getPermissionOverwriteData();
     }
 
-    public long add(long other) {
+    public long sum(long other) {
         return permissionOverwriteData | other;
+    }
+
+    public long validateAndGet(PermissionScope scope) {
+        int mask = scope == PermissionScope.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
+        return permissionOverwriteData & mask;
     }
 }
