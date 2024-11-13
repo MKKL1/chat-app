@@ -3,6 +3,7 @@ import {RouterOutlet} from "@angular/router";
 import {AppbarComponent} from "../../../../core/components/appbar/appbar.component";
 import {UserService} from "../../../../core/services/user.service";
 import {EventService} from "../../../../core/events/event.service";
+import {RoleService} from "../../../services/role.service";
 
 @Component({
   selector: 'app-main',
@@ -18,7 +19,8 @@ export class MainComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private eventService: EventService) {
+    private eventService: EventService,
+    private roleService: RoleService) {
   }
 
   ngOnInit(): void {
@@ -32,7 +34,7 @@ export class MainComponent implements OnInit {
     // });
 
     this.eventService.init();
-
+    this.roleService.init();
   }
 
 }

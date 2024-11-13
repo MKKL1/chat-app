@@ -3,8 +3,7 @@
 @if(userService.getUser().id === selectedCommunity().ownerId){
   <button mat-flat-button (click)="deleteCommunity(selectedCommunity().id)">Delete community</button>
   <button mat-flat-button (click)="editCommunity()">Edit community</button>
-
-  @if(checkInvitationPermission()){
-    <button mat-flat-button (click)="createInvitation()">Create link</button>
-  }
+}
+@if(permission()?.canCreateInvitation){
+  <button mat-flat-button (click)="createInvitation()">Create link</button>
 }

@@ -10,6 +10,15 @@ export class CommunityQuery extends QueryEntity<CommunityState> {
     super(store);
   }
 
+  // TODO implement
+  getActiveFull(){
+
+  }
+
+  selectActiveFull(){
+
+  }
+
   isCommunitySelected$: Observable<boolean> =
     this.select(state => state.active !== undefined);
 }

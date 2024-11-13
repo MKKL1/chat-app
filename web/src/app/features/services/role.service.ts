@@ -7,6 +7,10 @@ import {Role} from "../models/role";
 import {Member} from "../models/member";
 import {EventService} from "../../core/events/event.service";
 import {RoleStore} from "../store/role/role.store";
+import {MemberQuery} from "../store/member/member.query";
+import {MemberStore} from "../store/member/member.store";
+import {PermissionService} from "../../core/services/permission.service";
+import {UserService} from "../../core/services/user.service";
 
 interface Operation{
   op: string,
@@ -23,11 +27,19 @@ export class RoleService {
 
   constructor(private http: HttpClient,
               private communityQuery: CommunityQuery,
+              private memberQuery: MemberQuery,
+              private memberStore: MemberStore,
+              private permissionService: PermissionService,
+              private userService: UserService,
               private eventService: EventService,
               private roleStore: RoleStore) {
-      this.eventService.on('ROLE_CREATE_EVENT', this.handleCreateRole);
-      this.eventService.on('ROLE_UPDATE_EVENT', this.handleUpdateRole);
-      this.eventService.on('ROLE_DELETE_EVENT', this.handleDeleteRole);
+  }
+
+  // if user didn't use somewhere this service, callbacks will not be registered
+  init(){
+    this.eventService.on('ROLE_CREATE_EVENT', this.handleCreateRole);
+    this.eventService.on('ROLE_UPDATE_EVENT', this.handleUpdateRole);
+    this.eventService.on('ROLE_DELETE_EVENT', this.handleDeleteRole);
   }
 
   createRole(name: string, permissions: bigint): Observable<Role>{
@@ -76,27 +88,78 @@ export class RoleService {
    this.roleStore.add(res.role);
   };
 
-  // {
-  //   "role": {
-  //   "id": "64234317622018048",
-  //     "name": "rolename",
-  //     "permissionOverwrites": "26",
-  //     "community": "63919088711237632"
-  // },
-  //   "members": [
-  //   "63919009480835072"
-  // ]
-  // }
+// {
+//   "role": {
+//     "id": "69752379515338752",
+//     "name": "message",
+//     "permissionOverwrites": "224",
+//     "community": "69412078128988160"
+//   },
+//   "members": [
+//     "69428467023740928",
+//     "69419377962778624"
+//   ]
+// }
 
   // there is no info if members where deleted only if they were added
   // maybe remove all members from community and cached them again?
   private handleUpdateRole = (res: any) => {
-    console.log(res);
+    const role = res.role;
+    const members = res.members;
+
+    // update role data, not only members data
+
+    const currentMembers = this.memberQuery.getByCommunity(role.community);
+
+    const updatedMembers: Member[] = [];
+    currentMembers.forEach(member => {
+      let roles = [...member.roles];
+
+      if (members.includes(member.id)) {
+        // make sure that role is added to member
+        // and do it only if role isn't already added
+        if (!roles.includes(role.id)) {
+          roles.push(role.id);
+        }
+      } else {
+        // delete role from member
+        const index = roles.indexOf(role.id);
+        if (index !== -1) {
+          roles.splice(index, 1);
+        }
+      }
+
+      updatedMembers.push({ ...member, roles });
+    });
+
+    this.memberStore.upsertMany(updatedMembers);
+
+    // compute current user permissions once again
+    this.permissionService.setCommunityPermission();
+
+    console.log(role);
+    console.log(members);
   };
 
-  private handleDeleteRole = (role: any) => {
-   console.log(role);
-   this.roleStore.remove(role.roleId);
+  private handleDeleteRole = (role: {roleId: string}) => {
+    this.roleStore.remove(role.roleId);
+
+    // handle deleting role from members
+    let updatedMembers: Member[] = [];
+    const currentMembers = this.memberQuery.getByCommunity(this.communityQuery.getActiveId()!);
+    currentMembers.forEach(member => {
+      let roles = [...member.roles];
+      if(roles.includes(role.roleId)){
+        const index = roles.indexOf(role.roleId);
+        if (index !== -1) {
+          roles.splice(index, 1);
+        }
+      }
+      updatedMembers.push({ ...member, roles });
+    });
+
+    this.memberStore.upsertMany(updatedMembers);
+    this.permissionService.setCommunityPermission();
   };
 
 }

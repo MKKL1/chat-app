@@ -12,6 +12,7 @@ import {UserService} from "../../../../core/services/user.service";
 import {CreateCommunityComponent} from "../dialogs/create-community/create-community.component";
 import {Subscription} from "rxjs";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {Permission} from "../../../models/permission";
 
 @Component({
   selector: 'app-overview',
@@ -31,8 +32,10 @@ export class OverviewComponent implements OnInit, OnDestroy{
   readonly dialog: MatDialog = inject(MatDialog);
 
   selectedCommunity: WritableSignal<Community>;
-
   private communitySubscription: Subscription;
+
+  permission = signal<Permission | null>(null);
+  permSub: Subscription;
 
   constructor(
     protected communityQuery: CommunityQuery,
@@ -49,7 +52,11 @@ export class OverviewComponent implements OnInit, OnDestroy{
       }
     );
 
-    console.log(this.permissionService.getPermission());
+    this.permSub = this.permissionService.permissions$
+      .subscribe(permission => {
+        this.permission.set(permission);
+      }
+    );
   }
 
   deleteCommunity(id: string){
@@ -64,12 +71,8 @@ export class OverviewComponent implements OnInit, OnDestroy{
     this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity().id}});
   }
 
-  checkInvitationPermission(): boolean{
-    const permission = this.permissionService.getPermission();
-    return permission.canCreateInvitation;
-  }
-
   ngOnDestroy() {
     this.communitySubscription.unsubscribe();
+    this.permSub.unsubscribe();
   }
 }

@@ -59,6 +59,7 @@ export class CommunityService {
     // This flag will be automatically set after updating community object
     if(community?.fullyFetched !== undefined && community?.fullyFetched){
       this.communityStore.setActive(community.id);
+      this.permissionService.setCommunityPermission();
       return;
     }
 
@@ -119,20 +120,6 @@ export class CommunityService {
         //What if request is cached and permission doesn't change? This should fix it
         //Update: still doing it here, as I am not sure how to do it
 
-        const userId = this.userService.getUser().id;
-        // getting base permission for community and list of
-        // permission overwrite delivered by different roles belonging to user
-        const basePermissions = BigInt(response.community.basePermissions);
-        // getting roles of current user
-        const currentUserRoles = response.members
-          .find((m: any) => m.user.id === userId).roles;
-        const userPermissionsList = response.roles
-          .filter((role: Role) => currentUserRoles.includes(role.id))
-          .map((role: Role) => role.permissionOverwrites)
-          .map((perm: string) => BigInt(perm));
-
-        this.permissionService.setCommunityPermission(basePermissions, userPermissionsList, response.community.ownerId == userId);
-
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again
         this.communityStore.update(id, response.community);
@@ -140,6 +127,7 @@ export class CommunityService {
         // after this community can be referenced by other parts of app
         // as a currently chosen one
         this.communityStore.setActive(response.community.id);
+        this.permissionService.setCommunityPermission();
       },
       error: (err) => console.error(err)
     });
