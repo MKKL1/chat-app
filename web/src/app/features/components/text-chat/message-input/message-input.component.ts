@@ -12,6 +12,7 @@ import {CreateMessageDto} from "../../../models/create.message.dto";
 import {previewImage} from "../../../../shared/utils/utils";
 import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-message-input',
@@ -41,6 +42,8 @@ export class MessageInputComponent {
 
   showEmojiPicker = signal<boolean>(false);
   showGifSearch = signal<boolean>(false);
+
+  permission = toSignal(this.permissionService.permissions$);
 
   @Input() messageToRespond?: { id: string, text: string };
 
@@ -136,10 +139,6 @@ export class MessageInputComponent {
 
   closeGifSearch(){
     this.showGifSearch.set(false);
-  }
-
-  canCreateMessage(){
-    return this.permissionService.getPermission().canCreateMessage;
   }
 
 }

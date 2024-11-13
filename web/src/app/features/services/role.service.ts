@@ -78,7 +78,6 @@ export class RoleService {
     });
 
     console.log(operations);
-
     return this.http.patch(this.api + communityId + '/roles/' + role.id, operations);
   }
 
@@ -88,25 +87,11 @@ export class RoleService {
    this.roleStore.add(res.role);
   };
 
-// {
-//   "role": {
-//     "id": "69752379515338752",
-//     "name": "message",
-//     "permissionOverwrites": "224",
-//     "community": "69412078128988160"
-//   },
-//   "members": [
-//     "69428467023740928",
-//     "69419377962778624"
-//   ]
-// }
-
-  // there is no info if members where deleted only if they were added
-  // maybe remove all members from community and cached them again?
   private handleUpdateRole = (res: any) => {
     const role = res.role;
     const members = res.members;
 
+    // TODO
     // update role data, not only members data
 
     const currentMembers = this.memberQuery.getByCommunity(role.community);

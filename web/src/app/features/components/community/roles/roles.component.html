@@ -1,4 +1,4 @@
-@if(getAdminPermission()){
+@if(permission()?.isAdministrator){
   <button mat-fab (click)="addRole()" class="add-button">
     <mat-icon>add</mat-icon>
   </button>
@@ -8,7 +8,7 @@
       <mat-card appearance="outlined">
         <mat-card-content>
           <p>{{role.name}}</p>
-          @if(getAdminPermission()){
+          @if(permission()?.isAdministrator){
             <button mat-icon-button (click)="editRole(role.id)">
               <mat-icon>edit_note</mat-icon>
             </button>

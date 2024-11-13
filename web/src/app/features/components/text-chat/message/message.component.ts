@@ -19,6 +19,7 @@ import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {MatChip} from "@angular/material/chips";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-message',
@@ -54,6 +55,8 @@ export class MessageComponent implements OnInit{
   openedOptions = signal<boolean>(false);
   fromClient = signal<boolean>(false);
   showReactionPicker = signal<boolean>(false);
+
+  permission = toSignal(this.permissionService.permissions$);
 
   user: User | undefined;
 
@@ -119,13 +122,5 @@ export class MessageComponent implements OnInit{
         id: this.message.id
       }
     });
-  }
-
-  canCreateReaction(): boolean {
-    return this.permissionService.getPermission().canCreateReaction;
-  }
-
-  canDeleteMessage(): boolean {
-    return this.permissionService.getPermission().canDeleteMessage;
   }
 }

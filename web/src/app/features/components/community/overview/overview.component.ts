@@ -13,6 +13,7 @@ import {CreateCommunityComponent} from "../dialogs/create-community/create-commu
 import {Subscription} from "rxjs";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {Permission} from "../../../models/permission";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-overview',
@@ -28,35 +29,17 @@ import {Permission} from "../../../models/permission";
   styleUrl: './overview.component.scss'
 })
 
-export class OverviewComponent implements OnInit, OnDestroy{
+export class OverviewComponent{
   readonly dialog: MatDialog = inject(MatDialog);
 
-  selectedCommunity: WritableSignal<Community>;
-  private communitySubscription: Subscription;
-
-  permission = signal<Permission | null>(null);
-  permSub: Subscription;
+  selectedCommunity = toSignal(this.communityQuery.selectActive());
+  permission = toSignal(this.permissionService.permissions$);
 
   constructor(
     protected communityQuery: CommunityQuery,
     private permissionService: PermissionService,
     private communityService: CommunityService,
     protected userService: UserService) {
-  }
-
-  ngOnInit() {
-    this.communitySubscription =this.communityQuery.selectActive()
-      .subscribe(community => {
-        // when rendering this component active community must be defined
-        this.selectedCommunity = signal(community!);
-      }
-    );
-
-    this.permSub = this.permissionService.permissions$
-      .subscribe(permission => {
-        this.permission.set(permission);
-      }
-    );
   }
 
   deleteCommunity(id: string){
@@ -68,11 +51,6 @@ export class OverviewComponent implements OnInit, OnDestroy{
   }
 
   createInvitation(){
-    this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity().id}});
-  }
-
-  ngOnDestroy() {
-    this.communitySubscription.unsubscribe();
-    this.permSub.unsubscribe();
+    this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity()?.id}});
   }
 }

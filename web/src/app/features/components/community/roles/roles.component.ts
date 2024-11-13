@@ -14,6 +14,7 @@ import {CommunityQuery} from "../../../store/community/community.query";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
 import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-roles',
@@ -36,6 +37,8 @@ export class RolesComponent implements OnDestroy{
 
   private roleSubscription: Subscription;
   private communitySubscription: Subscription;
+
+  permission = toSignal(this.permissionService.permissions$);
 
   constructor(
     private roleQuery: RoleQuery,
@@ -80,10 +83,6 @@ export class RolesComponent implements OnDestroy{
         role: role
       }
     });
-  }
-
-  getAdminPermission(){
-    return this.permissionService.getPermission().isAdministrator;
   }
 
   ngOnDestroy() {
