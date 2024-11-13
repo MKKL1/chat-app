@@ -5,7 +5,9 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import type * as Plugin from "@docusaurus/types/src/plugin";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
+import { ApiPageMetadata, InfoPageMetadata, TagPageMetadata } from "docusaurus-plugin-openapi-docs/src/types";
 import {themes as prismThemes} from 'prism-react-renderer';
+import { createApiPageMD, createApiPageMD2 } from "./createApiDocs";
 
 const config: Config = {
   title: "Szampchat Docs",
@@ -118,12 +120,15 @@ const config: Config = {
         id: "openapi",
         docsPluginId: "classic",
         config: {
-          petstore: {
+          chatapp: {
             specPath: 'static/openapi.yaml',
             outputDir: "docs/api",
             sidebarOptions: {
               groupPathsBy: "tag",
               categoryLinkSource: "tag",
+            },
+            markdownGenerators: {
+              createApiPageMD: createApiPageMD2
             },
           } satisfies OpenApiPlugin.Options,
         } satisfies Plugin.PluginOptions,

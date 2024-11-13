@@ -7,6 +7,8 @@ import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {Channel, ChannelType} from "../models/channel";
 import {environment} from "../../../environment";
+import {KeycloakService} from "keycloak-angular";
+import {CommunityQuery} from "../store/community/community.query";
 
 let voiceChannel: Channel = {
   communityId: '123',
@@ -24,6 +26,18 @@ let textChannel: Channel = {
   overwrites: []
 };
 
+const mockCommunityQuery = {
+  getActiveId: jest.fn().mockReturnValue('123')
+};
+
+
+const mockKeycloakService = {
+  isLoggedIn: jest.fn().mockReturnValue(true),
+  getKeycloakInstance: jest.fn().mockReturnValue({
+    idToken: 'mock-id-token', // Provide a mock token
+  }),
+};
+
 describe('ChannelService', () => {
   let service: ChannelService;
   let voiceChannelStore: VoiceChannelStore;
@@ -38,6 +52,8 @@ describe('ChannelService', () => {
         provideHttpClientTesting(),
         VoiceChannelStore,
         TextChannelStore,
+        { provide: KeycloakService, useValue: mockKeycloakService },
+        { provide: CommunityQuery, useValue: mockCommunityQuery }
       ],
     });
 
@@ -99,7 +115,7 @@ describe('ChannelService', () => {
       expect(voiceChannelState.entities).toEqual([]);
     });
 
-    const req = httpTesting.expectOne(`${environment.api}channels/${mockNewChannel.communityId}`);
+    const req = httpTesting.expectOne(`${environment.api}communities/123/channels`);
     expect(req.request.method).toBe('POST');
     req.flush(mockNewChannel);
   });

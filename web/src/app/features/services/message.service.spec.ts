@@ -5,6 +5,14 @@ import {provideHttpClient} from "@angular/common/http";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {MessageStore} from "../store/message/message.store";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
+import {KeycloakService} from "keycloak-angular";
+
+const mockKeycloakService = {
+  isLoggedIn: jest.fn().mockReturnValue(true),
+  getKeycloakInstance: jest.fn().mockReturnValue({
+    idToken: 'mock-id-token', // Provide a mock token
+  }),
+};
 
 describe('MessageService', () => {
   let service: MessageService;
@@ -17,7 +25,8 @@ describe('MessageService', () => {
       providers: [
         MessageService,
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        { provide: KeycloakService, useValue: mockKeycloakService },
       ]
     });
 
