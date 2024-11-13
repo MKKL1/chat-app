@@ -101,8 +101,8 @@ public class SecurityConfig {
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
                         //ChannelController
-                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/channels")
-                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
+//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/channels")
+//                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
                         .pathMatchers(HttpMethod.PUT, "/channels/{channelId}")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
                         .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}")
@@ -164,7 +164,7 @@ public class SecurityConfig {
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
                         .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}/reactions")
                             .access(authMan.create(authFunc.isParticipant, PermissionContext.CHANNEL, PermissionFlag.REACTION_CREATE))
-                        .anyExchange().denyAll()
+                        .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
