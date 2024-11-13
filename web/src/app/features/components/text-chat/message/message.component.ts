@@ -73,8 +73,6 @@ export class MessageComponent implements OnInit{
     this.user = this.memberQuery.getAll({
       filterBy: entity => entity.storeId === this.communityQuery.getActiveId()! + this.message.userId!
     })[0].user;
-
-    console.log(this.message);
   }
 
   openOptions(){

@@ -188,8 +188,6 @@ export class MessageService{
 
   private handleCreateReaction = (res: any) => {
     const isCurrentUser = this.userService.getUser().id === res.userId;
-
-    console.log(res);
     this.messageStore.update(res.messageId, (message) => {
       const existingReaction = message.reactions.find((reaction) => reaction.emoji === res.emoji);
       if (existingReaction) {
