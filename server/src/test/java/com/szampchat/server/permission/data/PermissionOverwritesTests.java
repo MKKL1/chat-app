@@ -2,8 +2,6 @@ package com.szampchat.server.permission.data;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.BitSet;
-
 import static com.szampchat.server.permission.data.PermissionFlag.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -14,7 +12,7 @@ public class PermissionOverwritesTests {
         int permissionMask = CHANNEL_CREATE.asMask() | CHANNEL_MODIFY.asMask() | ADMINISTRATOR.asMask();
 
         PermissionOverwrites permissionOverwrites = new PermissionOverwrites(0);
-        permissionOverwrites.allow(PermissionContext.CHANNEL, permissionMask);
+        permissionOverwrites.allow(PermissionScope.CHANNEL, permissionMask);
 
         long data = permissionOverwrites.getPermissionOverwriteData();
         assertThat(data).isNotEqualTo(0L);
@@ -27,7 +25,7 @@ public class PermissionOverwritesTests {
         int permissionMask = CHANNEL_CREATE.asMask() | CHANNEL_MODIFY.asMask() | ADMINISTRATOR.asMask();
 
         PermissionOverwrites permissionOverwrites = new PermissionOverwrites(0);
-        permissionOverwrites.deny(PermissionContext.CHANNEL, permissionMask);
+        permissionOverwrites.deny(PermissionScope.CHANNEL, permissionMask);
 
         long data = permissionOverwrites.getPermissionOverwriteData();
         assertThat(data).isNotEqualTo(0L);

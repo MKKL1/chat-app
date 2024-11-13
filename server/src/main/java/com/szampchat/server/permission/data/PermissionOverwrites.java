@@ -33,39 +33,39 @@ public class PermissionOverwrites {
 
     //TODO define context in which overwrite should be applied,
     //For example, invite_create should be community only flag, and it shouldn't be overridden by channel permissions
-    public void allow(PermissionContext permissionContext, PermissionFlag permissionFlag) {
-        allow(permissionContext, 1 << permissionFlag.getOffset());
+    public void allow(PermissionScope permissionScope, PermissionFlag permissionFlag) {
+        allow(permissionScope, 1 << permissionFlag.getOffset());
     }
 
-    public void allow(PermissionContext permissionContext, PermissionFlag... permissionFlags) {
+    public void allow(PermissionScope permissionScope, PermissionFlag... permissionFlags) {
         int combinedMask = 0;
         for (PermissionFlag flag : permissionFlags) {
             combinedMask |= (1 << flag.getOffset());
         }
 
-        allow(permissionContext, combinedMask);
+        allow(permissionScope, combinedMask);
     }
 
-    public void allow(PermissionContext permissionContext, int permissionMask) {
-        int mask = permissionContext == PermissionContext.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
+    public void allow(PermissionScope permissionScope, int permissionMask) {
+        int mask = permissionScope == PermissionScope.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
         permissionOverwriteData |= (permissionMask & mask);
     }
 
-    public void deny(PermissionContext permissionContext, PermissionFlag permissionFlag) {
-        deny(permissionContext, 1 << permissionFlag.getOffset());
+    public void deny(PermissionScope permissionScope, PermissionFlag permissionFlag) {
+        deny(permissionScope, 1 << permissionFlag.getOffset());
     }
 
-    public void deny(PermissionContext permissionContext, PermissionFlag... permissionFlags) {
+    public void deny(PermissionScope permissionScope, PermissionFlag... permissionFlags) {
         int combinedMask = 0;
         for (PermissionFlag flag : permissionFlags) {
             combinedMask |= (1 << flag.getOffset());
         }
 
-        deny(permissionContext, combinedMask);
+        deny(permissionScope, combinedMask);
     }
 
-    public void deny(PermissionContext permissionContext, int permissionMask) {
-        int mask = permissionContext == PermissionContext.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
+    public void deny(PermissionScope permissionScope, int permissionMask) {
+        int mask = permissionScope == PermissionScope.CHANNEL ? channelOverwriteMask : Integer.MAX_VALUE;
         permissionOverwriteData |= (long) (permissionMask & mask) << 32;
     }
 

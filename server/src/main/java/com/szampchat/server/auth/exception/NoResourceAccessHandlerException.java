@@ -1,4 +1,4 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.exception;
 
 public class NoResourceAccessHandlerException extends RuntimeException{
 }

@@ -1,6 +1,8 @@
 package com.szampchat.server.community;
 
 import com.szampchat.server.auth.CurrentUser;
+import com.szampchat.server.auth.annotation.HasPermission;
+import com.szampchat.server.auth.annotation.ResourceId;
 import com.szampchat.server.community.dto.*;
 import com.szampchat.server.community.dto.request.CommunityCreateRequest;
 import com.szampchat.server.community.dto.request.JoinRequest;
@@ -9,6 +11,8 @@ import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
+import com.szampchat.server.permission.data.PermissionFlag;
+import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -35,7 +40,6 @@ import static com.szampchat.server.shared.docs.DocsProperties.*;
 @Validated //?
 public class CommunityController {
     private final CommunityService communityService;
-    private final CommunityMemberService communityMemberService;
     private final InvitationService invitationService;
 
 
@@ -43,8 +47,8 @@ public class CommunityController {
     @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Get community")
 
+    @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @GetMapping("/{communityId}")
-//    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<CommunityDTO> getCommunity(@PathVariable Long communityId) {
         return communityService.findById(communityId);
     }
@@ -57,6 +61,7 @@ public class CommunityController {
                     Ideally it should be used once when opening community
                     and then updated using websocket events""")
 
+    @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @GetMapping("/{communityId}/info")
 //    @PreAuthorize("@communityMemberService.isMember(#communityId)")
     public Mono<FullCommunityInfoDTO> getFullCommunityInfo(@PathVariable Long communityId){
@@ -83,9 +88,10 @@ public class CommunityController {
                     Creates temporary or permanent(?) invitation link to community.
                     This invitation can then be shared with any user, who can then join given community""")
 
+    @HasPermission(scope = PermissionScope.COMMUNITY, value = PermissionFlag.INVITE_CREATE)
+    @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @PostMapping("/{communityId}/invite")
-//    @PreAuthorize("@communityService.isOwner(#communityId)")
-    public Mono<InvitationResponseDTO> inviteToCommunity(@PathVariable Long communityId){
+    public Mono<InvitationResponseDTO> inviteToCommunity(@ResourceId @PathVariable Long communityId){
         return invitationService.createInvitation(communityId, 5);
     }
 
@@ -98,7 +104,6 @@ public class CommunityController {
 
     //TODO not sure what should be response
     @PostMapping("/{communityId}/join")
-//    @PreAuthorize("@communityMemberService.isNotMember(#communityId)")
     public Mono<CommunityMember> joinCommunity(@PathVariable Long communityId, @RequestBody JoinRequest joinRequest, CurrentUser currentUser) {
         return invitationService.addMemberToCommunity(communityId, joinRequest.invitationId(), currentUser.getUserId());
     }
@@ -125,9 +130,11 @@ public class CommunityController {
             description = """
                     Edits community""")
 
+    @HasPermission(scope = PermissionScope.COMMUNITY, value = PermissionFlag.ADMINISTRATOR)
+    @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @PatchMapping("/{communityId}")
     public Mono<CommunityDTO> editCommunity(
-            @PathVariable Long communityId,
+            @ResourceId @PathVariable Long communityId,
             @RequestPart("community") Community community, //TODO DTO
             @RequestPart("file") FilePart file) {
         return communityService.editCommunity(communityId, community, file);
@@ -139,6 +146,7 @@ public class CommunityController {
             description = """
                     Removes community""")
 
+    //TODO isOwner method here
     @DeleteMapping("/{communityId}")
     public Mono<Void> deleteCommunity(@PathVariable Long communityId) {
         return communityService.delete(communityId);

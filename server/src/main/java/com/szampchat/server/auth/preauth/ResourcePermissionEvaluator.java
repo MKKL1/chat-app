@@ -1,11 +1,16 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.preauth;
 
-import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.auth.exception.InvalidResourceTypeException;
+import com.szampchat.server.auth.exception.UnknownCommunityScopeException;
+import com.szampchat.server.auth.handler.ResourceAccessHandler;
+import com.szampchat.server.permission.PermissionService;
+import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.permission.data.PermissionFlag;
-import com.szampchat.server.permission.data.ResourceTypes;
+import com.szampchat.server.auth.ResourceTypes;
+import com.szampchat.server.role.dto.RoleDTO;
+import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -18,13 +23,18 @@ public class ResourcePermissionEvaluator {
     private final ResourceAccessBeanManager handlerManager;
     private final CustomPrincipalProvider customPrincipalProvider;
     private final PermissionService permissionService;
+    private final RoleService roleService;
 
-    public ResourcePermissionEvaluator(ResourceAccessBeanManager handlerManager, CustomPrincipalProvider customPrincipalProvider, PermissionService permissionService) {
+    public ResourcePermissionEvaluator(ResourceAccessBeanManager handlerManager,
+                                       CustomPrincipalProvider customPrincipalProvider,
+                                       PermissionService permissionService,
+                                       RoleService roleService) {
         resourceTypeNameMap = Arrays.stream(ResourceTypes.values())
                 .collect(Collectors.toMap(ResourceTypes::getTypeId, resourceTypes -> resourceTypes));
         this.handlerManager = handlerManager;
         this.customPrincipalProvider = customPrincipalProvider;
         this.permissionService = permissionService;
+        this.roleService = roleService;
     }
 
     public Mono<Boolean> canAccess(long resourceId, String resourceType) {
@@ -41,7 +51,7 @@ public class ResourcePermissionEvaluator {
                 .onErrorReturn(false);
     }
 
-    public Mono<Boolean> hasPermission(long resourceId, PermissionContext context, PermissionFlag... permissionFlags) {
+    public Mono<Boolean> hasPermission(long resourceId, PermissionScope context, PermissionFlag... permissionFlags) {
         switch (context) {
             case COMMUNITY -> {
                 return permissionService.hasPermissionInCommunity(resourceId, permissionFlags);
@@ -49,7 +59,14 @@ public class ResourcePermissionEvaluator {
             case CHANNEL -> {
                 return permissionService.hasPermissionInChannel(resourceId, permissionFlags);
             }
+            case ROLE -> {
+                return roleService.getRole(resourceId)
+                        .map(RoleDTO::getCommunity)
+                        .flatMap(communityId -> permissionService.hasPermissionInCommunity(communityId, permissionFlags));
+            }
+            default -> {
+                return Mono.error(new UnknownCommunityScopeException());
+            }
         }
-        return Mono.just(false);
     }
 }

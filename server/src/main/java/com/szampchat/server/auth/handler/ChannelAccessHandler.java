@@ -1,8 +1,7 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.handler;
 
 import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.community.service.CommunityMemberService;
-import com.szampchat.server.permission.data.ResourceTypes;
+import com.szampchat.server.auth.ResourceTypes;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;

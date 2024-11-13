@@ -63,7 +63,6 @@ public class UserController {
     @Operation(summary = "Get user")
 
     @GetMapping("/users/{userId}")
-//    @PreAuthorize("//Current user knows specified user")
     public Mono<UserDTO> getUser(@PathVariable Long userId) {
         //TODO move dto mapping to service
         return userService.findUserDTO(userId);

@@ -9,7 +9,7 @@ import com.szampchat.server.community.repository.CommunityMemberRepository;
 import com.szampchat.server.community.repository.CommunityRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
-import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.permission.data.PermissionFlag;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.Permissions;
@@ -194,7 +194,7 @@ public class TestDataGenerator {
 
             for (Role role : pickNRandom(roles, 2)) {
                 PermissionOverwrites permissionOverwrites = new PermissionOverwrites();
-                permissionOverwrites.allow(PermissionContext.CHANNEL, PermissionFlag.CHANNEL_CREATE, PermissionFlag.REACTION_CREATE);
+                permissionOverwrites.allow(PermissionScope.CHANNEL, PermissionFlag.CHANNEL_CREATE, PermissionFlag.REACTION_CREATE);
 
                 channelRoleRepository.save(ChannelRole.builder()
                         .channelId(savedChannel.getId())

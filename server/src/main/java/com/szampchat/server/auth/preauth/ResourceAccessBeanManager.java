@@ -1,6 +1,8 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.preauth;
 
-import com.szampchat.server.permission.data.ResourceTypes;
+import com.szampchat.server.auth.exception.NoResourceAccessHandlerException;
+import com.szampchat.server.auth.handler.ResourceAccessHandler;
+import com.szampchat.server.auth.ResourceTypes;
 import lombok.Getter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.handler;
 
-import com.szampchat.server.permission.data.ResourceTypes;
+import com.szampchat.server.auth.ResourceTypes;
 import reactor.core.publisher.Mono;
 
 public interface ResourceAccessHandler {

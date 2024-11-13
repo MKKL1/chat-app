@@ -1,13 +1,11 @@
 package com.szampchat.server.channel;
 
-import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.dto.request.ChannelCreateRequest;
 import com.szampchat.server.channel.dto.request.ChannelEditRequest;
-import com.szampchat.server.channel.entity.Channel;
-import com.szampchat.server.permission.HasPermission;
-import com.szampchat.server.permission.ResourceId;
-import com.szampchat.server.permission.data.PermissionContext;
+import com.szampchat.server.auth.annotation.HasPermission;
+import com.szampchat.server.auth.annotation.ResourceId;
+import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.permission.data.PermissionFlag;
 import com.szampchat.server.shared.docs.OperationDocs;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,9 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -37,7 +33,7 @@ public class ChannelController {
     @OperationDocs({RESPONSE_419, REQUIRES_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Create channel")
 
-    @HasPermission(context = PermissionContext.COMMUNITY, value = PermissionFlag.CHANNEL_CREATE)
+    @HasPermission(scope = PermissionScope.COMMUNITY, value = PermissionFlag.CHANNEL_CREATE)
     @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @PostMapping("/communities/{communityId}/channels")
     public Mono<ChannelDTO> createChannel(@RequestBody ChannelCreateRequest channelCreateRequest,
@@ -50,11 +46,11 @@ public class ChannelController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Edit channel")
 
+    @HasPermission(scope = PermissionScope.CHANNEL, value = PermissionFlag.CHANNEL_MODIFY)
+    @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @PutMapping("/channels/{channelId}")
-    //@PreAuthorize("@channelService.isParticipant(#channelId, #currentUser.userId)")
-    //Check if user has permission to edit this channel
     public Mono<ChannelDTO> editChannel(@PathVariable Long channelId,
-                                        @Valid @RequestBody ChannelEditRequest channel) {
+                                        @ResourceId @Valid @RequestBody ChannelEditRequest channel) {
         return channelService.editChannel(channelId, channel);
     }
 
@@ -63,6 +59,8 @@ public class ChannelController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Delete channel")
 
+    @HasPermission(scope = PermissionScope.CHANNEL, value = PermissionFlag.CHANNEL_MODIFY)
+    @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @DeleteMapping("/channels/{channelId}")
     public Mono<Void> deleteChannel(@PathVariable Long channelId) {
         return channelService.deleteChannel(channelId);

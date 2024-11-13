@@ -1,18 +1,14 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.preauth;
 
-import org.aopalliance.intercept.MethodInvocation;
+import com.szampchat.server.auth.annotation.HasPermission;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
-import org.springframework.aop.support.annotation.AnnotationMethodMatcher;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.authorization.method.AuthorizationInterceptorsOrder;
-import org.springframework.security.authorization.method.AuthorizationManagerAfterReactiveMethodInterceptor;
 import org.springframework.security.authorization.method.AuthorizationManagerBeforeReactiveMethodInterceptor;
-import org.springframework.security.authorization.method.MethodInvocationResult;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 
 @Configuration

@@ -1,4 +1,4 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.exception;
 
 public class InvalidResourceTypeException extends RuntimeException {
     public InvalidResourceTypeException(String resource) {

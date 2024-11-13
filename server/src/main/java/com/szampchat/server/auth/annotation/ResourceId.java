@@ -1,4 +1,4 @@
-package com.szampchat.server.permission;
+package com.szampchat.server.auth.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
