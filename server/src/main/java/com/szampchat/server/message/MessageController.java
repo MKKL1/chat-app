@@ -4,7 +4,7 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.auth.annotation.HasPermission;
 import com.szampchat.server.auth.annotation.ResourceId;
 import com.szampchat.server.message.dto.*;
-import com.szampchat.server.message.dto.request.EditMessageRequest;
+import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.request.MessageCreateRequest;
 import com.szampchat.server.message.entity.Message;
@@ -75,7 +75,7 @@ public class MessageController {
     //TODO add is owner of message
     @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageRequest editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
+    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody MessageEditRequest editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
         return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
     }
 

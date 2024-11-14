@@ -5,10 +5,10 @@ import com.szampchat.server.auth.annotation.HasPermission;
 import com.szampchat.server.auth.annotation.ResourceId;
 import com.szampchat.server.community.dto.*;
 import com.szampchat.server.community.dto.request.CommunityCreateRequest;
+import com.szampchat.server.community.dto.request.CommunityEditRequest;
 import com.szampchat.server.community.dto.request.JoinRequest;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
-import com.szampchat.server.community.service.CommunityMemberService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.community.service.InvitationService;
 import com.szampchat.server.permission.data.PermissionFlag;
@@ -135,7 +135,7 @@ public class CommunityController {
     @PatchMapping("/{communityId}")
     public Mono<CommunityDTO> editCommunity(
             @ResourceId @PathVariable Long communityId,
-            @RequestPart("community") Community community, //TODO DTO
+            @RequestPart("community") CommunityEditRequest community, //TODO DTO
             @RequestPart("file") FilePart file) {
         return communityService.editCommunity(communityId, community, file);
     }

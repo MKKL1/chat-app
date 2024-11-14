@@ -1,7 +1,6 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.upload.FileNotFoundException;
-import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FilePathType;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
@@ -117,7 +116,7 @@ public class UserService {
                     }
                 }
 
-                return fileStorageService.save(file, FilePath.AVATAR)
+                return fileStorageService.save(file, FilePathType.AVATAR)
                     .flatMap(filepath -> {
                         user.setImageUrl(filepath);
                         return userRepository.save(user)

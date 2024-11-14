@@ -20,8 +20,7 @@ import com.szampchat.server.role.service.RoleService;
 import com.szampchat.server.community.dto.RoleNoCommunityDTO;
 import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
-import com.szampchat.server.upload.FileNotFoundException;
-import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FilePathType;
 import com.szampchat.server.upload.FileStorageService;
 import com.szampchat.server.user.UserService;
 import lombok.AllArgsConstructor;
@@ -115,7 +114,7 @@ public class CommunityService {
     public Mono<Community> save(CommunityCreateRequest communityDTO, FilePart file, Long ownerId) {
         // storing community image
         Mono<String> imageUrlMono = (file != null)
-                ? fileStorageService.save(file, FilePath.COMMUNITY)
+                ? fileStorageService.save(file, FilePathType.COMMUNITY)
                 : Mono.just(null);
 
         // creating file to save in database
@@ -169,7 +168,7 @@ public class CommunityService {
 
                 //Save image if changed
                 return Mono.justOrEmpty(file)
-                        .flatMap(filePart -> fileStorageService.save(filePart, FilePath.COMMUNITY))
+                        .flatMap(filePart -> fileStorageService.save(filePart, FilePathType.COMMUNITY))
                         .doOnNext(existingCommunity::setImageUrl)
                         //Save community
                         .then(communityRepository.save(existingCommunity))

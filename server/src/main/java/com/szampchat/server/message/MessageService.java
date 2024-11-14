@@ -5,6 +5,7 @@ import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.*;
 import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.request.MessageCreateRequest;
+import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
@@ -13,10 +14,9 @@ import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
 import com.szampchat.server.reaction.service.ReactionService;
-import com.szampchat.server.reaction.dto.ReactionOverviewBulkDTO;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.snowflake.SnowflakeGen;
-import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FilePathType;
 import com.szampchat.server.upload.FileStorageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,6 @@ public class MessageService {
     private final EventSink eventSender;
     private final FileStorageService fileStorageService;
 
-    //Can't cache as it requires current user id
     //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
     //TODO separate cacheable and non-cacheable parts of MessageFullDTO
     public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesRequest fetchMessagesRequest, Long currentUserId) {
@@ -52,7 +51,6 @@ public class MessageService {
             return getMessagesBulk(channelId, fetchMessagesRequest.getMessages(), currentUserId);
         }
 
-        //TODO no need to wrapping it in Mono.just
         return Mono.just(fetchMessagesRequest)
                 .flatMapMany(request -> {
                     int limit = request.getLimit() != null ? request.getLimit() : 10;
@@ -85,27 +83,24 @@ public class MessageService {
 
                 // checking if file is attached and saving it
                 if (file != null) {
-                    return fileStorageService.save(file, FilePath.MESSAGE)
-                        .flatMap(filePath -> {
-                            MessageAttachment attachment = MessageAttachment.builder()
+                    return fileStorageService.upload(file, FilePathType.MESSAGE)
+                        .map(fileDTO -> MessageAttachment.builder()
                                 .message(savedMessage.getId())
                                 .name(file.filename())
                                 .channel(channelId)
-                                .path(filePath)
+                                .path(fileDTO.getId().toString())//TODO should be renamed to imageId
                                 .size(0)
-                                .build();
-                            return messageAttachmentRepository.save(attachment)
-                                .flatMap(messageAttachment -> {
+                                .build()
+                        ).flatMap(attachment -> messageAttachmentRepository.save(attachment) //TODO move to service
+                                .map(messageAttachment -> {
                                     messageDTO.setAttachments(List.of(modelMapper.map(messageAttachment, MessageAttachmentDTO.class)));
-                                    return Mono.just(messageDTO);
-                                });
-                        });
-                } else {
-                    return Mono.just(messageDTO);
+                                    return messageDTO;
+                                }));
                 }
+                return Mono.just(messageDTO);
             })
             // sending message to listening users
-            // TODO send path to saved file
+            // TODO send path to saved file. ????
             .doOnSuccess(savedMessageDTO -> {
                 eventSender.publish(MessageCreateEvent.builder()
                     .data(savedMessageDTO)
@@ -122,14 +117,13 @@ public class MessageService {
                 .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
-    public Mono<Message> editMessage(Long messageId, Long channelId, String text, Long userId) {
+    public Mono<Message> editMessage(Long messageId, Long channelId, Long userId, MessageEditRequest request) {
         return getMessage(messageId, channelId)
             .flatMap(message -> {
 //                if(!Objects.equals(message.getUser(), userId)){
 //                    return Mono.error(new Exception("Message doesn't belong to user"));
 //                }
-
-                message.setText(text);
+                message.setText(request.text());
                 return messageRepository.save(message);
             });
     }
@@ -139,6 +133,7 @@ public class MessageService {
             .flatMap(message -> {
                 // TODO find attachment and delete it
                 // deleting attached file
+//                fileStorageService.delete()
 
 
                 //TODO check in pre authorize

@@ -8,8 +8,6 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.Instant;
 @Data
 @NoArgsConstructor
-@Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @Table(name = "messages")
