@@ -54,20 +54,19 @@ export class RoleService {
 
   editRole(roleId: string, name?: string, permissions?: string){
     const communityId = this.communityQuery.getActiveId();
-
     const operations: Operation[] = []
 
     if(name){
       operations.push({
         op: 'replace',
-        path: '/name',
+        path: '/role/name',
         value: name});
     }
 
     if(permissions){
       operations.push({
         op: 'replace',
-        path: '/permissionOverwrites',
+        path: '/role/permissionOverwrites',
         value: permissions
       });
     }
@@ -118,11 +117,9 @@ export class RoleService {
     const role = res.role;
     const members = res.members;
 
-    // TODO
-    // update role data, not only members data
+    this.roleStore.update(role.id, role);
 
     const currentMembers = this.memberQuery.getByCommunity(role.community);
-
     const updatedMembers: Member[] = [];
     currentMembers.forEach(member => {
       let roles = [...member.roles];
