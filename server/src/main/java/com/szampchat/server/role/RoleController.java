@@ -67,7 +67,7 @@ public class RoleController {
 
     @HasPermission(scope = PermissionScope.ROLE, value = PermissionFlag.ADMINISTRATOR)
     @PreAuthorize("@auth.canAccess(#roleId, 'ROLE')")
-    @PatchMapping("/communities/{communityId}/roles/{roleId}")
+    @PatchMapping("/roles/{roleId}")
     public Mono<RoleWithMembersDTO> editRole(@ResourceId @PathVariable Long roleId,
                                              @RequestBody JsonPatch jsonPatch) {
         return roleService.update(roleId, jsonPatch);
@@ -80,7 +80,7 @@ public class RoleController {
 
     @HasPermission(scope = PermissionScope.ROLE, value = PermissionFlag.ADMINISTRATOR)
     @PreAuthorize("@auth.canAccess(#roleId, 'ROLE')")
-    @DeleteMapping("/communities/{communityId}/roles/{roleId}")
+    @DeleteMapping("/roles/{roleId}")
     public Mono<Void> deleteRole(@ResourceId @PathVariable Long roleId) {
         return roleService.delete(roleId);
     }
