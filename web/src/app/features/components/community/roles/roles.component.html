@@ -1,7 +1,5 @@
 @if(permission()?.isAdministrator){
-  <button mat-fab (click)="addRole()" class="add-button">
-    <mat-icon>add</mat-icon>
-  </button>
+  <button mat-flat-button (click)="addRole()" style="margin-top: 10px">Add new role</button>
 }
 <mat-list role="list">
   @for (role of roles(); track role.id){

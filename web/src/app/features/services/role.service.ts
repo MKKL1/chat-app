@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {environment} from "../../../environment";
 import {HttpClient} from "@angular/common/http";
 import {CommunityQuery} from "../store/community/community.query";
-import {Observable} from "rxjs";
+import {EMPTY, Observable} from "rxjs";
 import {Role} from "../models/role";
 import {Member} from "../models/member";
 import {EventService} from "../../core/events/event.service";
@@ -50,6 +50,33 @@ export class RoleService {
       permissionOverwrites: permissions.toString(),
       members: []
     });
+  }
+
+  editRole(roleId: string, name?: string, permissions?: string){
+    const communityId = this.communityQuery.getActiveId();
+
+    const operations: Operation[] = []
+
+    if(name){
+      operations.push({
+        op: 'replace',
+        path: '/name',
+        value: name});
+    }
+
+    if(permissions){
+      operations.push({
+        op: 'replace',
+        path: '/permissionOverwrites',
+        value: permissions
+      });
+    }
+
+    if(operations?.length === 0){
+      return EMPTY;
+    }
+
+    return this.http.patch(`${this.api}${communityId}/roles/${roleId}`,operations);
   }
 
   deleteRole(id: string){

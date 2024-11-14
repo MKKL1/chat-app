@@ -98,10 +98,6 @@ export class RoleDialogComponent {
 
       this.roleForm.addControl(permissionKeys[Number(i)], new FormControl(startValue));
     }
-
-    console.log(this.roleForm);
-    console.log(this.roleToUpdate);
-    console.log(this.permissions);
   }
 
   onSubmit(){
@@ -115,8 +111,6 @@ export class RoleDialogComponent {
         // status can be -> allow, denied or none
         // it has to replace boolean value, because of p-select element
         const status = control?.value.value;
-        console.log(status);
-
         if(status === 'allow'){
           this.permissionOverride = setBit(this.permissionOverride, currentBit);
         } else if(status === 'denied'){
@@ -140,15 +134,29 @@ export class RoleDialogComponent {
 
   createRole(){
     this.roleService.createRole(this.roleName.value!, this.permissionOverride)
-      .subscribe(res => {
-        console.log(res);
+      .subscribe(_ => {
         this.dialogRef.close();
       }
     );
   }
 
   editRole(){
+    let nameChanged = false;
+    let permissionChanged = false;
 
+    if(this.roleName.value !== this.roleToUpdate?.name){
+      nameChanged = true;
+    }
+
+    if(this.permissionOverride !== BigInt(this.roleToUpdate?.permissionOverwrites!)){
+      permissionChanged = true;
+    }
+
+    this.roleService.editRole(
+      this.roleToUpdate?.id!,
+      nameChanged ? this.roleName.value! : undefined,
+      permissionChanged ? String(this.permissionOverride!) : undefined
+    ).subscribe(_ => this.dialogRef.close());
   }
 
   protected readonly Object = Object;

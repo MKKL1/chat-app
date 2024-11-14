@@ -15,14 +15,6 @@
           <h1>{{selectedRole()?.name}}</h1>
           <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
             <div class="flex">
-              <p>Is administrator</p>
-              <p-selectButton [options]="roleOptions" optionLabel="icon">
-                <ng-template let-item pTemplate>
-                  <i [class]="item.icon"></i>
-                </ng-template>
-              </p-selectButton>
-            </div>
-            <div class="flex">
               <p>Modify channel</p>
               <p-selectButton [options]="roleOptions" optionLabel="icon">
                 <ng-template let-item pTemplate>
@@ -54,7 +46,7 @@
                 </ng-template>
               </p-selectButton>
             </div>
-            <button mat-button>Submit</button>
+            <button mat-button type="submit">Save role</button>
           </form>
         }
       </div>

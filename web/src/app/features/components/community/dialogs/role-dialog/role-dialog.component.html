@@ -3,11 +3,17 @@
   <mat-dialog-content>
     <mat-form-field appearance="outline">
       <mat-label>Role name</mat-label>
-      <input matInput [formControl]="roleName">
+      <input matInput [formControl]="roleName" required>
+      @if(roleName.hasError('required')){
+        <mat-error>Role name is required</mat-error>
+      }
+      @if(roleName.hasError('minlength')){
+        <mat-error>Role name must be at least 3 characters long</mat-error>
+      }
     </mat-form-field>
     @for(key of Object.keys(permissions); track key){
       @if(key !== 'rawValue'){
-        <div class="flex">
+        <div class="select">
           <p>{{ formatRoleName(key) }}</p>
           <p-selectButton [options]="roleOptions"
                           optionLabel="icon"
@@ -22,6 +28,6 @@
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button>{{ editing ? 'Edit' : 'Create'}}</button>
+    <button mat-button [disabled]="!roleName.valid">{{ editing ? 'Edit' : 'Create'}}</button>
   </mat-dialog-actions>
 </form>

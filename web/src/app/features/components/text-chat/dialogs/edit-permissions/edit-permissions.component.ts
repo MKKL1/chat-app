@@ -77,8 +77,11 @@ export class EditPermissionsComponent implements OnInit{
     console.log(this.roles());
   }
 
+  // TODO add patch for channel in api
   selectRole(role: Role){
     this.selectedRole.set(role);
+
+    // get ovewrties from overwrites in channel
   }
 
   onSubmit(){

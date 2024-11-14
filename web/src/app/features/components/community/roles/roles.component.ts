@@ -1,6 +1,6 @@
 import {Component, inject, OnDestroy, signal} from '@angular/core';
 import {MatTableModule} from "@angular/material/table";
-import {MatFabButton, MatIconButton} from "@angular/material/button";
+import {MatButton, MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
@@ -25,7 +25,8 @@ import {toSignal} from "@angular/core/rxjs-interop";
     MatIcon,
     MatFabButton,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+    MatButton
   ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
