@@ -41,12 +41,12 @@ export class RoleService {
   }
 
   deleteRole(id: string){
-    const communityId = this.communityQuery.getActiveId();
-    this.http.delete(this.api + communityId + "/roles/" + id).subscribe();
+    // const communityId = this.communityQuery.getActiveId();
+    this.http.delete(environment.api + "roles/" + id).subscribe();
   }
 
   changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]): Observable<any>{
-    const communityId = this.communityQuery.getActiveId();
+    // const communityId = this.communityQuery.getActiveId();
     const operations: Operation[] = [];
 
     membersToAddIds.forEach(m => {
@@ -67,7 +67,7 @@ export class RoleService {
 
     console.log(operations);
 
-    return this.http.patch(this.api + communityId + '/roles/' + role.id, operations);
+    return this.http.patch(environment.api + 'roles/' + role.id, operations);
   }
 
   // handling events
