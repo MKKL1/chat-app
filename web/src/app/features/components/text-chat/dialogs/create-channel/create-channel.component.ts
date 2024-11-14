@@ -128,7 +128,10 @@ export class CreateChannelComponent implements OnInit{
 
   editPermissions(){
     this.dialog.open(EditPermissionsComponent, {
-      data: {communityId: this.communityId},
+      data: {
+        communityId: this.communityId,
+        channelId: this.id
+      },
       width: '60vw'
     });
   }

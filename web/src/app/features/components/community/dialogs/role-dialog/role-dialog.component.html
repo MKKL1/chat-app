@@ -11,19 +11,17 @@
         <mat-error>Role name must be at least 3 characters long</mat-error>
       }
     </mat-form-field>
-    @for(key of Object.keys(permissions); track key){
-      @if(key !== 'rawValue'){
-        <div class="select">
-          <p>{{ formatRoleName(key) }}</p>
-          <p-selectButton [options]="roleOptions"
-                          optionLabel="icon"
-                          formControlName="{{key}}">
-            <ng-template let-item pTemplate>
-              <i [class]="item.icon"></i>
-            </ng-template>
-          </p-selectButton>
-        </div>
-      }
+    @for(key of permissions.getPermissionsNames(); track key){
+      <div class="select">
+        <p>{{ formatRoleName(key) }}</p>
+        <p-selectButton [options]="roleOptions"
+                        optionLabel="icon"
+                        formControlName="{{key}}">
+          <ng-template let-item pTemplate>
+            <i [class]="item.icon"></i>
+          </ng-template>
+        </p-selectButton>
+      </div>
     }
   </mat-dialog-content>
   <mat-dialog-actions>

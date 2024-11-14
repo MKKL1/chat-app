@@ -77,7 +77,7 @@ export class RoleDialogComponent {
 
     this.roleForm = this.fb.group({});
 
-    const permissionKeys = Object.keys(this.permissions).filter(key => key !== 'rawValue');
+    const permissionKeys = this.permissions.getPermissionsNames();
     const permissionsCount = Object.keys(this.permissions).length - 1;
 
     let allowBitValue: boolean;
