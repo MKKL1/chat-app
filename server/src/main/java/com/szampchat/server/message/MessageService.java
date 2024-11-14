@@ -117,7 +117,7 @@ public class MessageService {
                 .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
-    public Mono<Message> editMessage(Long messageId, Long channelId, Long userId, MessageEditRequest request) {
+    public Mono<Message> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
         return getMessage(messageId, channelId)
             .flatMap(message -> {
 //                if(!Objects.equals(message.getUser(), userId)){
@@ -128,7 +128,7 @@ public class MessageService {
             });
     }
 
-    public Mono<Void> deleteMessage(Long messageId, Long channelId, Long userId){
+    public Mono<Void> deleteMessage(Long messageId, Long channelId){
         return getMessage(messageId, channelId)
             .flatMap(message -> {
                 // TODO find attachment and delete it

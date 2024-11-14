@@ -93,73 +93,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-//                .addFilterBefore(new CustomAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeExchange(auth -> auth
                         .pathMatchers(WHITELIST).permitAll()
-                        //ChannelController
-//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/channels")
-//                            .access(authMan.create(authFunc.isMember, PermissionContext.COMMUNITY, PermissionFlag.CHANNEL_CREATE))
-//                        .pathMatchers(HttpMethod.PUT, "/channels/{channelId}")
-//                            .access(authMan.create(authFunc.isParticipant, PermissionScope.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
-//                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}")
-//                            .access(authMan.create(authFunc.isParticipant, PermissionScope.CHANNEL, PermissionFlag.CHANNEL_MODIFY))
-                        //CommunityController
-//                        .pathMatchers(HttpMethod.GET, "/communities/{communityId}")
-//                            .access(authMan.create(authFunc.isMember))
-//                        .pathMatchers(HttpMethod.GET, "/communities/{communityId}/info")
-//                            .access(authMan.create(authFunc.isMember))
-//                        .pathMatchers(HttpMethod.GET, "/communities")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/invite")
-//                            .access(authMan.create(authFunc.isMember, PermissionScope.COMMUNITY, PermissionFlag.INVITE_CREATE))
-//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/join")
-//                            .access(authMan.create(authFunc.isNotMember))
-//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/join")
-//                            .access(authMan.create(authFunc.isNotMember))
-//                        .pathMatchers(HttpMethod.POST, "/communities")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.PATCH, "/communities/{communityId}")
-//                            .access(authMan.create(authFunc.isMember, PermissionScope.COMMUNITY, PermissionFlag.ADMINISTRATOR))
-//                        .pathMatchers(HttpMethod.DELETE, "/communities/{communityId}")
-//                            .access(authMan.create(authFunc.isOwner))
-                        //MessageController
-//                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/messages")
-//                            .access(authMan.create(authFunc.isParticipant))
-//                        .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages")
-//                            .access(authMan.create(authFunc.isParticipant, PermissionScope.CHANNEL, PermissionFlag.MESSAGE_CREATE))
-//                        .pathMatchers(HttpMethod.PATCH, "/channels/{channelId}/messages/{messageId}")
-//                            .access(authMan.create(authFunc.isParticipant)) //TODO user should be able to edit ONLY their message, requires new auth function
-//                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}")
-//                            .access(authMan.create(authFunc.isParticipant))//TODO delete only their own message
-                        //RoleController
-//                        .pathMatchers(HttpMethod.GET, "/roles/{roleId}")
-//                            .access(authMan.create(authFunc.hasAccessToRoleInfo))
-//                        .pathMatchers(HttpMethod.POST, "/communities/{communityId}/roles")
-//                            .access(authMan.create(authFunc.isMember, PermissionScope.COMMUNITY, PermissionFlag.ADMINISTRATOR))
-//                        //TODO adding communityId for role in path may be dangerous, as user can give community id where they have permission and system may allow operation on role in different community
-//                        .pathMatchers(HttpMethod.PATCH, "/communities/{communityId}/roles/{roleId}")
-//                            .access(authMan.create(authFunc.hasAccessToRoleInfo, PermissionScope.COMMUNITY, PermissionFlag.ADMINISTRATOR))
-//                        .pathMatchers(HttpMethod.DELETE, "/communities/{communityId}/roles/{roleId}")
-//                            .access(authMan.create(authFunc.hasAccessToRoleInfo, PermissionScope.COMMUNITY, PermissionFlag.ADMINISTRATOR))
-                        //UserController
-//                        .pathMatchers(HttpMethod.GET, "/users/me")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.GET, "/users/{userId}")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.PATCH, "/users/avatar")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.PATCH, "users/description")
-//                            .authenticated()
-//                        .pathMatchers(HttpMethod.DELETE, "/users")
-//                            .authenticated()
-//                        .pathMatchers("/api/file/**").permitAll()
-//                        .pathMatchers(HttpMethod.GET, "/channels/{channelId}/voice/join")
-//                            .access(authMan.create(authFunc.isParticipant))
-                        //ReactionController
-//                        .pathMatchers(HttpMethod.POST, "/channels/{channelId}/messages/{messageId}/reactions")
-//                            .access(authMan.create(authFunc.isParticipant, PermissionScope.CHANNEL, PermissionFlag.REACTION_CREATE))
-//                        .pathMatchers(HttpMethod.DELETE, "/channels/{channelId}/messages/{messageId}/reactions")
-//                            .access(authMan.create(authFunc.isParticipant, PermissionScope.CHANNEL, PermissionFlag.REACTION_CREATE))
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

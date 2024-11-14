@@ -14,4 +14,5 @@ import java.util.UUID;
 public class FileDTO {
     private UUID id;
     private String path;
+    private String mime;
 }

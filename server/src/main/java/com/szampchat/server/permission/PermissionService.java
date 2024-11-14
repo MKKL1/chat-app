@@ -52,7 +52,7 @@ public class PermissionService {
     }
 
     public Mono<Permissions> getUserPermissionsForCommunity(Long communityId, Long userId) {
-        return communityService.findById(communityId)
+        return communityService.getById(communityId)
                 .flatMap(community -> {
                     //If user is owner, grant all permissions
                     if (community.getOwnerId().equals(userId)) return Mono.just(Permissions.allAllowed());
@@ -86,7 +86,7 @@ public class PermissionService {
                                             .reduce(0L, (acc, permissionData) -> acc | permissionData)
                                             .map(accumulatedPermissions -> new PermissionOverwrites(communityPermissionOverwrites.sum(accumulatedPermissions)))
                                 )
-                                .flatMap(channelsOverwrites -> communityService.findById(channel.getCommunityId())
+                                .flatMap(channelsOverwrites -> communityService.getById(channel.getCommunityId())
                                         .flatMap(community -> {
                                             if (community.getOwnerId().equals(userId)) return Mono.just(Permissions.allAllowed());
 

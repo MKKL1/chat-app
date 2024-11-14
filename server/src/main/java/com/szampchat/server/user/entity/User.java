@@ -24,7 +24,7 @@ public class User {
     private String username;
 
     @Column("image_url")
-    private String imageUrl;
+    private UUID imageUrl;
 
     @Column("description")
     private String description;

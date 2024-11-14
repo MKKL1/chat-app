@@ -50,7 +50,7 @@ public class CommunityController {
     @PreAuthorize("@auth.canAccess(#communityId, 'COMMUNITY')")
     @GetMapping("/{communityId}")
     public Mono<CommunityDTO> getCommunity(@PathVariable Long communityId) {
-        return communityService.findById(communityId);
+        return communityService.getById(communityId);
     }
 
     @ApiResponse(responseCode = "200")
@@ -135,9 +135,9 @@ public class CommunityController {
     @PatchMapping("/{communityId}")
     public Mono<CommunityDTO> editCommunity(
             @ResourceId @PathVariable Long communityId,
-            @RequestPart("community") CommunityEditRequest community, //TODO DTO
+            @RequestPart("community") CommunityEditRequest request,
             @RequestPart("file") FilePart file) {
-        return communityService.editCommunity(communityId, community, file);
+        return communityService.editCommunity(communityId, request, file);
     }
 
     @ApiResponse(responseCode = "204")

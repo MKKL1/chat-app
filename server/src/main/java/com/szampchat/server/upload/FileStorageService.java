@@ -6,6 +6,8 @@ import com.szampchat.server.upload.entity.FileEntity;
 import com.szampchat.server.upload.exception.FileNotFoundException;
 import com.szampchat.server.upload.exception.FileOperationException;
 import com.szampchat.server.upload.repository.FileRepository;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +35,28 @@ public class FileStorageService {
     public void init(){
         try{
             Files.createDirectories(Paths.get("uploads/"));
+            Files.createDirectories(Paths.get("uploads/communities/"));
+            Files.createDirectories(Paths.get("uploads/avatars/"));
+            Files.createDirectories(Paths.get("uploads/messages/"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Mono<FileDownloadDTO> downloadFile(UUID fileId) {
+    public Mono<FileDTO> getFileDTO(@Nonnull UUID fileID) {
+        return fileRepository.findById(fileID)
+                .switchIfEmpty(Mono.error(new FileNotFoundException(fileID)))
+                .map(this::toDTO);
+    }
+
+    public Mono<FileDownloadDTO> downloadFile(String fileIdString) {
+        return Mono.justOrEmpty(fileIdString)
+                .switchIfEmpty(Mono.error(new FileNotFoundException(fileIdString)))
+                .flatMap(fileId -> downloadFile(UUID.fromString(fileId)))
+                .onErrorMap(IllegalArgumentException.class, e -> new FileNotFoundException(fileIdString));
+    }
+
+    public Mono<FileDownloadDTO> downloadFile(@Nonnull UUID fileId) {
         return getFileDTO(fileId)
                 .flatMap(fileDTO -> {
                     File file = Paths.get(currentDirectory, "uploads", fileDTO.getPath()).toFile();
@@ -50,35 +68,31 @@ public class FileStorageService {
                 });
     }
 
-    public Mono<FileDTO> getFileDTO(UUID fileID) {
-        return fileRepository.findById(fileID)
-                .switchIfEmpty(Mono.error(new FileNotFoundException(fileID)))
-                .map(this::toDTO);
-    }
-
-    public Mono<FileDTO> upload(FilePart file, FilePathType path) {
+    public Mono<FileDTO> upload(@Nonnull FilePart file, @Nonnull FilePathType path) {
         UUID uuid = UUID.randomUUID();
-        return Mono.just(buildFilePath(path, uuid.toString()))
-        .subscribeOn(Schedulers.boundedElastic())
-        .doOnNext(uploadPath -> {
-            try {
-                Files.createDirectories(uploadPath.getParent());
-            } catch (IOException e) {
-                throw new FileOperationException("Could not create upload directory: " + e.getMessage());
-            }
-        })
-        .flatMap(uploadPath -> file.transferTo(uploadPath)
-            .then(fileRepository.save(FileEntity.builder()
-                            .id(uuid)
-                            .path(uploadPath.subpath(1, uploadPath.getNameCount()).toString())
-                            .build())
-            )
-        )
-        .map(this::toDTO)
-        .onErrorMap(e -> new FileOperationException("Failed to save file: " + e.getMessage()));
+        String extension = getFileExtension(new File(file.filename()));
+        Path uploadPath = buildFilePath(path, uuid + extension);
+        Mono<Void> uploadFileMono = file.transferTo(uploadPath).subscribeOn(Schedulers.boundedElastic());
+
+        return fileRepository.save(FileEntity.builder()
+                        .path(uploadPath.subpath(1, uploadPath.getNameCount()).toString())
+                        .mime("images/" + extension) //TODO temporary solution
+                        .build())
+                .flatMap(fileEntity -> uploadFileMono.thenReturn(fileEntity))
+                .map(this::toDTO)
+                .onErrorMap(e -> new FileOperationException("Failed to save file: " + e.getMessage()));
     }
 
-    public Mono<Void> delete(UUID fileID) {
+    private static String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return "";
+        }
+        return name.substring(lastIndexOf);
+    }
+
+    public Mono<Void> delete(@Nonnull UUID fileID) {
         return getFileDTO(fileID)
                 .flatMap(fileDTO -> {
                     File file = buildFilePath(fileDTO).toFile();
@@ -91,6 +105,17 @@ public class FileStorageService {
                     }
                     return Mono.empty();
                 });
+    }
+
+    public Mono<FileDTO> replace(@Nullable FilePart filePart, FilePathType pathType, @Nullable UUID fileId) {
+        // If no file is provided, return an empty Mono
+        if (filePart == null)
+            return Mono.empty();
+
+        // If fileId is provided, delete the existing file first
+        Mono<Void> deleteExistingFileMono = (fileId != null) ? delete(fileId) : Mono.empty();
+
+        return deleteExistingFileMono.then(upload(filePart, pathType));
     }
 
     private Path buildFilePath(FilePathType path, String filename) {
@@ -115,6 +140,7 @@ public class FileStorageService {
         return FileDTO.builder()
                 .id(entity.getId())
                 .path(entity.getPath())
+                .mime(entity.getMime())
                 .build();
     }
 }

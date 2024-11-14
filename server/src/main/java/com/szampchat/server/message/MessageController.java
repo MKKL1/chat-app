@@ -75,8 +75,10 @@ public class MessageController {
     //TODO add is owner of message
     @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody MessageEditRequest editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
+    public Mono<Message> editMessage(@PathVariable Long channelId,
+                                     @PathVariable Long messageId,
+                                     @RequestBody MessageEditRequest request) {
+        return messageService.editMessage(messageId, channelId, request);
     }
 
 
@@ -87,7 +89,8 @@ public class MessageController {
 
     //TODO add is owner of message or has message delete permission
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
-    public Mono<Void> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.deleteMessage(messageId, channelId, currentUser.getUserId());
+    public Mono<Void> deleteMessage(@PathVariable Long channelId,
+                                    @PathVariable Long messageId) {
+        return messageService.deleteMessage(messageId, channelId);
     }
 }
