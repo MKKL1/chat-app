@@ -20,6 +20,7 @@ import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
 import com.szampchat.server.role.dto.ChannelRoleOverwritesDTO;
 import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.shared.JsonPatchUtil;
+import com.szampchat.server.shared.exception.ValidationException;
 import com.szampchat.server.voice.service.ParticipantService;
 import com.szampchat.server.voice.dto.RoomParticipantsDTO;
 import jakarta.validation.ConstraintViolation;
@@ -28,6 +29,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -134,6 +136,7 @@ public class ChannelService {
                 );
     }
 
+    //TODO no check for valid role, throws internal error from r2dbc
     @Transactional
     public Mono<ChannelFullInfoDTO> editChannel(Long channelId, JsonPatch jsonPatch){
         return getChannelFullInfo(channelId)
@@ -200,7 +203,7 @@ public class ChannelService {
         final BeanPropertyBindingResult errors = new BeanPropertyBindingResult(patch, "channel");
         validator.validate(patch, errors);
         if(errors.hasFieldErrors()) {
-            throw new RuntimeException("Failed validation"); //TODO custom handler
+            throw new ValidationException(errors.getFieldErrors());
         }
         return patch;
     }
