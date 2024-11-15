@@ -208,7 +208,6 @@ public class ChannelService {
         return patch;
     }
 
-    // issue with constraints
     public Mono<Void> deleteChannel(Long id){
         return channelRepository.findById(id)
             .flatMap(channel -> channelRepository.deleteById(id)

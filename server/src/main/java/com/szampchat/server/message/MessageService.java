@@ -1,5 +1,6 @@
 package com.szampchat.server.message;
 
+import com.szampchat.server.auth.preauth.ResourcePermissionEvaluator;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.*;
@@ -13,6 +14,7 @@ import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
+import com.szampchat.server.permission.PermissionService;
 import com.szampchat.server.reaction.service.ReactionService;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.snowflake.SnowflakeGen;
@@ -30,7 +32,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 import java.util.List;
 
-@Service
+@Service("messageService")
 @Slf4j
 @AllArgsConstructor
 public class MessageService {
@@ -43,6 +45,10 @@ public class MessageService {
     private final SnowflakeGen snowflakeGen;
     private final EventSink eventSender;
     private final FileStorageService fileStorageService;
+
+
+
+
 
     //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
     //TODO separate cacheable and non-cacheable parts of MessageFullDTO
@@ -113,7 +119,7 @@ public class MessageService {
     }
 
     public Mono<Message> getMessage(Long messageId, Long channelId) {
-        return messageRepository.findById(new MessageId(messageId, channelId))
+        return messageRepository.findMessageByChannelAndId(channelId, messageId)
                 .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
@@ -124,7 +130,8 @@ public class MessageService {
 //                    return Mono.error(new Exception("Message doesn't belong to user"));
 //                }
                 message.setText(request.text());
-                return messageRepository.save(message);
+                return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
+                        .thenReturn(message);
             });
     }
 
@@ -142,7 +149,7 @@ public class MessageService {
 //                }
 
 
-                return messageRepository.deleteById(new MessageId(messageId, channelId));
+                return messageRepository.deleteByChannelAndId(channelId, messageId);
             });
     }
 

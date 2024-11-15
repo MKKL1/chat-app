@@ -64,7 +64,7 @@ public class ChannelController {
     @HasPermission(scope = PermissionScope.CHANNEL, value = PermissionFlag.CHANNEL_MODIFY)
     @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @DeleteMapping("/channels/{channelId}")
-    public Mono<Void> deleteChannel(@PathVariable Long channelId) {
+    public Mono<Void> deleteChannel(@ResourceId @PathVariable Long channelId) {
         return channelService.deleteChannel(channelId);
     }
 }

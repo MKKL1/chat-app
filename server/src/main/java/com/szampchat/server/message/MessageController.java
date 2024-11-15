@@ -72,11 +72,12 @@ public class MessageController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Edit message")
 
-    //TODO add is owner of message
-    @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
+    //Is owner of message
+    @PreAuthorize("@messagePerm.canEdit(#channelId, #messageId, #currentUser.userId)")
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
     public Mono<Message> editMessage(@PathVariable Long channelId,
                                      @PathVariable Long messageId,
+                                     CurrentUser currentUser,
                                      @RequestBody MessageEditRequest request) {
         return messageService.editMessage(messageId, channelId, request);
     }
@@ -87,10 +88,12 @@ public class MessageController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Delete message")
 
-    //TODO add is owner of message or has message delete permission
+    //Is owner of message or has permission to delete any message (moderator)
+    @PreAuthorize("@messagePerm.canDelete(#channelId, #messageId, #currentUser.userId)")
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
     public Mono<Void> deleteMessage(@PathVariable Long channelId,
-                                    @PathVariable Long messageId) {
+                                    @PathVariable Long messageId,
+                                    CurrentUser currentUser) {
         return messageService.deleteMessage(messageId, channelId);
     }
 }
