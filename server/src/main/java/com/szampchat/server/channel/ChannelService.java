@@ -9,6 +9,7 @@ import com.szampchat.server.channel.dto.request.ChannelEditRequest;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.event.ChannelCreateEvent;
 import com.szampchat.server.channel.event.ChannelDeleteEvent;
+import com.szampchat.server.channel.event.ChannelUpdateEvent;
 import com.szampchat.server.channel.exception.ChannelAlreadyExistsException;
 import com.szampchat.server.channel.exception.ChannelNotFoundException;
 import com.szampchat.server.channel.repository.ChannelRepository;
@@ -21,6 +22,7 @@ import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.shared.JsonPatchUtil;
 import com.szampchat.server.voice.service.ParticipantService;
 import com.szampchat.server.voice.dto.RoomParticipantsDTO;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,8 @@ import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
@@ -156,7 +160,16 @@ public class ChannelService {
                                         );
                             });
 
-                });
+                })
+                .doOnSuccess(channelFullInfoDTO -> eventSender.publish(
+                        ChannelUpdateEvent.builder()
+                                .recipient(Recipient.builder()
+                                        .context(Recipient.Context.COMMUNITY)
+                                        .id(channelFullInfoDTO.getChannel().getCommunityId())
+                                        .build())
+                                .data(channelFullInfoDTO)
+                                .build())
+                );
     }
 
     private ChannelPatchDiff patchDiff(List<ChannelRoleOverwriteDTO> listA, List<ChannelRoleOverwriteDTO> listB) {
@@ -181,8 +194,15 @@ public class ChannelService {
     }
 
     private ChannelEditRequest patch(ChannelEditRequest channelEditRequest, JsonPatch jsonPatch) {
-        return new JsonPatchUtil<>(ChannelEditRequest.class)
+        ChannelEditRequest patch = new JsonPatchUtil<>(ChannelEditRequest.class)
                 .patch(channelEditRequest, jsonPatch);
+
+        final BeanPropertyBindingResult errors = new BeanPropertyBindingResult(patch, "channel");
+        validator.validate(patch, errors);
+        if(errors.hasFieldErrors()) {
+            throw new RuntimeException("Failed validation"); //TODO custom handler
+        }
+        return patch;
     }
 
     // issue with constraints

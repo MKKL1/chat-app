@@ -1,6 +1,7 @@
 package com.szampchat.server.channel.dto.request;
 
 import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChannelEditRequest {
+    @Valid
     private ChannelEditDTO channel;
-    private List<ChannelRoleOverwriteDTO> overwrites;
+    private List<@Valid ChannelRoleOverwriteDTO> overwrites;
 
     @Data
     @AllArgsConstructor
