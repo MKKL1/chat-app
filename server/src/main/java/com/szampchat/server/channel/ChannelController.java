@@ -1,6 +1,8 @@
 package com.szampchat.server.channel;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.szampchat.server.channel.dto.ChannelDTO;
+import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
 import com.szampchat.server.channel.dto.request.ChannelCreateRequest;
 import com.szampchat.server.channel.dto.request.ChannelEditRequest;
 import com.szampchat.server.auth.annotation.HasPermission;
@@ -49,9 +51,9 @@ public class ChannelController {
     @HasPermission(scope = PermissionScope.CHANNEL, value = PermissionFlag.CHANNEL_MODIFY)
     @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @PutMapping("/channels/{channelId}")
-    public Mono<ChannelDTO> editChannel(@PathVariable Long channelId,
-                                        @ResourceId @Valid @RequestBody ChannelEditRequest channel) {
-        return channelService.editChannel(channelId, channel);
+    public Mono<ChannelFullInfoDTO> editChannel(@ResourceId @PathVariable Long channelId,
+                                                @Valid @RequestBody JsonPatch jsonPatch) {
+        return channelService.editChannel(channelId, jsonPatch);
     }
 
 
