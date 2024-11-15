@@ -1,4 +1,4 @@
-package com.szampchat.server.user.entity;
+package com.szampchat.server.upload.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,20 +12,15 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
-@Table("users")
-public class User {
+@AllArgsConstructor
+@Table(name = "files")
+public class FileEntity {
     @Id
-    @Column("id")
-    private Long id;
-
-    @Column("name")
-    private String username;
-
-    @Column("image_url")
-    private UUID imageUrl;
-
-    @Column("description")
-    private String description;
+    @Column("file_id")
+    private UUID id; //Using uuid for backwards compatibility
+    @Column("path")
+    private String path;
+    @Column("mime")
+    private String mime;
 }

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,6 +21,6 @@ public class CommunityDTO {
     @Schema(example = "29754971884879872", description = "ID of community's owner")
     private Long ownerId;
     @Schema(example = "img/myimage.png")
-    private String imageUrl;
+    private UUID imageUrl;
     private Permissions basePermissions;
 }

@@ -1,6 +1,6 @@
 package com.szampchat.server.upload;
 
-public enum FilePath {
+public enum FilePathType {
     COMMUNITY,
     AVATAR,
     MESSAGE

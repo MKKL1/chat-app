@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +28,7 @@ public class Community {
     private Long ownerId;
 
     @Column("image_url")
-    private String imageUrl;
+    private UUID imageUrl;
 
     @Column("base_permissions")
     private Permissions basePermissions;

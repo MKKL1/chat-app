@@ -1,6 +1,7 @@
 package com.szampchat.server.channel.event;
 
 import com.szampchat.server.channel.dto.ChannelDTO;
+import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
 import com.szampchat.server.event.data.EventType;
 import com.szampchat.server.event.data.InternalEvent;
 import com.szampchat.server.event.data.Recipient;
@@ -9,10 +10,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChannelUpdateEvent implements InternalEvent<ChannelDTO> {
+public class ChannelUpdateEvent implements InternalEvent<ChannelFullInfoDTO> {
     private final String name = "CHANNEL_UPDATE_EVENT";
     private final EventType type = EventType.MESSAGES;
 
     private final Recipient recipient;
-    private final ChannelDTO data;
+    private final ChannelFullInfoDTO data;
 }

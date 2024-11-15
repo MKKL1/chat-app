@@ -4,7 +4,7 @@ import com.szampchat.server.auth.CurrentUser;
 import com.szampchat.server.auth.annotation.HasPermission;
 import com.szampchat.server.auth.annotation.ResourceId;
 import com.szampchat.server.message.dto.*;
-import com.szampchat.server.message.dto.request.EditMessageRequest;
+import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.request.MessageCreateRequest;
 import com.szampchat.server.message.entity.Message;
@@ -72,11 +72,14 @@ public class MessageController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Edit message")
 
-    //TODO add is owner of message
-    @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
+    //Is owner of message
+    @PreAuthorize("@messagePerm.canEdit(#channelId, #messageId, #currentUser.userId)")
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    public Mono<Message> editMessage(@PathVariable Long channelId, @RequestBody EditMessageRequest editMessage, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.editMessage(messageId, channelId, editMessage.text(), currentUser.getUserId());
+    public Mono<Message> editMessage(@PathVariable Long channelId,
+                                     @PathVariable Long messageId,
+                                     CurrentUser currentUser,
+                                     @RequestBody MessageEditRequest request) {
+        return messageService.editMessage(messageId, channelId, request);
     }
 
 
@@ -85,9 +88,12 @@ public class MessageController {
     @OperationDocs({RESPONSE_419, REQUIRES_PARTICIPANT_PERMISSION, DOCUMENT_PATH_VARIABLES, RESPONSE_401})
     @Operation(summary = "Delete message")
 
-    //TODO add is owner of message or has message delete permission
+    //Is owner of message or has permission to delete any message (moderator)
+    @PreAuthorize("@messagePerm.canDelete(#channelId, #messageId, #currentUser.userId)")
     @DeleteMapping("channels/{channelId}/messages/{messageId}")
-    public Mono<Void> deleteMessage(@PathVariable Long channelId, @PathVariable Long messageId, CurrentUser currentUser) {
-        return messageService.deleteMessage(messageId, channelId, currentUser.getUserId());
+    public Mono<Void> deleteMessage(@PathVariable Long channelId,
+                                    @PathVariable Long messageId,
+                                    CurrentUser currentUser) {
+        return messageService.deleteMessage(messageId, channelId);
     }
 }
