@@ -1,3 +1,15 @@
+create table files
+(
+    file_id uuid
+        constraint files_pk
+            primary key,
+    path    varchar not null,
+    mime    varchar(32) not null
+);
+
+create unique index path__uindex
+    on files (path);
+
 create table users
 (
     id          bigint       not null
@@ -6,13 +18,18 @@ create table users
     name        varchar(32) not null
         constraint uc_users_name
             unique,
---     email       varchar(255)
---         constraint uc_users_email
---             unique,
     image_url   varchar(255),
     description varchar(255),
     sub         uuid
 );
+
+alter table users
+    alter column image_url type uuid using image_url::uuid;
+
+alter table users
+    add constraint users_files_file_id_fk
+        foreign key (image_url) references files
+            on delete set null;
 
 create table communities
 (
@@ -26,6 +43,17 @@ create table communities
     image_url varchar(255),
     base_permissions int not null
 );
+
+alter table communities
+    alter column image_url type uuid using image_url::uuid;
+
+alter table communities
+    alter column image_url set not null;
+
+alter table communities
+    add constraint communities_files_file_id_fk
+        foreign key (image_url) references files
+            on delete set null;
 
 create table channels
 (

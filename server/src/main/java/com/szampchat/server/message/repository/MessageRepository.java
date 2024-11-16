@@ -26,4 +26,17 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, Messa
                                         @Param("limit") int limit);
 
     Flux<Message> findMessagesByChannelAndIdIn(Long channel, Collection<Long> ids);
+
+    //TODO for some reason deleteById doesn't work
+    Mono<Void> deleteByChannelAndId(Long channel, Long id);
+
+    Mono<Message> findMessageByChannelAndId(Long channel, Long id);
+    @Query("""
+        UPDATE messages
+        SET text = :text, updated_at = NOW()
+        WHERE channel_id = :channelId AND message_id = :id
+""")
+    Mono<Void> updateByChannelIdAndId(@Param("channelId") Long channelId,
+                                          @Param("id") Long id,
+                                          @Param("text") String text);
 }

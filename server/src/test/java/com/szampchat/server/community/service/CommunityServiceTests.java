@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -31,7 +30,7 @@ class CommunityServiceTests {
     private CommunityService communityService;
 
     @Test
-    void findById_CommunityFound() {
+    void getById_CommunityFound() {
         Long communityId = 1L;
         Community community = new Community();
         community.setId(communityId);
@@ -44,7 +43,7 @@ class CommunityServiceTests {
         when(modelMapper.map(community, CommunityDTO.class))
                 .thenReturn(communityDTO);
 
-        Mono<CommunityDTO> result = communityService.findById(communityId);
+        Mono<CommunityDTO> result = communityService.getById(communityId);
 
         StepVerifier.create(result)
                 .expectNext(communityDTO)
@@ -52,13 +51,13 @@ class CommunityServiceTests {
     }
 
     @Test
-    void findById_CommunityNotFound() {
+    void getById_CommunityNotFound() {
         Long communityId = 1L;
 
         when(communityRepository.findById(eq(communityId)))
                 .thenReturn(Mono.empty());
 
-        Mono<CommunityDTO> result = communityService.findById(communityId);
+        Mono<CommunityDTO> result = communityService.getById(communityId);
 
         StepVerifier.create(result)
                 .expectError(CommunityNotFoundException.class)

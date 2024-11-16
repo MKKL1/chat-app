@@ -19,6 +19,7 @@ import com.szampchat.server.role.event.RoleUpdateEvent;
 import com.szampchat.server.role.exception.RoleNotFoundException;
 import com.szampchat.server.role.repository.RoleRepository;
 import com.szampchat.server.shared.InvalidPatchException;
+import com.szampchat.server.shared.JsonPatchUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,22 +137,15 @@ public class RoleService {
                 .then();
     }
 
-    private RoleWithMembersDTO patch(RoleWithMembersDTO existingRoleWithMembers, JsonPatch jsonPatch) throws InvalidPatchException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode roleWithMembersNode = objectMapper.convertValue(existingRoleWithMembers, JsonNode.class);
-
-        try {
-            JsonNode patchedNode = jsonPatch.apply(roleWithMembersNode);
-            RoleWithMembersDTO patchedRoleWithMembers = objectMapper.treeToValue(patchedNode, RoleWithMembersDTO.class);
+    private RoleWithMembersDTO patch(RoleWithMembersDTO existingRoleWithMembers, JsonPatch jsonPatch) {
+            RoleWithMembersDTO patchedRoleWithMembers = new JsonPatchUtil<>(RoleWithMembersDTO.class)
+                    .patch(existingRoleWithMembers, jsonPatch);
 
             long communityId = existingRoleWithMembers.getRole().getCommunity();
             //Make sure that community id is not updated
             patchedRoleWithMembers.getRole().setCommunity(communityId);
 
             return patchedRoleWithMembers;
-        } catch (JsonPatchException | JsonProcessingException e) {
-            throw new InvalidPatchException("Failed to apply patch", e);
-        }
     }
 
     private Mono<RoleDTO> updateRoleEntityIfChanged(RoleDTO existingRole, RoleDTO patchedRole) {

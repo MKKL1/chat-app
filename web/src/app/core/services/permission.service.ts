@@ -26,6 +26,7 @@ export class PermissionService implements OnDestroy{
 
   private basePerm: bigint = 0n;
   private permCommunityMask: bigint = 0n;
+  private isOwner: boolean = false;
 
   private textChannelSub: Subscription;
   private voiceChannelSub: Subscription;
@@ -67,21 +68,25 @@ export class PermissionService implements OnDestroy{
   }
 
   private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
-    //Get overwrites that affect user
-    const overwritesOfChannelForUser = channelRoles
-      .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
-      .map((channelRole: ChannelRole) => channelRole.overwrites)
-      .map((overwrite: string) => BigInt(overwrite))
+    let newPerms: Permission;
+    if(this.isOwner) {
+      newPerms = new Permission(0xFFFFFFFFn)
+    } else {
+      //Get overwrites that affect user
+      const overwritesOfChannelForUser = channelRoles
+        .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
+        .map((channelRole: ChannelRole) => channelRole.overwrites)
+        .map((overwrite: string) => BigInt(overwrite))
 
-    //TODO handle null
-    //Sum all permission overwrites (community and channel)
-    const permChannelMask = sumMasks(overwritesOfChannelForUser!)
-    const combinedMask = permChannelMask | this.permCommunityMask
+      //TODO handle null
+      //Sum all permission overwrites (community and channel)
+      const permChannelMask = sumMasks(overwritesOfChannelForUser!)
+      const combinedMask = permChannelMask | this.permCommunityMask
 
-    //Update permission, based on saved base permission and ALL overwrites
-    const newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
+      //Update permission, based on saved base permission and ALL overwrites
+      newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
+    }
     this.permissionSubject.next(newPerms)
-    console.log("New perms: ", newPerms)
   }
 
   public setCommunityPermission() {

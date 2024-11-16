@@ -16,7 +16,6 @@ const userServiceMock = {
   getUser: jest.fn().mockReturnValue({
     id: "123"
   })
-
 };
 
 describe('MessageService', () => {

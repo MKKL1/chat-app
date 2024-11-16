@@ -3,7 +3,6 @@ package com.szampchat.server.reaction.service;
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.reaction.dto.ReactionOverviewBulkDTO;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.reaction.dto.ReactionUpdateDTO;
 import com.szampchat.server.reaction.dto.ReactionUsersDTO;
@@ -12,7 +11,6 @@ import com.szampchat.server.reaction.entity.Reaction;
 import com.szampchat.server.reaction.event.ReactionCreateEvent;
 import com.szampchat.server.reaction.event.ReactionDeleteEvent;
 import com.szampchat.server.reaction.exception.ReactionAlreadyExistsException;
-import com.szampchat.server.reaction.exception.ReactionNotFoundException;
 import com.szampchat.server.reaction.repository.ReactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,8 +18,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
-import java.util.Collection;
 
 @AllArgsConstructor
 @Service
@@ -66,7 +62,7 @@ public class ReactionService {
         return reactionRepository.save(reaction)
                 .onErrorMap(DuplicateKeyException.class, _ -> new ReactionAlreadyExistsException(reaction.getEmoji()))
                 .flatMap(savedReaction -> reactionCacheService.addUserReaction(reaction)
-                        .then(channelService.getChannelDTO(channelId)
+                        .then(channelService.getChannel(channelId)
                                 .doOnNext(channelDTO ->
                                         eventSink.publish(ReactionCreateEvent.builder()
                                                 .recipient(Recipient.builder()
@@ -95,7 +91,7 @@ public class ReactionService {
                 .build();
         return reactionRepository.deleteByMessageAndChannelAndEmojiAndUser(messageId, channelId, request.getEmoji(), userId)
                 .filter(count -> count != 0)
-                .flatMap(_ -> channelService.getChannelDTO(channelId)
+                .flatMap(_ -> channelService.getChannel(channelId)
                         .doOnNext(channelDTO ->
                                 eventSink.publish(ReactionDeleteEvent.builder()
                                         .recipient(Recipient.builder()

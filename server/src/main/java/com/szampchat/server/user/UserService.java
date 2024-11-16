@@ -1,8 +1,8 @@
 package com.szampchat.server.user;
 
-import com.szampchat.server.upload.FileNotFoundException;
-import com.szampchat.server.upload.FilePath;
+import com.szampchat.server.upload.FilePathType;
 import com.szampchat.server.upload.FileStorageService;
+import com.szampchat.server.upload.exception.FileNotProvidedException;
 import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.file.FileSystemException;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,15 +32,10 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
 
-    @Deprecated
-    public Mono<User> findUser(Long userId) {
-        return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new UserNotFoundException())); //TODO Maybe we shouldn't throw error here
-    }
-
     public Mono<UserDTO> findUserDTO(Long userId) {
-        return findUser(userId)
-            .map(user -> modelMapper.map(user, UserDTO.class));
+        return userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new UserNotFoundException()))
+                .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     public Flux<UserDTO> findUsers(List<Long> userIds) {
@@ -108,22 +102,13 @@ public class UserService {
 
     public Mono<UserDTO> editAvatar(FilePart file, Long userId){
         return userRepository.findById(userId)
-            .flatMap(user -> {
-                if(user.getImageUrl() != null){
-                    try {
-                        fileStorageService.delete(user.getImageUrl());
-                    } catch (Exception e) {
-                        return Mono.error(new FileNotFoundException("Error during deleting file: " + e.getMessage())); //TODO??
-                    }
-                }
-
-                return fileStorageService.save(file, FilePath.AVATAR)
-                    .flatMap(filepath -> {
-                        user.setImageUrl(filepath);
-                        return userRepository.save(user)
-                            .map(updatedUser -> modelMapper.map(updatedUser, UserDTO.class));
-                    });
-            });
+                .switchIfEmpty(Mono.error(new UserNotFoundException()))
+                .flatMap(user -> Mono.justOrEmpty(user.getImageUrl())
+                        .flatMap(imageUrl -> fileStorageService.replace(file, FilePathType.AVATAR, imageUrl))
+                        .switchIfEmpty(fileStorageService.upload(file, FilePathType.AVATAR))
+                        .doOnNext(newFileDTO -> user.setImageUrl(newFileDTO.getId()))
+                        .then(userRepository.save(user))
+                ).map(this::toDTO);
     }
 
     public Mono<UserDTO> editDescription(String description, Long id){
@@ -131,18 +116,14 @@ public class UserService {
     }
 
     public Mono<Void> deleteUser(Long id){
-        return userRepository.findById(id)
-            .flatMap(existingCommunity -> {
-                if (existingCommunity.getImageUrl() != null) {
-                    try {
-                        return fileStorageService.delete(existingCommunity.getImageUrl())
-                                .then(userRepository.deleteById(id));
-                    } catch (FileSystemException e) {
-                        return Mono.error(e.getCause());
-                    }
-                } else {
-                    return userRepository.deleteById(id);
-                }
-            });
+        return findUserDTO(id)
+                .flatMap(user -> Mono.justOrEmpty(user.getImageUrl())
+                        .flatMap(fileStorageService::delete)
+                        .then(userRepository.deleteById(id))
+                );
+    }
+
+    private UserDTO toDTO(User user) {
+        return modelMapper.map(user, UserDTO.class);
     }
 }

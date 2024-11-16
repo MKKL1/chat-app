@@ -1,12 +1,17 @@
 package com.szampchat.server.upload;
 
-import com.szampchat.server.snowflake.SnowflakeGen;
+import com.szampchat.server.upload.dto.FileDTO;
+import com.szampchat.server.upload.dto.FileDownloadDTO;
+import com.szampchat.server.upload.entity.FileEntity;
+import com.szampchat.server.upload.exception.FileNotFoundException;
+import com.szampchat.server.upload.exception.FileOperationException;
+import com.szampchat.server.upload.repository.FileRepository;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -16,93 +21,126 @@ import reactor.core.scheduler.Schedulers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.UUID;
 
 @Slf4j
 @AllArgsConstructor
 @Service
 public class FileStorageService {
-    private final SnowflakeGen snowflakeGen;
+//    private final SnowflakeGen snowflakeGen;
+    private final String currentDirectory = System.getProperty("user.dir");
+    private final FileRepository fileRepository;
 
+    @PostConstruct
     public void init(){
         try{
             Files.createDirectories(Paths.get("uploads/"));
+            Files.createDirectories(Paths.get("uploads/communities/"));
+            Files.createDirectories(Paths.get("uploads/avatars/"));
+            Files.createDirectories(Paths.get("uploads/messages/"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ResponseEntity<?> getFile(String filename){
-        try {
-            String currentDirectory = System.getProperty("user.dir");
-            Path filePath = Paths.get(currentDirectory, "uploads", filename);
-            File file = filePath.toFile();
+    public Mono<FileDTO> getFileDTO(@Nonnull UUID fileID) {
+        return fileRepository.findById(fileID)
+                .switchIfEmpty(Mono.error(new FileNotFoundException(fileID)))
+                .map(this::toDTO);
+    }
 
-            // checking if file exists
-            if (file.exists() && file.isFile()) {
-                // getting file
-                FileSystemResource resource = new FileSystemResource(file);
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+    public Mono<FileDownloadDTO> downloadFile(String fileIdString) {
+        return Mono.justOrEmpty(fileIdString)
+                .switchIfEmpty(Mono.error(new FileNotFoundException(fileIdString)))
+                .flatMap(fileId -> downloadFile(UUID.fromString(fileId)))
+                .onErrorMap(IllegalArgumentException.class, e -> new FileNotFoundException(fileIdString));
+    }
 
-                // returning file
-                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-            } else {
-                // Status if file doesn't exist
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public Mono<FileDownloadDTO> downloadFile(@Nonnull UUID fileId) {
+        return getFileDTO(fileId)
+                .flatMap(fileDTO -> {
+                    File file = Paths.get(currentDirectory, "uploads", fileDTO.getPath()).toFile();
+                    if(!file.exists() || !file.isFile()) {
+                        return Mono.error(new FileNotFoundException(fileId));
+                    }
+                    FileSystemResource resource = new FileSystemResource(file);
+                    return Mono.just(new FileDownloadDTO(fileDTO, resource));
+                });
+    }
+
+    public Mono<FileDTO> upload(@Nonnull FilePart file, @Nonnull FilePathType path) {
+        UUID uuid = UUID.randomUUID();
+        String extension = getFileExtension(new File(file.filename()));
+        Path uploadPath = buildFilePath(path, uuid + extension);
+        Mono<Void> uploadFileMono = file.transferTo(uploadPath).subscribeOn(Schedulers.boundedElastic());
+
+        return fileRepository.save(FileEntity.builder()
+                        .path(uploadPath.subpath(1, uploadPath.getNameCount()).toString())
+                        .mime("images/" + extension) //TODO temporary solution
+                        .build())
+                .flatMap(fileEntity -> uploadFileMono.thenReturn(fileEntity))
+                .map(this::toDTO)
+                .onErrorMap(e -> new FileOperationException("Failed to save file: " + e.getMessage()));
+    }
+
+    private static String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return "";
         }
+        return name.substring(lastIndexOf);
     }
 
-    public Mono<String> save(FilePart file, FilePath path){
-        return Mono.fromCallable(() -> {
-            String filePath = switch(path) {
-                case COMMUNITY -> "communities";
-                case AVATAR -> "avatars";
-                case MESSAGE -> "messages";
-            };
+    public Mono<Void> delete(@Nonnull UUID fileID) {
+        return getFileDTO(fileID)
+                .flatMap(fileDTO -> {
+                    File file = buildFilePath(fileDTO).toFile();
+                    if(!file.exists()){
+                        return Mono.error(new FileOperationException("File doesn't exist"));
+                    }
 
-            String filename = file.filename();
-            int dotIndex = filename.lastIndexOf(".");
-
-            return Paths.get(
-                "uploads",
-                filePath,
-                snowflakeGen.nextId() + filename.substring(dotIndex).toLowerCase());
-            })
-            .doOnNext(uploadPath -> {
-                try {
-                    Files.createDirectories(uploadPath.getParent());
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not create upload directory: " + e.getMessage());
-                }
-            })
-            .subscribeOn(Schedulers.boundedElastic())
-            .flatMap(uploadPath -> file.transferTo(uploadPath)
-                .then(Mono.just(uploadPath.subpath(1, uploadPath.getNameCount()).toString())))
-            .onErrorMap(e -> new RuntimeException("File saving failed: " + e.getMessage()));
+                    if(!file.delete()){
+                        return Mono.error(new FileOperationException("Cannot delete file"));
+                    }
+                    return Mono.empty();
+                });
     }
 
-    public Mono<Void> delete(String filePath) throws FileSystemException {
-        return Mono.defer(() -> {
-            File file = new File("uploads", filePath);
-
-            if(!file.exists()){
-                return Mono.error(new FileSystemException("File doesn't exist"));
-            }
-
-            if(!file.delete()){
-                return Mono.error(new FileSystemException("Cannot delete file"));
-            }
-
+    public Mono<FileDTO> replace(@Nullable FilePart filePart, FilePathType pathType, @Nullable UUID fileId) {
+        // If no file is provided, return an empty Mono
+        if (filePart == null)
             return Mono.empty();
-        });
 
+        // If fileId is provided, delete the existing file first
+        Mono<Void> deleteExistingFileMono = (fileId != null) ? delete(fileId) : Mono.empty();
+
+        return deleteExistingFileMono.then(upload(filePart, pathType));
     }
 
-    public void deleteAll(){
-        FileSystemUtils.deleteRecursively(Paths.get("uploads").toFile());
+    private Path buildFilePath(FilePathType path, String filename) {
+        String filePath = switch(path) {
+            case COMMUNITY -> "communities";
+            case AVATAR -> "avatars";
+            case MESSAGE -> "messages";
+        };
+
+        return Paths.get("uploads", filePath, filename);
     }
 
+    private Path buildFilePath(FileEntity fileEntity) {
+        return Paths.get("uploads", fileEntity.getPath());
+    }
+
+    private Path buildFilePath(FileDTO fileDTO) {
+        return Paths.get("uploads", fileDTO.getPath());
+    }
+
+    private FileDTO toDTO(FileEntity entity) {
+        return FileDTO.builder()
+                .id(entity.getId())
+                .path(entity.getPath())
+                .mime(entity.getMime())
+                .build();
+    }
 }

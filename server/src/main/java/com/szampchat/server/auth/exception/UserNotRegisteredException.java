@@ -1,7 +1,6 @@
-package com.szampchat.server.auth;
+package com.szampchat.server.auth.exception;
 
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class UserNotRegisteredException extends AuthenticationException {
     public UserNotRegisteredException() {
