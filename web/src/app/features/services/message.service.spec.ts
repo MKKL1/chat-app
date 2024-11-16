@@ -5,6 +5,19 @@ import {provideHttpClient} from "@angular/common/http";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {MessageStore} from "../store/message/message.store";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
+import {EventService} from "../../core/events/event.service";
+import {UserService} from "../../core/services/user.service";
+
+const eventServiceMock = {
+  on: jest.fn()
+};
+
+const userServiceMock = {
+  getUser: jest.fn().mockReturnValue({
+    id: "123"
+  })
+
+};
 
 describe('MessageService', () => {
   let service: MessageService;
@@ -17,7 +30,9 @@ describe('MessageService', () => {
       providers: [
         MessageService,
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        {provide: EventService, useValue: eventServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     });
 
@@ -31,19 +46,19 @@ describe('MessageService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get messages', () => {
-
-  });
-
-  it('should send message', () => {
-
-  });
-
-  it('should edit message', () => {
-
-  });
-
-  it('should delete message', () => {
-
-  });
+  // it('should get messages', () => {
+  //
+  // });
+  //
+  // it('should send message', () => {
+  //
+  // });
+  //
+  // it('should edit message', () => {
+  //
+  // });
+  //
+  // it('should delete message', () => {
+  //
+  // });
 });
