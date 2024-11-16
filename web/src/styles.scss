@@ -79,3 +79,10 @@ app-emoji-picker, app-gif-search{
 .pointer, .pointer:hover{
   cursor: pointer;
 }
+
+.select{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 10%;
+}

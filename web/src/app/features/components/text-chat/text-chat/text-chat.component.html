@@ -1,10 +1,8 @@
 <div class="text-chat-container">
   <!-- messages -->
-  <div class="messages">
-    @if(!loadedAllData()){
-      <div class="load-more-container">
-        <button mat-button (click)="loadMoreMessage()">Load more</button>
-      </div>
+  <div class="messages" #scrollContainer (scroll)="onScroll()">
+    @if(loadedAllData()){
+      <h1 class="flex-center">No more messages</h1>
     }
     @if(messages()){
       @if(messages().length === 0){

@@ -1,6 +1,6 @@
 import {Component, inject, OnDestroy, signal} from '@angular/core';
 import {MatTableModule} from "@angular/material/table";
-import {MatFabButton, MatIconButton} from "@angular/material/button";
+import {MatButton, MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component";
@@ -14,6 +14,7 @@ import {CommunityQuery} from "../../../store/community/community.query";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
 import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-roles',
@@ -24,7 +25,8 @@ import {PermissionService} from "../../../../core/services/permission.service";
     MatIcon,
     MatFabButton,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+    MatButton
   ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
@@ -36,6 +38,8 @@ export class RolesComponent implements OnDestroy{
 
   private roleSubscription: Subscription;
   private communitySubscription: Subscription;
+
+  permission = toSignal(this.permissionService.permissions$);
 
   constructor(
     private roleQuery: RoleQuery,
@@ -80,10 +84,6 @@ export class RolesComponent implements OnDestroy{
         role: role
       }
     });
-  }
-
-  getAdminPermission(){
-    return this.permissionService.getPermission().isAdministrator;
   }
 
   ngOnDestroy() {

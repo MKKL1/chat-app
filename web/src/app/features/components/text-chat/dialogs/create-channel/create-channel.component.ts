@@ -1,6 +1,6 @@
 import {Component, inject, Inject, OnInit, signal} from '@angular/core';
 import {
-  MAT_DIALOG_DATA,
+  MAT_DIALOG_DATA, MatDialog,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
@@ -20,6 +20,7 @@ import {NgIf} from "@angular/common";
 import {Channel, ChannelType} from "../../../../models/channel";
 import {catchError, of} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {EditPermissionsComponent} from "../edit-permissions/edit-permissions.component";
 
 @Component({
   selector: 'app-create-channel',
@@ -55,6 +56,7 @@ export class CreateChannelComponent implements OnInit{
   });
 
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   constructor(
     public dialogRef: MatDialogRef<CreateChannelComponent>,
@@ -122,6 +124,16 @@ export class CreateChannelComponent implements OnInit{
         this.dialogRef.close();
       });
     }
+  }
+
+  editPermissions(){
+    this.dialog.open(EditPermissionsComponent, {
+      data: {
+        communityId: this.communityId,
+        channelId: this.id
+      },
+      width: '60vw'
+    });
   }
 
 }

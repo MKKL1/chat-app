@@ -5,7 +5,7 @@
         <div class="first-card">
           <h2>{{user()?.username}}</h2>
           <div class="image-container">
-            <img (click)="editAvatar()" class="profile-picture" src="{{user()?.imageUrl ?? 'avatar.jpg'}}">
+            <img (click)="editAvatar()" class="profile-picture" src="{{!user()?.imageUrl?.endsWith('null') ? user()?.imageUrl : 'avatar.png'}}">
             <div class="flex-center profile-hint">
               <mat-icon fontIcon="photo_camera"></mat-icon>
               Change picture

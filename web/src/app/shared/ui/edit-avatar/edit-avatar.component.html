@@ -2,7 +2,7 @@
 <mat-dialog-content>
   <img class="profile-picture" src="{{
   newImagePreview() !== '' ? newImagePreview() :
-  imageUrl() !== '' ? imageUrl() : 'avatar.jpg' }}">
+  !imageUrl().endsWith('null') ? imageUrl() : 'avatar.png' }}">
   <app-file-upload (fileSelected)="updatePicture($event)"></app-file-upload>
 </mat-dialog-content>
 <mat-dialog-actions>

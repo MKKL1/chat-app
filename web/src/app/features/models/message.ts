@@ -10,6 +10,7 @@ export interface Message{
   updatedAt: Date;
   dateFormatted: string;
   respondsToMessage?: string;
+  respondObject?: Message;
   reactions: Reaction[];
   attachments: MessageAttachment[];
   gifLink?: string

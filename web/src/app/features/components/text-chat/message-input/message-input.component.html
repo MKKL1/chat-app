@@ -23,7 +23,7 @@
 }
 
 <!-- please do it in better way -->
-@if(canCreateMessage()){
+@if(permission()?.canCreateMessage){
   <div class="message-input">
     <!-- preventing from displaying additional margin at bottom (place for hint) -->
     <mat-form-field style="margin-bottom: -1.25em" appearance="outline">

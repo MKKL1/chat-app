@@ -1,18 +1,17 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {Permission} from "../../features/models/permission";
-import {CommunityStore} from "../../features/store/community/community.store";
-import {TextChannelStore} from "../../features/store/textChannel/text.channel.store";
-import {CommunityQuery} from "../../features/store/community/community.query";
 import {TextChannelQuery} from "../../features/store/textChannel/text.channel.query";
 import {VoiceChannelQuery} from "../../features/store/voiceChannel/voice.channel.query";
 import {sumMasks} from "../../shared/utils/binaryOperations";
 import {UserService} from "./user.service";
-import {Role} from "../../features/models/role";
 import {applyOverwrite, applyOverwrites} from "../../shared/utils/permOperations";
 import {MemberQuery} from "../../features/store/member/member.query";
-import {RoleQuery} from "../../features/store/role/role.query";
 import {Channel, ChannelRole} from "../../features/models/channel";
+import {Role} from "../../features/models/role";
+import {CommunityQuery} from "../../features/store/community/community.query";
+import {User} from "../../features/models/user";
+import {RoleQuery} from "../../features/store/role/role.query";
 
 //TODO unit testing
 @Injectable({
@@ -33,14 +32,20 @@ export class PermissionService implements OnDestroy{
   private voiceChannelSub: Subscription;
 
   constructor(private memberQuery: MemberQuery,
+              private roleQuery: RoleQuery,
+              private communityQuery: CommunityQuery,
               private textChannelQuery: TextChannelQuery,
               private voiceChannelQuery: VoiceChannelQuery,
               private userService: UserService
               ) {
-    //TODO on destroy unsub
+    // permission should be computed once again after community changed
+    // or after event connected to role (update, delete)
 
     // Moving it back to community service, as doing it here requires a lot of calls to akita store
     // But it should be here
+    // I decided to do version with lot of calls because permission will be updated
+    // also when update or delete role event occurs, and leaving it outside this class
+    // would be redundant
     // communityQuery.selectActive().subscribe(community => {
     //   //Get base perm and save it
     //
@@ -51,20 +56,15 @@ export class PermissionService implements OnDestroy{
     this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
       if(!channel) return;
       const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel.overwrites)
+      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
 
     this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
       //same as above
       if(!channel) return;
       const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      this.updatePermsFromChannel(userRoles!, channel.overwrites)
+      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
     })
-  }
-
-  ngOnDestroy(): void {
-    this.textChannelSub.unsubscribe();
-    this.voiceChannelSub.unsubscribe();
   }
 
   private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
@@ -89,10 +89,22 @@ export class PermissionService implements OnDestroy{
     this.permissionSubject.next(newPerms)
   }
 
-  public setCommunityPermission(basePermissions: bigint, userPermissions: bigint[], isOwner: boolean) {
-    this.basePerm = basePermissions
-    this.isOwner = isOwner //Setting isOwner, not sure if it may cause problems in future
+  public setCommunityPermission() {
+    const community = this.communityQuery.getActive()!;
+
+    console.log(community);
+
+    const currentUser = this.userService.getUser();
+
+    // getting base permission for community and list of
+    // permission overwrite delivered by different roles belonging to user
+    this.basePerm = BigInt(this.communityQuery.getActive()!.basePermissions!);
+    const isOwner = community.ownerId === currentUser.id;
+    // getting roles of current user
+    const userPermissions = this.getUserPermissionList(currentUser, community.id);
+
     let newPerms: Permission;
+
     if(isOwner) {
       newPerms = new Permission(0xFFFFFFFFn)
     } else {
@@ -111,5 +123,22 @@ export class PermissionService implements OnDestroy{
     return this.permissionSubject.value;
   }
 
+  public getUserPermissionList(currentUser: User, communityId: string): bigint[]{
+    const communityRoles = this.roleQuery.getAll({
+      filterBy: entity =>  entity.communityId === communityId
+    });
+    const currentUserRoles = this.memberQuery.getAll({
+      filterBy: entity => entity.user.id === currentUser.id
+    }).at(0)?.roles!;
+    return communityRoles
+      .filter((role: Role) => currentUserRoles.includes(role.id))
+      .map((role: Role) => role.permissionOverwrites)
+      .map((perm: string) => BigInt(perm));
+  }
+
+  ngOnDestroy(): void {
+    this.textChannelSub.unsubscribe();
+    this.voiceChannelSub.unsubscribe();
+  }
 
 }

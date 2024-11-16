@@ -1,5 +1,5 @@
 <mat-list>
-  @if(canCreateChannel()){
+  @if(permission()?.canCreateChannel){
     <div>
       <button (click)="addChannel()" mat-button>Add new channel <mat-icon fontIcon="add"></mat-icon></button>
     </div>
@@ -10,7 +10,7 @@
         <mat-list-item (click)="selectChannel(channel)"  class="pointer">
           <span matListItemTitle  class="pointer">{{ channel?.name! | short}}</span>
         </mat-list-item>
-        @if(canModifyChannel()){
+        @if(permission()?.canModifyChannel){
           <button (click)="editChannel(channel)" mat-icon-button>
             <mat-icon fontIcon="edit"></mat-icon>
           </button>

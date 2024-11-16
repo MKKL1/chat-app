@@ -45,4 +45,7 @@ export class Permission{
     return (bytes & (1n << bitPosition)) !== 0n;
   }
 
+  public getPermissionsNames(): string[]{
+    return Object.keys(this).filter(key => key !== 'rawValue');
+  }
 }

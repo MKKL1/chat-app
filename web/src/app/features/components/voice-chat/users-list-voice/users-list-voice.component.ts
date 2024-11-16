@@ -60,7 +60,7 @@ import {PermissionService} from "../../../../core/services/permission.service";
   templateUrl: './users-list-voice.component.html',
   styleUrl: './users-list-voice.component.scss'
 })
-export class UsersListVoiceComponent  implements OnInit, OnDestroy{
+export class UsersListVoiceComponent{
   readonly dialog = inject(MatDialog);
 
   readonly voiceChannels = toSignal(this.channelQuery.selectAll({
@@ -69,35 +69,22 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
     ]
   }));
 
-  selectedChannelId = signal<ID | null>(null);
-  channelSub: Subscription;
+  selectedChannelId = toSignal(this.channelQuery.selectActiveId());
 
-  members = signal<Member[]>([]);
-  membersSub: Subscription;
+  members = toSignal(this.memberQuery.selectAll({
+    filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
+  }));
+
+  permission = toSignal(this.permissionService.permissions$);
 
   constructor(
     private channelQuery: VoiceChannelQuery,
     private channelService: ChannelService,
     private communityQuery: CommunityQuery,
     private memberQuery: MemberQuery,
-    private userService: UserService,
     private voiceChat: VoiceChatService,
     private messageService: MessageService,
     private permissionService: PermissionService) {
-  }
-
-  ngOnInit() {
-    console.log(this.channelQuery.getAll());
-    this.membersSub = this.memberQuery.selectAll({
-      filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
-    }).subscribe(members => this.members.set(members));
-
-    this.channelSub = this.channelQuery.selectActiveId()
-      .subscribe(id => {
-        if(id !== undefined){
-          this.selectedChannelId.set(id);
-        }
-    });
   }
 
   addChannel(){
@@ -120,21 +107,8 @@ export class UsersListVoiceComponent  implements OnInit, OnDestroy{
     this.messageService.add({ severity: 'info', summary: 'Joined room', detail: 'Connected with ' + channel.name })
   }
 
-  canCreateChannel(){
-    return this.permissionService.getPermission().canCreateChannel;
-  }
-
-  canModifyChannel(){
-    return this.permissionService.getPermission().canModifyChannel;
-  }
-
   getParticipantImage(id: string){
-    return this.members().find(m => m.user.id === id)?.user.imageUrl;
-  }
-
-  ngOnDestroy() {
-    this.channelSub.unsubscribe();
-    this.membersSub.unsubscribe();
+    return this.members()?.find(m => m.user.id === id)?.user.imageUrl;
   }
 
 }

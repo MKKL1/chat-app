@@ -18,6 +18,8 @@ import {User} from "../../../models/user";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {MatChip} from "@angular/material/chips";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-message',
@@ -34,7 +36,8 @@ import {PermissionService} from "../../../../core/services/permission.service";
     EmojiPickerComponent,
     UserBasicInfoComponent,
     BottomSheetComponent,
-    MatListModule
+    MatListModule,
+    MatChip
   ],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
@@ -52,6 +55,8 @@ export class MessageComponent implements OnInit{
   openedOptions = signal<boolean>(false);
   fromClient = signal<boolean>(false);
   showReactionPicker = signal<boolean>(false);
+
+  permission = toSignal(this.permissionService.permissions$);
 
   user: User | undefined;
 
@@ -91,8 +96,9 @@ export class MessageComponent implements OnInit{
     this.messageService.addReaction(emoji, this.message.id);
   }
 
-  removeReaction(emoji: string){
-    this.messageService.deleteReaction(emoji, this.message.id);
+  removeReaction(){
+    const emoji = this.message.reactions.find(r => r.me)?.emoji;
+    this.messageService.deleteReaction(emoji!, this.message.id);
   }
 
   updateReactionPicker(){
@@ -116,13 +122,5 @@ export class MessageComponent implements OnInit{
         id: this.message.id
       }
     });
-  }
-
-  canCreateReaction(): boolean {
-    return this.permissionService.getPermission().canCreateReaction;
-  }
-
-  canDeleteMessage(): boolean {
-    return this.permissionService.getPermission().canDeleteMessage;
   }
 }

@@ -1,29 +1,31 @@
-<h2 mat-dialog-title>Create new role</h2>
+<h2 mat-dialog-title>{{ editing ? 'Edit role': 'Create new role'}}</h2>
 <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
   <mat-dialog-content>
     <mat-form-field appearance="outline">
       <mat-label>Role name</mat-label>
-      <input matInput [formControl]="roleName">
+      <input matInput [formControl]="roleName" required>
+      @if(roleName.hasError('required')){
+        <mat-error>Role name is required</mat-error>
+      }
+      @if(roleName.hasError('minlength')){
+        <mat-error>Role name must be at least 3 characters long</mat-error>
+      }
     </mat-form-field>
-    <div class="flex">
-      <p>Is administrator</p>
-      <p-selectButton [options]="roleOptions" optionLabel="icon">
-        <ng-template let-item pTemplate>
-          <i [class]="item.icon"></i>
-        </ng-template>
-      </p-selectButton>
-    </div>
-    <p><mat-slide-toggle formControlName="isAdministrator" labelPosition="before">Administrator</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canModifyRole" labelPosition="before">Modify role</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canCreateInvitation" labelPosition="before">Create invitation</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canCreateChannel" labelPosition="before">Create channel</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canModifyChannel" labelPosition="before">Modify channel</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canCreateMessage" labelPosition="before">Create message</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canDeleteMessage" labelPosition="before">Delete message</mat-slide-toggle></p>
-    <p><mat-slide-toggle formControlName="canCreateReaction" labelPosition="before">Create reaction</mat-slide-toggle></p>
+    @for(key of permissions.getPermissionsNames(); track key){
+      <div class="select">
+        <p>{{ formatRoleName(key) }}</p>
+        <p-selectButton [options]="roleOptions"
+                        optionLabel="icon"
+                        formControlName="{{key}}">
+          <ng-template let-item pTemplate>
+            <i [class]="item.icon"></i>
+          </ng-template>
+        </p-selectButton>
+      </div>
+    }
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button>Create</button>
+    <button mat-button [disabled]="!roleName.valid">{{ editing ? 'Edit' : 'Create'}}</button>
   </mat-dialog-actions>
 </form>

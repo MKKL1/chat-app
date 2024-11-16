@@ -9,7 +9,7 @@
     : {'flex-direction': 'row'}">
     <div class="user-info-container">
       <!--   Member avatar   -->
-      <app-avatar [imagePath]="user?.imageUrl ?? 'avatar.jpg'"></app-avatar>
+      <app-avatar [imagePath]="user?.imageUrl ?? 'avatar.png'"></app-avatar>
       @if(user){
         <app-user-basic-info [user]="user" [ngStyle]="fromClient() ? {'right': '20px'} : {'left': '20px'}">
         </app-user-basic-info>
@@ -50,6 +50,18 @@
     </div>
   </div>
 
+  <!-- reactions -->
+  @if(message.reactions && message.reactions.length > 0){
+    <div style="margin-top: 3px">
+      <mat-chip (click)="removeReaction()">
+        @for(reaction of message.reactions; track reaction){
+          <span [ngClass]="{'my-reaction': reaction.me}">
+            {{reaction.emoji}} {{reaction.count}}
+          </span>
+        }
+      </mat-chip>
+    </div>
+  }
 </div>
 
 @if(showReactionPicker()){
@@ -66,7 +78,7 @@
         <div matListItemTitle>Respond</div>
         <div matListItemLine>Answer to this message</div>
       </mat-list-item>
-      @if(canCreateReaction()){
+      @if(permission()?.canCreateReaction){
         <mat-list-item (click)="updateReactionPicker()">
           <mat-icon matListItemIcon>favorite</mat-icon>
           <div matListItemTitle>React</div>
@@ -80,7 +92,7 @@
           <div matListItemLine>Edit this message content</div>
         </mat-list-item>
       }
-      @if(fromClient() || canDeleteMessage()){
+      @if(fromClient() || permission()?.canDeleteMessage){
         <mat-list-item (click)="delete()">
           <mat-icon matListItemIcon>delete</mat-icon>
           <div matListItemTitle>Delete</div>

@@ -5,13 +5,17 @@ import {provideHttpClient} from "@angular/common/http";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {MessageStore} from "../store/message/message.store";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
-import {KeycloakService} from "keycloak-angular";
+import {EventService} from "../../core/events/event.service";
+import {UserService} from "../../core/services/user.service";
 
-const mockKeycloakService = {
-  isLoggedIn: jest.fn().mockReturnValue(true),
-  getKeycloakInstance: jest.fn().mockReturnValue({
-    idToken: 'mock-id-token', // Provide a mock token
-  }),
+const eventServiceMock = {
+  on: jest.fn()
+};
+
+const userServiceMock = {
+  getUser: jest.fn().mockReturnValue({
+    id: "123"
+  })
 };
 
 describe('MessageService', () => {
@@ -26,7 +30,8 @@ describe('MessageService', () => {
         MessageService,
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: KeycloakService, useValue: mockKeycloakService },
+        {provide: EventService, useValue: eventServiceMock},
+        {provide: UserService, useValue: userServiceMock}
       ]
     });
 
@@ -40,19 +45,19 @@ describe('MessageService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get messages', () => {
-
-  });
-
-  it('should send message', () => {
-
-  });
-
-  it('should edit message', () => {
-
-  });
-
-  it('should delete message', () => {
-
-  });
+  // it('should get messages', () => {
+  //
+  // });
+  //
+  // it('should send message', () => {
+  //
+  // });
+  //
+  // it('should edit message', () => {
+  //
+  // });
+  //
+  // it('should delete message', () => {
+  //
+  // });
 });
