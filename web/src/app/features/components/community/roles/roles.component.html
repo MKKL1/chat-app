@@ -3,21 +3,25 @@
 }
 <mat-list role="list">
   @for (role of roles(); track role.id){
-      <mat-card appearance="outlined">
-        <mat-card-content>
+    <mat-card appearance="outlined">
+      <mat-card-content>
+        <div class="role">
           <p>{{role.name}}</p>
           @if(permission()?.isAdministrator){
-            <button mat-icon-button (click)="editRole(role.id)">
-              <mat-icon>edit_note</mat-icon>
-            </button>
-            <button mat-icon-button (click)="deleteRole(role.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-            <button (click)="addMembersToRole(role)" mat-icon-button>
-              <mat-icon>manage_accounts</mat-icon>
-            </button>
+            <div>
+              <button mat-icon-button (click)="editRole(role.id)">
+                <mat-icon>edit_note</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteRole(role.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button (click)="addMembersToRole(role)" mat-icon-button>
+                <mat-icon>manage_accounts</mat-icon>
+              </button>
+            </div>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
   }
 </mat-list>

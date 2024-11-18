@@ -8,6 +8,7 @@ import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {EventService} from "../../core/events/event.service";
+import {Operation} from "./role.service";
 
 @Injectable({
   providedIn: 'root'
@@ -59,23 +60,14 @@ export class ChannelService {
     return this.http.post<Channel>(environment.api + "communities/" + this.communityQuery.getActiveId() + "/channels", channel);
   }
 
-  updateChannel(channel: Channel){
-    console.log(channel);
-    // @ts-ignore
-    channel.type = channel.type === 0 ? 'TEXT_CHANNEL' : 'VOICE_CHANNEL';
-    console.log(channel);
+  updateChannel(channelId: string, name: string){
+    const operations: Operation[] = [
+      {
+        op: 'replace', path: '/channel/name', value: name
+      }
+    ];
 
-    return this.http.put<Channel>(this.apiPath + "/" + channel.id, {channel}).pipe(
-      tap(updatedChannel => {
-        if(!updatedChannel.id){
-          return;
-        }
-
-        updatedChannel.type === ChannelType.Text ?
-          this.textChannelStore.update(updatedChannel.id, updatedChannel) :
-          this.voiceChannelStore.update(updatedChannel.id, updatedChannel);
-      })
-    );
+    return this.http.put<Channel>(this.apiPath + "/" + channelId, operations);
   }
 
   // I'm too lazy to check channel type here
@@ -98,8 +90,15 @@ export class ChannelService {
     }
   };
 
-  private handleUpdateChannel = (channel: Channel) => {
-      // TODO IMPLEMENT
+  private handleUpdateChannel = (newChannel: any) => {
+    const channel: Channel = newChannel.channel;
+    // @ts-ignore
+    // 1 === voice
+    if(channel.type === '1'){
+      this.voiceChannelStore.update(channel.id, {name: channel.name});
+    } else {
+      this.textChannelStore.update(channel.id, {name: channel.name});
+    }
   };
 
   private handleDeleteChannel = (id: any) => {

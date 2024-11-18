@@ -113,13 +113,14 @@ export class MessageService{
     });
   }
 
+  // if i edit message text, getting messages stops working
   editMessage(id: string, text: string){
     const channelId = this.channelQuery.getActiveId();
 
     this.http.patch<Message>(this.api + `${channelId}/messages/${id}`, {
       text: text
     }).subscribe(message => {
-      this.messageStore.update(message.id, message);
+      console.log(message);
     });
   }
 
@@ -175,6 +176,7 @@ export class MessageService{
     console.log(message);
   };
 
+  // Message delete event isn't sent
   private handleDeleteMessage = (message: Message) => {
     console.log(message);
   };

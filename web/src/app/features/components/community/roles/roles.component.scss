@@ -6,3 +6,10 @@ mat-card-content{
   display: flex;
   flex-direction: row;
 }
+
+.role{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

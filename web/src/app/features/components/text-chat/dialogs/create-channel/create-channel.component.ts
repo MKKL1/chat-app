@@ -102,18 +102,10 @@ export class CreateChannelComponent implements OnInit{
 
   editChannel() {
     if(this.editing() && this.id){
-      const channel = {
-        id: this.id,
-        communityId: this.communityId,
-        name: this.channelForm.value.name ?? '',
-        // ☠☠☠
-        type: this.channelForm.value.type == '0' ? ChannelType.Text : ChannelType.Voice ?? ChannelType.Text,
-        overwrites: []
-      }
-
-      this.channelService.updateChannel(channel).subscribe(channel => {
-        this.loading.set(false);
-        this.dialogRef.close();
+      this.channelService.updateChannel(this.id, this.channelForm.value.name!)
+        .subscribe(channel => {
+          this.loading.set(false);
+          this.dialogRef.close();
       });
     }
   }

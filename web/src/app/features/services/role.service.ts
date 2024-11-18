@@ -12,7 +12,7 @@ import {MemberStore} from "../store/member/member.store";
 import {PermissionService} from "../../core/services/permission.service";
 import {UserService} from "../../core/services/user.service";
 
-interface Operation{
+export interface Operation{
   op: string,
   path: string,
   value: string | number
