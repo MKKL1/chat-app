@@ -22,8 +22,8 @@ public class ReactionController {
     @HasPermission(scope = PermissionScope.CHANNEL, value = PermissionFlag.REACTION_CREATE)
     @PreAuthorize("@auth.canAccess(#channelId, 'CHANNEL')")
     @PostMapping("/channels/{channelId}/messages/{messageId}/reactions")
-    public Mono<Void> createReaction(@PathVariable Long channelId,
-                                     @ResourceId @PathVariable Long messageId,
+    public Mono<Void> createReaction(@ResourceId @PathVariable Long channelId,
+                                     @PathVariable Long messageId,
                                      CurrentUser currentUser,
                                      @RequestBody ReactionUpdateRequest request) {
         return reactionService.createReaction(channelId, messageId, currentUser.getUserId(), request);

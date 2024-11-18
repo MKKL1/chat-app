@@ -25,7 +25,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChannelEditRequest"
+              $ref: "#/components/schemas/JsonPatch"
         required: true
       responses:
         "204":
@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelDTO"
+                $ref: "#/components/schemas/ChannelFullInfoDTO"
         "419":
           description: User not created
         "403":
@@ -628,7 +628,7 @@ paths:
               type: object
               properties:
                 community:
-                  $ref: "#/components/schemas/Community"
+                  $ref: "#/components/schemas/CommunityEditRequest"
                 file:
                   type: string
                   format: binary
@@ -771,7 +771,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EditMessageRequest"
+              $ref: "#/components/schemas/MessageEditRequest"
         required: true
       responses:
         "204":
@@ -867,18 +867,25 @@ paths:
           description: Incorrect token scope (token not provided?)
       security:
       - OAuthSecurity: []
-  /file/**:
+  /file/{fileId}:
     get:
       tags:
       - file-controller
       operationId: getFile
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                type: object
+                type: string
+                format: binary
   /communities/{communityId}/info:
     get:
       tags:
@@ -943,15 +950,8 @@ paths:
           description: Incorrect token scope (token not provided?)
 components:
   schemas:
-    ChannelEditRequest:
-      required:
-      - name
+    JsonPatch:
       type: object
-      properties:
-        name:
-          maxLength: 32
-          minLength: 0
-          type: string
     ChannelDTO:
       type: object
       properties:
@@ -968,6 +968,30 @@ components:
           enum:
           - TEXT_CHANNEL
           - VOICE_CHANNEL
+    ChannelFullInfoDTO:
+      type: object
+      properties:
+        channel:
+          $ref: "#/components/schemas/ChannelDTO"
+        overwrites:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelRoleOverwriteDTO"
+        participants:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+    ChannelRoleOverwriteDTO:
+      type: object
+      properties:
+        roleId:
+          type: integer
+          format: int64
+        overwrites:
+          type: integer
+          format: int64
     UserCreateRequest:
       required:
       - username
@@ -992,7 +1016,7 @@ components:
         imageUrl:
           type: string
           description: Relative path to image (or uuid)
-          example: img/userimage.jpg
+          format: uuid
         description:
           type: string
           description: Short message which describes user
@@ -1021,6 +1045,7 @@ components:
           format: int64
         imageUrl:
           type: string
+          format: uuid
         basePermissions:
           type: integer
           format: int32
@@ -1209,6 +1234,14 @@ components:
       properties:
         description:
           type: string
+    CommunityEditRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        basePermissions:
+          type: integer
+          format: int32
     CommunityDTO:
       type: object
       properties:
@@ -1228,7 +1261,7 @@ components:
           example: 29754971884879872
         imageUrl:
           type: string
-          example: img/myimage.png
+          format: uuid
         basePermissions:
           type: integer
           format: int32
@@ -1253,7 +1286,7 @@ components:
           example: /name
         value:
           type: string
-    EditMessageRequest:
+    MessageEditRequest:
       required:
       - text
       type: object
@@ -1282,30 +1315,6 @@ components:
           type: integer
           format: int64
         userId:
-          type: integer
-          format: int64
-    ChannelFullInfoDTO:
-      type: object
-      properties:
-        channel:
-          $ref: "#/components/schemas/ChannelDTO"
-        overwrites:
-          type: array
-          items:
-            $ref: "#/components/schemas/ChannelRoleOverwriteDTO"
-        participants:
-          uniqueItems: true
-          type: array
-          items:
-            type: integer
-            format: int64
-    ChannelRoleOverwriteDTO:
-      type: object
-      properties:
-        roleId:
-          type: integer
-          format: int64
-        overwrites:
           type: integer
           format: int64
     CommunityMemberRolesDTO:
