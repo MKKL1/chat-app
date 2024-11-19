@@ -171,10 +171,16 @@ public class CommunityService {
     }
 
     public Mono<Void> delete(Long id) {
+
+
         return getById(id)
-                .flatMap(communityDTO -> fileStorageService.delete(communityDTO.getImageUrl())
-                                .then(communityRepository.deleteById(id))
-                );
+                .flatMap(communityDTO -> {
+                            Mono<Void> deleteImageMono = communityDTO.getImageUrl() == null ?
+                                    Mono.empty() :
+                                    fileStorageService.delete(communityDTO.getImageUrl());
+
+                            return deleteImageMono.then(communityRepository.deleteById(id));
+                });
     }
 
     private CommunityDTO toDTO(Community community) {
