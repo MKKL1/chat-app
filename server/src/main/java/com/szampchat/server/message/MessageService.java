@@ -85,7 +85,7 @@ public class MessageService {
         // saving message
         return createMessageMono.flatMap(messageRepository::save)
             .flatMap(savedMessage -> {
-                MessageDTO messageDTO = modelMapper.map(savedMessage, MessageDTO.class);
+                MessageDTO messageDTO = toDTO(savedMessage);
 
                 // checking if file is attached and saving it
                 if (file != null) {
@@ -180,7 +180,7 @@ public class MessageService {
                     List<MessageAttachmentDTO> attachments = tuple.getT2();
 
 
-                    MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+                    MessageDTO messageDTO = toDTO(message);
                     messageDTO.setAttachments(attachments);
                     messageDTO.setReactions(reactionPreviews);
 
@@ -210,5 +210,18 @@ public class MessageService {
     public Flux<MessageDTO> getMessagesBulk(Long channelId, Collection<Long> messageIds, Long userId) {
         return messageRepository.findMessagesByChannelAndIdIn(channelId, messageIds)
                 .flatMap(message -> attachAdditionalDataToMessage(message, userId));
+    }
+
+    private MessageDTO toDTO(Message message) {
+        Long updatedAt = message.getUpdated_at() == null ? null : message.getUpdated_at().toEpochMilli();
+        return MessageDTO.builder()
+                .id(message.getId())
+                .channel(message.getChannel())
+                .text(message.getText())
+                .updated_at(updatedAt)
+                .user(message.getUser())
+                .respondsToMessage(message.getRespondsToMessage())
+                .gifLink(message.getGifLink())
+                .build();
     }
 }

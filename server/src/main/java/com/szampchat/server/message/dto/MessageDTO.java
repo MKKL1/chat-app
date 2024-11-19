@@ -25,7 +25,7 @@ public class MessageDTO {
     @Schema(example = "My message content", description = "Content of message")
     private String text;
     @Schema(example = "not sure", description = "When message was updated")
-    private Instant updated_at;
+    private Long updated_at;
     @Schema(example = "4501678724218880", description = "ID of user that sent message")
     @JsonProperty("userId")
     private Long user;
