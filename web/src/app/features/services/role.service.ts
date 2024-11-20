@@ -42,18 +42,17 @@ export class RoleService {
     this.eventService.on('ROLE_DELETE_EVENT', this.handleDeleteRole);
   }
 
-  createRole(name: string, permissions: bigint): Observable<Role>{
+  createRole(name: string, permissions: bigint): Observable<any>{
     const communityId = this.communityQuery.getActiveId();
 
-    return this.http.post<Role>(this.api + communityId + "/roles", {
+    return this.http.post(this.api + communityId + "/roles", {
       name: name,
       permissionOverwrites: permissions.toString(),
       members: []
     });
   }
 
-  editRole(roleId: string, name?: string, permissions?: string){
-    const communityId = this.communityQuery.getActiveId();
+  editRole(roleId: string, name?: string, permissions?: string): Observable<any>{
     const operations: Operation[] = []
 
     if(name){
@@ -75,7 +74,7 @@ export class RoleService {
       return EMPTY;
     }
 
-    return this.http.patch(`${this.api}${communityId}/roles/${roleId}`,operations);
+    return this.http.patch(`${environment.api}roles/${roleId}`,operations);
   }
 
   deleteRole(id: string){

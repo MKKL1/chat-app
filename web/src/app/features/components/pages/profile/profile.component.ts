@@ -15,6 +15,7 @@ import {UserService} from "../../../../core/services/user.service";
 import {resetStores} from "@datorama/akita";
 import {User} from "../../../models/user";
 import {Subscription} from "rxjs";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-profile',
@@ -47,7 +48,8 @@ export class ProfileComponent implements OnInit, OnDestroy{
   constructor(
     private keycloakService: KeycloakService,
     private userService: UserService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private messageService: MessageService) {
   }
 
   ngOnInit() {
@@ -68,9 +70,14 @@ export class ProfileComponent implements OnInit, OnDestroy{
   }
 
   editDescription(){
-    // this.userService.editDescription(this.user()?.description ?? '').subscribe(user => {
-    //   console.log(user);
-    // });
+    if(this.description.length === 0){
+      this.messageService.add({severity: 'warn', summary: 'Description cannot be null'});
+      return;
+    }
+
+    this.userService.editDescription(this.description).subscribe(user => {
+      console.log(user);
+    });
   }
 
   logout(){

@@ -15,6 +15,9 @@ import {RoleMembersComponent} from "../dialogs/role-members/role-members.compone
 import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {ConfirmationService} from "primeng/api";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @Component({
   selector: 'app-roles',
@@ -26,7 +29,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
     MatFabButton,
     MatListModule,
     MatCardModule,
-    MatButton
+    MatButton,
   ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
@@ -45,7 +48,8 @@ export class RolesComponent implements OnDestroy{
     private roleQuery: RoleQuery,
     private roleService: RoleService,
     private communityQuery: CommunityQuery,
-    private permissionService: PermissionService) {
+    private permissionService: PermissionService,
+    private confirmationService: ConfirmationService) {
     this.communitySubscription = this.communityQuery
       .selectActiveId()
       .subscribe(
@@ -71,6 +75,15 @@ export class RolesComponent implements OnDestroy{
       width: '60vw',
       data: {'roleToUpdate': role[0]}
     });
+  }
+
+  confirmDeleteRole(event: Event, id: string){
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to delete this role?',
+      header: 'Confirmation',
+      accept: () => this.deleteRole(id)
+    })
   }
 
   deleteRole(id: string){

@@ -21,6 +21,7 @@ import {AvatarComponent} from "../../../../../shared/ui/avatar/avatar.component"
 import {MatCard, MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../../services/role.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-role-members',
@@ -58,7 +59,8 @@ export class RoleMembersComponent implements OnInit{
               @Inject(MAT_DIALOG_DATA) public data: {role: Role},
               private memberQuery: MemberQuery,
               private communityQuery: CommunityQuery,
-              private roleService: RoleService) {
+              private roleService: RoleService,
+              private messageService: MessageService) {
     if(data){
       this.role.set(data.role);
     }
@@ -80,7 +82,6 @@ export class RoleMembersComponent implements OnInit{
   }
 
   transferMembersBetweenLists(){
-    console.log(this.membersToAdd.value);
     const idsToMove: string[] = this.membersToAdd.value!;
 
     if(idsToMove.length === 0){
@@ -121,11 +122,9 @@ export class RoleMembersComponent implements OnInit{
       currentMember => !updatedMembersWithRole.some(updatedMember => updatedMember.id === currentMember.id)
     );
 
-    console.log('Added Members:', addedMembers);
-    console.log('Removed Members:', removedMembers);
-
     this.roleService.changeRoleMembers(this.role()!, addedMembers, removedMembers).subscribe(_ => {
       this.dialogRef.close();
+      this.messageService.add({severity: 'success', summary: 'Role reassigned successfully'});
     });
   }
 

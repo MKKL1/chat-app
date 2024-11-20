@@ -1,7 +1,7 @@
 <div class="text-chat-container">
   <!-- messages -->
   <div class="messages" #scrollContainer (scroll)="onScroll()">
-    @if(loadedAllData()){
+    @if(loadedAllData() && messages().length !== 0){
       <h1 class="flex-center">No more messages</h1>
     }
     @if(messages()){

@@ -6,7 +6,6 @@ import {Observable, tap} from "rxjs";
 import {CommunityQuery} from "../store/community/community.query";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
-import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {EventService} from "../../core/events/event.service";
 import {Operation} from "./role.service";
 
@@ -60,20 +59,30 @@ export class ChannelService {
     return this.http.post<Channel>(environment.api + "communities/" + this.communityQuery.getActiveId() + "/channels", channel);
   }
 
-  updateChannel(channelId: string, name: string){
+  updateChannel(channelId: string, name: string): Observable<any>{
     const operations: Operation[] = [
       {
         op: 'replace', path: '/channel/name', value: name
       }
     ];
 
-    return this.http.put<Channel>(this.apiPath + "/" + channelId, operations);
+    return this.http.put(this.apiPath + "/" + channelId, operations);
   }
 
   // I'm too lazy to check channel type here
   // and there won't be channels with same id in both stores anyway
-  deleteChannel(id: string){
+  deleteChannel(id: string): Observable<any>{
     return this.http.delete(this.apiPath + "/" + id);
+  }
+
+  updatePermissions(id: string, roleId: string, permissions: bigint){
+    const operations = [
+      {op: 'replace', path: '/overwrites', value: [
+          {"roleId": roleId,"overwrites": permissions.toString()}
+        ]
+      }
+    ];
+    return this.http.put(environment.api + 'channels/' + id, operations);
   }
 
   private handleAddChannel = (newChannel: Channel) => {

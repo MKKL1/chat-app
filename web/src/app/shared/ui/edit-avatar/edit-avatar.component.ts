@@ -11,6 +11,7 @@ import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {UserService} from "../../../core/services/user.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {previewImage} from "../../utils/utils";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-edit-avatar',
@@ -34,6 +35,7 @@ export class EditAvatarComponent {
 
   constructor(
     private userService: UserService,
+    private messageService: MessageService,
     @Inject(MAT_DIALOG_DATA) public data: {imageUrl: string},
     public dialogRef: MatDialogRef<EditAvatarComponent>) {
     this.imageUrl.set(data.imageUrl);
@@ -50,6 +52,7 @@ export class EditAvatarComponent {
     if(this.fileToUpload()){
       this.userService.editAvatar(this.fileToUpload()!).subscribe(response => {
         this.dialogRef.close();
+        this.messageService.add({severity: 'success', summary: 'Changed avatar'});
       });
 
     } else {

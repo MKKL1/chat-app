@@ -12,7 +12,7 @@
               <button mat-icon-button (click)="editRole(role.id)">
                 <mat-icon>edit_note</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteRole(role.id)">
+              <button mat-icon-button (click)="confirmDeleteRole($event, role.id)">
                 <mat-icon>delete</mat-icon>
               </button>
               <button (click)="addMembersToRole(role)" mat-icon-button>

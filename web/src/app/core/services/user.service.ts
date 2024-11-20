@@ -67,7 +67,7 @@ export class UserService {
   }
 
   editDescription(description: string){
-    return this.http.patch<User>(this.api, {description: description});
+    return this.http.patch<User>(this.api + "/description", {description: description});
   }
 
   editAvatar(file: File) {

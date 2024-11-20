@@ -21,6 +21,7 @@ import {Channel, ChannelType} from "../../../../models/channel";
 import {catchError, of} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {EditPermissionsComponent} from "../edit-permissions/edit-permissions.component";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-create-channel',
@@ -61,6 +62,7 @@ export class CreateChannelComponent implements OnInit{
   constructor(
     public dialogRef: MatDialogRef<CreateChannelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {editing: boolean, channel: Channel},
+    private messageService: MessageService,
     private channelService: ChannelService) {
   }
 
@@ -97,6 +99,7 @@ export class CreateChannelComponent implements OnInit{
       })).subscribe(channel => {
       this.loading.set(false);
       this.dialogRef.close();
+      this.messageService.add({severity: 'success', summary: `Added new channel: ${channel?.name}`});
     });
   }
 
@@ -106,6 +109,7 @@ export class CreateChannelComponent implements OnInit{
         .subscribe(channel => {
           this.loading.set(false);
           this.dialogRef.close();
+          this.messageService.add({severity: 'info', summary: `Edited channel: ${channel.channel.name}`});
       });
     }
   }
@@ -114,6 +118,7 @@ export class CreateChannelComponent implements OnInit{
     if(this.editing() && this.id){
       this.channelService.deleteChannel(this.id).subscribe(channel => {
         this.dialogRef.close();
+        this.messageService.add({severity: 'info', summary: 'Deleted channel'});
       });
     }
   }
