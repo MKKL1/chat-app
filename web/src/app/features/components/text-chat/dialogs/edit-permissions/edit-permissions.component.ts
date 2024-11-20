@@ -24,7 +24,9 @@ import {Channel} from "../../../../models/channel";
 import {TextChannelQuery} from "../../../../store/textChannel/text.channel.query";
 import {VoiceChannelQuery} from "../../../../store/voiceChannel/voice.channel.query";
 import {formatRoleName} from "../../../../../shared/utils/utils";
-import {clearBit, setBit} from "../../../../../shared/utils/binaryOperations";
+import {clearBit, isBitSet, setBit} from "../../../../../shared/utils/binaryOperations";
+import {ChannelService} from "../../../../services/channel.service";
+import {MessageService} from "primeng/api";
 
 export interface RoleValue {
   label: string;
@@ -72,9 +74,11 @@ export class EditPermissionsComponent implements OnInit{
   ];
 
   constructor(private roleService: RoleService,
+              private channelService: ChannelService,
               private roleQuery: RoleQuery,
               private textChannelQuery: TextChannelQuery,
               private voiceChannelQuery: VoiceChannelQuery,
+              private messageService: MessageService,
               @Inject(MAT_DIALOG_DATA) public data: {
                 communityId: string,
                 channelId: string
@@ -93,7 +97,6 @@ export class EditPermissionsComponent implements OnInit{
     console.log(this.channel());
   }
 
-  // TODO add patch for channel in api
   // get overwrites from overwrites in channel
   selectRole(role: Role){
     this.selectedRole.set(role);
@@ -109,29 +112,40 @@ export class EditPermissionsComponent implements OnInit{
       }
     }
 
-    if(overwrites === undefined){
-      // assign basic values to form
+    const permissionKeys = this.permissions.getPermissionsNames();
 
+    // assign basic values to form
+    if(overwrites === undefined){
       // bits that can be modified 4-7
       // get those bits and build form based on them
-
-      // on submit transform form into long
-      // and send patch
-
-      // what does permission mean here?
-      const permissionKeys = this.permissions.getPermissionsNames();
-
       for(let i=4n; i<8n; i++) {
         const startValue = {icon: 'pi pi-minus', value: 'none'};
         this.roleForm.addControl(permissionKeys[Number(i)], new FormControl(startValue));
         this.channelPermissions.push(permissionKeys[Number(i)]);
       }
     } else {
+      console.log(overwrites);
       // assign values from overwrite to form
-    }
+      let allowBitValue: boolean;
+      let denyBitValue: boolean;
+      let startValue: any;
 
-    console.log(this.roleForm.value);
-    console.log(this.roleForm.controls);
+      for(let i=4n; i<8n; i++) {
+        allowBitValue = isBitSet(this.permissions.rawValue, i);
+        denyBitValue = isBitSet(this.permissions.rawValue, i + 32n);
+
+        if(allowBitValue && !denyBitValue){
+          startValue = {icon: 'pi pi-check', value: 'allow'};
+        } else if(!allowBitValue && denyBitValue){
+          startValue = {icon: 'pi pi-times', value: 'denied'};
+        } else {
+          startValue = {icon: 'pi pi-minus', value: 'none'};
+        }
+
+        this.roleForm.addControl(permissionKeys[Number(i)], new FormControl(startValue));
+        this.channelPermissions.push(permissionKeys[Number(i)]);
+      }
+    }
   }
 
   onSubmit(){
@@ -142,8 +156,6 @@ export class EditPermissionsComponent implements OnInit{
       let currentBit = 0n;
       Object.keys(this.roleForm.controls).forEach(controlName => {
         const control = this.roleForm.get(controlName);
-        //console.log(`Control Name: ${controlName}, Value: ${control?.value}, Status: ${control?.status}`);
-
         const status = control?.value.value;
         if(status === 'allow'){
           permissionOverride = setBit(permissionOverride, currentBit);
@@ -160,16 +172,22 @@ export class EditPermissionsComponent implements OnInit{
     }
 
     console.log(permissionOverride.toString(2));
-    // TODO send permissionOverride to backend (need patch)
+    this.channelService.updatePermissions(
+      this.channel()?.id!,
+      this.selectedRole()?.id!,
+      permissionOverride
+    ).subscribe(_ => {
+      // overwrites doesn't change
+      this.messageService.add({severity: 'info', summary: `Updated channel permissions`});
+      console.log(_);
+    });
   }
 
   getChannel(id: string): Channel{
     let textChannel = this.textChannelQuery.getEntity(id);
-
     if(textChannel === undefined){
       return this.voiceChannelQuery.getEntity(id)!;
     }
-
     return textChannel;
   }
 

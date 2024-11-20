@@ -14,6 +14,7 @@ import {Subscription} from "rxjs";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {Permission} from "../../../models/permission";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {ConfirmationService} from "primeng/api";
 
 @Component({
   selector: 'app-overview',
@@ -39,7 +40,17 @@ export class OverviewComponent{
     protected communityQuery: CommunityQuery,
     private permissionService: PermissionService,
     private communityService: CommunityService,
-    protected userService: UserService) {
+    protected userService: UserService,
+    private confirmationService: ConfirmationService) {
+  }
+
+  confirmDeleteCommunity(event: Event, id: string){
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to delete this community?',
+      header: 'Confirmation',
+      accept: () => this.deleteCommunity(id)
+    })
   }
 
   deleteCommunity(id: string){

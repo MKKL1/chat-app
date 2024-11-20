@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {EMPTY, map, switchMap, tap} from "rxjs";
+import {catchError, EMPTY, map, switchMap, tap, throwError} from "rxjs";
 import {Community} from "../models/community";
 import {CommunityStore} from "../store/community/community.store";
 import {Channel, ChannelType} from "../models/channel";
@@ -19,6 +19,7 @@ import {Member} from "../models/member";
 import {UserService} from "../../core/services/user.service";
 import {MemberQuery} from "../store/member/member.query";
 import {PermissionService} from "../../core/services/permission.service";
+import {MessageService} from "primeng/api";
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,7 @@ export class CommunityService {
     private memberStore: MemberStore,
     private roleStore: RoleStore,
     private eventService: EventService,
-    private userService: UserService,
+    private messageService: MessageService,
     private permissionService: PermissionService
   ) { }
 
@@ -134,14 +135,18 @@ export class CommunityService {
   }
 
   getCommunities(){
+    this.communityStore.setLoading(true);
     this.communityQuery.selectHasCache().pipe(
       switchMap(hasCache => {
         const apiCall = this.http.get<Community[]>(this.apiPath).pipe(
           tap(communities => this.communityStore.set(communities))
         );
+        this.communityStore.setLoading(false);
         return hasCache ? EMPTY : apiCall
       })
-    ).subscribe();
+    ).subscribe(_ => {
+      this.communityStore.setLoading(false);
+    });
   }
 
   createCommunity(form: {name: string}, file: File | undefined) {
@@ -157,9 +162,16 @@ export class CommunityService {
         'enctype': 'multipart/form-data'
       })
     })
-    .subscribe(
-      community => this.communityStore.add(community)
-    );
+    .pipe(
+      catchError(err => {
+        console.error(err);
+        this.messageService.add({severity: 'error', summary: 'Cannot create new community'});
+        return throwError(() => err);
+    }))
+    .subscribe(community => {
+      this.communityStore.add(community);
+      this.messageService.add({severity: 'success', summary: `Created ${community.name} community`});
+    });
   }
 
   editCommunity(){

@@ -18,20 +18,22 @@ import {UserService} from "../../../../core/services/user.service";
 import {ID} from "@datorama/akita";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {Permission} from "../../../models/permission";
+import {ShorteningPipe} from "../../../../shared/pipes/ShorteningPipe";
 
 @Component({
   selector: 'app-text-chats-list',
   standalone: true,
-  imports: [
-    MatListModule,
-    TextChannelInfoComponent,
-    MatButton,
-    MatIcon,
-    MatIconButton,
-    IsOwnerDirective,
-    AsyncPipe,
-    NgClass
-  ],
+    imports: [
+        MatListModule,
+        TextChannelInfoComponent,
+        MatButton,
+        MatIcon,
+        MatIconButton,
+        IsOwnerDirective,
+        AsyncPipe,
+        NgClass,
+        ShorteningPipe
+    ],
   templateUrl: './text-chats-list.component.html',
   styleUrl: './text-chats-list.component.scss'
 })

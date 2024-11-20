@@ -20,6 +20,7 @@ import {Role} from "../../../../models/role";
 import {Permission} from "../../../../models/permission";
 import {SelectButtonModule} from "primeng/selectbutton";
 import {formatRoleName} from "../../../../../shared/utils/utils";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-role-dialog',
@@ -63,6 +64,7 @@ export class RoleDialogComponent {
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
+    private messageService: MessageService,
     public dialogRef: MatDialogRef<RoleDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {roleToUpdate: Role}) {
     if(data !== null){
@@ -134,7 +136,8 @@ export class RoleDialogComponent {
 
   createRole(){
     this.roleService.createRole(this.roleName.value!, this.permissionOverride)
-      .subscribe(_ => {
+      .subscribe(role => {
+        this.messageService.add({severity: 'info', summary: `Added new role: ${role.role.name}`});
         this.dialogRef.close();
       }
     );
@@ -156,7 +159,10 @@ export class RoleDialogComponent {
       this.roleToUpdate?.id!,
       nameChanged ? this.roleName.value! : undefined,
       permissionChanged ? String(this.permissionOverride!) : undefined
-    ).subscribe(_ => this.dialogRef.close());
+    ).subscribe(role => {
+      this.messageService.add({severity: 'info', summary: `Modified role ${role.role.name}`});
+      this.dialogRef.close()
+    });
   }
 
   protected readonly Object = Object;

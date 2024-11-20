@@ -86,3 +86,10 @@ app-emoji-picker, app-gif-search{
   justify-content: space-between;
   margin-right: 10%;
 }
+
+
+.p-button.p-confirm-dialog-accept, .p-button.p-confirm-dialog-reject{
+  background-color: #005142;
+  color: white;
+  border: none;
+}

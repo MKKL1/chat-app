@@ -61,8 +61,6 @@ export class CreateCommunityComponent implements OnInit{
     this.communityForm.setValue({
       name: this.data.community.name
     });
-
-    // todo set image after it is retrieved
   }
 
   resetImage(){
@@ -86,7 +84,6 @@ export class CreateCommunityComponent implements OnInit{
   }
 
   private createCommunity(){
-    // todo send also image
     if(typeof this.communityForm.value.name === 'string'){
       this.communityService.createCommunity({name: this.communityForm.value.name}, this.file);
     }

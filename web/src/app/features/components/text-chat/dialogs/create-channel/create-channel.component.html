@@ -5,13 +5,15 @@
       <mat-label>Name</mat-label>
       <input matInput formControlName="name">
     </mat-form-field>
-    <mat-form-field>
-      <mat-label>Type</mat-label>
-      <mat-select required formControlName="type">
-        <mat-option value="0">Text</mat-option>
-        <mat-option value="1">Voice</mat-option>
-      </mat-select>
-    </mat-form-field>
+    @if(!editing()){
+      <mat-form-field>
+        <mat-label>Type</mat-label>
+        <mat-select required formControlName="type">
+          <mat-option value="0">Text</mat-option>
+          <mat-option value="1">Voice</mat-option>
+        </mat-select>
+      </mat-form-field>
+    }
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>

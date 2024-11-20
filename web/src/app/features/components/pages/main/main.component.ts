@@ -4,13 +4,16 @@ import {AppbarComponent} from "../../../../core/components/appbar/appbar.compone
 import {UserService} from "../../../../core/services/user.service";
 import {EventService} from "../../../../core/events/event.service";
 import {RoleService} from "../../../services/role.service";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @Component({
   selector: 'app-main',
   standalone: true,
   imports: [
     AppbarComponent,
-    RouterOutlet
+    RouterOutlet,
+    ConfirmDialogModule
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
