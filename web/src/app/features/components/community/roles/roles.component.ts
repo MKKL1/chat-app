@@ -83,7 +83,7 @@ export class RolesComponent implements OnDestroy{
       message: 'Are you sure you want to delete this role?',
       header: 'Confirmation',
       accept: () => this.deleteRole(id)
-    })
+    });
   }
 
   deleteRole(id: string){

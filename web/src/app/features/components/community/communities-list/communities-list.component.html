@@ -2,17 +2,23 @@
   <mat-button-toggle value="all">All</mat-button-toggle>
   <mat-button-toggle value="owned">Only owned</mat-button-toggle>
 </mat-button-toggle-group>
-
-@if(showOnlyOwned){
-  @if(ownedCommunities$ | async; as communities){
-    @for(community of communities; track community.id){
+@if(loading()){
+  <div class="skeletons">
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+    <p-skeleton height="4rem" borderRadius="16px"></p-skeleton>
+  </div>
+} @else {
+  @if(showOnlyOwned()){
+    @for(community of ownedCommunities(); track community.id){
       <app-community-card (click)="selectCommunity(community.id)" [community]="community">
       </app-community-card>
     }
-  }
-} @else {
-  @if(communities$ | async; as communities){
-    @for(community of communities; track community.id){
+  } @else {
+    @for(community of communities(); track community.id){
       <app-community-card (click)="selectCommunity(community.id)" [community]="community">
       </app-community-card>
     }

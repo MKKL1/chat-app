@@ -20,6 +20,7 @@ import {TextChannelQuery} from "../../../store/textChannel/text.channel.query";
 import {UserService} from "../../../../core/services/user.service";
 import {MatButton} from "@angular/material/button";
 import {Order} from "@datorama/akita";
+import {SkeletonModule} from "primeng/skeleton";
 
 @Component({
   selector: 'app-text-chat',
@@ -37,7 +38,8 @@ import {Order} from "@datorama/akita";
     FadeInOutScrollDirective,
     MessageInputComponent,
     AsyncPipe,
-    MatButton
+    MatButton,
+    SkeletonModule
   ],
   templateUrl: './text-chat.component.html',
   styleUrl: './text-chat.component.scss'

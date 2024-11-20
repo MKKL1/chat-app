@@ -1,7 +1,7 @@
 <!-- Add css later -->
 <p>overview works! {{ selectedCommunity()?.id }} | {{ selectedCommunity()?.name }}</p>
 @if(userService.getUser().id === selectedCommunity()?.ownerId){
-  <button mat-flat-button (click)="deleteCommunity(selectedCommunity()?.id!)">Delete community</button>
+  <button mat-flat-button (click)="confirmDeleteCommunity($event, selectedCommunity()?.id!)">Delete community</button>
   <button mat-flat-button (click)="editCommunity()">Edit community</button>
 }
 @if(permission()?.canCreateInvitation){

@@ -13,3 +13,13 @@
   width: 0;
   height: 0;
 }
+
+.skeletons{
+  display: flex;
+  flex-direction: column;
+}
+
+.skeletons p-skeleton{
+  margin: 5px 10px;
+  border-radius: 16px;
+}

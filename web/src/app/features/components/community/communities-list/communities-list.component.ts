@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {CommunityCardComponent} from "../community-card/community-card.component";
 import {RouterLink} from "@angular/router";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
@@ -11,6 +11,8 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {UserService} from "../../../../core/services/user.service";
 import {Subscription} from "rxjs";
+import {toSignal} from "@angular/core/rxjs-interop";
+import {SkeletonModule} from "primeng/skeleton";
 
 @Component({
   selector: 'app-communities-list',
@@ -27,16 +29,22 @@ import {Subscription} from "rxjs";
     MatButtonToggle,
     FormsModule,
     NgIf,
-    MatProgressSpinner
+    MatProgressSpinner,
+    SkeletonModule
   ],
   templateUrl: './communities-list.component.html',
   styleUrl: './communities-list.component.scss'
 })
 
 export class CommunitiesListComponent implements OnInit {
-  showOnlyOwned: boolean = false;
-  errorMessage: string | null = null;
-  isLoading: boolean = true;
+  showOnlyOwned = signal<boolean>(false);
+
+  loading = toSignal(this.communityQuery.selectLoading());
+
+  communities = toSignal(this.communityQuery.selectAll());
+  ownedCommunities = toSignal(this.communityQuery.selectAll({
+    filterBy: entity => entity.ownerId === this.userService.getUser().id
+  }));
 
   constructor(
     private communityService: CommunityService,
@@ -48,22 +56,12 @@ export class CommunitiesListComponent implements OnInit {
     this.communityService.getCommunities();
   }
 
-  get communities$(){
-    return this.communityQuery.selectAll();
-  }
-
-  get ownedCommunities$(){
-    return this.communityQuery.selectAll({
-      filterBy: entity => entity.ownerId === this.userService.getUser().id
-    });
-  }
-
   selectCommunity(id: string){
     this.communityService.changeCommunity(id);
   }
 
   onToggleChange(value: string){
-    this.showOnlyOwned = value !== 'all';
+    this.showOnlyOwned.set(value !== 'all');
   }
 
 }

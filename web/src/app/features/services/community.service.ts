@@ -135,14 +135,18 @@ export class CommunityService {
   }
 
   getCommunities(){
+    this.communityStore.setLoading(true);
     this.communityQuery.selectHasCache().pipe(
       switchMap(hasCache => {
         const apiCall = this.http.get<Community[]>(this.apiPath).pipe(
           tap(communities => this.communityStore.set(communities))
         );
+        this.communityStore.setLoading(false);
         return hasCache ? EMPTY : apiCall
       })
-    ).subscribe();
+    ).subscribe(_ => {
+      this.communityStore.setLoading(false);
+    });
   }
 
   createCommunity(form: {name: string}, file: File | undefined) {
