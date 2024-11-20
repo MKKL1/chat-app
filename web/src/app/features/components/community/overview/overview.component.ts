@@ -58,7 +58,13 @@ export class OverviewComponent{
   }
 
   editCommunity(){
-    this.dialog.open(CreateCommunityComponent, {data: {editing: true, community: this.selectedCommunity()}});
+    this.dialog.open(CreateCommunityComponent, {
+      width: '60vw',
+      data: {
+        editing: true,
+        community: this.selectedCommunity()
+      }
+    });
   }
 
   createInvitation(){

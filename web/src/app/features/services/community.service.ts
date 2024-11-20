@@ -182,9 +182,7 @@ export class CommunityService {
     this.http.delete(this.apiPath + "/" + id).pipe()
       .subscribe({
       next: _ => {
-        // ???
         this.communityStore.remove(id);
-
         // need to unselect community if deleted one was actually selected
         if(this.communityQuery.getActiveId() === id){
           this.communityStore.removeActive(id);

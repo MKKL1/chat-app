@@ -82,6 +82,9 @@ export class ChannelService {
         ]
       }
     ];
+
+    console.log(operations);
+
     return this.http.put(environment.api + 'channels/' + id, operations);
   }
 

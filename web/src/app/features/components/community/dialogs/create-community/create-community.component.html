@@ -11,7 +11,7 @@
     <app-file-upload (fileSelected)="setFile($event)"></app-file-upload>
     <button mat-raised-button (click)="resetImage()">Reset image</button>
   </div>
-  @if(imagePreview() !== undefined && imagePreview() !== ''){
+  @if(imagePreview() !== null && imagePreview() !== ''){
     <img src="{{imagePreview()}}">
   }
 </mat-dialog-content>

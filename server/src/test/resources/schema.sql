@@ -55,6 +55,9 @@ alter table communities
         foreign key (image_url) references files
             on delete set null;
 
+--- If image_url is set to not null it causes errors while creating community without image
+alter table communities alter column image_url drop not null;
+
 create table channels
 (
     id           bigint       not null

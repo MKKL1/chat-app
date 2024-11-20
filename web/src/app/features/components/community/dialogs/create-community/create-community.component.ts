@@ -44,7 +44,7 @@ export class CreateCommunityComponent implements OnInit{
   });
 
   file?: File;
-  imagePreview = signal<string>('');
+  imagePreview = signal<string | null>(null);
 
   constructor(private communityService: CommunityService,
     public dialogRef: MatDialogRef<CreateCommunityComponent>,
@@ -56,6 +56,7 @@ export class CreateCommunityComponent implements OnInit{
       return;
     }
 
+    this.imagePreview.set(this.data.community.imageUrl);
     this.editing.set(this.data.editing);
     this.communityId = this.data.community.id;
     this.communityForm.setValue({
@@ -64,7 +65,7 @@ export class CreateCommunityComponent implements OnInit{
   }
 
   resetImage(){
-    this.imagePreview.set('');
+    this.imagePreview.set(null);
     this.file = undefined;
   }
 
