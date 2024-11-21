@@ -50,6 +50,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.communitySubscription = this.communityQuery.selectActive()
       .subscribe(community => {
         if(community === undefined){
+          this.title.set('');
           return;
         }
 

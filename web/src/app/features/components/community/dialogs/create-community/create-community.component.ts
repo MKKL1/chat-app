@@ -92,7 +92,10 @@ export class CreateCommunityComponent implements OnInit{
   }
 
   private editCommunity(){
-    // todo send also image
-    this.communityService.editCommunity();
+    this.communityService.editCommunity(
+      this.communityId,
+      this.communityForm.value.name!,
+      this.file
+    );
   }
 }

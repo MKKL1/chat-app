@@ -9,6 +9,7 @@ import com.szampchat.server.community.dto.FullCommunityInfoDTO;
 import com.szampchat.server.community.dto.request.CommunityEditRequest;
 import com.szampchat.server.community.entity.Community;
 import com.szampchat.server.community.entity.CommunityMember;
+import com.szampchat.server.community.event.CommunityDeleteEvent;
 import com.szampchat.server.community.event.CommunityUpdateEvent;
 import com.szampchat.server.community.exception.CommunityNotFoundException;
 import com.szampchat.server.community.exception.FailedToSaveCommunityException;
@@ -107,7 +108,6 @@ public class CommunityService {
                 .map(this::toDTO);
     }
 
-    // TODO REMOVE Mono.just(null);
     @Transactional
     public Mono<Community> save(CommunityCreateRequest communityDTO, FilePart file, Long ownerId) {
         // storing community image
@@ -171,8 +171,6 @@ public class CommunityService {
     }
 
     public Mono<Void> delete(Long id) {
-
-
         return getById(id)
                 .flatMap(communityDTO -> {
                             Mono<Void> deleteImageMono = communityDTO.getImageUrl() == null ?
@@ -180,7 +178,15 @@ public class CommunityService {
                                     fileStorageService.delete(communityDTO.getImageUrl());
 
                             return deleteImageMono.then(communityRepository.deleteById(id));
-                });
+                }).doOnSuccess(_ -> eventSink.publish(
+                        CommunityDeleteEvent.builder()
+                                .data(id)
+                                .recipient(Recipient.builder()
+                                        .context(Recipient.Context.COMMUNITY)
+                                        .id(id)
+                                        .build())
+                                .build())
+                );
     }
 
     private CommunityDTO toDTO(Community community) {

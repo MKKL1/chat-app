@@ -15,6 +15,7 @@ import {PermissionService} from "../../../../core/services/permission.service";
 import {Permission} from "../../../models/permission";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {ConfirmationService} from "primeng/api";
+import {CommunityStats} from "../../../models/community-stats";
 
 @Component({
   selector: 'app-overview',
@@ -30,11 +31,13 @@ import {ConfirmationService} from "primeng/api";
   styleUrl: './overview.component.scss'
 })
 
-export class OverviewComponent{
+export class OverviewComponent implements OnInit{
   readonly dialog: MatDialog = inject(MatDialog);
 
   selectedCommunity = toSignal(this.communityQuery.selectActive());
   permission = toSignal(this.permissionService.permissions$);
+
+  stats = signal<CommunityStats | undefined>(undefined);
 
   constructor(
     protected communityQuery: CommunityQuery,
@@ -42,6 +45,10 @@ export class OverviewComponent{
     private communityService: CommunityService,
     protected userService: UserService,
     private confirmationService: ConfirmationService) {
+  }
+
+  ngOnInit() {
+    this.stats.set(this.communityQuery.getStats());
   }
 
   confirmDeleteCommunity(event: Event, id: string){

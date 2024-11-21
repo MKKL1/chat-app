@@ -136,7 +136,7 @@ public class CommunityController {
     public Mono<CommunityDTO> editCommunity(
             @ResourceId @PathVariable Long communityId,
             @RequestPart("community") CommunityEditRequest request,
-            @RequestPart("file") FilePart file) {
+            @RequestPart(value = "file", required = false) FilePart file) {
         return communityService.editCommunity(communityId, request, file);
     }
 
