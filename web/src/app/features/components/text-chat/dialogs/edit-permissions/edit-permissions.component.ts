@@ -172,6 +172,7 @@ export class EditPermissionsComponent implements OnInit{
     }
 
     console.log(permissionOverride.toString(2));
+
     this.channelService.updatePermissions(
       this.channel()?.id!,
       this.selectedRole()?.id!,

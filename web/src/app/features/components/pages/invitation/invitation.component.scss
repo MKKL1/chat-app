@@ -1,6 +1,7 @@
 :host{
   color: white;
   display: grid;
+  place-items: center;
   height: 100vh;
   background: linear-gradient(135deg,
     #1f6d5a 10%,
@@ -13,10 +14,27 @@
 
 mat-card{
   place-self: center;
-  padding: 100px;
+  padding: 50px;
+  background: var(--light-background);
 }
 
-button{
-  width: 100%;
-  margin: 0 20px;
+.section {
+  padding: 40px 16px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+
+.icon {
+  margin-right: 8px;
 }

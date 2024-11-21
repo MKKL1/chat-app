@@ -9,11 +9,9 @@ import {MatButton} from "@angular/material/button";
 import {Subscription} from "rxjs";
 
 // TODO
-// add styling to invitation, center spinner
+// add displaying community image somewhere
 // catch more info than just community (owner, number of members)
 // first discover how to do it in db (mapping)
-
-// wait with adding signal for change in api
 
 @Component({
   selector: 'app-invitation',

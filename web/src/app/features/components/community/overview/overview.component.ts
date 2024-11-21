@@ -31,13 +31,15 @@ import {CommunityStats} from "../../../models/community-stats";
   styleUrl: './overview.component.scss'
 })
 
-export class OverviewComponent implements OnInit{
+export class OverviewComponent implements OnInit, OnDestroy{
   readonly dialog: MatDialog = inject(MatDialog);
 
   selectedCommunity = toSignal(this.communityQuery.selectActive());
   permission = toSignal(this.permissionService.permissions$);
 
   stats = signal<CommunityStats | undefined>(undefined);
+
+  communitySub: Subscription;
 
   constructor(
     protected communityQuery: CommunityQuery,
@@ -49,6 +51,12 @@ export class OverviewComponent implements OnInit{
 
   ngOnInit() {
     this.stats.set(this.communityQuery.getStats());
+
+    this.communitySub = this.communityQuery.selectActive()
+      .subscribe(community => {
+        this.stats.set(this.communityQuery.getStats());
+      }
+    );
   }
 
   confirmDeleteCommunity(event: Event, id: string){
@@ -76,5 +84,9 @@ export class OverviewComponent implements OnInit{
 
   createInvitation(){
     this.dialog.open(GenerateInvitationComponent, {data: {id: this.selectedCommunity()?.id}});
+  }
+
+  ngOnDestroy() {
+    this.communitySub.unsubscribe();
   }
 }

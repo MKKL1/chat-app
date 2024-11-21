@@ -1,8 +1,13 @@
+body, :host{
+  margin: 0;
+  padding: 0;
+}
+
 .landing{
   display: grid;
   width: 100vw;
-  height: 100vh;
-  background: linear-gradient(167deg, #000000, #195c52, #a8e6cf);
+  //background: linear-gradient(#000000, #2b4a46, #3a5a53);
+  background: var(--background);
 }
 
 .actions{
@@ -12,9 +17,59 @@
   background: var(--background);
 }
 
-h1{
-  margin: 0;
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 20px;
 }
 
+.text-section {
+  flex: 1;
+  text-align: center;
+  padding: 20px;
+}
 
+@media (min-width: 768px) {
+  .text-section {
+    text-align: left;
+  }
+}
 
+.title {
+  color: white;
+  font-size: 4rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 5rem;
+  color: #195c52;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.description {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #5f6368;
+  line-height: 1.5;
+}
+
+//.image-section {
+//  flex: 1;
+//  overflow: hidden;
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//}
+//
+//.image {
+//  width: 100%;
+//  height: auto;
+//  object-fit: cover;
+//  clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%);
+//}
