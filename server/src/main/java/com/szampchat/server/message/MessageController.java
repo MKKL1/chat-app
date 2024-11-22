@@ -75,7 +75,7 @@ public class MessageController {
     //Is owner of message
     @PreAuthorize("@messagePerm.canEdit(#channelId, #messageId, #currentUser.userId)")
     @PatchMapping("/channels/{channelId}/messages/{messageId}")
-    public Mono<Message> editMessage(@PathVariable Long channelId,
+    public Mono<MessageDTO> editMessage(@PathVariable Long channelId,
                                      @PathVariable Long messageId,
                                      CurrentUser currentUser,
                                      @RequestBody MessageEditRequest request) {

@@ -121,29 +121,29 @@ public class MessageService {
                 .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
-    public Mono<Message> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
+    public Mono<MessageDTO> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
         return getMessage(messageId, channelId)
-            .flatMap(message -> {
+                .flatMap(message -> {
 //                if(!Objects.equals(message.getUser(), userId)){
 //                    return Mono.error(new Exception("Message doesn't belong to user"));
 //                }
-                message.setText(request.text());
-                return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
-                        .thenReturn(message);
-            }).flatMap(message ->
-                channelService.getChannel(channelId)
-                    .map(channel -> MessageUpdateEvent.builder()
-                        // can't map this
-                        .data(modelMapper.map(message, MessageDTO.class))
-                        .recipient(Recipient.builder()
-                            .context(Recipient.Context.COMMUNITY)
-                            .id(channel.getCommunityId())
-                            .build())
-                        .build()
-                    )
-                    .doOnNext(eventSender::publish)
-                    .thenReturn(message)
-                );
+                    message.setText(request.text());
+                    return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
+                            .thenReturn(message);
+                }).flatMap(message -> {
+                    MessageDTO messageDTO = toDTO(message);
+                    return channelService.getChannel(channelId)
+                            .map(channel -> MessageUpdateEvent.builder()
+                                    .data(messageDTO)
+                                    .recipient(Recipient.builder()
+                                            .context(Recipient.Context.COMMUNITY)
+                                            .id(channel.getCommunityId())
+                                            .build())
+                                    .build()
+                            )
+                            .doOnNext(eventSender::publish)
+                            .thenReturn(messageDTO);
+                });
     }
 
     public Mono<Void> deleteMessage(Long messageId, Long channelId) {

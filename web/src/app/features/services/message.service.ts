@@ -76,7 +76,6 @@ export class MessageService{
     }
   }
 
-  // for now after switching channel all message data is lost
   fetchMessages(channelId: ID, lastMessageId?: string): Observable<Message[]>{
     const params: any = {
       limit: this.limit
@@ -108,27 +107,20 @@ export class MessageService{
       headers: new HttpHeaders({
         'enctype': 'multipart/form-data'
       })
-    }).subscribe(res => {
-      //console.log(res);
-    });
+    }).subscribe();
   }
 
-  // if i edit message text, getting messages stops working
   editMessage(id: string, text: string){
     const channelId = this.channelQuery.getActiveId();
 
     this.http.patch<Message>(this.api + `${channelId}/messages/${id}`, {
       text: text
-    }).subscribe(message => {
-      console.log(message);
-    });
+    }).subscribe();
   }
 
   deleteMessage(id: string){
     const channelId = this.channelQuery.getActiveId();
-    this.http.delete(this.api + `${channelId}/messages/${id}`).subscribe(res => {
-      this.messageStore.remove(id);
-    });
+    this.http.delete(this.api + `${channelId}/messages/${id}`).subscribe();
   }
 
   addReaction(reaction: string, messageId: string){
@@ -173,12 +165,11 @@ export class MessageService{
   }
 
   private handleUpdateMessage = (message: Message) => {
-    console.log(message);
+    this.messageStore.update(message.id, {text: message.text});
   };
 
-  // Message delete event isn't sent
-  private handleDeleteMessage = (message: Message) => {
-    console.log(message);
+  private handleDeleteMessage = (id: any) => {
+    this.messageStore.remove(id);
   };
 
   // {

@@ -149,14 +149,17 @@ export class EditPermissionsComponent implements OnInit{
   }
 
   onSubmit(){
-    let permissionOverride = 0n;
+    let permissionOverride = this.permissions.rawValue;
 
     // TODO wrap in function
     if(this.roleForm.valid){
-      let currentBit = 0n;
+      let currentBit = 4n;
       Object.keys(this.roleForm.controls).forEach(controlName => {
         const control = this.roleForm.get(controlName);
         const status = control?.value.value;
+
+        console.log(status);
+
         if(status === 'allow'){
           permissionOverride = setBit(permissionOverride, currentBit);
         } else if(status === 'denied'){
