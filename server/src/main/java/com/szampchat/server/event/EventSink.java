@@ -23,7 +23,7 @@ public class EventSink {
     //Reactor stuff
     private final Sinks.EmitFailureHandler emitFailureHandler = (_, emitResult) -> emitResult.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
     private final Sinks.Many<InternalEvent<?>> events = Sinks.many().multicast().onBackpressureBuffer(bufferSize, false);
-
+    
     public void publish(InternalEvent<?> event) {
         log.info("Publishing event {}", event);
         events.emitNext(event, emitFailureHandler);

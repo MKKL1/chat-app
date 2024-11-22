@@ -3,16 +3,19 @@ package com.szampchat.server.event.rabbitmq;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.szampchat.server.event.EventSink;
+import com.szampchat.server.event.data.InternalEvent;
+import com.szampchat.server.shared.rabbitmq.RabbitMqProperties;
 import com.szampchat.server.socket.data.EventOutboundMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import reactor.rabbitmq.BindingSpecification;
-import reactor.rabbitmq.ExchangeSpecification;
-import reactor.rabbitmq.OutboundMessage;
-import reactor.rabbitmq.Sender;
+import reactor.rabbitmq.*;
+import reactor.util.retry.Retry;
+
+import java.net.ConnectException;
+import java.time.Duration;
 
 /**
  * Component that consumes events from {@link EventSink} and publishes them in rabbitmq
@@ -31,27 +34,30 @@ class RabbitMqPublisher {
     @PostConstruct
     private void init() {
         final String chatExchange = rabbitMqProperties.getChatExchange();
-        configureRabbitMq().then(
-            sender.send(eventSink.asFlux()
-                    .flatMap(event -> {
+        var eventFlux = eventSink.asFlux()
+                .flatMap(event -> {
 
-                        //Convert event data to byte buffer
-                        byte[] buf;
-                        try {
-                            buf = objectMapper.writeValueAsBytes(EventOutboundMessage.fromSendEvent(event));
-                        } catch (JsonProcessingException e) {
-                            return Mono.error(e);
-                        }
+                    //Convert event data to byte buffer
+                    byte[] buf;
+                    try {
+                        buf = objectMapper.writeValueAsBytes(EventOutboundMessage.fromSendEvent(event));
+                    } catch (JsonProcessingException e) {
+                        return Mono.error(e);
+                    }
 
-                        //Publish to main exchange
-                        return Mono.just(new OutboundMessage(
+                    //Publish to main exchange
+                    return Mono.just(new OutboundMessage(
                             chatExchange,
                             routeMapper.toRouteKey(event),
                             buf
-                        ));
-                    })
-                    .doOnNext(outboundMessage -> log.debug("Publishing {}", outboundMessage.toString()))
-            )).subscribe();
+                    ));
+                })
+                .doOnNext(outboundMessage -> log.debug("Publishing {}", outboundMessage.toString()));
+
+        var sendMono = sender.send(eventFlux);
+
+        configureRabbitMq().then(sendMono)
+            .subscribe();
     }
 
     //Creates initial structure for rabbitmq (exchanges, bindings)
