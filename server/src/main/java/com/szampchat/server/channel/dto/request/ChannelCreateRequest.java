@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class ChannelCreateRequest {
     @NotBlank(message = "Channel name cannot be blank")
-    @Size(max = 64, message = "Channel name cannot exceed 64 characters")
+    @Size(max = 32, message = "Channel name cannot exceed 32 characters")
     private String name;
     private ChannelType type;
 }
