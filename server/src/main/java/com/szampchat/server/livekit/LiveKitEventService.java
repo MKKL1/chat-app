@@ -24,7 +24,6 @@ public class LiveKitEventService {
     private final int bufferSize = 10;
     private final Scheduler scheduler = Schedulers.boundedElastic();
 
-    //Reactor stuff
     private final Sinks.EmitFailureHandler emitFailureHandler = (_, emitResult) -> emitResult.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
     private final Sinks.Many<LivekitEvent> events = Sinks.many().multicast().onBackpressureBuffer(bufferSize, false);
 
@@ -52,9 +51,6 @@ public class LiveKitEventService {
         events.emitNext(livekitEventMap.get(event.getEvent()).apply(event), emitFailureHandler);
     }
 
-    /**
-     * @return Flux of internal events
-     */
     public Flux<LivekitEvent> asFlux() {
         return events.asFlux().publishOn(scheduler);
     }

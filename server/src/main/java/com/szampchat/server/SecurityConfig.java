@@ -42,7 +42,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
-
+    private final LiveKitAuthManager liveKitAuthManager;
 
 
     private static final String[] WHITELIST = {
@@ -73,8 +73,7 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityWebFilterChain securityFilterChainLiveKitWebhook(ServerHttpSecurity http) {
-        ReactiveAuthenticationManager authenticationManager = new LiveKitAuthManager("devkey", "secret");//TODO move to config
-        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
+        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(liveKitAuthManager);
         authenticationWebFilter.setServerAuthenticationConverter(new LiveKitJwtConverter());
         authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance());
 
@@ -121,7 +120,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource apiConfigurationSource(){
         CorsConfiguration conf = new CorsConfiguration();
-        conf.setAllowedOrigins(List.of("http://localhost:4200"));
+        conf.setAllowedOrigins(List.of("*"));
         conf.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         conf.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
