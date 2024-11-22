@@ -15,8 +15,6 @@ public class LiveKitEventController {
 
     @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
     public Mono<Void> handleWebhook(@RequestBody String payload) {
-        return Mono.fromRunnable(() -> {
-            liveKitEventService.handleEventPayload(payload);
-        });
+        return Mono.fromRunnable(() -> liveKitEventService.handleEventPayload(payload));
     }
 }
