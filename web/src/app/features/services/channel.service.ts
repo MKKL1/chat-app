@@ -109,7 +109,11 @@ export class ChannelService {
     if(channel.type === '1'){
       this.voiceChannelStore.update(channel.id, {name: channel.name});
     } else {
-      this.textChannelStore.update(channel.id, {name: channel.name});
+      // TODO compute new permissions
+      this.textChannelStore.update(channel.id, {
+        name: channel.name,
+        overwrites: newChannel.overwrites
+      });
     }
   };
 

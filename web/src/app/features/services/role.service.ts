@@ -1,4 +1,4 @@
-import {inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from "../../../environment";
 import {HttpClient} from "@angular/common/http";
 import {CommunityQuery} from "../store/community/community.query";
@@ -10,7 +10,6 @@ import {RoleStore} from "../store/role/role.store";
 import {MemberQuery} from "../store/member/member.query";
 import {MemberStore} from "../store/member/member.store";
 import {PermissionService} from "../../core/services/permission.service";
-import {UserService} from "../../core/services/user.service";
 
 export interface Operation{
   op: string,
@@ -30,7 +29,6 @@ export class RoleService {
               private memberQuery: MemberQuery,
               private memberStore: MemberStore,
               private permissionService: PermissionService,
-              private userService: UserService,
               private eventService: EventService,
               private roleStore: RoleStore) {
   }
@@ -78,12 +76,10 @@ export class RoleService {
   }
 
   deleteRole(id: string){
-    // const communityId = this.communityQuery.getActiveId();
     this.http.delete(environment.api + "roles/" + id).subscribe();
   }
 
   changeRoleMembers(role: Role, membersToAddIds: Member[], membersToRemoveIds: Member[]): Observable<any>{
-    // const communityId = this.communityQuery.getActiveId();
     const operations: Operation[] = [];
 
     membersToAddIds.forEach(m => {
@@ -101,8 +97,6 @@ export class RoleService {
         value: m.id
       });
     });
-
-    console.log(operations);
 
     return this.http.patch(environment.api + 'roles/' + role.id, operations);
   }
@@ -145,9 +139,6 @@ export class RoleService {
 
     // compute current user permissions once again
     this.permissionService.setCommunityPermission();
-
-    console.log(role);
-    console.log(members);
   };
 
   private handleDeleteRole = (role: {roleId: string}) => {

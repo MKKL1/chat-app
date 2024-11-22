@@ -38,3 +38,10 @@ mat-card{
 .icon {
   margin-right: 8px;
 }
+
+.icon-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
+  object-fit: cover;
+}

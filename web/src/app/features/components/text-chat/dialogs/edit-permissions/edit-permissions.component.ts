@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, signal} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
@@ -27,6 +27,7 @@ import {formatRoleName} from "../../../../../shared/utils/utils";
 import {clearBit, isBitSet, setBit} from "../../../../../shared/utils/binaryOperations";
 import {ChannelService} from "../../../../services/channel.service";
 import {MessageService} from "primeng/api";
+import {Subscription} from "rxjs";
 
 export interface RoleValue {
   label: string;
@@ -56,8 +57,9 @@ export interface RoleValue {
   templateUrl: './edit-permissions.component.html',
   styleUrl: './edit-permissions.component.scss'
 })
-export class EditPermissionsComponent implements OnInit{
+export class EditPermissionsComponent implements OnInit, OnDestroy{
   channel = signal<Channel | null>(null);
+  textChannelSub: Subscription;
 
   roles = signal<Role[]>([]);
   selectedRole = signal<Role | null>(null);
@@ -95,6 +97,14 @@ export class EditPermissionsComponent implements OnInit{
 
     console.log(this.roles());
     console.log(this.channel());
+
+    this.textChannelSub = this.textChannelQuery
+      .selectEntity(this.channel()?.id!)
+      .subscribe(channel => {
+        console.log(channel);
+        //this.channel.set(channel!);
+        //this.selectRole(this.selectedRole()!);
+    });
   }
 
   // get overwrites from overwrites in channel
@@ -130,6 +140,7 @@ export class EditPermissionsComponent implements OnInit{
       let denyBitValue: boolean;
       let startValue: any;
 
+      // This is no good
       for(let i=4n; i<8n; i++) {
         allowBitValue = isBitSet(this.permissions.rawValue, i);
         denyBitValue = isBitSet(this.permissions.rawValue, i + 32n);
@@ -193,6 +204,10 @@ export class EditPermissionsComponent implements OnInit{
       return this.voiceChannelQuery.getEntity(id)!;
     }
     return textChannel;
+  }
+
+  ngOnDestroy() {
+    this.textChannelSub.unsubscribe();
   }
 
   protected readonly Object = Object;

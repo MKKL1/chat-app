@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CommunityService} from "../../../services/community.service";
 import {CommunityQuery} from "../../../store/community/community.query";
@@ -7,6 +7,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatCard, MatCardActions, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {MatButton} from "@angular/material/button";
 import {Subscription} from "rxjs";
+import {filePathMapping} from "../../../../shared/utils/utils";
 
 // TODO
 // add displaying community image somewhere
@@ -28,12 +29,12 @@ import {Subscription} from "rxjs";
   styleUrl: './invitation.component.scss'
 })
 export class InvitationComponent  implements OnInit, OnDestroy{
-  loadedInvitation: boolean = false;
   communityId: string | null | undefined;
   invitationId: string | null | undefined;
-  community: Community | undefined;
+  community = signal<Community | null>(null);
 
-  private communitySubscription: Subscription;
+  private communitySub: Subscription;
+  private invitationSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,20 +51,19 @@ export class InvitationComponent  implements OnInit, OnDestroy{
       console.log('Community ID:', params.get('communityId'));
       console.log('Invite ID:', params.get('inviteId'));
 
-
-      if (this.communityId != null) {
-        this.communityService.changeCommunity(this.communityId);
-      }
-
-      // shouldn't be loaded from store, but there isn't any endpoint for this yet
-      this.community = this.communityQuery.getActive();
-      this.loadedInvitation = true;
+      this.communitySub = this.communityService
+        .getInvitationInfo(this.communityId!, this.invitationId!)
+        .subscribe(community => {
+          console.log(community);
+          this.community.set(community);
+        }
+      );
     });
   }
 
   acceptInvitation(){
     if (this.communityId != null && this.invitationId != null) {
-      this.communitySubscription = this.communityService
+      this.invitationSub = this.communityService
         .acceptInvitation(this.communityId, this.invitationId)
         .subscribe(res => {
           console.log(res);
@@ -74,9 +74,11 @@ export class InvitationComponent  implements OnInit, OnDestroy{
   }
 
   ngOnDestroy() {
-    if (this.communitySubscription) {
-      this.communitySubscription.unsubscribe();
+    this.communitySub.unsubscribe();
+    if (this.communitySub) {
+      this.invitationSub.unsubscribe();
     }
   }
 
+  protected readonly filePathMapping = filePathMapping;
 }

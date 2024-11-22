@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {catchError, EMPTY, map, switchMap, tap, throwError} from "rxjs";
+import {catchError, EMPTY, map, Observable, switchMap, tap, throwError} from "rxjs";
 import {Community} from "../models/community";
 import {CommunityStore} from "../store/community/community.store";
 import {Channel, ChannelType} from "../models/channel";
@@ -225,6 +225,10 @@ export class CommunityService {
 
   createInvitation(id: string, days: number){
     return this.http.post<{link: string}>(this.apiPath + "/" + id + "/invite",{days: days});
+  }
+
+  getInvitationInfo(communityId: string, invitationId: string): Observable<Community> {
+    return this.http.get<Community>(environment.api + "communities/" + communityId + "/invitation/" + invitationId);
   }
 
   acceptInvitation(communityId: string, invitationId: string){
