@@ -1,0 +1,156 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --providers.docker.network=traefik_network
+      - --log.level=DEBUG
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    # isolation: process # workaround for https://github.com/containous/traefik/issues/4409
+    # volumes:
+    #   - type: npipe
+    #     source: \.\pipe\docker_engine
+    #     target: \.\pipe\docker_engine
+    networks:
+      - traefik_network
+
+  whoami:
+    image: traefik/whoami:v1.10
+    networks:
+      - traefik_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mywhoami.rule=(Host(`whoami.szampchat.com`) || Host(`www.whoami.szampchat.com`)) && PathPrefix(`/test`)
+      - traefik.http.services.mywhoami.loadbalancer.server.port=80
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgresd
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ../../server/src/test/resources/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=chat
+    networks:
+      - traefik_network
+
+  keycloak:
+    container_name: keycloakd
+    image: quay.io/keycloak/keycloak:25.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak:/opt/keycloak/data/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`auth.szampchat.com`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_network"
+    networks:
+      - traefik_network
+    command:
+      - "start-dev"
+
+  rabbitmq:
+    container_name: rabbitmqd
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    networks:
+      - traefik_network
+
+  redis:
+    container_name: redisd
+    image: redis:alpine
+    volumes:
+      - redis:/root/redis
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - traefik_network
+
+  livekit:
+    container_name: livekitd
+    image: livekit/livekit-server:v1.8
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    entrypoint: "/livekit-server --config /etc/livekit.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.livekit.rule=Host(`livekit.szampchat.com`)"
+      - "traefik.docker.network=traefik_network"
+    networks:
+      - traefik_network
+
+  szampchat-server:
+    build: ../../server
+    container_name: szampchat-server
+    # ports:
+    #   - "8081:8081"
+    #   - "8083:8083"
+    labels:
+      # General API routing
+    - traefik.enable=true
+    - traefik.http.routers.szampchat-server.rule=Host(`szampchat.com`) && PathPrefix(`/api`)
+    - traefik.http.services.szampchat-server.loadbalancer.server.port=8081
+    - traefik.http.routers.szampchat-server.service=szampchat-server
+
+    # WebSocket routing
+    - traefik.http.routers.szampchat-server-ws.rule=Host(`events.szampchat.com`)
+    - traefik.http.routers.szampchat-server-ws.entrypoints=web
+    - traefik.http.services.szampchat-server-ws.loadbalancer.server.port=8083
+    - traefik.http.routers.szampchat-server-ws.service=szampchat-server-ws
+
+    - traefik.docker.network=traefik_network
+    volumes:
+      - ./deploy-conf.yml:/opt/szampchat/application.yml:ro
+    networks:
+      - traefik_network
+    depends_on:
+      - postgres
+      - rabbitmq
+  
+  szampchat-web:
+    image: nginx:1-alpine
+    container_name: szampchat-web
+    networks:
+      - traefik_network
+    volumes:
+      - ../../web/dist/web/browser:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.szampchat-web.rule=Host(`szampchat.com`)
+    - traefik.http.services.szampchat-web.loadbalancer.server.port=80
+    - traefik.http.routers.szampchat-web.service=szampchat-web
+    - traefik.docker.network=traefik_network
+
+networks:
+  traefik_network:
+
+volumes:
+  postgres:
+  keycloak:
+  redis:
+  rabbitmq:

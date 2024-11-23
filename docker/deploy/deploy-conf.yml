@@ -2,7 +2,7 @@ spring:
   application:
     name: szampchat-server
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/chat
+    url: r2dbc:postgresql://postgres:5432/chat
     username: root
     password: root
   data:
@@ -12,7 +12,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:8082/realms/szampchat"
+          issuer-uri: "http://auth.szampchat.com/realms/szampchat"
+          jwk-set-uri: "http://keycloak:8080/realms/szampchat/protocol/openid-connect/certs"
   main:
     web-application-type: reactive
   webflux:
@@ -20,12 +21,12 @@ spring:
   rsocket:
     server:
       port: 8083
-      mapping-path: /events
+      mapping-path: /
       transport: websocket
   jackson:
     default-property-inclusion: NON_NULL
   rabbitmq:
-    host: localhost
+    host: rabbitmqd
     port: 5672
     username: root
     password: root
@@ -43,14 +44,14 @@ springdoc:
     path: /
 app:
   livekit:
-    url: "http://localhost:7880"
+    url: "http://livekit:7880"
     key: devkey
     secret: secret
   redis:
-    host: localhost
+    host: redis
     port: 6379
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        security: TRACE
+logging:
+ level:
+   org:
+     springframework:
+       security: TRACE
