@@ -28,6 +28,9 @@ public class RabbitMqConfiguration {
         connectionFactory.setPort(properties.getPort());
         connectionFactory.setUsername(properties.getUsername());
         connectionFactory.setPassword(properties.getPassword());
+
+        log.info("RabbitMQ on: {}:{}", properties.getHost(), properties.getPort());
+
         return connectionFactory;
     }
 
