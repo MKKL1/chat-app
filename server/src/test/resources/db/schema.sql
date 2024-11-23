@@ -175,3 +175,17 @@ create table invitations
     expired_at   timestamp not null
 );
 
+create table message_attachment
+(
+    id         bigint       not null
+        constraint pk_message_attachment
+            primary key,
+    path       varchar(255) not null,
+    size       integer      not null,
+    name       varchar(255) not null,
+    message_id bigint,
+    channel_id bigint,
+    constraint fk_message_attachment_on_meidchid
+        foreign key (message_id, channel_id) references messages on delete cascade
+);
+
