@@ -26,14 +26,6 @@ create table users
     sub         uuid
 );
 
-alter table users
-    alter column image_url type uuid using image_url::uuid;
-
-alter table users
-    add constraint users_files_file_id_fk
-        foreign key (image_url) references files
-            on delete set null;
-
 create table communities
 (
     id               bigint      not null
@@ -181,6 +173,20 @@ create table invitations
         constraint fk_invitations_on_community
             references communities,
     expired_at   timestamp not null
+);
+
+create table message_attachment
+(
+    id         bigint       not null
+        constraint pk_message_attachment
+            primary key,
+    path       varchar(255) not null,
+    size       integer      not null,
+    name       varchar(255) not null,
+    message_id bigint,
+    channel_id bigint,
+    constraint fk_message_attachment_on_meidchid
+        foreign key (message_id, channel_id) references messages on delete cascade
 );
 
 --- Foreign key prevent from deleting community if invitation existed
