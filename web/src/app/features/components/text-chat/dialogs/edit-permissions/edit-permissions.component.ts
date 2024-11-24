@@ -65,7 +65,7 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
   selectedRole = signal<Role | null>(null);
   permissions: Permission;
 
-  channelPermissions: string[] = []
+  channelPermissions: string[] = [];
 
   roleForm: FormGroup;
 
@@ -111,9 +111,15 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
   selectRole(role: Role){
     this.selectedRole.set(role);
     this.permissions = new Permission(role.permissionOverwrites);
+
+    console.log(this.permissions);
+
     this.roleForm = this.fb.group({});
     this.channelPermissions = [];
 
+    console.log(this.channel());
+
+    // runs if channel already overwrites role permissions
     let overwrites;
     if(this.channel()?.overwrites){
       const roleOverwrite = this.channel()!.overwrites.find(r => r.roleId === role.id);
@@ -129,10 +135,12 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
       // bits that can be modified 4-7
       // get those bits and build form based on them
       for(let i=4n; i<8n; i++) {
+        console.log(permissionKeys[Number(i)]);
         const startValue = {icon: 'pi pi-minus', value: 'none'};
         this.roleForm.addControl(permissionKeys[Number(i)], new FormControl(startValue));
         this.channelPermissions.push(permissionKeys[Number(i)]);
       }
+      // worry about this when i get saving to work
     } else {
       console.log(overwrites);
       // assign values from overwrite to form
@@ -142,6 +150,8 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
 
       // This is no good
       for(let i=4n; i<8n; i++) {
+        console.log(permissionKeys[Number(i)]);
+
         allowBitValue = isBitSet(this.permissions.rawValue, i);
         denyBitValue = isBitSet(this.permissions.rawValue, i + 32n);
 
@@ -152,6 +162,8 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
         } else {
           startValue = {icon: 'pi pi-minus', value: 'none'};
         }
+
+        console.log(startValue);
 
         this.roleForm.addControl(permissionKeys[Number(i)], new FormControl(startValue));
         this.channelPermissions.push(permissionKeys[Number(i)]);
@@ -169,6 +181,7 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
         const control = this.roleForm.get(controlName);
         const status = control?.value.value;
 
+        console.log(control?.value);
         console.log(status);
 
         if(status === 'allow'){
@@ -186,6 +199,7 @@ export class EditPermissionsComponent implements OnInit, OnDestroy{
     }
 
     console.log(permissionOverride.toString(2));
+    console.log(new Permission(permissionOverride))
 
     this.channelService.updatePermissions(
       this.channel()?.id!,
