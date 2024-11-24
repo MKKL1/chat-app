@@ -13,6 +13,10 @@ export class MessageStore extends EntityStore<MessageState>{
   }
 
   override akitaPreAddEntity(newEntity: Message): getEntityType<MessageState> {
+    if(!newEntity.reactions){
+      newEntity.reactions = [];
+    }
+
     // mapping paths of files, so they can be fetched from api
     if(newEntity.attachments){
       newEntity.attachments = newEntity.attachments.map(attachment => {

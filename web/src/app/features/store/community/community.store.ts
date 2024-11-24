@@ -14,13 +14,17 @@ export class CommunityStore extends EntityStore<CommunityState> {
   }
 
   override akitaPreAddEntity(newEntity: Community): getEntityType<CommunityState> {
-    newEntity.imageUrl = filePathMapping(newEntity.imageUrl);
+    if(newEntity.imageUrl !== null){
+      newEntity.imageUrl = filePathMapping(newEntity.imageUrl);
+    }
     return super.akitaPreAddEntity(newEntity);
   }
 
   // setting flag so nextEntity won't be fetched again
   override akitaPreUpdateEntity(_: Readonly<getEntityType<CommunityState>>, nextEntity: any): getEntityType<CommunityState> {
-    nextEntity.imageUrl = filePathMapping(nextEntity.imageUrl);
+    if(nextEntity.imageUrl !== null){
+      nextEntity.imageUrl = filePathMapping(nextEntity.imageUrl);
+    }
     nextEntity.fullyFetched = true;
     return super.akitaPreUpdateEntity(_, nextEntity);
   }

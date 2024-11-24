@@ -1,9 +1,56 @@
-<!-- Add css later -->
-<p>overview works! {{ selectedCommunity()?.id }} | {{ selectedCommunity()?.name }}</p>
-@if(userService.getUser().id === selectedCommunity()?.ownerId){
-  <button mat-flat-button (click)="confirmDeleteCommunity($event, selectedCommunity()?.id!)">Delete community</button>
-  <button mat-flat-button (click)="editCommunity()">Edit community</button>
-}
-@if(permission()?.canCreateInvitation){
-  <button mat-flat-button (click)="createInvitation()">Create link</button>
-}
+<h1>{{selectedCommunity()?.name}}</h1>
+<div class="buttons">
+  @if(permission()?.canCreateInvitation){
+    <button mat-flat-button (click)="createInvitation()">Create link</button>
+  }
+  @if(userService.getUser().id === selectedCommunity()?.ownerId){
+    <button mat-flat-button (click)="editCommunity()">Edit community</button>
+    <button mat-flat-button (click)="confirmDeleteCommunity($event, selectedCommunity()?.id!)">Delete community</button>
+  }
+</div>
+<div class="card-grid">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Owner</span>
+        <div class="card-value">{{stats()?.ownerName}}</div>
+      </div>
+      <div class="icon-container">
+        <i class="pi pi-crown icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Members</span>
+        <div class="card-value">{{stats()?.membersCount}}</div>
+      </div>
+      <div class="icon-container">
+        <i class="pi pi-users icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Text channels</span>
+        <div class="card-value">{{stats()?.textChannelsCount}}</div>
+      </div>
+      <div class="icon-container">
+        <i class="pi pi-comments icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Voice channels</span>
+        <div class="card-value">{{stats()?.voiceChannelsCount}}</div>
+      </div>
+      <div class="icon-container">
+        <i class="pi pi-phone icon"></i>
+      </div>
+    </div>
+  </div>
+</div>

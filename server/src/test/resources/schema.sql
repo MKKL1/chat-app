@@ -55,6 +55,9 @@ alter table communities
         foreign key (image_url) references files
             on delete set null;
 
+--- If image_url is set to not null it causes errors while creating community without image
+alter table communities alter column image_url drop not null;
+
 create table channels
 (
     id           bigint       not null
@@ -187,3 +190,12 @@ create table invitations
   community_id bigint not null constraint fk_invitations_on_community references communities,
   expired_at timestamp not null
 );
+
+--- Foreign key prevent from deleting community if invitation existed
+alter table invitations
+    drop constraint fk_invitations_on_community;
+
+alter table invitations
+    add constraint fk_invitations_on_community
+        foreign key (community_id) references communities(id)
+            on delete cascade;

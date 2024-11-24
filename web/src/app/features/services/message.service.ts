@@ -7,7 +7,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {ID} from "@datorama/akita";
-import {Observable, Subject} from "rxjs";
+import {catchError, Observable, Subject, throwError} from "rxjs";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {EventService} from "../../core/events/event.service";
 import {formatDate} from "../../shared/utils/utils";
@@ -16,6 +16,8 @@ import {MessageNotification} from "../models/message-notification";
 import {UserService} from "../../core/services/user.service";
 import {MemberQuery} from "../store/member/member.query";
 import {CommunityQuery} from "../store/community/community.query";
+import {MessageService as Notification} from "primeng/api";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,7 +38,8 @@ export class MessageService{
               private eventService: EventService,
               private userService: UserService,
               private memberQuery: MemberQuery,
-              private communityQuery: CommunityQuery) {
+              private communityQuery: CommunityQuery,
+              private message: Notification) {
     this.eventService.on('MESSAGE_CREATE_EVENT', this.handleCreateMessage);
     this.eventService.on('MESSAGE_UPDATE_EVENT', this.handleUpdateMessage);
     this.eventService.on('MESSAGE_DELETE_EVENT', this.handleDeleteMessage);
@@ -76,7 +79,6 @@ export class MessageService{
     }
   }
 
-  // for now after switching channel all message data is lost
   fetchMessages(channelId: ID, lastMessageId?: string): Observable<Message[]>{
     const params: any = {
       limit: this.limit
@@ -108,45 +110,39 @@ export class MessageService{
       headers: new HttpHeaders({
         'enctype': 'multipart/form-data'
       })
-    }).subscribe(res => {
-      //console.log(res);
-    });
+    }).subscribe();
   }
 
-  // if i edit message text, getting messages stops working
   editMessage(id: string, text: string){
     const channelId = this.channelQuery.getActiveId();
 
     this.http.patch<Message>(this.api + `${channelId}/messages/${id}`, {
       text: text
-    }).subscribe(message => {
-      console.log(message);
-    });
+    }).subscribe();
   }
 
   deleteMessage(id: string){
     const channelId = this.channelQuery.getActiveId();
-    this.http.delete(this.api + `${channelId}/messages/${id}`).subscribe(res => {
-      this.messageStore.remove(id);
-    });
+    this.http.delete(this.api + `${channelId}/messages/${id}`).subscribe();
   }
 
   addReaction(reaction: string, messageId: string){
     const channelId = this.channelQuery.getActiveId();
-    console.log(reaction);
     this.http.post(`${this.api}${channelId}/messages/${messageId}/reactions`,{emoji: reaction})
-      .subscribe(res => {
-        console.log(res);
+      .subscribe({
+        error: err => {
+          console.error(err.message);
+          this.message.add({severity: 'error', summary: "Cannot add reaction"});
+        }
       });
   }
 
   deleteReaction(reaction: string, messageId: string){
     const channelId = this.channelQuery.getActiveId();
-    console.log(reaction);
-    this.http.delete(`${this.api}${channelId}/messages/${messageId}/reactions`)
-      .subscribe(res => {
-        console.log(res);
-      });
+    this.http.delete(`${this.api}${channelId}/messages/${messageId}/reactions`, {
+      body: {emoji: reaction}
+    })
+    .subscribe();
   }
 
   private handleCreateMessage = (message: Message) => {
@@ -173,20 +169,12 @@ export class MessageService{
   }
 
   private handleUpdateMessage = (message: Message) => {
-    console.log(message);
+    this.messageStore.update(message.id, {text: message.text});
   };
 
-  // Message delete event isn't sent
-  private handleDeleteMessage = (message: Message) => {
-    console.log(message);
+  private handleDeleteMessage = (id: any) => {
+    this.messageStore.remove(id);
   };
-
-  // {
-  //   "emoji": "😀",
-  //   "channelId": "69412425505439744",
-  //   "messageId": "69425807574958080",
-  //   "userId": "69419377962778624"
-  // }
 
   private handleCreateReaction = (res: any) => {
     const isCurrentUser = this.userService.getUser().id === res.userId;
@@ -215,9 +203,18 @@ export class MessageService{
     });
   };
 
-  // TODO implement
   private handleDeleteReaction = (res: any) => {
-    console.log(res);
+    this.messageStore.update(res.messageId, (message: Message) => {
+      return {
+        ...message,
+        reactions: message.reactions
+          .map((reaction) =>
+            reaction.emoji === res.emoji
+              ? { ...reaction, count: reaction.count - 1, me: reaction.me }
+              : reaction
+          )
+          .filter((reaction) => reaction.count > 0),
+      };
+    });
   };
-
 }

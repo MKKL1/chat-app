@@ -1,5 +1,6 @@
 package com.szampchat.server.community.service;
 
+import com.szampchat.server.community.dto.CommunityDTO;
 import com.szampchat.server.community.dto.InvitationResponseDTO;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.entity.Invitation;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class InvitationService {
     private InvitationRepository invitationRepository;
+    private CommunityService communityService;
     private CommunityMemberService communityMemberService;
 
 
@@ -33,6 +35,17 @@ public class InvitationService {
 
         return invitationRepository.save(invitation)
                 .flatMap(inv -> Mono.just(new InvitationResponseDTO(inv.toLink())));
+    }
+
+    public Mono<CommunityDTO> getInvitationInfo(Long communityId, Long invitationId){
+        return invitationRepository.isValid(invitationId, communityId)
+            .flatMap(isValid -> {
+                if(!isValid){
+                    return Mono.error(new InvalidInvitationException(invitationId));
+                } else {
+                    return communityService.getById(communityId);
+                }
+            });
     }
 
     public Mono<CommunityMember> addMemberToCommunity(Long communityId, Long invitationId, Long userId){

@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RouterOutlet} from "@angular/router";
 import {AppbarComponent} from "../../../../core/components/appbar/appbar.component";
 import {UserService} from "../../../../core/services/user.service";
 import {EventService} from "../../../../core/events/event.service";
 import {RoleService} from "../../../services/role.service";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {KeycloakEventType, KeycloakService} from "keycloak-angular";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-main',
@@ -18,12 +19,15 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
+
+  tokenExpireSub: Subscription;
 
   constructor(
     private userService: UserService,
     private eventService: EventService,
-    private roleService: RoleService) {
+    private roleService: RoleService,
+    private keycloak: KeycloakService) {
   }
 
   ngOnInit(): void {
@@ -38,6 +42,18 @@ export class MainComponent implements OnInit {
 
     this.eventService.init();
     this.roleService.init();
+
+    this.tokenExpireSub = this.keycloak.keycloakEvents$
+      .subscribe(event => {
+        if(event.type === KeycloakEventType.OnTokenExpired){
+          this.keycloak.updateToken(20);
+        }
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.tokenExpireSub.unsubscribe();
   }
 
 }

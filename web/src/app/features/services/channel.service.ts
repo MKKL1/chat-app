@@ -8,6 +8,7 @@ import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {EventService} from "../../core/events/event.service";
 import {Operation} from "./role.service";
+import {Permission} from "../models/permission";
 
 @Injectable({
   providedIn: 'root'
@@ -82,6 +83,9 @@ export class ChannelService {
         ]
       }
     ];
+
+    console.log(operations);
+
     return this.http.put(environment.api + 'channels/' + id, operations);
   }
 
@@ -99,6 +103,7 @@ export class ChannelService {
     }
   };
 
+  // overwrites always gives smaller value that is expected
   private handleUpdateChannel = (newChannel: any) => {
     const channel: Channel = newChannel.channel;
     // @ts-ignore
@@ -106,7 +111,14 @@ export class ChannelService {
     if(channel.type === '1'){
       this.voiceChannelStore.update(channel.id, {name: channel.name});
     } else {
-      this.textChannelStore.update(channel.id, {name: channel.name});
+      // TODO compute new permissions
+      this.textChannelStore.update(channel.id, {
+        name: channel.name,
+        overwrites: newChannel.overwrites
+      });
+
+      console.log(newChannel.overwrites);
+      //console.log(new Permission(newChannel.overwrites));
     }
   };
 

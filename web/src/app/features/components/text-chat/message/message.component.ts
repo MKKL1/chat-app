@@ -20,6 +20,7 @@ import {CommunityQuery} from "../../../store/community/community.query";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {MatChip} from "@angular/material/chips";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {Reaction} from "../../../models/reaction";
 
 @Component({
   selector: 'app-message',
@@ -91,14 +92,17 @@ export class MessageComponent implements OnInit{
   }
 
   appendReaction(emoji: string){
-    console.log(emoji);
     this.showReactionPicker.set(false);
     this.messageService.addReaction(emoji, this.message.id);
   }
 
-  removeReaction(){
-    const emoji = this.message.reactions.find(r => r.me)?.emoji;
-    this.messageService.deleteReaction(emoji!, this.message.id);
+  removeReaction(reaction: Reaction){
+    // user cannot delete reaction from someone else
+    if(!reaction.me){
+      return;
+    }
+
+    this.messageService.deleteReaction(reaction.emoji!, this.message.id);
   }
 
   updateReactionPicker(){

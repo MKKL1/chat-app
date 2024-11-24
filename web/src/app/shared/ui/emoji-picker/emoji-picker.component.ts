@@ -24,7 +24,6 @@ export class EmojiPickerComponent implements AfterViewInit{
       previewPosition: 'none',
       // logging emoji and emitting it as output
       onEmojiSelect: (emoji: any) => {
-        console.log(emoji);
         this.emojiSelect.emit(emoji.native);
       },
     }

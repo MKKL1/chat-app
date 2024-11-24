@@ -41,18 +41,6 @@ export class PermissionService implements OnDestroy{
     // permission should be computed once again after community changed
     // or after event connected to role (update, delete)
 
-    // Moving it back to community service, as doing it here requires a lot of calls to akita store
-    // But it should be here
-    // I decided to do version with lot of calls because permission will be updated
-    // also when update or delete role event occurs, and leaving it outside this class
-    // would be redundant
-    // communityQuery.selectActive().subscribe(community => {
-    //   //Get base perm and save it
-    //
-    //TODO  setCommunityPermission()
-    //
-    // })
-
     this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
       if(!channel) return;
       const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
@@ -127,9 +115,11 @@ export class PermissionService implements OnDestroy{
     const communityRoles = this.roleQuery.getAll({
       filterBy: entity =>  entity.communityId === communityId
     });
+
     const currentUserRoles = this.memberQuery.getAll({
       filterBy: entity => entity.user.id === currentUser.id
     }).at(0)?.roles!;
+
     return communityRoles
       .filter((role: Role) => currentUserRoles.includes(role.id))
       .map((role: Role) => role.permissionOverwrites)

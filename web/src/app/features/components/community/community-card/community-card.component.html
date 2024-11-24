@@ -1,4 +1,9 @@
 <div class="community-container">
-  <img src="{{community.imageUrl ? community.imageUrl : 'avatar.jpg'}}" alt="{{community.name}}">
+  @if(community.imageUrl !== null){
+    <img src="{{community.imageUrl}}" alt="{{community.name}}">
+  } @else {
+    <div class="community" [ngStyle]="{ 'background-color': community.imageUrl ? 'transparent' : getRandomColor() }">
+    </div>
+  }
   <h3>{{community.name | short}}</h3>
 </div>

@@ -1,12 +1,12 @@
 <mat-card>
   <mat-card-content>
-    <div>
-      <img src="{{community?.imageUrl}}">
+    <div class="section">
+      <img class="icon-image" src="{{filePathMapping(community()?.imageUrl!)}}" alt="Community Icon" />
+      <div class="title">Join Community</div>
+      <div class="subtitle">
+        You were invited to join {{community()?.name}}
+      </div>
+      <button mat-flat-button (click)="acceptInvitation()">Join now</button>
     </div>
-    <p>{{community?.ownerId}} invited you to join</p>
-    <h2>{{community?.name}}</h2>
   </mat-card-content>
-  <mat-card-actions>
-    <button (click)="acceptInvitation()" mat-flat-button>Accept</button>
-  </mat-card-actions>
 </mat-card>

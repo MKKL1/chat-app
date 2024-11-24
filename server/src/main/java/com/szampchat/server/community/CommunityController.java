@@ -95,6 +95,17 @@ public class CommunityController {
         return invitationService.createInvitation(communityId, 5);
     }
 
+    // TODO Secure this endpoint
+    @Operation(summary = "Get info about community to which user wants to join",
+            description = """
+                    Returns basic info about community if invitation
+                    which id was provided is correct"""
+    )
+    @GetMapping("/{communityId}/invitation/{invitationId}")
+    public Mono<CommunityDTO> getInvitationInfo(@PathVariable Long communityId, @PathVariable Long invitationId){
+        return invitationService.getInvitationInfo(communityId, invitationId);
+    }
+
     @ApiResponse(responseCode = "201")
     @OperationDocs({RESPONSE_419, RESPONSE_401, REQUIRES_NOT_MEMBER_PERMISSION, DOCUMENT_PATH_VARIABLES})
     @Operation(summary = "Join community",
@@ -136,7 +147,7 @@ public class CommunityController {
     public Mono<CommunityDTO> editCommunity(
             @ResourceId @PathVariable Long communityId,
             @RequestPart("community") CommunityEditRequest request,
-            @RequestPart("file") FilePart file) {
+            @RequestPart(value = "file", required = false) FilePart file) {
         return communityService.editCommunity(communityId, request, file);
     }
 

@@ -1,6 +1,7 @@
 package com.szampchat.server.message;
 
 import com.szampchat.server.auth.preauth.ResourcePermissionEvaluator;
+import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.*;
@@ -10,6 +11,8 @@ import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
+import com.szampchat.server.message.event.MessageDeleteEvent;
+import com.szampchat.server.message.event.MessageUpdateEvent;
 import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
@@ -41,17 +44,12 @@ public class MessageService {
     private final MessageAttachmentRepository messageAttachmentRepository;
     private final MessageAttachmentService messageAttachmentService;
     private final ReactionService reactionService;
+    private final ChannelService channelService;
     private final ModelMapper modelMapper;
     private final SnowflakeGen snowflakeGen;
     private final EventSink eventSender;
     private final FileStorageService fileStorageService;
 
-
-
-
-
-    //TODO rename MessageDTO to MessageFullDTO or something, as MessageDTO is not mapping Message entity object directly
-    //TODO separate cacheable and non-cacheable parts of MessageFullDTO
     public Flux<MessageDTO> getMessages(Long channelId, FetchMessagesRequest fetchMessagesRequest, Long currentUserId) {
         if(fetchMessagesRequest.getMessages() != null && !fetchMessagesRequest.getMessages().isEmpty()){
             return getMessagesBulk(channelId, fetchMessagesRequest.getMessages(), currentUserId);
@@ -123,34 +121,57 @@ public class MessageService {
                 .switchIfEmpty(Mono.error(new MessageNotFoundException(messageId)));
     }
 
-    public Mono<Message> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
+    public Mono<MessageDTO> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
         return getMessage(messageId, channelId)
-            .flatMap(message -> {
+                .flatMap(message -> {
 //                if(!Objects.equals(message.getUser(), userId)){
 //                    return Mono.error(new Exception("Message doesn't belong to user"));
 //                }
-                message.setText(request.text());
-                return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
-                        .thenReturn(message);
-            });
+                    message.setText(request.text());
+                    return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
+                            .thenReturn(message);
+                }).flatMap(message -> {
+                    MessageDTO messageDTO = toDTO(message);
+                    return channelService.getChannel(channelId)
+                            .map(channel -> MessageUpdateEvent.builder()
+                                    .data(messageDTO)
+                                    .recipient(Recipient.builder()
+                                            .context(Recipient.Context.COMMUNITY)
+                                            .id(channel.getCommunityId())
+                                            .build())
+                                    .build()
+                            )
+                            .doOnNext(eventSender::publish)
+                            .thenReturn(messageDTO);
+                });
     }
 
-    public Mono<Void> deleteMessage(Long messageId, Long channelId){
+    public Mono<Void> deleteMessage(Long messageId, Long channelId) {
         return getMessage(messageId, channelId)
             .flatMap(message -> {
                 // TODO find attachment and delete it
-                // deleting attached file
-//                fileStorageService.delete()
+                // fileStorageService.delete()
 
-
-                //TODO check in pre authorize
-//                if(!Objects.equals(message.getUser(), userId)){
-//                    return Mono.error(new Exception("Message doesn't belong to user"));
-//                }
-
+                // TODO check in pre authorize
+                // if (!Objects.equals(message.getUser(), userId)) {
+                //     return Mono.error(new Exception("Message doesn't belong to user"));
+                // }
 
                 return messageRepository.deleteByChannelAndId(channelId, messageId);
-            });
+            })
+            .then(channelService.getChannel(channelId)
+                .flatMap(channel -> {
+                    MessageDeleteEvent event = MessageDeleteEvent.builder()
+                        .data(messageId)
+                        .recipient(Recipient.builder()
+                            .context(Recipient.Context.COMMUNITY)
+                            .id(channel.getCommunityId())
+                            .build())
+                        .build();
+                    eventSender.publish(event);
+                    return Mono.empty();
+                })
+            );
     }
 
     Flux<Message> findLatestMessages(Long channelId, int limit) {

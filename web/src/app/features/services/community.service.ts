@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
-import {catchError, EMPTY, map, switchMap, tap, throwError} from "rxjs";
+import {catchError, EMPTY, map, Observable, switchMap, tap, throwError} from "rxjs";
 import {Community} from "../models/community";
 import {CommunityStore} from "../store/community/community.store";
 import {Channel, ChannelType} from "../models/channel";
@@ -41,7 +41,10 @@ export class CommunityService {
     private eventService: EventService,
     private messageService: MessageService,
     private permissionService: PermissionService
-  ) { }
+  ) {
+    this.eventService.on('COMMUNITY_UPDATE_EVENT', this.handleCommunityEdit);
+    this.eventService.on('COMMUNITY_DELETE_EVENT', this.handleCommunityDelete);
+  }
 
   changeCommunity(id: string){
     const community = this.communityQuery.getEntity(id);
@@ -174,31 +177,58 @@ export class CommunityService {
     });
   }
 
-  editCommunity(){
-    // TODO implement
+  editCommunity(id: string, name: string, file: File | undefined){
+    const formData = new FormData();
+    formData.append('community', new Blob(
+      [JSON.stringify({name: name})],
+      { type: 'application/json' })
+    );
+
+    if(file){
+      formData.append('file', file, file.name);
+    }
+
+    this.http.patch(this.apiPath + '/' + id, formData, {
+      headers: new HttpHeaders({
+        'enctype': 'multipart/form-data'
+      })
+    }).subscribe(res => {
+      console.log(res);
+      this.messageService.add({severity: 'info', summary: 'Community edited'});
+    })
   }
 
   deleteCommunity(id: string) {
-    this.http.delete(this.apiPath + "/" + id).pipe()
-      .subscribe({
-      next: _ => {
-        // ???
-        this.communityStore.remove(id);
-
-        // need to unselect community if deleted one was actually selected
-        if(this.communityQuery.getActiveId() === id){
-          this.communityStore.removeActive(id);
-        }
-
-        // global info
-        this.snackBar.open("Community deleted", 'Ok', {duration: 3000})
-      },
-      error: err => this.snackBar.open("Error occurred during deleting community " + err)
-    });
+    this.http.delete(this.apiPath + "/" + id).subscribe();
   }
+
+  private handleCommunityEdit = (res: any) => {
+    this.communityStore.update(res.id, res);
+  };
+
+  private handleCommunityDelete = (id: string) => {
+    console.log(id);
+    const community = this.communityQuery.getEntity(id);
+
+    this.communityStore.remove(id);
+    // need to unselect community if deleted one was actually selected
+    if(this.communityQuery.getActiveId() === id){
+      this.communityStore.removeActive(id);
+    }
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Community deleted',
+      detail: `Community ${community?.name} is no longer available`
+    });
+  };
 
   createInvitation(id: string, days: number){
     return this.http.post<{link: string}>(this.apiPath + "/" + id + "/invite",{days: days});
+  }
+
+  getInvitationInfo(communityId: string, invitationId: string): Observable<Community> {
+    return this.http.get<Community>(environment.api + "communities/" + communityId + "/invitation/" + invitationId);
   }
 
   acceptInvitation(communityId: string, invitationId: string){
