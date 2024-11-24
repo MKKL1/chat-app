@@ -103,7 +103,7 @@ export class RsocketConnection{
         onNext: (payload: any) => {
           const dataAsString = decoder.decode(payload.data);
           //dataAsString is json string
-          console.log(dataAsString);
+          // console.log(dataAsString);
 
           // Instead of returning plane string trying to map it to generic type
           // Also it has to parse all numbers to string to not broke ids

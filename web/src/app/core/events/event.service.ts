@@ -27,7 +27,7 @@ export class EventService {
     this.rsocketConnection
       .requestStream<any>(`/community/${communityId}/messages`)
       .pipe(tap(() =>
-        console.log(`Subscriping to /community/${communityId}/messages`)
+        console.log(`Message from /community/${communityId}/messages`)
       ))
       .subscribe({
         next: (event: any) => {
