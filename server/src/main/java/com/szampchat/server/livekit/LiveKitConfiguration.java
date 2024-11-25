@@ -1,5 +1,6 @@
 package com.szampchat.server.livekit;
 
+import com.szampchat.server.livekit.auth.LiveKitAuthManager;
 import com.szampchat.server.livekit.dto.ParticipantDTO;
 import com.szampchat.server.livekit.dto.RoomDTO;
 import io.livekit.server.RoomServiceClient;
@@ -11,21 +12,27 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 
 @Configuration
 public class LiveKitConfiguration {
 
     @Bean
-    public RoomServiceClient roomServiceClient() {
+    public RoomServiceClient roomServiceClient(LiveKitProperties properties) {
         return RoomServiceClient.createClient(
-                "http://localhost:7880",
-                "devkey",
-                "secret");
+                properties.getUrl(),
+                properties.getKey(),
+                properties.getSecret()
+        );
     }
 
     @Bean
-    public WebhookReceiver webhookReceiver() {
-        return new WebhookReceiver("devkey", "secret");
+    public WebhookReceiver webhookReceiver(LiveKitProperties properties) {
+        return new WebhookReceiver(properties.getKey(), properties.getSecret());
     }
 
+    @Bean
+    public LiveKitAuthManager liveKitAuthManager(LiveKitProperties properties) {
+        return new LiveKitAuthManager(properties.getKey(), properties.getSecret());
+    }
 }

@@ -1,0 +1,189 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    command:
+      - --providers.docker.network=traefik_network
+      # - --log.level=DEBUG
+    
+      # If deploying on server
+      # - "--providers.docker.exposedbydefault=false"
+      # - "--certificatesresolvers.letsencryptres.acme.tlschallenge=true"
+      # - "--certificatesresolvers.letsencryptres.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+      # - "--certificatesresolvers.letsencryptres.acme.email=test@gmail.com"
+      # - "--certificatesresolvers.letsencryptres.acme.storage=/letsencrypt/acme.json"
+      # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      # - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./certs:/etc/certs:ro
+      # - ./letsencrypt:/letsencrypt
+    networks:
+      - traefik_network
+
+# For testing
+  # whoami:
+  #   image: traefik/whoami:v1.10
+  #   networks:
+  #     - traefik_network
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.mywhoami.rule=Host(`whoami.szampchat.com`) || Host(`www.whoami.szampchat.com`)
+  #     - traefik.http.services.mywhoami.loadbalancer.server.port=80
+  #     - traefik.http.routers.mywhoami.tls=true
+  #     - traefik.http.routers.whoami.entrypoints=https
+  #     # - traefik.http.routers.whoami.tls.certresolver=letsencryptres
+  #     - "traefik.docker.network=traefik_network"
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgresd
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ../../server/src/test/resources/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=chat
+    networks:
+      - traefik_network
+
+  keycloak:
+    container_name: keycloakd
+    image: quay.io/keycloak/keycloak:25.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin #Password could be better
+      KC_PROXY_ADDRESS_FORWARDING: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME: auth.szampchat.com
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      - keycloak:/opt/keycloak/data/
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.keycloak.rule=Host(`auth.szampchat.com`)
+      - traefik.http.services.keycloak.loadbalancer.server.port=8080
+      - traefik.http.routers.keycloak.tls=true
+      - traefik.http.routers.keycloak.entrypoints=https
+      # - traefik.http.routers.keycloak.tls.certresolver=letsencryptres
+      - "traefik.docker.network=traefik_network"
+    networks:
+      - traefik_network
+    command: 
+      - start
+
+  rabbitmq:
+    container_name: rabbitmqd
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    networks:
+      - traefik_network
+
+  redis:
+    container_name: redisd
+    image: redis:alpine
+    volumes:
+      - redis:/root/redis
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - traefik_network
+
+# still not working
+  # livekit:
+  #   container_name: livekitd
+  #   image: livekit/livekit-server:v1.8
+  #   ports:
+  #   #   - "7880:7880"
+  #     - "7881:7881"
+  #     - "7882:7882/udp"
+  #   volumes:
+  #     - ./livekit.yaml:/etc/livekit.yaml:ro
+  #   entrypoint: "/livekit-server --config /etc/livekit.yaml"
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.livekit.rule=Host(`livekit.szampchat.com`)"
+  #     - traefik.http.services.livekit.loadbalancer.server.port=7880
+  #     - traefik.http.routers.livekit.tls=true
+  #     - traefik.http.routers.livekit.entrypoints=https
+  #     # - traefik.http.routers.livekit.tls.certresolver=letsencryptres
+  #     - "traefik.docker.network=traefik_network"
+  #   networks:
+  #     - traefik_network
+
+  szampchat-server:
+    build: ../../server
+    container_name: szampchat-server
+    labels:
+      # General API routing
+    - traefik.enable=true
+    - traefik.http.routers.szampchat-server.rule=Host(`szampchat.com`) && PathPrefix(`/api`)
+    - traefik.http.services.szampchat-server.loadbalancer.server.port=8081
+    - traefik.http.routers.szampchat-server.service=szampchat-server
+    - traefik.http.routers.szampchat-server.tls=true
+    - traefik.http.routers.szampchat-server.entrypoints=https
+    # - traefik.http.routers.szampchat-server.tls.certresolver=letsencryptres
+
+    # WebSocket routing
+    - traefik.http.routers.szampchat-server-ws.rule=Host(`events.szampchat.com`)
+    - traefik.http.routers.szampchat-server-ws.entrypoints=web
+    - traefik.http.services.szampchat-server-ws.loadbalancer.server.port=8083
+    - traefik.http.routers.szampchat-server-ws.service=szampchat-server-ws
+    - traefik.http.routers.szampchat-server-ws.tls=true
+    - traefik.http.routers.szampchat-server-ws.entrypoints=https
+    # - traefik.http.routers.szampchat-server-ws.tls.certresolver=letsencryptres
+
+    - traefik.docker.network=traefik_network
+    volumes:
+      - ./deploy-conf.yml:/opt/szampchat/application.yml:ro
+      - ./uploads:/opt/szampchat/uploads
+    networks:
+      - traefik_network
+    depends_on:
+      - postgres
+      - rabbitmq
+  
+  szampchat-web:
+    image: nginx:1-alpine
+    container_name: szampchat-web
+    networks:
+      - traefik_network
+    volumes:
+      - ../../web/dist/web/browser:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.szampchat-web.rule=Host(`szampchat.com`)
+    - traefik.http.services.szampchat-web.loadbalancer.server.port=80
+    - traefik.http.routers.szampchat-web.service=szampchat-web
+    - traefik.http.routers.szampchat-web.tls=true
+    - traefik.http.routers.szampchat-web.entrypoints=https
+    # - traefik.http.routers.szampchat-web.tls.certresolver=letsencryptres
+
+    - traefik.docker.network=traefik_network
+
+networks:
+  traefik_network:
+
+volumes:
+  postgres:
+  keycloak:
+  redis:
+  rabbitmq:
