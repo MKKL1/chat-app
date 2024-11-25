@@ -26,7 +26,7 @@ export interface ParticipantInfo {
 export class VoiceChatService{
 
   token: string;
-  wsUrl: string = 'ws://localhost:7880';
+  wsUrl: string = environment.livekitUrl;
 
   room: Room | null = null;
 

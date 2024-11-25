@@ -7,6 +7,7 @@ export const environment = {
   api: 'https://szampchat.com/api/',
   keycloackUrl: 'https://auth.szampchat.com',
   websocketUrl: 'wss://events.szampchat.com',
+  livekitUrl: 'ws://localhost:7880',
   // white2115 birthday
   snowflakeEpoch: 1714867200000
 }
