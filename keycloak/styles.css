@@ -1,0 +1,133 @@
+:root{
+  --pf-c-button--disabled--BackgroundColor: red;
+  --pf-c-button--after--BorderColor: red;
+}
+
+#kc-header-wrapper{
+  font-size: 80px;
+  font-weight: bold;
+}
+
+#kc-logo-text span{
+  font-size: 36px;
+}
+
+body{
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center; 
+  color: white;
+}
+
+.login-pf-page .card-pf {
+  margin-bottom: 100px;
+}
+
+.login-pf{
+  background: #195c52;
+}
+
+.login-pf body {
+  background: linear-gradient(#000000, #195c52);
+}
+
+.card-pf {
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blue(30px);
+  padding: 20px 40px 300px 40px;
+}
+
+.pf-c-form-control {
+  border: none;
+  border-radius: 10px;
+  background-color: #2f2f2f;
+  color: white;
+}
+
+.pf-c-form-control:focus{
+  border: none;
+}
+
+.pf-c-button.pf-m-control {
+  background-color: #333;
+  border: none;
+}
+
+.pf-c-input-group{
+  background: none;
+  background-color: none;
+}
+
+.pf-c-button.pf-m-control i {
+  color: #999999;
+}
+
+.pf-c-button.pf-m-control {
+  margin-left: 5px;
+  border-radius: 10px;
+  --pf-c-button--after--BorderColor: transparent;
+}
+
+#kc-login, .pf-c-button.pf-m-primary{
+  border-radius: 20px;
+  background: #195c52;
+}
+
+a, a:hover{
+  color: #195c52;
+}
+
+.pf-m-error{
+  color: #ff0000;
+}
+
+@media (max-width: 768px) {
+  #kc-header-wrapper {
+    font-size: 40px;
+  }
+
+  #kc-logo-text span {
+    font-size: 24px;
+  }
+
+  .card-pf {
+    padding: 15px 20px 100px 20px;
+    margin-bottom: 50px;
+    border-radius: 20px;
+  }
+
+  .login-pf-page .card-pf {
+    margin-bottom: 50px;
+  }
+
+  .pf-c-form-control {
+    font-size: 14px;
+  }
+
+  #kc-login, .pf-c-button.pf-m-primary {
+    padding: 10px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #kc-header-wrapper {
+    font-size: 30px;
+  }
+
+  #kc-logo-text span {
+    font-size: 18px;
+  }
+
+  .card-pf {
+    padding: 10px 15px 80px 15px;
+    border-radius: 15px;
+  }
+
+  #kc-login, .pf-c-button.pf-m-primary {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
