@@ -7,11 +7,13 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ~/apps/postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
+      - ./server/src/test/resources/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       - POSTGRES_PASSWORD=root
       - POSTGRES_USER=root
       - POSTGRES_DB=chat
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -22,6 +24,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
       - ~/apps/pgadmin:/var/lib/pgadmin
+
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:25.0
@@ -30,10 +33,11 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
       - keycloak:/opt/keycloak/data/
+      - ./keycloak/:/opt/keycloak/data/import/
     ports:
       - "8082:8080"
-    command:
-      - "start-dev"
+    command: start-dev --import-realm
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.13-management
@@ -44,8 +48,10 @@ services:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: root
     volumes:
-      - ~/apps/rabbitmq:/var/lib/rabbitmq
-      # TODO can't get it to work, maybe traeffik may help
+      - rabbitmq:/var/lib/rabbitmq
+
+      
+      # TODO can't get it to work
       # using local server for now
   # livekit:
   #   container_name: livekit
@@ -69,5 +75,7 @@ services:
 volumes:
   keycloak:
   redis:
+  postgres:
+  rabbitmq:
   # add postgres volume here
   # and pgadmin
