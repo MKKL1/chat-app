@@ -1,22 +1,17 @@
 package com.szampchat.server.community.service;
 
-import com.szampchat.server.community.dto.CommunityMemberRolesDTO;
 import com.szampchat.server.community.entity.CommunityMember;
 import com.szampchat.server.community.event.MemberCreateEvent;
 import com.szampchat.server.community.repository.CommunityMemberRepository;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
-import com.szampchat.server.role.service.UserRoleService;
 import com.szampchat.server.shared.CustomPrincipalProvider;
-import com.szampchat.server.user.UserService;
+import com.szampchat.server.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @AllArgsConstructor
 @Service("communityMemberService")

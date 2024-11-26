@@ -1,7 +1,7 @@
 package com.szampchat.server.auth;
 
 import com.szampchat.server.auth.exception.UserNotRegisteredException;
-import com.szampchat.server.user.UserService;
+import com.szampchat.server.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.jwt.Jwt;

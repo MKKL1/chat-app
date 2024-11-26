@@ -1,8 +1,7 @@
-package com.szampchat.server.user;
+package com.szampchat.server.user.service;
 
 import com.szampchat.server.upload.FilePathType;
 import com.szampchat.server.upload.FileStorageService;
-import com.szampchat.server.upload.exception.FileNotProvidedException;
 import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.entity.User;

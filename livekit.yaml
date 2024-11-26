@@ -9,4 +9,4 @@ keys:
 webhook:
   api_key: 'devkey'
   urls:
-    - 'http://localhost:8081/api/livekit/webhook'
+    - 'https://szampchat.com/api/livekit/webhook'

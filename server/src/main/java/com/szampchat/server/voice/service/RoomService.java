@@ -2,7 +2,7 @@ package com.szampchat.server.voice.service;
 
 import com.szampchat.server.channel.ChannelService;
 import com.szampchat.server.channel.ChannelType;
-import com.szampchat.server.user.UserService;
+import com.szampchat.server.user.service.UserService;
 import com.szampchat.server.voice.dto.VoiceTokenResponse;
 import com.szampchat.server.voice.exception.NotVoiceChannelException;
 import com.szampchat.server.voice.repository.RedisRoomRepository;

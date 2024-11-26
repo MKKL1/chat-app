@@ -5,6 +5,7 @@ import com.szampchat.server.shared.docs.OperationDocs;
 import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;
 import com.szampchat.server.user.dto.UserDescriptionDTO;
+import com.szampchat.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

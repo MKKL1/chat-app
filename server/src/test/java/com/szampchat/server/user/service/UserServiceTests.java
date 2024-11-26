@@ -1,4 +1,4 @@
-package com.szampchat.server.user;
+package com.szampchat.server.user.service;
 
 import com.szampchat.server.user.dto.request.UserCreateRequest;
 import com.szampchat.server.user.dto.UserDTO;

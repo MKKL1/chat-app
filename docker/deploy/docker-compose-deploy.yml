@@ -70,6 +70,9 @@ services:
       KC_PROXY_HEADERS: xforwarded
     volumes:
       - keycloak:/opt/keycloak/data/
+      # - ./realm-export.json:/opt/keycloak/data/import/realm-export.json import doesnt work for some reason, cors issue
+      - ../../keycloak/styles.css:/opt/keycloak/themes/szampchat-theme/login/resources/css/styles.css
+      - ../../keycloak/theme.properties:/opt/keycloak/themes/szampchat-theme/login/theme.properties
     labels:
       - traefik.enable=true
       - traefik.http.routers.keycloak.rule=Host(`auth.szampchat.com`)
@@ -80,8 +83,7 @@ services:
       - "traefik.docker.network=traefik_network"
     networks:
       - traefik_network
-    command: 
-      - start
+    command: start --import-realm
 
   rabbitmq:
     container_name: rabbitmqd
