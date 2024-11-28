@@ -105,7 +105,7 @@ export class MessageComponent implements OnInit{
     this.messageService.deleteReaction(reaction.emoji!, this.message.id);
   }
 
-  updateReactionPicker(){
+  addReaction(){
     this.openedOptions.set(false);
     this.showReactionPicker.set(true);
   }

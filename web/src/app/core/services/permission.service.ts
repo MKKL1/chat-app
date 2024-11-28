@@ -34,48 +34,46 @@ export class PermissionService implements OnDestroy{
   constructor(private memberQuery: MemberQuery,
               private roleQuery: RoleQuery,
               private communityQuery: CommunityQuery,
-              private textChannelQuery: TextChannelQuery,
-              private voiceChannelQuery: VoiceChannelQuery,
               private userService: UserService
               ) {
     // permission should be computed once again after community changed
     // or after event connected to role (update, delete)
 
-    this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
-      if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
-    })
-
-    this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
-      //same as above
-      if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
-    })
+    // this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
+    //   if(!channel) return;
+    //   const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
+    //   //this.updatePermsFromChannel(userRoles!, channel.overwrites)
+    // })
+    //
+    // this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
+    //   //same as above
+    //   if(!channel) return;
+    //   const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
+    //   //this.updatePermsFromChannel(userRoles!, channel.overwrites)
+    // })
   }
 
-  private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
-    let newPerms: Permission;
-    if(this.isOwner) {
-      newPerms = new Permission(0xFFFFFFFFn)
-    } else {
-      //Get overwrites that affect user
-      const overwritesOfChannelForUser = channelRoles
-        .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
-        .map((channelRole: ChannelRole) => channelRole.overwrites)
-        .map((overwrite: string) => BigInt(overwrite))
-
-      //TODO handle null
-      //Sum all permission overwrites (community and channel)
-      const permChannelMask = sumMasks(overwritesOfChannelForUser!)
-      const combinedMask = permChannelMask | this.permCommunityMask
-
-      //Update permission, based on saved base permission and ALL overwrites
-      newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
-    }
-    this.permissionSubject.next(newPerms)
-  }
+  // private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
+  //   let newPerms: Permission;
+  //   if(this.isOwner) {
+  //     newPerms = new Permission(0xFFFFFFFFn)
+  //   } else {
+  //     //Get overwrites that affect user
+  //     const overwritesOfChannelForUser = channelRoles
+  //       .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
+  //       .map((channelRole: ChannelRole) => channelRole.overwrites)
+  //       .map((overwrite: string) => BigInt(overwrite))
+  //
+  //     //TODO handle null
+  //     //Sum all permission overwrites (community and channel)
+  //     const permChannelMask = sumMasks(overwritesOfChannelForUser!)
+  //     const combinedMask = permChannelMask | this.permCommunityMask
+  //
+  //     //Update permission, based on saved base permission and ALL overwrites
+  //     newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
+  //   }
+  //   this.permissionSubject.next(newPerms)
+  // }
 
   public setCommunityPermission() {
     const community = this.communityQuery.getActive()!;
