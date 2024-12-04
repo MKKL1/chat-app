@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">ChatApp</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appTitle">SZAMPCHAT</string>
+    <string name="hmmIcon">🤔</string>
+    <string name="username">Nazwa użytkownika</string>
+    <string name="password">Hasło</string>
+    <string name="keepLoggedIn">Nie wylogowywuj mnie</string>
+    <string name="login">ZALOGUJ</string>
+    <string name="createAccount">Załóż konto</string>
+    <string name="registerFromTittle">REJESTRACJA</string>
+    <string name="emailAddress">Adres e-mail:</string>
+    <string name="passwordCheck">Powtórz hasło</string>
+    <string name="registerTerms">Oddaję duszę szatanowi</string>
+    <string name="backgroundimage"><![CDATA["Fale png, opacity <10%, tło "]]></string>
+    <string name="edit">EDYTUJ</string>
+    <string name="cancel">ODRZUĆ</string>
+    <string name="accept">ZATWIERDŹ</string>
+    <string name="add">DODAJ</string>
+    <string name="create">STWÓRZ</string>
+    <string name="voiceChannels">KANAŁY GŁOSOWE</string>
+    <string name="textChannels">KANAŁY TEKSTOWE</string>
+    <string name="delete">USUŃ</string>
+    <string name="channels">KANAŁY</string>
+    <string name="users">UŻYTKOWNICY</string>
+    <string name="roles">ROLE:</string>
+    <string name="text">TEKSTOWE:</string>
+    <string name="voice">GŁOSOWE:</string>
+    <string name="roleNameInput">Podaj nazwę roli</string>
+    <string name="createRole">TWORZENIE ROLI</string>
+    <string name="setRoleUsers">Przydziel użytkowników</string>
+    <string name="connect">POŁĄCZ</string>
+    <string name="disconnect">ROZŁĄCZ</string>
+</resources>

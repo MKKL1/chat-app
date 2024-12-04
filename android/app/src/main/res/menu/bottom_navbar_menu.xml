@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navbar_menu_chats"
+        android:icon="@drawable/sharp_chat_24"
+        android:title="Wiadomości"
+        />
+    <item
+        android:id="@+id/navbar_menu_channels"
+        android:icon="@drawable/sharp_adaptive_audio_mic_24"
+        android:title="Kanały"
+        />
+    <item
+        android:id="@+id/navbar_menu_users"
+        android:icon="@drawable/sharp_account_circle_24"
+        android:title="Użytkownicy"
+        />
+</menu>
