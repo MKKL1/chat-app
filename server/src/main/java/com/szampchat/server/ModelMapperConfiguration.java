@@ -2,7 +2,7 @@ package com.szampchat.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.entity.ChannelType;
 import com.szampchat.server.channel.converters.ShortToChannelTypeConverter;
 import com.szampchat.server.channel.converters.ChannelTypeToShortConverter;
 import com.szampchat.server.permission.converters.IntToPermissionConverter;
@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
 import org.springframework.data.r2dbc.dialect.DialectResolver;
-import org.springframework.data.r2dbc.dialect.PostgresDialect;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 
 import java.util.ArrayList;

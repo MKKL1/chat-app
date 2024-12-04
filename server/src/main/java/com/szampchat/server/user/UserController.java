@@ -39,7 +39,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public Mono<UserDTO> getMe(CurrentUser currentUser) {
-        return userService.findUserDTO(currentUser.getUserId());
+        return userService.getUser(currentUser.getUserId());
     }
 
 
@@ -65,15 +65,13 @@ public class UserController {
 
     @GetMapping("/users/{userId}")
     public Mono<UserDTO> getUser(@PathVariable Long userId) {
-        //TODO move dto mapping to service
-        return userService.findUserDTO(userId);
+        return userService.getUser(userId);
     }
 
     //TODO use one endpoint to edit all?
-
     @Operation(summary = "Edit avatar? TODO")
 
-    @PatchMapping("/users/avatar")
+    @PatchMapping("/users/avatar") //TODO IT SHOULD BE PUT VERY MUCH
     public Mono<UserDTO> editAvatar(@RequestPart("file") FilePart file, CurrentUser user){
         return userService.editAvatar(file, user.getUserId());
     }

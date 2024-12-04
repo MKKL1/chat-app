@@ -1,6 +1,6 @@
 package com.szampchat.server.tools.populate;
 
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.entity.ChannelType;
 import com.szampchat.server.channel.entity.Channel;
 import com.szampchat.server.channel.repository.ChannelRepository;
 import com.szampchat.server.community.entity.Community;
@@ -47,6 +47,7 @@ public class TestDataGenerator {
     public User generateUser() {
         return Instancio.of(User.class)
                 .set(field(User::getId), null)
+                .set(field(User::getImageUrl), null)
                 .create();
     }
 
@@ -145,6 +146,7 @@ public class TestDataGenerator {
                 .set(field(Community::getId), null)
                 .set(field(Community::getOwnerId), owner.getId())
                 .set(field(Community::getBasePermissions), new Permissions())
+                .set(field(Community::getImageUrl), null)
                 .create()).block();
 
         assertThat(community).isNotNull();

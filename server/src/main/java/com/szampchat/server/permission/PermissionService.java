@@ -1,7 +1,7 @@
 package com.szampchat.server.permission;
 
 import com.szampchat.server.auth.CurrentUser;
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.community.service.CommunityService;
 import com.szampchat.server.permission.data.PermissionOverwrites;
 import com.szampchat.server.permission.data.PermissionScope;

@@ -7,7 +7,7 @@ import com.szampchat.server.message.dto.*;
 import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.request.MessageCreateRequest;
-import com.szampchat.server.message.entity.Message;
+import com.szampchat.server.message.service.MessageService;
 import com.szampchat.server.permission.data.PermissionFlag;
 import com.szampchat.server.permission.data.PermissionScope;
 import com.szampchat.server.shared.docs.OperationDocs;

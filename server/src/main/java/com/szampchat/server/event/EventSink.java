@@ -1,6 +1,8 @@
 package com.szampchat.server.event;
 
 import com.szampchat.server.event.data.InternalEvent;
+import com.szampchat.server.message.event.MessageCreateEvent;
+import com.szampchat.server.message.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;

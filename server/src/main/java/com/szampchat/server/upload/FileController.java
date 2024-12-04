@@ -24,17 +24,17 @@ public class FileController {
 
     @GetMapping("/file/{fileId}")
     public Mono<ResponseEntity<FileSystemResource>> getFile(@PathVariable String fileId) {
-        log.info("File request of {}", fileId);
-        return fileStorageService.downloadFile(fileId)
-                .map(fileDownloadDTO -> {
-                    String filename = Path.of(fileDownloadDTO.getFileDTO().getPath()).getFileName().toString();
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
-                    headers.add(HttpHeaders.CONTENT_TYPE, fileDownloadDTO.getFileDTO().getMime());
+    log.info("File request of {}", fileId);
+    return fileStorageService.downloadFile(fileId)
+        .map(fileDownloadDTO -> {
+            String filename = Path.of(fileDownloadDTO.getFileDTO().getPath()).getFileName().toString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+            headers.add(HttpHeaders.CONTENT_TYPE, fileDownloadDTO.getFileDTO().getMime());
 
-                    return new ResponseEntity<>(fileDownloadDTO.getResource(), headers, HttpStatus.OK);
-                })
-                .onErrorResume(Mono::error);
+            return new ResponseEntity<>(fileDownloadDTO.getResource(), headers, HttpStatus.OK);
+        })
+        .onErrorResume(Mono::error);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.szampchat.server.community.service;
 
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.channel.dto.ChannelFullInfoDTO;
 import com.szampchat.server.community.dto.request.CommunityCreateRequest;
 import com.szampchat.server.community.dto.CommunityDTO;
@@ -88,7 +88,7 @@ public class CommunityService {
                         userRoleService.getMemberRoleIdsBulk(userIds, communityId)
                                 .collectMap(UserRolesDTO::getUserId, Function.identity())
                                 .flatMapMany(userRolesMap ->
-                                        userService.findUsers(userIds)
+                                        userService.getUserBulk(userIds)
                                                 .map(userDto -> {
                                                     UserRolesDTO userRolesDTO = userRolesMap.get(userDto.getId());
                                                     return CommunityMemberRolesDTO.builder()

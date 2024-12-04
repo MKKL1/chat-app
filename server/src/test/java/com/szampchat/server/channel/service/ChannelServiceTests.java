@@ -1,4 +1,4 @@
-package com.szampchat.server.channel;
+package com.szampchat.server.channel.service;
 
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.channel.entity.Channel;

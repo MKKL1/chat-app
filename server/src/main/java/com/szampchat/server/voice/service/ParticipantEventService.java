@@ -1,6 +1,6 @@
 package com.szampchat.server.voice.service;
 
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.channel.dto.ChannelDTO;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;

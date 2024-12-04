@@ -1,4 +1,4 @@
-package com.szampchat.server.message;
+package com.szampchat.server.message.service;
 
 import com.szampchat.server.auth.ResourceTypes;
 import com.szampchat.server.auth.preauth.ResourcePermissionEvaluator;

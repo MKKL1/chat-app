@@ -1,4 +1,4 @@
-package com.szampchat.server.message;
+package com.szampchat.server.message.configuration;
 
 import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.snowflake.SnowflakeGen;

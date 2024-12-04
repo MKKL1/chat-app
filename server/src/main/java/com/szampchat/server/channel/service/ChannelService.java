@@ -1,6 +1,7 @@
-package com.szampchat.server.channel;
+package com.szampchat.server.channel.service;
 
 import com.github.fge.jsonpatch.JsonPatch;
+import com.szampchat.server.channel.entity.ChannelType;
 import com.szampchat.server.channel.dto.ChannelPatchDiff;
 import com.szampchat.server.channel.dto.request.ChannelCreateRequest;
 import com.szampchat.server.channel.dto.ChannelDTO;
@@ -18,24 +19,18 @@ import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.role.dto.ChannelRoleOverwriteDTO;
 import com.szampchat.server.role.dto.ChannelRoleOverwritesDTO;
-import com.szampchat.server.role.dto.RoleWithMembersDTO;
 import com.szampchat.server.shared.JsonPatchUtil;
 import com.szampchat.server.shared.exception.ValidationException;
 import com.szampchat.server.voice.service.ParticipantService;
 import com.szampchat.server.voice.dto.RoomParticipantsDTO;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import com.szampchat.server.role.service.ChannelRoleService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -72,37 +67,37 @@ public class ChannelService {
     }
 
     public Flux<ChannelFullInfoDTO> getCommunityChannelsFullInfo(Long communityId) {
-        return getCommunityChannels(communityId)
-                .collectList()
-                .flatMapMany(channelDTOs -> {
-                    List<Long> channelIds = channelDTOs.stream()
-                            .map(ChannelDTO::getId)
-                            .toList();
+    return getCommunityChannels(communityId)
+    .collectList()
+    .flatMapMany(channelDTOs -> {
+    List<Long> channelIds = channelDTOs.stream()
+            .map(ChannelDTO::getId)
+            .toList();
 
-                    List<Long> voiceChannelIds = channelDTOs.stream()
-                            .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
-                            .map(ChannelDTO::getId)
-                            .toList();
+    List<Long> voiceChannelIds = channelDTOs.stream()
+            .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
+            .map(ChannelDTO::getId)
+            .toList();
 
-                    Mono<Map<Long, List<ChannelRoleOverwriteDTO>>> overwritesMapMono = channelRoleService.getChannelOverwritesBulk(channelIds)
-                            .collectMap(ChannelRoleOverwritesDTO::getChannelId, ChannelRoleOverwritesDTO::getOverwrites);
+    Mono<Map<Long, List<ChannelRoleOverwriteDTO>>> overwritesMapMono = channelRoleService.getChannelOverwritesBulk(channelIds)
+            .collectMap(ChannelRoleOverwritesDTO::getChannelId, ChannelRoleOverwritesDTO::getOverwrites);
 
-                    Mono<Map<Long, Set<Long>>> participantsMono = participantService.getRoomParticipants(voiceChannelIds)
-                            .collectMap(RoomParticipantsDTO::getChannelId, RoomParticipantsDTO::getParticipants);
+    Mono<Map<Long, Set<Long>>> participantsMono = participantService.getRoomParticipants(voiceChannelIds)
+            .collectMap(RoomParticipantsDTO::getChannelId, RoomParticipantsDTO::getParticipants);
 
-                    return Mono.zip(overwritesMapMono, participantsMono)
-                            .flatMapMany(tuple2 -> {
-                                Map<Long, List<ChannelRoleOverwriteDTO>> overwritesMap = tuple2.getT1();
-                                Map<Long, Set<Long>> participantsMap = tuple2.getT2();
+    return Mono.zip(overwritesMapMono, participantsMono)
+            .flatMapMany(tuple2 -> {
+                Map<Long, List<ChannelRoleOverwriteDTO>> overwritesMap = tuple2.getT1();
+                Map<Long, Set<Long>> participantsMap = tuple2.getT2();
 
-                                return Flux.fromIterable(channelDTOs)
-                                        .map(channelDTO -> {
-                                            List<ChannelRoleOverwriteDTO> overwrites = overwritesMap.getOrDefault(channelDTO.getId(), Collections.emptyList());
-                                            Set<Long> participants = participantsMap.get(channelDTO.getId());
-                                            return new ChannelFullInfoDTO(channelDTO, overwrites, participants);
-                                        });
-                            });
-                });
+                return Flux.fromIterable(channelDTOs)
+                        .map(channelDTO -> {
+                            List<ChannelRoleOverwriteDTO> overwrites = overwritesMap.getOrDefault(channelDTO.getId(), Collections.emptyList());
+                            Set<Long> participants = participantsMap.get(channelDTO.getId());
+                            return new ChannelFullInfoDTO(channelDTO, overwrites, participants);
+                        });
+            });
+    });
     }
 
     private Mono<ChannelEditRequest> getChannelFullInfo(Long channelId) {
@@ -138,7 +133,7 @@ public class ChannelService {
 
     //TODO no check for valid role, throws internal error from r2dbc
     @Transactional
-    public Mono<ChannelFullInfoDTO> editChannel(Long channelId, JsonPatch jsonPatch){
+    public Mono<ChannelFullInfoDTO> editChannel(Long channelId, JsonPatch jsonPatch) {
         return getChannelFullInfo(channelId)
                 .flatMap(oldEditData -> {
                     ChannelEditRequest newEditRequest = patch(oldEditData, jsonPatch);

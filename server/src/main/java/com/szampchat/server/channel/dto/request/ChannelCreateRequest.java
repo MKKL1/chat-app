@@ -1,6 +1,6 @@
 package com.szampchat.server.channel.dto.request;
 
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.entity.ChannelType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

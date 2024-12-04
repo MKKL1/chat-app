@@ -1,7 +1,6 @@
-package com.szampchat.server.message;
+package com.szampchat.server.message.service;
 
 import com.szampchat.server.message.dto.MessageAttachmentDTO;
-import com.szampchat.server.message.entity.MessageAttachment;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

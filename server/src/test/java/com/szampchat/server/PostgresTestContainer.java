@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Container;
 public interface PostgresTestContainer {
     @Container
     PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withInitScript("schema.sql");
+            .withInitScript("db/schema.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

@@ -1,6 +1,6 @@
 package com.szampchat.server.channel.converters;
 
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.entity.ChannelType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.WritingConverter;
 

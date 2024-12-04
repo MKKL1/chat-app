@@ -49,8 +49,8 @@ app:
   redis:
     host: localhost
     port: 6379
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        security: TRACE
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE

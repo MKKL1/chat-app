@@ -1,6 +1,6 @@
 package com.szampchat.server.reaction.service;
 
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
@@ -61,7 +61,7 @@ public class ReactionService {
                 .build();
         return reactionRepository.save(reaction)
                 .onErrorMap(DuplicateKeyException.class, _ -> new ReactionAlreadyExistsException(reaction.getEmoji()))
-                .flatMap(savedReaction -> reactionCacheService.addUserReaction(reaction)
+                .flatMap(_ -> reactionCacheService.addUserReaction(reaction)
                         .then(channelService.getChannel(channelId)
                                 .doOnNext(channelDTO ->
                                         eventSink.publish(ReactionCreateEvent.builder()

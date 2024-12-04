@@ -19,7 +19,7 @@ public class RSocketConfiguration {
                 .authorizePayload(authorize ->
                         authorize
 //                                .route("/community/{communityId}/messages").access((authentication, object) -> object.)
-                                .anyExchange().authenticated()
+                                .anyExchange().permitAll()
                 )
                 .jwt(Customizer.withDefaults());
         return rsocket.build();

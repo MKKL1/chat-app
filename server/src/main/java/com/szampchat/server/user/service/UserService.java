@@ -31,25 +31,25 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final FileStorageService fileStorageService;
 
-    public Mono<UserDTO> findUserDTO(Long userId) {
+    public Mono<UserDTO> getUser(Long userId) {
         return userRepository.findById(userId)
                 .switchIfEmpty(Mono.error(new UserNotFoundException()))
-                .map(user -> modelMapper.map(user, UserDTO.class));
+                .map(this::toDTO);
     }
 
-    public Flux<UserDTO> findUsers(List<Long> userIds) {
+    public Flux<UserDTO> getUserBulk(List<Long> userIds) {
         return userRepository.findByIdIn(userIds)
-                .map(user -> modelMapper.map(user, UserDTO.class));
+                .map(this::toDTO);
     }
 
     //easy to cache, will practically never change
-    public Mono<Long> findUserIdBySub(UUID sub) {
+    public Mono<Long> getUserIdBySub(UUID sub) {
         return userSubjectRepository.findBySub(sub)
                 .map(UserSubject::getUserId);
     }
 
-    public Mono<User> findUserBySub(UUID sub) {
-        return findUserIdBySub(sub)
+    public Mono<User> getUserBySub(UUID sub) {
+        return getUserIdBySub(sub)
                 .flatMap(userRepository::findById);
     }
 
@@ -71,7 +71,7 @@ public class UserService {
     }
 
     private Mono<Boolean> checkUserExistsBySub(UUID sub) {
-        return findUserBySub(sub).hasElement();
+        return getUserBySub(sub).hasElement();
     }
 
     private Mono<Boolean> checkUsernameExists(String username) {
@@ -86,7 +86,7 @@ public class UserService {
                 .flatMap(savedUser -> saveUserSubject(savedUser, currentUserId)
                         .thenReturn(savedUser)
                 )
-                .map(savedUser -> modelMapper.map(savedUser, UserDTO.class));
+                .map(this::toDTO);
     }
 
     private Mono<UserSubject> saveUserSubject(User savedUser, UUID currentUserId) {
@@ -115,7 +115,7 @@ public class UserService {
     }
 
     public Mono<Void> deleteUser(Long id){
-        return findUserDTO(id)
+        return getUser(id)
                 .flatMap(user -> Mono.justOrEmpty(user.getImageUrl())
                         .flatMap(fileStorageService::delete)
                         .then(userRepository.deleteById(id))

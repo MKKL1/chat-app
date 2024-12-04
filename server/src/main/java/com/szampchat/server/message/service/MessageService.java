@@ -1,7 +1,6 @@
-package com.szampchat.server.message;
+package com.szampchat.server.message.service;
 
-import com.szampchat.server.auth.preauth.ResourcePermissionEvaluator;
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.event.EventSink;
 import com.szampchat.server.event.data.Recipient;
 import com.szampchat.server.message.dto.*;
@@ -9,7 +8,6 @@ import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.request.MessageCreateRequest;
 import com.szampchat.server.message.dto.request.MessageEditRequest;
 import com.szampchat.server.message.entity.MessageAttachment;
-import com.szampchat.server.message.entity.MessageId;
 import com.szampchat.server.message.event.MessageCreateEvent;
 import com.szampchat.server.message.event.MessageDeleteEvent;
 import com.szampchat.server.message.event.MessageUpdateEvent;
@@ -17,7 +15,6 @@ import com.szampchat.server.message.exception.MessageNotFoundException;
 import com.szampchat.server.message.repository.MessageAttachmentRepository;
 import com.szampchat.server.message.entity.Message;
 import com.szampchat.server.message.repository.MessageRepository;
-import com.szampchat.server.permission.PermissionService;
 import com.szampchat.server.reaction.service.ReactionService;
 import com.szampchat.server.reaction.dto.ReactionOverviewDTO;
 import com.szampchat.server.snowflake.SnowflakeGen;
@@ -104,7 +101,6 @@ public class MessageService {
                 return Mono.just(messageDTO);
             })
             // sending message to listening users
-            // TODO send path to saved file. ????
             .doOnSuccess(savedMessageDTO -> {
                 eventSender.publish(MessageCreateEvent.builder()
                     .data(savedMessageDTO)
@@ -124,9 +120,6 @@ public class MessageService {
     public Mono<MessageDTO> editMessage(Long messageId, Long channelId, MessageEditRequest request) {
         return getMessage(messageId, channelId)
                 .flatMap(message -> {
-//                if(!Objects.equals(message.getUser(), userId)){
-//                    return Mono.error(new Exception("Message doesn't belong to user"));
-//                }
                     message.setText(request.text());
                     return messageRepository.updateByChannelIdAndId(channelId, messageId, request.text())
                             .thenReturn(message);
@@ -151,11 +144,6 @@ public class MessageService {
             .flatMap(message -> {
                 // TODO find attachment and delete it
                 // fileStorageService.delete()
-
-                // TODO check in pre authorize
-                // if (!Objects.equals(message.getUser(), userId)) {
-                //     return Mono.error(new Exception("Message doesn't belong to user"));
-                // }
 
                 return messageRepository.deleteByChannelAndId(channelId, messageId);
             })

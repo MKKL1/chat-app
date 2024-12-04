@@ -15,6 +15,6 @@ public interface InvitationRepository extends R2dbcRepository<Invitation, Long> 
     @Query("SELECT EXISTS (SELECT 1 FROM invitations WHERE id = :invitation AND community_id = :community AND expired_at > NOW())")
     Mono<Boolean> isValid(@Param("invitation") Long invitation, @Param("community") Long community);
 
-    @Query("DELETE FROM invitations WHERE expiret_at < NOW()")
+    @Query("DELETE FROM invitations WHERE expired_at < NOW()")
     Mono<Integer> deleteAllByExpiredAt();
 }

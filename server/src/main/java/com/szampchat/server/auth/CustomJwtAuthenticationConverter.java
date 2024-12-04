@@ -23,7 +23,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Mono<Cur
     @Override
     public Mono<CurrentUser> convert(Jwt jwt) {
         return Mono.fromCallable(jwt::getSubject)
-                .flatMap(keycloakId -> userService.findUserBySub(UUID.fromString(keycloakId)))
+                .flatMap(keycloakId -> userService.getUserBySub(UUID.fromString(keycloakId)))
                 .switchIfEmpty(Mono.error(new UserNotRegisteredException()))
                 .map(user -> new CurrentUser(jwt, null, user.getId()));
     }

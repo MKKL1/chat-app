@@ -1,4 +1,4 @@
-package com.szampchat.server.channel;
+package com.szampchat.server.channel.entity;
 
 import lombok.Getter;
 

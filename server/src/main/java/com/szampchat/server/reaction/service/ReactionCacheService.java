@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 public class ReactionCacheService {
-    private final ReactionRepository reactionRepository;
     private final ReactionCountRepository reactionCountRepository;
     private final ReactionUsersRepository reactionUsersRepository;
 

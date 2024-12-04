@@ -22,8 +22,7 @@ create table users
         constraint users_files_file_id_fk
             references files
             on delete set null,
-    description varchar(255),
-    sub         uuid
+    description varchar(255)
 );
 
 create table communities

@@ -1,4 +1,4 @@
-package com.szampchat.server.message;
+package com.szampchat.server.message.service;
 
 import com.szampchat.server.message.dto.request.FetchMessagesRequest;
 import com.szampchat.server.message.dto.MessageDTO;

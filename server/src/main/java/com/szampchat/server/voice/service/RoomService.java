@@ -1,7 +1,7 @@
 package com.szampchat.server.voice.service;
 
-import com.szampchat.server.channel.ChannelService;
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.service.ChannelService;
+import com.szampchat.server.channel.entity.ChannelType;
 import com.szampchat.server.user.service.UserService;
 import com.szampchat.server.voice.dto.VoiceTokenResponse;
 import com.szampchat.server.voice.exception.NotVoiceChannelException;
@@ -34,7 +34,7 @@ public class RoomService {
         return channelService.getChannel(channelId)
                 .filter(channelDTO -> channelDTO.getType() == ChannelType.VOICE_CHANNEL)
                 .switchIfEmpty(Mono.error(new NotVoiceChannelException(channelId)))
-                .flatMap(_ -> userService.findUserDTO(userId)
+                .flatMap(_ -> userService.getUser(userId)
                         .map(user -> {
                             AccessToken token = new AccessToken("devkey", "secret");//TODO
 

@@ -1,7 +1,7 @@
 package com.szampchat.server.channel.dto;
 
 import lombok.AllArgsConstructor;
-import com.szampchat.server.channel.ChannelType;
+import com.szampchat.server.channel.entity.ChannelType;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

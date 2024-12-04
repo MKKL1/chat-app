@@ -40,7 +40,7 @@ public class UserServiceTests {
     private UserService userService;
 
     @Test
-    public void findUserIdBySub_SubExists_ReturnsUserId() {
+    public void getUserIdBySub_SubExists_ReturnsUserId() {
         // Arrange
         UUID sub = UUID.randomUUID();
         Long expectedUserId = 123L;
@@ -50,7 +50,7 @@ public class UserServiceTests {
         doReturn(Mono.just(userSubject)).when(userSubjectRepository).findBySub(sub);
 
         // Act
-        Mono<Long> result = userService.findUserIdBySub(sub);
+        Mono<Long> result = userService.getUserIdBySub(sub);
 
         // Assert
         StepVerifier.create(result)
@@ -59,14 +59,14 @@ public class UserServiceTests {
     }
 
     @Test
-    public void findUserIdBySub_SubDoesNotExist_ReturnsEmpty() {
+    public void getUserIdBySub_SubDoesNotExist_ReturnsEmpty() {
         // Arrange
         UUID sub = UUID.randomUUID();
 
         doReturn(Mono.empty()).when(userSubjectRepository).findBySub(sub);
 
         // Act
-        Mono<Long> result = userService.findUserIdBySub(sub);
+        Mono<Long> result = userService.getUserIdBySub(sub);
 
         // Assert
         StepVerifier.create(result)
@@ -83,7 +83,7 @@ public class UserServiceTests {
         User user = new User();
         user.setId(currentUserId);
 
-        doReturn(Mono.just(user)).when(userService).findUserBySub(currentUserSub);
+        doReturn(Mono.just(user)).when(userService).getUserBySub(currentUserSub);
         // Act
         Mono<UserDTO> result = userService.createUser(userCreateRequest, currentUserSub);
 
@@ -94,18 +94,18 @@ public class UserServiceTests {
     }
 
     @Test
-    public void findUserBySub_SubExists_ReturnsUser() {
+    public void getUserBySub_SubExists_ReturnsUser() {
         // Arrange
         UUID sub = UUID.randomUUID();
         Long userId = 123L;
         User expectedUser = new User();
         expectedUser.setId(userId);
 
-        doReturn(Mono.just(userId)).when(userService).findUserIdBySub(sub);
+        doReturn(Mono.just(userId)).when(userService).getUserIdBySub(sub);
         doReturn(Mono.just(expectedUser)).when(userRepository).findById(userId);
 
         // Act
-        Mono<User> result = userService.findUserBySub(sub);
+        Mono<User> result = userService.getUserBySub(sub);
 
         // Assert
         StepVerifier.create(result)
@@ -114,14 +114,14 @@ public class UserServiceTests {
     }
 
     @Test
-    public void findUserBySub_SubDoesNotExist_ReturnsEmpty() {
+    public void getUserBySub_SubDoesNotExist_ReturnsEmpty() {
         // Arrange
         UUID sub = UUID.randomUUID();
 
-        doReturn(Mono.empty()).when(userService).findUserIdBySub(sub);
+        doReturn(Mono.empty()).when(userService).getUserIdBySub(sub);
 
         // Act
-        Mono<User> result = userService.findUserBySub(sub);
+        Mono<User> result = userService.getUserBySub(sub);
 
         // Assert
         StepVerifier.create(result)
@@ -129,16 +129,16 @@ public class UserServiceTests {
     }
 
     @Test
-    public void findUserBySub_UserIdExistsButUserNotFound_ReturnsEmpty() {
+    public void getUserBySub_UserIdExistsButUserNotFound_ReturnsEmpty() {
         // Arrange
         UUID sub = UUID.randomUUID();
         Long userId = 123L;
 
-        doReturn(Mono.just(userId)).when(userService).findUserIdBySub(sub);
+        doReturn(Mono.just(userId)).when(userService).getUserIdBySub(sub);
         doReturn(Mono.empty()).when(userRepository).findById(userId);
 
         // Act
-        Mono<User> result = userService.findUserBySub(sub);
+        Mono<User> result = userService.getUserBySub(sub);
 
         // Assert
         StepVerifier.create(result)
@@ -157,7 +157,7 @@ public class UserServiceTests {
 
         UserDTO userDTO = new UserDTO(); // Create a UserDTO for the mapping
 
-        doReturn(Mono.empty()).when(userService).findUserIdBySub(currentUserSub);
+        doReturn(Mono.empty()).when(userService).getUserIdBySub(currentUserSub);
 
         when(modelMapper.map(userCreateRequest, User.class)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(Mono.just(user));

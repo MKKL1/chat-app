@@ -48,7 +48,7 @@ public class CommunityMemberService {
 
     public Mono<CommunityMember> create(Long communityId, Long userId) {
         return communityMemberRepository.save(new CommunityMember(communityId, userId))
-                .flatMap(communityMember -> userService.findUserDTO(communityMember.getUserId())
+                .flatMap(communityMember -> userService.getUser(communityMember.getUserId())
                         .doOnNext(userDTO -> eventSink.publish(MemberCreateEvent.builder()
                                 .recipient(Recipient.builder()
                                         .context(Recipient.Context.COMMUNITY)

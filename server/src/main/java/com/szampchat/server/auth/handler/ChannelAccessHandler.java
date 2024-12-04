@@ -1,6 +1,6 @@
 package com.szampchat.server.auth.handler;
 
-import com.szampchat.server.channel.ChannelService;
+import com.szampchat.server.channel.service.ChannelService;
 import com.szampchat.server.auth.ResourceTypes;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
