@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Definiowanie podstawowych kolorów aplikacji -->
+    <color name="colorPrimary">#009688</color>  <!-- Główny kolor aplikacji -->
+    <color name="colorPrimaryVariant">#005950</color>  <!-- Zmieniona wersja koloru głównego -->
+    <color name="colorSecondary">#00FF7B</color>  <!-- Kolor dla elementów pomocniczych -->
+    <color name="colorSecondaryVariant">#007739</color>  <!-- Zmieniona wersja koloru pomocniczego -->
+    <color name="colorBackground">#00332E</color>  <!-- Kolor tła -->
+    <color name="colorSurface">#FFFFFF</color>  <!-- Kolor powierzchni (np. tło kartki) -->
+    <color name="colorError">#B00020</color>  <!-- Kolor dla błędów -->
+    <color name="colorOnPrimary">#000000</color>  <!-- Kolor tekstu na tle primary -->
+    <color name="colorOnSecondary">#000000</color>  <!-- Kolor tekstu na tle secondary -->
+    <color name="colorOnSurface">#000000</color>  <!-- Kolor tekstu na tle powierzchni, checkboxy to tez tekst -->
+    <color name="colorOnBackground">#000000</color>  <!-- Kolor tekstu na tle tła -->
+
+    <!-- Definiowanie podstawowych kolorów aplikacji -->
+    <color name="colorPrimaryNight">#008C70</color>  <!-- Główny kolor aplikacji -->
+    <color name="colorPrimaryVariantNight">#005950</color>  <!-- Zmieniona wersja koloru głównego -->
+    <color name="colorSecondaryNight">#006020</color>  <!-- Kolor dla elementów pomocniczych -->
+    <color name="colorSecondaryVariantNight">#02351B</color>  <!-- Zmieniona wersja koloru pomocniczego -->
+    <color name="colorBackgroundNight">#00302B</color>  <!-- Kolor tła -->
+    <color name="colorSurfaceNight">#001B18</color>  <!-- Kolor powierzchni (np. tło kartki) -->
+    <color name="colorErrorNight">#B00020</color>  <!-- Kolor dla błędów -->
+    <color name="colorOnPrimaryNight">#FFFFFF</color>  <!-- Kolor tekstu na tle primary -->
+    <color name="colorOnSecondaryNight">#FFFFFF</color>  <!-- Kolor tekstu na tle secondary -->
+    <color name="colorOnSurfaceNight">#FFFFFF</color>  <!-- Kolor tekstu na tle powierzchni, checkboxy -->
+    <color name="colorOnBackgroundNight">#FFFFFF</color>  <!-- Kolor tekstu na tle tła -->
+
+    <color name="black">#FF000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="sea">#009688</color>
+    <color name="light_green">#00FF7B</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
+</resources>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/createRoleTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/TextAppearance.Material3.LabelLarge"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/createRole"
+        android:gravity="center" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/createRoleNameLayout"
+        app:layout_constraintTop_toBottomOf="@id/createRoleTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/roleNameInput">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/createRoleNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ScrollView
+        android:background="@color/colorBackgroundNight"
+        android:padding="5dp"
+        android:id="@+id/SECTION1"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/createRoleNameLayout"
+        android:layout_height="250dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/roleSetting1"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/techSetting1Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 1"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/roleSetting1Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting2"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/roleSetting1">
+                <TextView
+                    android:id="@+id/techSetting2Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 2"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting2Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting3"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting2">
+                <TextView
+                    android:id="@+id/techSetting3Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 3"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting3Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting4"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting3">
+                <TextView
+                    android:id="@+id/techSetting4Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 4"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting4Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting5"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting4">
+                <TextView
+                    android:id="@+id/techSetting5Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 5"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting5Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting6"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting5">
+                <TextView
+                    android:id="@+id/techSetting6Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 6"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting6Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting7"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting6">
+                <TextView
+                    android:id="@+id/techSetting7Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 7"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting7Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/techSetting8"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/techSetting7">
+                <TextView
+                    android:id="@+id/techSetting8Input"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ustawienie 8"
+                    android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/techSetting8Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+    <TextView
+        android:layout_margin="10dp"
+        android:id="@+id/setRoleUsers"
+        app:layout_constraintTop_toBottomOf="@id/SECTION1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.Material3.LabelLarge"
+        android:gravity="center"
+        android:text="@string/setRoleUsers"
+        />
+    <ScrollView
+        android:padding="5dp"
+        android:background="@color/colorBackgroundNight"
+        android:id="@+id/roleUsersScrollView"
+        app:layout_constraintTop_toBottomOf="@id/setRoleUsers"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/roleUsersRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_list_users"
+            />
+    </ScrollView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add"
+        app:layout_constraintTop_toBottomOf="@id/roleUsersScrollView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

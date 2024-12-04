@@ -1,0 +1,123 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="Fragments.Auth.RegisterFragment">
+
+    <TextView
+        android:id="@+id/appname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/appTitle"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        />
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:id="@+id/logoImg"
+        android:gravity="center"
+        android:textSize="70sp"
+        android:text="@string/hmmIcon"
+        app:layout_constraintTop_toBottomOf="@+id/appname"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/formTittle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/registerFromTittle"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        app:layout_constraintTop_toBottomOf="@id/logoImg"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/usernameTextFieldLayout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/username"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formTittle" >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/usernameTextField"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailTextFieldLayout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/emailAddress"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameTextFieldLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailTextField"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordTextFieldLayout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailTextFieldLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordTextField"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordCheckTextFieldLayout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/passwordCheck"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordTextFieldLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordCheckTextField"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <CheckBox
+        android:id="@+id/termsCheckbox"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:text="@string/registerTerms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordCheckTextFieldLayout" />
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/createAccountButton"
+        app:layout_constraintTop_toBottomOf="@id/termsCheckbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/createAccount"
+        android:textColor="@color/light_green"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
