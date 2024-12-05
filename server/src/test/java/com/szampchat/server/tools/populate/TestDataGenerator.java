@@ -93,6 +93,10 @@ public class TestDataGenerator {
         return roleRepository.save(generateRole(communityId)).block();
     }
 
+    public CommunityData saveComplexCommunity() {
+        return saveComplexCommunity(GenericCommunityGenData.builder().build());
+    }
+
     public CommunityData saveComplexCommunity(GenericCommunityGenData genData) {
         //Using a lot of blocking code, but it's not really that important now
         //Feel free to add more functionality
@@ -101,7 +105,7 @@ public class TestDataGenerator {
         List<User> users = generateUsers(genData);
         users.add(owner);
 
-        Community community = generateCommunity(genData, owner);
+        Community community = generateCommunity(owner);
         joinCommunity(users, community);
 
         List<Role> roles = generateRoles(genData, community);
@@ -141,7 +145,7 @@ public class TestDataGenerator {
         return users;
     }
 
-    private Community generateCommunity(GenericCommunityGenData genData, User owner) {
+    public Community generateCommunity(User owner) {
         Community community = communityRepository.save(Instancio.of(Community.class)
                 .set(field(Community::getId), null)
                 .set(field(Community::getOwnerId), owner.getId())

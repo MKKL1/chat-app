@@ -47,11 +47,6 @@ import static org.mockito.Mockito.mock;
 @ActiveProfiles(value = "test")
 public class CommunityControllerIT implements PostgresTestContainer {
 
-
-    @Autowired
-    private CommunityRepository communityRepository;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     protected WebTestClient client;
 
@@ -85,18 +80,16 @@ public class CommunityControllerIT implements PostgresTestContainer {
                 .expectBody(CommunityDTO.class)
                 .value((res) -> assertThat(res.getId()).isEqualTo(communityData.getCommunity().getId()));
     }
-//
+
 //    void givenDefinedCommunity_whenGetFullCommunityInfo_thenReturnFullCommunityInfoDTO() {
 //        //TODO
 //    }
-//
+
+
     @WithMockCustomUser
     @Test
     void givenDefinedCommunity_whenInviteToCommunity_thenReturnInvitationResponseDTO() {
-//        when(communityService.isOwner(anyLong())).thenReturn(Mono.just(true));
-
         Pattern linkPattern = Pattern.compile("^community/(\\d+)/join/(\\d+)$");
-
 
         CommunityData communityData = testDataGenerator.saveComplexCommunity(GenericCommunityGenData.builder().build()); //Minimal setup
 

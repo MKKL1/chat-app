@@ -2,17 +2,13 @@ package com.szampchat.server.community.dto;
 
 import com.szampchat.server.permission.data.Permissions;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class CommunityDTO {
     @Schema(example = "4501678724218880", description = "ID of community")
     private Long id;

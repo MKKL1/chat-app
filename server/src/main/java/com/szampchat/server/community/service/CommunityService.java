@@ -50,6 +50,7 @@ public class CommunityService {
     private final ChannelService channelService;
     private final RoleService roleService;
     private final ModelMapper modelMapper;
+    private final CommunityMapper communityMapper;
     private final FileStorageService fileStorageService;
     private final UserRoleService userRoleService;
     private final EventSink eventSink;
@@ -100,9 +101,9 @@ public class CommunityService {
                 );
     }
 
-    public Flux<CommunityDTO> getUserCommunities(Long id){
-        return communityRepository.userCommunities(id)
-                .map(this::toDTO);
+    public Flux<CommunityDTO> getUserCommunities(Long userId){
+        return communityRepository.userCommunities(userId)
+                .map(communityMapper::toDTO);
     }
 
     @Transactional
@@ -186,7 +187,5 @@ public class CommunityService {
                 );
     }
 
-    private CommunityDTO toDTO(Community community) {
-        return modelMapper.map(community, CommunityDTO.class);
-    }
+
 }
