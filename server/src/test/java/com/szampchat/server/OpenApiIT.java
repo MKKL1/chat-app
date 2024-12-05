@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.File;
@@ -19,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 //Had to add dirties context, as rsocket port is not randomized
 //TODO find a way to reuse context
 @DirtiesContext
+@Import(TestSecurityConfiguration.class)
+@ActiveProfiles(value = "test")
 public class OpenApiIT {
     @Autowired
     protected WebTestClient client;

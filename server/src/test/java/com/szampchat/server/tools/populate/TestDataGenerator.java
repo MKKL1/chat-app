@@ -136,7 +136,7 @@ public class TestDataGenerator {
     }
 
     private List<User> generateUsers(GenericCommunityGenData genData) {
-        List<User> users = genData.getMembers() == null ? new ArrayList<>() : genData.getMembers();
+        List<User> users = genData.getMembers() == null ? new ArrayList<>() : new ArrayList<>(genData.getMembers());
         for (int i = 0; i < genData.getRandomMembers(); i++) {
             User savedUser = saveUser();
             assertThat(savedUser).isNotNull();
