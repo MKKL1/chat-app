@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {MatAnchor, MatButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
-//import {FeaturesComponent} from "../../../../shared/ui/features/features.component";
+import {FeaturesComponent} from "../../../../shared/ui/features/features.component";
 
 @Component({
   selector: 'app-landing',
@@ -9,7 +9,7 @@ import {RouterLink} from "@angular/router";
   imports: [
     MatButton,
     RouterLink,
-    //FeaturesComponent,
+    FeaturesComponent,
     MatAnchor
   ],
   templateUrl: './landing.component.html',
