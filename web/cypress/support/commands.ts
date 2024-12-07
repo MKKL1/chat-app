@@ -35,6 +35,36 @@ Cypress.Commands.add('login', () => {
   })
 });
 
+Cypress.Commands.add('createCommunity', (name: string) => {
+  cy.get('button.add-button').click();
+  cy.get('#mat-input-0').type(name);
+  cy.contains('button', 'Create').click();
+  cy.get('h3').contains(name).should('be.visible');
+});
+
+Cypress.Commands.add('deleteCommunity', (name: string) => {
+  cy.get('mat-icon[routerlink="/app/communities"]').click()
+  cy.get('h3').contains(name).click();
+  cy.get('span').contains('Delete community').should('be.visible');
+  cy.get('span').contains('Delete community').click();
+  cy.get('span.p-button-label').contains('Yes').click();
+  cy.get('h3').should('not.exist');
+});
+
+Cypress.Commands.add('createChannel', (name: string, type: string) => {
+  // creating new channel
+  cy.get('span').contains('Add new channel').should('be.visible');
+  cy.get('span').contains('Add new channel').click();
+  cy.get('input:visible').first().type(name);
+
+  // setting channel type
+  cy.get('mat-select[formcontrolname="type"]').click();
+  cy.get('.mat-mdc-option').contains(type).click();
+
+  cy.get('span').contains('Create').should('be.visible');
+  cy.get('span').contains('Create').click();
+});
+
 before(() => {
   cy.login();
 });

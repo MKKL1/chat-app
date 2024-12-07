@@ -4,5 +4,8 @@ declare namespace Cypress {
      * Custom command to login user
      */
     login(): Chainable<void>;
+    createCommunity(name: string): Chainable<void>;
+    deleteCommunity(name: string): Chainable<void>;
+    createChannel(name: string, type: string): Chainable<void>;
   }
 }
