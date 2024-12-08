@@ -5,7 +5,9 @@ export const environment = {
   giphyKey: 'GO6Q2NWnawI61Zdkb11Rv60cijsXPHEw',
   domain: 'https://szampchat.com',
   api: 'https://szampchat.com/api/',
-  keycloackUrl: 'https://auth.szampchat.com',
+  keycloakUrl: 'https://auth.szampchat.com',
+  realm: 'szampchat',
+  clientId: 'angular-web',
   websocketUrl: 'wss://events.szampchat.com',
   livekitUrl: 'ws://localhost:7880',
   // white2115 birthday

@@ -1,12 +1,10 @@
 import {QueryEntity} from "@datorama/akita";
 import {CommunityState, CommunityStore} from "./community.store";
-import {Observable} from "rxjs";
 import {inject, Injectable} from "@angular/core";
 import {MemberQuery} from "../member/member.query";
 import {TextChannelQuery} from "../textChannel/text.channel.query";
 import {VoiceChannelQuery} from "../voiceChannel/voice.channel.query";
 import {CommunityStats} from "../../models/community-stats";
-import {Community} from "../../models/community";
 
 @Injectable({ providedIn: 'root' })
 export class CommunityQuery extends QueryEntity<CommunityState> {

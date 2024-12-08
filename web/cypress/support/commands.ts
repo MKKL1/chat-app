@@ -1,7 +1,7 @@
 import {environment} from "../../src/environment";
 
 let domainUrl = environment.domain;
-let authUrl = environment.keycloackUrl;
+let authUrl = environment.keycloakUrl;
 
 Cypress.Commands.add('login', () => {
   cy.visit(domainUrl);

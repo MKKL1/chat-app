@@ -81,7 +81,7 @@ describe('Testing performing operations on messages', () => {
     cy.get('mat-dialog-actions').find('button').eq(1).click();
     cy.get('div.messages')
       .find('app-message')
-      .should('have.length', 4);
+      .should('have.length', 3);
 
     cy.deleteChannel();
   });

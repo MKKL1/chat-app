@@ -22,7 +22,7 @@ export class EmojiPickerComponent implements AfterViewInit{
       theme: 'dark',
       set: 'google',
       previewPosition: 'none',
-      // logging emoji and emitting it as output
+      // emitting emoji as output
       onEmojiSelect: (emoji: any) => {
         this.emojiSelect.emit(emoji.native);
       },

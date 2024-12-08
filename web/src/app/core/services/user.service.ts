@@ -5,8 +5,6 @@ import {KeycloakService} from "keycloak-angular";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {filePathMapping} from "../../shared/utils/utils";
-import {Permission} from "../../features/models/permission";
-import {applyOverwrite} from "../../shared/utils/permOperations";
 
 @Injectable({
   providedIn: 'root'
@@ -35,15 +33,6 @@ export class UserService {
     user.imageUrl = filePathMapping(user.imageUrl!);
     this.userSubject.next(user);
   }
-  //
-  // public getPermission(): Permission {
-  //   return this.permissionSubject.value;
-  // }
-  //
-  // public setPermission(permission: Permission): void {
-  //   // todo change user permissions
-  //   this.permissionSubject.next(permission);
-  // }
 
   fetchUserData(){
       this.http.get<User>(this.api + "/me").subscribe({
@@ -86,19 +75,5 @@ export class UserService {
       this.keycloakService.logout();
     });
   }
-  //
-  // updateUserPermissions(basePermission: string, permOverwrites: string[]){
-  //   let accumulatedPermOverwrites = 0n;
-  //   for(let i = 0; i < permOverwrites.length; i++){
-  //     accumulatedPermOverwrites |= BigInt(permOverwrites[i]);
-  //   }
-  //
-  //   const currentPermissions = applyOverwriteMask(accumulatedPermOverwrites, BigInt(basePermission));
-  //
-  //   console.log(currentPermissions.toString(2));
-  //   console.log(currentPermissions);
-  //
-  //   this.setPermission(new Permission(currentPermissions));
-  // }
 
 }

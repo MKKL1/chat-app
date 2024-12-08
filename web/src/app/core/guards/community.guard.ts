@@ -10,6 +10,5 @@ export const communityGuard: CanActivateFn = (route, state) => {
   const communityQuery: CommunityQuery = inject(CommunityQuery);
 
   let isSelected: boolean = communityQuery.hasActive();
-
   return isSelected ? isSelected : router.createUrlTree(['/','app','communities']);
 };

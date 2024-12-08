@@ -9,9 +9,6 @@ export class MessageQuery extends QueryEntity<MessageState> {
     super(store);
   }
 
-  // add searching for message by its id and its owner id,
-  // maybe by date
-  // this method isn't reactive
   selectAllOrderByDesc(channelId: ID){
     console.log('in store');
     return this.selectAll({
