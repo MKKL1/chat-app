@@ -1,6 +1,6 @@
-const communityName = 'Test';
-
 describe('Testing performing operations on text channel', () => {
+  const communityName = 'Test (edited)';
+
   it('Should test channel', () => {
     cy.url().then(url => {
       cy.log(url);
@@ -8,7 +8,9 @@ describe('Testing performing operations on text channel', () => {
 
     // moving to text channels tab
     cy.get('h3').first().click();
+    cy.get('h1').first().should('have.text', communityName);
     cy.get('mat-icon[routerlink="/app/text"]').click();
+    cy.url().should('include', '/app/text');
 
     const name = 'Test channel';
     cy.createChannel(name, 'Text');
@@ -29,8 +31,6 @@ describe('Testing performing operations on text channel', () => {
     cy.get('span').contains(name + " (e...").should('be.visible');
 
     // deleting channel
-    // cy.get('button').find('mat-icon[fonticon="edit"]').click();
-    // cy.get('span').contains('Delete').should('be.visible');
-    // cy.get('span').contains('Delete').click();
+    cy.deleteChannel();
   })
 })

@@ -15,7 +15,8 @@ Cypress.Commands.add('login', () => {
       cy.get('#password').type(register.password);
       cy.get('#kc-login').click();
     })
-  });
+  }
+);
 
   cy.url().then(url => {
     if(!url.startsWith('http://localhost:4200')){
@@ -63,6 +64,39 @@ Cypress.Commands.add('createChannel', (name: string, type: string) => {
 
   cy.get('span').contains('Create').should('be.visible');
   cy.get('span').contains('Create').click();
+});
+
+Cypress.Commands.add('deleteChannel', () => {
+  cy.get('button').find('mat-icon[fonticon="edit"]').click();
+  cy.get('mat-dialog-actions').find('button').eq(2).click();
+});
+
+Cypress.Commands.add('createMessage', (text: string) => {
+  // testing sending regular message
+  cy.get('input[placeholder="Write something here..."]').type(text);
+  cy.get('mat-icon[fonticon="send"]').click();
+});
+
+Cypress.Commands.add('performOnLastMessage', (func) => {
+  cy.get('div.messages')
+    .find('div.message-container')
+    .last()
+    .within(() => {
+      func();
+    });
+})
+
+Cypress.Commands.add('showBottomSheet', () => {
+  cy.get('div.message-menu').invoke('show');
+  cy.get('mat-icon').contains('more_vert').click();
+});
+
+Cypress.Commands.add('clickBottomSheetEl', (elIndex: number) => {
+  // this really don't want to be clicked
+  cy.get('div.bottom-sheet').should('have.class', 'opened');
+  cy.get('div.bottom-sheet.opened div mat-list').should('be.visible');
+  cy.get('div.bottom-sheet.opened div mat-list mat-list-item').eq(elIndex).should('exist');
+  cy.get('div.bottom-sheet.opened div mat-list mat-list-item').eq(elIndex).click();
 });
 
 before(() => {
