@@ -1,5 +1,14 @@
 describe('Testing performing operations on voice channel', () => {
-  const communityName = 'Test (edited)';
+  const communityName = 'Test';
+
+  before(() => {
+    cy.createCommunity(communityName);
+  });
+
+  after(() => {
+    cy.deleteCommunity(communityName);
+  });
+
   it('Should test voice channel', () => {
     cy.url().then(url => {
       cy.log(url);
@@ -22,5 +31,6 @@ describe('Testing performing operations on voice channel', () => {
 
     // deleting channel
     cy.deleteChannel();
+    cy.get('mat-list-item').should('not.exist');
   })
 })

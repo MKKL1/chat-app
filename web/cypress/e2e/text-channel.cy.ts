@@ -1,5 +1,13 @@
 describe('Testing performing operations on text channel', () => {
-  const communityName = 'Test (edited)';
+  const communityName = 'Test';
+
+  before(() => {
+    cy.createCommunity(communityName);
+  });
+
+  after(() => {
+    cy.deleteCommunity(communityName);
+  });
 
   it('Should test channel', () => {
     cy.url().then(url => {
@@ -32,5 +40,6 @@ describe('Testing performing operations on text channel', () => {
 
     // deleting channel
     cy.deleteChannel();
+    cy.get('mat-list-item').should('not.exist');
   })
 })

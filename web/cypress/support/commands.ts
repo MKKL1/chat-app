@@ -44,7 +44,8 @@ Cypress.Commands.add('createCommunity', (name: string) => {
 });
 
 Cypress.Commands.add('deleteCommunity', (name: string) => {
-  cy.get('mat-icon[routerlink="/app/communities"]').click()
+  cy.get('mat-icon[routerlink="/app/communities"]').click();
+  cy.get('span').contains('Overview').click();
   cy.get('h3').contains(name).click();
   cy.get('span').contains('Delete community').should('be.visible');
   cy.get('span').contains('Delete community').click();

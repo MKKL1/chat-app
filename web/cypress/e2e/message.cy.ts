@@ -1,5 +1,13 @@
 describe('Testing performing operations on messages', () => {
-  const communityName = 'Test (edited)';
+  const communityName = 'Test';
+
+  before(() => {
+    cy.createCommunity(communityName);
+  });
+
+  after(() => {
+    cy.deleteCommunity(communityName);
+  });
 
   it('Should test message', () => {
     // navigating to text channel

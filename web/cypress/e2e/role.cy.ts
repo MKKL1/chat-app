@@ -1,4 +1,13 @@
 describe('Testing performing operations on roles', () => {
+  const communityName = "Test";
+  before(() => {
+    cy.createCommunity(communityName);
+  })
+
+  after(() => {
+    cy.deleteCommunity(communityName);
+  })
+
   it('Should test roles', () => {
     const roleName = "Test role";
     const username = "cypress-test-user";

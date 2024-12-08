@@ -33,7 +33,6 @@ describe('Testing performing operations on community', () => {
     cy.get('body').type('{esc}');
 
     // deleting community
-    //cy.deleteCommunity(communityName);
-
+    cy.deleteCommunity(communityName);
   });
 })
