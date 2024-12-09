@@ -17,7 +17,7 @@ import {ChannelService} from "../../../../services/channel.service";
 import {MatProgressBar} from "@angular/material/progress-bar";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {NgIf} from "@angular/common";
-import {Channel, ChannelType} from "../../../../models/channel";
+import {Channel} from "../../../../models/channel";
 import {catchError, of} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {EditPermissionsComponent} from "../edit-permissions/edit-permissions.component";

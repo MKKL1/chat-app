@@ -13,7 +13,6 @@ import {AvatarComponent} from "../../../../shared/ui/avatar/avatar.component";
 import {UserBasicInfoComponent} from "../../../../core/components/user-basic-info/user-basic-info.component";
 import {BottomSheetComponent} from "../../../../shared/ui/bottom-sheet/bottom-sheet.component";
 import {MatListModule} from "@angular/material/list";
-import {UserService} from "../../../../core/services/user.service";
 import {User} from "../../../models/user";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
@@ -110,7 +109,7 @@ export class MessageComponent implements OnInit{
     this.showReactionPicker.set(true);
   }
 
-  edit(){
+  editMessage(){
     this.openedOptions.set(false);
     this.dialog.open(EditMessageComponent, {
       width: '60vw',

@@ -1,6 +1,5 @@
-import {Component, inject, OnDestroy, OnInit, signal, WritableSignal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {CommunityQuery} from "../../../store/community/community.query";
-import {Community} from "../../../models/community";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {CommunityService} from "../../../services/community.service";
@@ -12,7 +11,6 @@ import {UserService} from "../../../../core/services/user.service";
 import {CreateCommunityComponent} from "../dialogs/create-community/create-community.component";
 import {Subscription} from "rxjs";
 import {PermissionService} from "../../../../core/services/permission.service";
-import {Permission} from "../../../models/permission";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {ConfirmationService} from "primeng/api";
 import {CommunityStats} from "../../../models/community-stats";

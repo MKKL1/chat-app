@@ -39,8 +39,7 @@ export class InvitationComponent  implements OnInit, OnDestroy{
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private communityService: CommunityService,
-    private communityQuery: CommunityQuery) {
+    private communityService: CommunityService) {
   }
 
   ngOnInit() {
@@ -48,13 +47,9 @@ export class InvitationComponent  implements OnInit, OnDestroy{
       this.communityId = params.get('communityId');
       this.invitationId = params.get('invitationId');
 
-      console.log('Community ID:', params.get('communityId'));
-      console.log('Invite ID:', params.get('inviteId'));
-
       this.communitySub = this.communityService
         .getInvitationInfo(this.communityId!, this.invitationId!)
         .subscribe(community => {
-          console.log(community);
           this.community.set(community);
         }
       );
@@ -66,7 +61,6 @@ export class InvitationComponent  implements OnInit, OnDestroy{
       this.invitationSub = this.communityService
         .acceptInvitation(this.communityId, this.invitationId)
         .subscribe(res => {
-          console.log(res);
           this.router.navigate(["/app/communities"]);
         }
       );

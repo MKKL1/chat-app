@@ -105,10 +105,8 @@ export class RoleDialogComponent {
   onSubmit(){
     if(this.roleForm.valid){
       let currentBit = 0n;
-      // control no longer holds boolean value, instead it provides one of roleOptions
       Object.keys(this.roleForm.controls).forEach(controlName => {
         const control = this.roleForm.get(controlName);
-        //console.log(`Control Name: ${controlName}, Value: ${control?.value}, Status: ${control?.status}`);
 
         // status can be -> allow, denied or none
         // it has to replace boolean value, because of p-select element

@@ -52,6 +52,7 @@ describe('Testing performing operations on messages', () => {
     // editing message
     const messageToEdit = 'Message to edit';
     cy.createMessage(messageToEdit);
+    cy.wait(1000);
     cy.performOnLastMessage(() => {
       cy.showBottomSheet();
     });

@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {tap} from "rxjs";
 import {EventCallback, EventHandler} from "./event.handler";
 import {RsocketConnection} from "./rsocket.connection";
 import {EventConnection} from "./EventConnection";
@@ -9,23 +8,23 @@ import {EventConnection} from "./EventConnection";
 })
 export class EventService{
 
-  private rsocketConnection: EventConnection;
+  private connection: EventConnection;
   private eventHandler: EventHandler;
 
   constructor() {
-    this.rsocketConnection = new RsocketConnection();
+    this.connection = new RsocketConnection();
     this.eventHandler = new EventHandler();
   }
 
   public init(){
-    this.rsocketConnection.connect();
+    this.connection.connect();
   }
 
   // after changing community from first there is no more data coming to text-chat component
   // stream is closed, and it is never used again
   public handleNewStreamRequest(communityId: string) {
     // Create a new subscription, but don't use Event as a generic type
-    this.rsocketConnection
+    this.connection
       .requestStream<any>(`/community/${communityId}/messages`)
       .subscribe({
         next: (event: any) => {

@@ -1,4 +1,4 @@
-import {Component, computed, inject, Inject, OnInit, signal} from '@angular/core';
+import {Component, inject, Inject, OnInit, signal} from '@angular/core';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
@@ -18,7 +18,7 @@ import {CommunityQuery} from "../../../../store/community/community.query";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {MatIcon} from "@angular/material/icon";
 import {AvatarComponent} from "../../../../../shared/ui/avatar/avatar.component";
-import {MatCard, MatCardModule} from "@angular/material/card";
+import {MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../../services/role.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MessageService} from "primeng/api";
@@ -92,7 +92,6 @@ export class RoleMembersComponent implements OnInit{
     const membersToTransfer = this.membersWithoutRole()
       .filter(member => idsToMove.includes(member.id));
 
-    console.log(membersToTransfer);
     // removing members from list of members which don't have role
     this.membersWithoutRole.update(
       members => members.filter(member => !idsToMove.includes(member.id))

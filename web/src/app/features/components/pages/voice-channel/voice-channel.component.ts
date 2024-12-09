@@ -6,18 +6,15 @@ import {MatIcon} from "@angular/material/icon";
 import {LayoutComponent} from "../../../../core/components/layout/layout.component";
 import {ParticipantInfo, VoiceChatService} from "../../../services/voice-chat.service";
 import {VoiceChannelQuery} from "../../../store/voiceChannel/voice.channel.query";
-import {UserService} from "../../../../core/services/user.service";
 import {Channel} from "../../../models/channel";
 import {TextChatComponent} from "../../text-chat/text-chat/text-chat.component";
-import {Participant} from "livekit-client";
 import {Subscription} from "rxjs";
 import {MemberQuery} from "../../../store/member/member.query";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {Member} from "../../../models/member";
 import {NgClass} from "@angular/common";
-import {User} from "../../../models/user";
 import {MessageService} from "primeng/api";
-import {MatButton, MatButtonModule} from "@angular/material/button";
+import {MatButtonModule} from "@angular/material/button";
 import {VoiceChannelStore} from "../../../store/voiceChannel/voice.channel.store";
 
 @Component({
@@ -64,8 +61,6 @@ export class VoiceChannelComponent implements OnInit, OnDestroy{
     private communityQuery: CommunityQuery,
     private messageService: MessageService) {
   }
-
-  // what happens if i changed community during talking?
 
   ngOnInit() {
     this.memberSubscription = this.memberQuery.selectAll({

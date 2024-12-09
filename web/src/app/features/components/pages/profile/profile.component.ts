@@ -66,7 +66,8 @@ export class ProfileComponent implements OnInit, OnDestroy{
   }
 
   openUserSettings(){
-    this.keycloakService.getKeycloakInstance().accountManagement();
+    const keycloakService = this.keycloakService.getKeycloakInstance();
+    keycloakService.accountManagement();
   }
 
   editDescription(){
@@ -75,9 +76,8 @@ export class ProfileComponent implements OnInit, OnDestroy{
       return;
     }
 
-    this.userService.editDescription(this.description).subscribe(user => {
-      console.log(user);
-    });
+    this.userService.editDescription(this.description)
+      .subscribe(user => {});
   }
 
   logout(){

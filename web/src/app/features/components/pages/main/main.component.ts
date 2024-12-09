@@ -34,12 +34,6 @@ export class MainComponent implements OnInit, OnDestroy {
     // after entering part of app available to authorized users
     // basic data about current user should be saved in service for further use
     this.userService.fetchUserData();
-
-    // this method show your actual token
-    // this.keycloakService.getToken().then(token => {
-    //   console.log(token);
-    // });
-
     this.eventService.init();
     this.roleService.init();
 

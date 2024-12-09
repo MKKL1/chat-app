@@ -49,10 +49,8 @@ export class EditMessageComponent {
   constructor(private messageService: MessageService,
       @Inject(MAT_DIALOG_DATA) public data: {message: Message},
       public dialogRef: MatDialogRef<EditMessageComponent>) {
-    console.log(data.message);
     this.messageForm.setValue({text: data.message.text});
     this.message = signal<Message>(data.message);
-    console.log(this.message())
   }
 
   submitMessage(){

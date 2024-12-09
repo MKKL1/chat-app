@@ -7,17 +7,14 @@ import {RoleDialogComponent} from "../dialogs/role-dialog/role-dialog.component"
 import {RoleQuery} from "../../../store/role/role.query";
 import {Subscription} from "rxjs";
 import {Role} from "../../../models/role";
-import {MatList, MatListModule} from "@angular/material/list";
-import {MatCard, MatCardModule} from "@angular/material/card";
+import {MatListModule} from "@angular/material/list";
+import {MatCardModule} from "@angular/material/card";
 import {RoleService} from "../../../services/role.service";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {RoleMembersComponent} from "../dialogs/role-members/role-members.component";
-import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {ConfirmationService} from "primeng/api";
-import {ConfirmDialogModule} from "primeng/confirmdialog";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @Component({
   selector: 'app-roles',
