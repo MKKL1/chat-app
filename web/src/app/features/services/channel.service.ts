@@ -1,14 +1,13 @@
-import {inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Channel, ChannelType} from "../models/channel";
 import {environment} from "../../../environment";
-import {Observable, tap} from "rxjs";
+import {Observable} from "rxjs";
 import {CommunityQuery} from "../store/community/community.query";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {EventService} from "../../core/events/event.service";
-import {Operation} from "./role.service";
-import {Permission} from "../models/permission";
+import {Operation} from "../models/operation";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +36,6 @@ export class ChannelService {
       return;
     }
 
-    //TODO update permissions
     this.voiceChannelStore.setActive(channel.id);
   }
 
@@ -50,14 +48,14 @@ export class ChannelService {
       return;
     }
 
-    //TODO update permissions
     this.textChannelStore.setActive(channel.id);
   }
 
   createChannel(channel: any): Observable<Channel>{
-    // channel.communityId = this.communityQuery.getActiveId(); not needed/will throw exception
-    //This request was moved to /communities as POST /channels/{communityId} is very similar to GET /channels/{channelId}
-    return this.http.post<Channel>(environment.api + "communities/" + this.communityQuery.getActiveId() + "/channels", channel);
+    return this.http.post<Channel>(
+      environment.api + "communities/" +
+      this.communityQuery.getActiveId() + "/channels", channel
+    );
   }
 
   updateChannel(channelId: string, name: string): Observable<any>{
@@ -70,8 +68,6 @@ export class ChannelService {
     return this.http.put(this.apiPath + "/" + channelId, operations);
   }
 
-  // I'm too lazy to check channel type here
-  // and there won't be channels with same id in both stores anyway
   deleteChannel(id: string): Observable<any>{
     return this.http.delete(this.apiPath + "/" + id);
   }
@@ -83,8 +79,6 @@ export class ChannelService {
         ]
       }
     ];
-
-    console.log(operations);
 
     return this.http.put(environment.api + 'channels/' + id, operations);
   }
@@ -103,7 +97,6 @@ export class ChannelService {
     }
   };
 
-  // overwrites always gives smaller value that is expected
   private handleUpdateChannel = (newChannel: any) => {
     const channel: Channel = newChannel.channel;
     // @ts-ignore
@@ -111,14 +104,10 @@ export class ChannelService {
     if(channel.type === '1'){
       this.voiceChannelStore.update(channel.id, {name: channel.name});
     } else {
-      // TODO compute new permissions
       this.textChannelStore.update(channel.id, {
         name: channel.name,
         overwrites: newChannel.overwrites
       });
-
-      console.log(newChannel.overwrites);
-      //console.log(new Permission(newChannel.overwrites));
     }
   };
 

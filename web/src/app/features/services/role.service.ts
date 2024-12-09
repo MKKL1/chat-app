@@ -10,12 +10,7 @@ import {RoleStore} from "../store/role/role.store";
 import {MemberQuery} from "../store/member/member.query";
 import {MemberStore} from "../store/member/member.store";
 import {PermissionService} from "../../core/services/permission.service";
-
-export interface Operation{
-  op: string,
-  path: string,
-  value: string | number
-}
+import {Operation} from "../models/operation";
 
 @Injectable({
   providedIn: 'root'
