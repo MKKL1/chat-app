@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import {MatList, MatListItem, MatNavList} from "@angular/material/list";
 import {MatChip, MatChipSet} from "@angular/material/chips";
@@ -11,8 +11,6 @@ import {RoleQuery} from "../../../store/role/role.query";
 import {Subscription} from "rxjs";
 import {MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
-import {MatDialog} from "@angular/material/dialog";
-import {Order} from "@datorama/akita";
 import {CommunityQuery} from "../../../store/community/community.query";
 
 @Component({
@@ -56,15 +54,12 @@ export class UsersListComponent implements OnInit, OnDestroy{
           this.members.set(this.memberQuery.getAll({
             filterBy: entity => entity.communityId === communityId
           }));
-
-          console.log(this.members());
         }
       );
 
     this.membersSubscription = this.memberQuery.selectAll({
       filterBy: entity => entity.communityId === this.communityQuery.getActiveId()
     }).subscribe(members => {
-      console.log(members);
       this.members.set(members);
     });
   }

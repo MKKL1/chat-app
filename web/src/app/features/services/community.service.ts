@@ -1,4 +1,4 @@
-import {inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {catchError, EMPTY, map, Observable, switchMap, tap, throwError} from "rxjs";
@@ -7,7 +7,6 @@ import {CommunityStore} from "../store/community/community.store";
 import {Channel, ChannelType} from "../models/channel";
 import {Role} from "../models/role";
 import {CommunityQuery} from "../store/community/community.query";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {VoiceChannelStore} from "../store/voiceChannel/voice.channel.store";
 import {MemberStore} from "../store/member/member.store";
@@ -16,8 +15,6 @@ import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {EventService} from "../../core/events/event.service";
 import {Member} from "../models/member";
-import {UserService} from "../../core/services/user.service";
-import {MemberQuery} from "../store/member/member.query";
 import {PermissionService} from "../../core/services/permission.service";
 import {MessageService} from "primeng/api";
 
@@ -26,7 +23,6 @@ import {MessageService} from "primeng/api";
 })
 export class CommunityService {
   private readonly apiPath: string = environment.api + "communities";
-  private snackBar = inject(MatSnackBar);
 
   constructor(
     private http: HttpClient,
@@ -56,7 +52,7 @@ export class CommunityService {
     this.textChannelStore.removeActive(this.textChannelQuery.getActiveId());
     this.voiceChannelStore.removeActive(this.voiceChannelQuery.getActiveId());
 
-    // Data about communities is stored in storage after initiating app
+    // Data about communities is stored after initiating app
     // however data about channels, members etc. may be lacking
     // I introduce flag fullyFetched, so this method will now decide if data should be
     // fetched from api (fullyFetched is false) or taken from storage (fullyFetched is true)
@@ -75,7 +71,6 @@ export class CommunityService {
   private fetchCommunity(id: string){
     this.http.get(this.apiPath + "/" + id + "/info").pipe(
       map((res: any) => {
-        console.log(res);
         return {
           community: res.community,
           roles: res.roles.map((role: Role) => ({
@@ -96,11 +91,8 @@ export class CommunityService {
       })
     ).subscribe({
       next: (response) => {
-        console.log(response);
-
         // All relational data connected to community is normalized
         // and saved to separated stores which will make state of app easier to maintain
-
         const textChannels: Channel[] = [];
         const voiceChannels: Channel[] = [];
 
@@ -118,11 +110,6 @@ export class CommunityService {
         this.voiceChannelStore.add(voiceChannels);
         this.roleStore.add(response.roles);
         this.memberStore.add(response.members);
-
-
-        //Moving this logic to permission service so it could be updated when active community changes, not when it is fetched
-        //What if request is cached and permission doesn't change? This should fix it
-        //Update: still doing it here, as I am not sure how to do it
 
         // Updating existing entity triggers setting fullyFetched flag
         // which prevents fetching this community again
@@ -207,20 +194,11 @@ export class CommunityService {
   };
 
   private handleCommunityDelete = (id: string) => {
-    console.log(id);
-    const community = this.communityQuery.getEntity(id);
-
     this.communityStore.remove(id);
     // need to unselect community if deleted one was actually selected
     if(this.communityQuery.getActiveId() === id){
       this.communityStore.removeActive(id);
     }
-
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Community deleted',
-      detail: `Community ${community?.name} is no longer available`
-    });
   };
 
   createInvitation(id: string, days: number){

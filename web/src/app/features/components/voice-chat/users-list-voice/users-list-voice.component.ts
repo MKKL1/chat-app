@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   MatAccordion,
   MatExpansionPanel,
@@ -20,13 +20,9 @@ import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe, NgClass} from "@angular/common";
 import {TextChannelInfoComponent} from "../../text-chat/text-channel-info/text-channel-info.component";
 import {toSignal} from "@angular/core/rxjs-interop";
-import {UserService} from "../../../../core/services/user.service";
 import {VoiceChatService} from "../../../services/voice-chat.service";
 import {MessageService} from "primeng/api";
-import {ID} from "@datorama/akita";
-import {Subscription} from "rxjs";
 import {MemberQuery} from "../../../store/member/member.query";
-import { Member } from '../../../models/member';
 import {AvatarGroupModule} from "primeng/avatargroup";
 import {AvatarModule} from "primeng/avatar";
 import {MatBadge} from "@angular/material/badge";

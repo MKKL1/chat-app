@@ -1,15 +1,12 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {VoiceChannelQuery} from "../store/voiceChannel/voice.channel.query";
 import {environment} from "../../../environment";
 import {
-  LocalAudioTrack, LocalParticipant, LocalTrackPublication,
-  LocalVideoTrack,
   Participant,
-  ParticipantEvent, RemoteParticipant,
-  RemoteTrack, RemoteTrackPublication,
+  ParticipantEvent,
   Room,
-  RoomEvent, TrackProcessor, TrackPublication
+  RoomEvent,
 } from "livekit-client";
 import {BehaviorSubject} from "rxjs";
 
@@ -57,20 +54,17 @@ export class VoiceChatService{
         // loading list of current participants including user
         const participants: ParticipantInfo[] = [];
         this.room.remoteParticipants.forEach(participant => {
-          console.log(participant);
           participants.push(this.participantInfoFactory(participant));
         });
         this.participantsSubject$.next(participants);
 
         // add new participant to ui
         this.room.on(RoomEvent.ParticipantConnected, (participant) => {
-          console.log(`User connected: ${participant.identity}`);
           this.addParticipant(participant);
         });
 
         // remove participant from ui on disconnect
         this.room.on(RoomEvent.ParticipantDisconnected, (participant) => {
-          console.log(`User disconnected: ${participant.identity}`);
           this.removeParticipant(participant);
         });
 
@@ -87,7 +81,6 @@ export class VoiceChatService{
         // so ui state brake
         this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
           track.attach(this.audio);
-          console.log('video-' + participant.identity);
           const video = document.getElementById('video-' + participant.identity) as HTMLMediaElement;
           track.attach(video);
 
@@ -101,10 +94,9 @@ export class VoiceChatService{
               audioEnabled: track.kind === 'audio' ? true : updatedParticipants[participantIndex].audioEnabled,
               videoEnabled: track.kind === 'video' ? true : updatedParticipants[participantIndex].videoEnabled
             };
-            console.log(updatedParticipants);
+
             this.participantsSubject$.next(updatedParticipants);
           }
-
         });
 
         // share data about currently speaking participants
@@ -140,8 +132,6 @@ export class VoiceChatService{
           } else if(track.kind === 'video'){
             p.videoEnabled = false;
           }
-
-          console.log(`Remote participant with identity ${p.identity} muted ${track.kind}`);
         }
         return p;
       });
@@ -159,8 +149,6 @@ export class VoiceChatService{
           } else if(track.kind === 'video'){
             p.videoEnabled = true;
           }
-
-          console.log(`Remote participant with identity ${p.identity} unmuted ${track.kind}`);
         }
         return p;
       });

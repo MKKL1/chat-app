@@ -10,7 +10,6 @@ import {ClickOutsideDirective} from "../../../../shared/directives/click-outside
 import {MessageService} from "../../../services/message.service";
 import {CreateMessageDto} from "../../../models/create.message.dto";
 import {previewImage} from "../../../../shared/utils/utils";
-import {UserService} from "../../../../core/services/user.service";
 import {PermissionService} from "../../../../core/services/permission.service";
 import {toSignal} from "@angular/core/rxjs-interop";
 
@@ -85,15 +84,12 @@ export class MessageInputComponent {
   }
 
   onFileSelected(event: Event){
-    // handle attaching file
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile.set(input.files[0]);
-      console.log("Changing preview");
       previewImage(input.files[0]).then(image => {
         this.imagePreview.set(image);
       });
-      console.log(this.imagePreview());
     }
   }
 
@@ -105,10 +101,6 @@ export class MessageInputComponent {
   resetFile(){
     this.imagePreview.set('');
     this.selectedFile.set(null);
-  }
-
-  setResponse(event: { id: string, text: string }){
-    this.messageToRespond = event;
   }
 
   appendEmojiToInputField(emoji: string){

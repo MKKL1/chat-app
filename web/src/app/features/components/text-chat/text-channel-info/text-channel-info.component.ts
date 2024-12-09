@@ -8,7 +8,6 @@ import {MatIcon} from "@angular/material/icon";
 import {MatBadge} from "@angular/material/badge";
 import {MessageNotification} from "../../../models/message-notification";
 import {Subscription} from "rxjs";
-import {EventService} from "../../../../core/events/event.service";
 import {MessageService} from "../../../services/message.service";
 
 @Component({

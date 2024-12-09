@@ -5,7 +5,6 @@ import {MatListItem, MatNavList} from "@angular/material/list";
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
 import {MatToolbar} from "@angular/material/toolbar";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {CommunityService} from "../../../features/services/community.service";
 import {CommunityQuery} from "../../../features/store/community/community.query";
 import {Subscription} from "rxjs";
 

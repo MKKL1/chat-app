@@ -1,7 +1,6 @@
 import {CanActivateFn, Router} from '@angular/router';
 import {inject} from "@angular/core";
 import {CommunityQuery} from "../../features/store/community/community.query";
-import {map} from "rxjs";
 
 // Some pages can be accessed before user has selected community to which content showed on page belongs
 // E.g. user can add channel to community even if app don't know community id yet
@@ -11,6 +10,5 @@ export const communityGuard: CanActivateFn = (route, state) => {
   const communityQuery: CommunityQuery = inject(CommunityQuery);
 
   let isSelected: boolean = communityQuery.hasActive();
-
   return isSelected ? isSelected : router.createUrlTree(['/','app','communities']);
 };

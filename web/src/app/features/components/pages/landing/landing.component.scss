@@ -6,6 +6,7 @@ body, :host{
 .landing{
   display: grid;
   width: 100vw;
+  height: 100vh;
   //background: linear-gradient(#000000, #2b4a46, #3a5a53);
   background: var(--background);
 }

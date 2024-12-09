@@ -4,7 +4,7 @@ import {map} from "rxjs";
 /**
  * ID's provided by backend are too big to be properly mapped to javascript numbers
  * Because of this 46173257522479104 becomes 46173257522479100
- * To prevent this ridiculous behaviour after getting response from api this interceptor
+ * To prevent this ridiculous behaviour, after getting response from api this interceptor
  * is mapping every number into BigInt type which can handle such big numbers
  * HOWEVER BigInt cannot be serialized to json, so it has to be cast to string
 **/

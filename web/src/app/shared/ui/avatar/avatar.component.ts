@@ -12,6 +12,4 @@ import {MatBadge} from "@angular/material/badge";
 })
 export class AvatarComponent {
   @Input() imagePath: string = '';
-  // TODO add status for badge color
-  status: string = "";
 }

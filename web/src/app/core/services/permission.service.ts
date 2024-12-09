@@ -1,32 +1,28 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {Permission} from "../../features/models/permission";
-import {TextChannelQuery} from "../../features/store/textChannel/text.channel.query";
-import {VoiceChannelQuery} from "../../features/store/voiceChannel/voice.channel.query";
 import {sumMasks} from "../../shared/utils/binaryOperations";
 import {UserService} from "./user.service";
-import {applyOverwrite, applyOverwrites} from "../../shared/utils/permOperations";
+import {applyOverwrite} from "../../shared/utils/permOperations";
 import {MemberQuery} from "../../features/store/member/member.query";
-import {Channel, ChannelRole} from "../../features/models/channel";
 import {Role} from "../../features/models/role";
 import {CommunityQuery} from "../../features/store/community/community.query";
 import {User} from "../../features/models/user";
 import {RoleQuery} from "../../features/store/role/role.query";
 
-//TODO unit testing
 @Injectable({
   providedIn: 'root'
 })
 export class PermissionService implements OnDestroy{
   //Represents current permission
   private permissionSubject: BehaviorSubject<Permission> = new BehaviorSubject<Permission>(
-    new Permission("0"));
+    new Permission("0")
+  );
 
   public permissions$: Observable<Permission> = this.permissionSubject.asObservable();
 
   private basePerm: bigint = 0n;
   private permCommunityMask: bigint = 0n;
-  private isOwner: boolean = false;
 
   private textChannelSub: Subscription;
   private voiceChannelSub: Subscription;
@@ -34,54 +30,11 @@ export class PermissionService implements OnDestroy{
   constructor(private memberQuery: MemberQuery,
               private roleQuery: RoleQuery,
               private communityQuery: CommunityQuery,
-              private textChannelQuery: TextChannelQuery,
-              private voiceChannelQuery: VoiceChannelQuery,
               private userService: UserService
-              ) {
-    // permission should be computed once again after community changed
-    // or after event connected to role (update, delete)
-
-    this.textChannelSub = textChannelQuery.selectActive().subscribe(channel => {
-      if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
-    })
-
-    this.voiceChannelSub = voiceChannelQuery.selectActive().subscribe(channel => {
-      //same as above
-      if(!channel) return;
-      const userRoles = memberQuery.getEntity(channel.communityId + userService.getUser().id)?.roles
-      //this.updatePermsFromChannel(userRoles!, channel.overwrites)
-    })
-  }
-
-  private updatePermsFromChannel(userRoles: string[], channelRoles: ChannelRole[]) {
-    let newPerms: Permission;
-    if(this.isOwner) {
-      newPerms = new Permission(0xFFFFFFFFn)
-    } else {
-      //Get overwrites that affect user
-      const overwritesOfChannelForUser = channelRoles
-        .filter((channelRole: ChannelRole) => userRoles?.includes(channelRole.roleId))
-        .map((channelRole: ChannelRole) => channelRole.overwrites)
-        .map((overwrite: string) => BigInt(overwrite))
-
-      //TODO handle null
-      //Sum all permission overwrites (community and channel)
-      const permChannelMask = sumMasks(overwritesOfChannelForUser!)
-      const combinedMask = permChannelMask | this.permCommunityMask
-
-      //Update permission, based on saved base permission and ALL overwrites
-      newPerms = new Permission(applyOverwrite(this.basePerm, combinedMask))
-    }
-    this.permissionSubject.next(newPerms)
-  }
+              ) {}
 
   public setCommunityPermission() {
     const community = this.communityQuery.getActive()!;
-
-    console.log(community);
-
     const currentUser = this.userService.getUser();
 
     // getting base permission for community and list of

@@ -22,14 +22,12 @@ import {ConfirmationService, MessageService} from "primeng/api";
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
-      // TODO get config from env file
       config: {
-        url: environment.keycloackUrl,
-        realm: 'szampchat',
-        clientId: 'angular-web',
+        url: environment.keycloakUrl,
+        realm: environment.realm,
+        clientId: environment.clientId,
       },
       initOptions: {
-        //onLoad: 'login-required',
         checkLoginIframe: true,
         checkLoginIframeInterval: 3000,
       },
@@ -60,10 +58,5 @@ export const appConfig: ApplicationConfig = {
     },
     {provide: MessageService},
     {provide: ConfirmationService}
-
-    // {
-    //   provide: 'persistStorage',
-    //   useValue: persistState()
-    // }
 ]
 };

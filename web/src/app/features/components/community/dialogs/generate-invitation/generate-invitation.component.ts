@@ -6,7 +6,6 @@ import {
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
-  MatDialogRef,
   MatDialogTitle
 } from "@angular/material/dialog";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
@@ -69,7 +68,6 @@ export class GenerateInvitationComponent {
 
       this.communityService.createInvitation(this.data.id, days).subscribe({
         next: res => {
-          console.log(res.link);
           this.link.set(environment.domain + res.link);
           this.linkCreated.set(true);
         },

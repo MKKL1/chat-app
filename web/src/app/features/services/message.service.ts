@@ -7,7 +7,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environment";
 import {TextChannelQuery} from "../store/textChannel/text.channel.query";
 import {ID} from "@datorama/akita";
-import {catchError, Observable, Subject, throwError} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {TextChannelStore} from "../store/textChannel/text.channel.store";
 import {EventService} from "../../core/events/event.service";
 import {formatDate} from "../../shared/utils/utils";
@@ -24,7 +24,7 @@ import {MessageService as Notification} from "primeng/api";
 export class MessageService{
   api: string = environment.api + "channels/";
 
-  limit: number = 10;
+  messageLimit: number = 10;
 
   // this subject is used to notify list of text channels about new message,
   // so it can add notification to proper channel from list
@@ -55,7 +55,7 @@ export class MessageService{
         this.fetchMessages(channelId).subscribe(messages => {
           this.messageStore.add(messages);
 
-          if(messages.length < this.limit){
+          if(messages.length < this.messageLimit){
             this.channelStore.update(channelId, {messagesState: ChannelMessagesState.FullyFetched});
           } else {
             this.channelStore.update(channelId, {messagesState: ChannelMessagesState.PartlyFetched});
@@ -66,8 +66,7 @@ export class MessageService{
       case ChannelMessagesState.PartlyFetched:
         this.fetchMessages(channelId, lastMessageId).subscribe(messages => {
           this.messageStore.add(messages);
-
-          if(messages.length < this.limit){
+          if(messages.length < this.messageLimit){
             this.channelStore.update(channelId, {messagesState: ChannelMessagesState.FullyFetched});
           }
         });
@@ -81,7 +80,7 @@ export class MessageService{
 
   fetchMessages(channelId: ID, lastMessageId?: string): Observable<Message[]>{
     const params: any = {
-      limit: this.limit
+      limit: this.messageLimit
     }
 
     if(lastMessageId){
@@ -93,7 +92,6 @@ export class MessageService{
     });
   }
 
-  // we only want to send communityId, channelId and message text
   sendMessage(message: CreateMessageDto, file?: File | null){
     const formData = new FormData();
     message.communityId = this.channelQuery.getActive()?.communityId;
@@ -105,7 +103,6 @@ export class MessageService{
 
     const channelId = this.channelQuery.getActiveId();
 
-    // Message don't have to be added to store, because rsocket is already listening for new messages
     this.http.post(this.api + `${channelId}/messages`, formData, {
       headers: new HttpHeaders({
         'enctype': 'multipart/form-data'
@@ -115,7 +112,6 @@ export class MessageService{
 
   editMessage(id: string, text: string){
     const channelId = this.channelQuery.getActiveId();
-
     this.http.patch<Message>(this.api + `${channelId}/messages/${id}`, {
       text: text
     }).subscribe();
@@ -131,7 +127,6 @@ export class MessageService{
     this.http.post(`${this.api}${channelId}/messages/${messageId}/reactions`,{emoji: reaction})
       .subscribe({
         error: err => {
-          console.error(err.message);
           this.message.add({severity: 'error', summary: "Cannot add reaction"});
         }
       });

@@ -56,7 +56,7 @@ export class TextChatsListComponent{
       private permissionService: PermissionService) {
     }
 
-  addChannel(){
+    addChannel(){
       this.dialog.open(CreateChannelComponent, {width: '60vw'});
     }
 
@@ -72,13 +72,5 @@ export class TextChatsListComponent{
 
     selectChannel(channel: Channel){
       this.channelService.selectTextChannel(channel);
-    }
-
-    canCreateChannel(){
-      return this.permissionService.getPermission().canCreateChannel;
-    }
-
-    canModifyChannel(){
-      return this.permissionService.getPermission().canModifyChannel;
     }
 }

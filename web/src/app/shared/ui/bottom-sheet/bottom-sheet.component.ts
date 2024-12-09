@@ -6,8 +6,6 @@ import {
   Input,
   OnDestroy,
   Output,
-  Renderer2,
-  signal
 } from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
 
@@ -29,8 +27,7 @@ export class BottomSheetComponent implements AfterViewInit, OnDestroy{
 
   @Output() close = new EventEmitter<void>();
 
-  constructor(private el: ElementRef) {
-  }
+  constructor(private el: ElementRef) {}
 
   ngAfterViewInit(): void {
     document.addEventListener('click', (event) => this.handleClickOutside(event));

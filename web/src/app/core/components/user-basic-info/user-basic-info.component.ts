@@ -8,8 +8,7 @@ import {User} from "../../../features/models/user";
   imports: [
     AvatarComponent
   ],
-  templateUrl: './user-basic-info.component.html',
-  styleUrl: './user-basic-info.component.scss'
+  templateUrl: './user-basic-info.component.html'
 })
 export class UserBasicInfoComponent {
   @Input() user: User;

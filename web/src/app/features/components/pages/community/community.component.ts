@@ -10,7 +10,6 @@ import {LayoutComponent} from "../../../../core/components/layout/layout.compone
 import {CommunityDetailsComponent} from "../../community/community-details/community-details.component";
 import {CommunityQuery} from "../../../store/community/community.query";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-community',
